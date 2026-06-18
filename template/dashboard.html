@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+
+<html lang="fr">
+
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>Move Gasy — Système de gestion aquacole</title>
+  <link href="https://fonts.googleapis.com" rel="preconnect" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/responsive.css">
+</head>
+
+<body>
+      <div class="sidebar-overlay"></div>
+  <div class="layout">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-logo"><i class="bi bi-water"></i></div>
+        <div class="brand-name">MOVE GASY</div>
+      </div>
+      <div class="nav-container">
+        <div class="nav-label">Principal</div>
+        <a class="nav-item active" href="#">
+          <span class="nav-icon"><i class="bi bi-speedometer2"></i></span> Dashboard
+        </a>
+        <div class="nav-label">Terrain</div>
+        <a class="nav-item" href="bassin.html">
+          <span class="nav-icon"><i class="bi bi-droplet-half"></i></span> Bassins
+        </a>
+        <a class="nav-item " href="bio.html">
+          <span class="nav-icon"><i class="bi bi-activity"></i></span> Suivi biologique
+        </a>
+        <a class="nav-item" href="nourrissage.html">
+          <span class="nav-icon"><i class="bi bi-egg-fill"></i></span> Nourrissage
+        </a>
+        <!--  <a class="nav-item">
+                    <span class="nav-icon"><i class="bi bi-thermometer-half"></i></span> Environnement
+                </a> -->
+        <a class="nav-item" href="sanitaire.html">
+          <span class="nav-icon"><i class="bi bi-plus-circle"></i></span> Sanitaire
+        </a>
+        <div class="nav-label">Logistique</div>
+        <a class="nav-item" href="stock.html">
+          <span class="nav-icon"><i class="bi bi-box-seam"></i></span> Stocks
+        </a>
+        <a class="nav-item" href="commercial.html">
+          <span class="nav-icon"><i class="bi bi-cart3"></i></span> Commercial
+        </a>
+        <a class="nav-item" href="livraisons.html">
+          <span class="nav-icon"><i class="bi bi-truck"></i></span> Livraisons
+        </a>
+        <a class="nav-item" href="finances.html">
+          <span class="nav-icon"><i class="bi bi-cash-stack"></i></span> Finances
+        </a>
+        <div class="nav-label">Système</div>
+        <a class="nav-item" href="login.html">
+          <span class="nav-icon"><i class="bi bi-lock"></i></span> Connexion</a>
+        <a class="nav-item" href="administration.html">
+          <span class="nav-icon"><i class="bi bi-gear"></i></span> Administration</a>
+        <div class="nav-label" href="front-office.html">Portail client</div>
+        <a class="nav-item">
+          <span class="nav-icon"><i class="bi bi-person-lock"></i></span> Front Office
+        </a>
+      </div>
+    </aside>
+    <!-- MAIN WRAPPER -->
+    <div class="main-wrapper">
+      <!-- TOPBAR -->
+      <header class="topbar">
+        
+                <button class="menu-toggle" onclick="toggleSidebar()">
+                    <i class="bi bi-list"></i>
+                </button>
+<div class="breadcrumb" id="breadcrumb">
+          <span class="active">Dashboard</span>
+        </div>
+        <div class="topbar-actions">
+          <button class="icon-btn">
+            <i class="bi bi-bell"></i>
+            <div class="badge-dot"></div>
+          </button>
+          <div class="user-profile">
+            <div class="user-info">
+              <div class="user-name">Admin</div>
+              <div class="user-role">Move Gasy Manager</div>
+            </div>
+            <div class="avatar">AD</div>
+          </div>
+        </div>
+      </header>
+      <main>
+        <!-- PAGE: DASHBOARD -->
+        <div class="page active" id="pg-dashboard">
+          <div class="dash-banner">
+            <div>
+              <h2 class="banner-title">Bonjour, bonne journée <i class="bi bi-hand-thumbs-up"></i></h2>
+              <p class="banner-sub">Ferme Move Gasy · Mahajanga · Lundi 9 juin 2026</p>
+            </div>
+            <div class="status-pill">● Système opérationnel</div>
+          </div>
+          <!-- TOP KPI GRID -->
+          <div class="kpi-grid">
+            <div class="kpi-card">
+              <div class="kpi-label">Production annuelle (YTD)</div>
+              <div class="kpi-value">12.8 T</div>
+              <div class="kpi-sub">Objectif : 25 T (51.2%)</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">CA total (Payé)</div>
+              <div class="kpi-value">50.4M Ar</div>
+              <div class="kpi-sub">Prévu : 58.2M Ar</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">Profit actuel</div>
+              <div class="kpi-value">+14.9M Ar</div>
+              <div class="kpi-sub">Marge nette : 29.5%</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">ROI Actuel</div>
+              <div class="kpi-value">29.7%</div>
+              <div class="progress-container" style="margin: 8px 0 0;">
+                <div class="progress-bar" style="width:29.7%"></div>
+              </div>
+            </div>
+          </div>
+          <div class="dashboard-row">
+            <!-- KPI PRODUCTION (WOW) -->
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">Production mensuelle (kg) vs Objectif</h3>
+              </div>
+              <div style="position: relative;">
+                <div class="chart-target-line" style="top: 40px;"></div>
+                <div class="chart-container">
+                  <div class="chart-bar-group">
+                    <div class="chart-bar" style="height: 60%;"></div><span class="chart-label">Jan</span>
+                  </div>
+                  <div class="chart-bar-group">
+                    <div class="chart-bar" style="height: 75%;"></div><span class="chart-label">Fév</span>
+                  </div>
+                  <div class="chart-bar-group">
+                    <div class="chart-bar" style="height: 50%;"></div><span class="chart-label">Mar</span>
+                  </div>
+                  <div class="chart-bar-group">
+                    <div class="chart-bar" style="height: 85%;"></div><span class="chart-label">Avr</span>
+                  </div>
+                  <div class="chart-bar-group">
+                    <div class="chart-bar" style="height: 90%;"></div><span class="chart-label">Mai</span>
+                  </div>
+                  <div class="chart-bar-group">
+                    <div class="chart-bar" style="height: 40%; opacity: 0.5"></div><span class="chart-label">Juin</span>
+                  </div>
+                </div>
+              </div>
+              <div class="kpi-sub"
+                style="margin-top: 16px; border-top: 1px solid var(--mg-outline); padding-top: 12px; display: flex; justify-content: space-between;">
+                <span class="">Total depuis le 1er janvier : <strong>12 840 kg</strong></span>
+                <span style="color: var(--mg-success)" class=""><i class="bi bi-arrow-up"></i> +12% vs 2025</span>
+              </div>
+            </div>
+            <!-- SALES & FINANCE KPI -->
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">Ventes &amp; Performance financière</h3>
+              </div>
+              <div class="bassin-stat-row" style="margin-bottom: 12px;">
+                <span class="">Kg vendus ce mois</span><span style="font-weight: 700;" class="">1 500 kg</span>
+              </div>
+              <div class="bassin-stat-row" style="margin-bottom: 12px;">
+                <span class="">Taux d'écoulement (Vendu/Récolté)</span><span style="font-weight: 700;"
+                  class="">94%</span>
+              </div>
+              <div class="progress-container">
+                <div class="progress-bar" style="width:94%"></div>
+              </div>
+              <div style="margin-top: 24px;">
+                <div class="card-title" style="font-size: 11px; margin-bottom: 12px;">Dépenses vs Revenus (6 mois)</div>
+                <div class="mini-chart" style="display: flex; align-items: flex-end; gap: 4px; height: 80px;">
+                  <div class="mini-bar"
+                    style="height: 40%; width: 12px; background: var(--mg-danger); border-radius: 2px;"></div>
+                  <div class="mini-bar"
+                    style="height: 70%; width: 12px; background: var(--mg-success); border-radius: 2px;"></div>
+                  <div style="width: 12px;"></div>
+                  <div class="mini-bar"
+                    style="height: 35%; width: 12px; background: var(--mg-danger); border-radius: 2px;"></div>
+                  <div class="mini-bar"
+                    style="height: 75%; width: 12px; background: var(--mg-success); border-radius: 2px;"></div>
+                  <div style="width: 12px;"></div>
+                  <div class="mini-bar"
+                    style="height: 50%; width: 12px; background: var(--mg-danger); border-radius: 2px;"></div>
+                  <div class="mini-bar"
+                    style="height: 60%; width: 12px; background: var(--mg-success); border-radius: 2px;"></div>
+                  <div style="width: 12px;"></div>
+                  <div class="mini-bar"
+                    style="height: 45%; width: 12px; background: var(--mg-danger); border-radius: 2px;"></div>
+                  <div class="mini-bar"
+                    style="height: 80%; width: 12px; background: var(--mg-success); border-radius: 2px;"></div>
+                  <div style="width: 12px;"></div>
+                  <div class="mini-bar"
+                    style="height: 30%; width: 12px; background: var(--mg-danger); border-radius: 2px;"></div>
+                  <div class="mini-bar"
+                    style="height: 90%; width: 12px; background: var(--mg-success); border-radius: 2px;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- STOCK SITUATION -->
+          <div class="kpi-grid" style="margin-bottom: 24px;">
+            <div class="kpi-card" style="border-left: 4px solid var(--mg-primary);">
+              <div class="kpi-label">Stock Crevettes (kg)</div>
+              <div class="kpi-value">1 550 kg</div>
+              <div class="kpi-sub">Valeur estimée : 65.1M Ar</div>
+            </div>
+            <div class="kpi-card" style="border-left: 4px solid var(--mg-warning);">
+              <div class="kpi-label">Stock Aliment (kg)</div>
+              <div class="kpi-value">420 kg</div>
+              <div class="kpi-sub" style="color: var(--mg-danger); font-weight: 700;">Autonomie : 5 jours <i
+                  class="bi bi-exclamation-triangle"></i></div>
+            </div>
+            <div class="kpi-card" style="border-left: 4px solid var(--mg-outline);">
+              <div class="kpi-label">Entrées du mois</div>
+              <div class="kpi-value">2 400 kg</div>
+              <div class="kpi-sub">Aliments &amp; Intrants</div>
+            </div>
+            <div class="kpi-card" style="border-left: 4px solid var(--mg-outline);">
+              <div class="kpi-label">Sorties du mois</div>
+              <div class="kpi-value">1 850 kg</div>
+              <div class="kpi-sub">Ventes &amp; Pertes</div>
+            </div>
+          </div>
+          <!-- STATE OF ACTIVE PONDS (WOW) -->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">État détaillé des bassins actifs</h3>
+            </div>
+            <div class="bassin-grid">
+              <div class="bassin-card">
+                <div class="bassin-id">Bassin B01 <span class="badge badge-success">Actif</span></div>
+                <div class="bassin-stat-row"><span class="">Cycle : Semaine 8</span><span class="">72%</span></div>
+                <div class="progress-container">
+                  <div class="progress-bar" style="width:72%"></div>
+                </div>
+                <div class="bassin-stat-row"><span class="">Restant : 56 jours</span><span class="">Taux survie :
+                    88%</span></div>
+                <div class="bassin-stat-row" style="margin-top: 8px;"><span class="">Poids moyen</span><span
+                    style="font-weight:700" class="">6.2 g</span></div>
+              </div>
+              <div class="bassin-card">
+                <div class="bassin-id">Bassin B02 <span class="badge badge-success">Actif</span></div>
+                <div class="bassin-stat-row"><span class="">Cycle : Semaine 5</span><span class="">45%</span></div>
+                <div class="progress-container">
+                  <div class="progress-bar" style="width:45%"></div>
+                </div>
+                <div class="bassin-stat-row"><span class="">Restant : 77 jours</span><span class="">Taux survie :
+                    92%</span></div>
+                <div class="bassin-stat-row" style="margin-top: 8px;"><span class="">Poids moyen</span><span
+                    style="font-weight:700" class="">3.1 g</span></div>
+              </div>
+              <div class="bassin-card" style="border-color: var(--mg-danger);">
+                <div class="bassin-alert-tag">ALERTE</div>
+                <div class="bassin-id">Bassin B03 <span class="badge badge-danger">Quarantaine</span></div>
+                <div class="bassin-stat-row" style="color: var(--mg-danger); font-weight: 600;"><span class="">EMS
+                    Détecté</span><span class="">Bloqué</span></div>
+                <div class="progress-container">
+                  <div class="progress-bar" style="width:0%; background: var(--mg-danger);"></div>
+                </div>
+                <div class="bassin-stat-row"><span class="">Actions sanitaires en cours</span></div>
+              </div>
+              <div class="bassin-card">
+                <div class="bassin-id">Bassin B04 <span class="badge badge-success">Actif</span></div>
+                <div class="bassin-stat-row"><span class="">Cycle : Semaine 12</span><span class="">95%</span></div>
+                <div class="progress-container">
+                  <div class="progress-bar" style="width:95%"></div>
+                </div>
+                <div class="bassin-stat-row"><span class="">Restant : 4 jours</span><span class="">Taux survie :
+                    84%</span></div>
+                <div class="bassin-stat-row" style="margin-top: 8px; color: var(--mg-success);"><span class=""><i
+                      class="bi bi-lightning-charge-fill"></i> Récolte proche</span><span style="font-weight:700"
+                    class="">14.8 g</span></div>
+              </div>
+              <div class="bassin-card">
+                <div class="bassin-id">Bassin B05 <span class="badge badge-warning">Préparation</span></div>
+                <div class="bassin-stat-row"><span class="">Disponible</span><span class="">0%</span></div>
+                <div class="progress-container">
+                  <div class="progress-bar" style="width:0%"></div>
+                </div>
+                <div class="bassin-stat-row"><span class="">Nettoyage &amp; Assec</span></div>
+              </div>
+              <div class="bassin-card" style="border-color: var(--mg-danger);">
+                <div class="bassin-alert-tag">ALERTE</div>
+                <div class="bassin-id">Bassin B07 <span class="badge badge-danger">Quarantaine</span></div>
+                <div class="bassin-stat-row" style="color: var(--mg-danger); font-weight: 600;"><span class="">WSSV
+                    Confirmé</span><span class="">Bloqué</span></div>
+                <div class="progress-container">
+                  <div class="progress-bar" style="width:0%; background: var(--mg-danger);"></div>
+                </div>
+                <div class="bassin-stat-row"><span class="">Vide sanitaire requis</span></div>
+              </div>
+            </div>
+          </div>
+          <!-- CONSOLIDATED ALERTS (WOW) -->
+          <div class="card" style="border-top: 4px solid var(--mg-danger);">
+            <div class="card-header">
+              <h3 class="card-title">Alertes consolidées du système</h3>
+              <span class="badge badge-danger">4 Critiques</span>
+            </div>
+            <div class="alert-list">
+              <div class="alert-item">
+                <div class="alert-source" style="color: var(--mg-danger);">Sanitaire</div>
+                <span class="badge badge-danger" style="margin-right: 8px;">Critique</span>
+                <div class="alert-desc">Bassin 7 : Virus WSSV confirmé. Risque de contagion élevé.</div>
+                <div class="alert-link" onclick="showPage('sanitaire','Sanitaire','incidents')">Voir module</div>
+                <button class="btn btn-secondary btn-sm" style="margin-left: 16px;">Résoudre</button>
+              </div>
+              <div class="alert-item">
+                <div class="alert-source" style="color: var(--mg-danger);">Stock</div>
+                <span class="badge badge-danger" style="margin-right: 8px;">Critique</span>
+                <div class="alert-desc">Stock aliment : Moins de 7 jours d'autonomie (420kg).</div>
+                <div class="alert-link" onclick="showPage('stock','Stock','lots')">Commander</div>
+                <button class="btn btn-secondary btn-sm" style="margin-left: 16px;">Résoudre</button>
+              </div>
+              <div class="alert-item">
+                <div class="alert-source" style="color: var(--mg-warning);">Finance</div>
+                <span class="badge badge-warning" style="margin-right: 8px;">Moyen</span>
+                <div class="alert-desc">CMD-502 : Paiement en retard de 3 jours.</div>
+                <div class="alert-link" onclick="showPage('finance','Finances','flux')">Relancer</div>
+                <button class="btn btn-secondary btn-sm" style="margin-left: 16px;">Résoudre</button>
+              </div>
+              <div class="alert-item">
+                <div class="alert-source" style="color: var(--mg-warning);">Livraison</div>
+                <span class="badge badge-warning" style="margin-right: 8px;">Moyen</span>
+                <div class="alert-desc">EXP-104 : Retard logistique sur trajet Mahajanga-Tana.</div>
+                <div class="alert-link" onclick="showPage('livraison','Livraisons','expéditions')">Suivre</div>
+                <button class="btn btn-secondary btn-sm" style="margin-left: 16px;">Résoudre</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+    <script>
+        function toggleSidebar() {
+            document.querySelector('.sidebar').classList.toggle('open');
+            document.querySelector('.sidebar-overlay').classList.toggle('open');
+        }
+        document.querySelector('.sidebar-overlay')
+            ?.addEventListener('click', () => {
+                document.querySelector('.sidebar').classList.remove('open');
+                document.querySelector('.sidebar-overlay').classList.remove('open');
+            });
+    </script>
+</body>
+
+</html>
