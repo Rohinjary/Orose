@@ -1,0 +1,13 @@
+M10	Role, Utilisateur, JournalAction
+
+M1	StatutBassin, Bassin, HistoStatutBassin
+
+M2	EspeceCrevette, EvolutionHebdoEspece, CycleBassin, SuiviHebdoBassin
+
+M3	Aliment, EntreeStockAliment, CreneauHoraire, DistributionNourriture, MouvementStockAliment
+
+M4	Medicament, EntreeStockMedicament, IncidentSanitaire, Traitement
+
+M5	LotCrevette, MouvementStockCrevette
+
+M9	Alerte

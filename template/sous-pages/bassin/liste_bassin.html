@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+
+<html lang="fr">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Move Gasy — Gestion des Bassins</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+<style>
+        /* ═══════════════════════════════════════════════
+           DESIGN SYSTEM : MOVE GASY (CONFORME AU DASHBOARD)
+           Theme: LIGHT | Font: INTER | Roundness: 4px
+        ═══════════════════════════════════════════════ */
+        :root {
+            --mg-surface: #f7f9fb;
+            --mg-surface-dim: #d8dadc;
+            --mg-surface-bright: #ffffff;
+            --mg-surface-container: #eceef0;
+            --mg-primary: #1a1a1a;
+            --mg-secondary: #4a4a4a;
+            --mg-outline: #d1d5db;
+
+            --mg-success: #10b981;
+            --mg-warning: #f59e0b;
+            --mg-danger: #ef4444;
+            --mg-info: #3b82f6;
+
+            --font-main: 'Inter', sans-serif;
+            --radius: 4px;
+            --sidebar-w: 240px;
+            --topbar-h: 64px;
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--mg-surface);
+            color: var(--mg-primary);
+            font-size: 14px;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* LAYOUT */
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* TOPBAR */
+        .topbar {
+            position: fixed;
+            top: 0;
+            left: var(--sidebar-w);
+            right: 0;
+            z-index: 100;
+            height: var(--topbar-h);
+            background: var(--mg-surface-bright);
+            border-bottom: 1px solid var(--mg-outline);
+            display: flex;
+            align-items: center;
+            padding: 0 32px;
+            justify-content: space-between;
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--mg-secondary);
+        }
+
+        .breadcrumb span.active {
+            color: var(--mg-primary);
+            font-weight: 600;
+        }
+
+        .breadcrumb .sep {
+            color: var(--mg-outline);
+        }
+
+        .topbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .icon-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            width: 36px;
+            height: 36px;
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--mg-secondary);
+            transition: background 0.2s;
+            position: relative;
+        }
+
+        .icon-btn:hover {
+            background: var(--mg-surface-container);
+        }
+
+        .badge-dot {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 8px;
+            height: 8px;
+            background: var(--mg-danger);
+            border-radius: 50%;
+            border: 2px solid white;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-left: 16px;
+            border-left: 1px solid var(--mg-outline);
+        }
+
+        .user-info {
+            text-align: right;
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .user-role {
+            font-size: 11px;
+            color: var(--mg-secondary);
+        }
+
+        .avatar {
+            width: 32px;
+            height: 32px;
+            background: var(--mg-primary);
+            color: white;
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: var(--sidebar-w);
+            background: var(--mg-surface-bright);
+            border-right: 1px solid var(--mg-outline);
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-brand {
+            height: var(--topbar-h);
+            padding: 0 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid var(--mg-outline);
+        }
+
+        .brand-logo {
+            width: 32px;
+            height: 32px;
+            background: var(--mg-primary);
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: white;
+        }
+
+        .brand-name {
+            font-weight: 700;
+            font-size: 16px;
+            letter-spacing: -0.02em;
+        }
+
+        .nav-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px 12px;
+        }
+
+        .nav-label {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--mg-secondary);
+            margin: 24px 12px 8px;
+            letter-spacing: 0.05em;
+        }
+
+        .nav-label:first-child {
+            margin-top: 0;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            border-radius: var(--radius);
+            color: var(--mg-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+            cursor: pointer;
+            margin-bottom: 2px;
+        }
+
+        .nav-item:hover {
+            background: var(--mg-surface-container);
+            color: var(--mg-primary);
+        }
+
+        .nav-item.active {
+            background: var(--mg-primary);
+            color: white;
+        }
+
+        .nav-icon {
+            font-size: 18px;
+            width: 20px;
+            text-align: center;
+        }
+
+        /* MAIN CONTENT */
+        .main-wrapper {
+            margin-left: var(--sidebar-w);
+            padding-top: var(--topbar-h);
+            width: 100%;
+        }
+
+        .page {
+            padding: 32px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* FILTERS & HEADER */
+        .filters-section {
+            background: white;
+            border: 1px solid var(--mg-outline);
+            border-radius: var(--radius);
+            padding: 16px 24px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: flex-end;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .filter-label {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--mg-secondary);
+        }
+
+        .filter-input {
+            height: 36px;
+            padding: 0 12px;
+            border: 1px solid var(--mg-outline);
+            border-radius: var(--radius);
+            font-size: 13px;
+            font-family: var(--font-main);
+            background: var(--mg-surface);
+            outline: none;
+        }
+
+        .filter-input:focus {
+            border-color: var(--mg-primary);
+        }
+
+        .btn {
+            height: 36px;
+            padding: 0 16px;
+            border-radius: var(--radius);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            border: 1px solid transparent;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: var(--font-main);
+        }
+
+        .btn-primary {
+            background: var(--mg-primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+        }
+
+        /* BASSIN GRID & CARDS */
+        .bassin-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
+        }
+
+        .bassin-card {
+            border: 1px solid var(--mg-outline);
+            padding: 20px;
+            border-radius: var(--radius);
+            background: white;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .bassin-card:hover {
+            border-color: var(--mg-primary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .bassin-id {
+            font-weight: 700;
+            font-size: 15px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .bassin-stat-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: var(--mg-secondary);
+            margin-bottom: 4px;
+        }
+
+        .progress-container {
+            height: 6px;
+            background: var(--mg-surface-container);
+            border-radius: 3px;
+            margin: 12px 0;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--mg-primary);
+            transition: width 1s ease;
+        }
+
+        .bassin-footer {
+            border-top: 1px solid var(--mg-surface-container);
+            margin-top: 16px;
+            padding-top: 16px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .footer-stat {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .footer-label {
+            font-size: 10px;
+            text-transform: uppercase;
+            color: var(--mg-secondary);
+            font-weight: 700;
+        }
+
+        .footer-val {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--mg-primary);
+        }
+
+        /* BADGES */
+        .badge {
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 700;
+            display: inline-block;
+        }
+
+        .badge-success {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .badge-warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-danger {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .badge-neutral {
+            background: #f3f4f6;
+            color: #4b5563;
+        }
+
+        .harvest-alert {
+            color: #166534;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+    </style>
+    <link href="../css/responsive.css" rel="stylesheet" />
+</head>
+
+<body>
+    <div class="sidebar-overlay"></div>
+    <div class="layout">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <div class="brand-logo"><i class="bi bi-water"></i></div>
+                <div class="brand-name">MOVE GASY</div>
+            </div>
+            <div class="nav-container">
+                <div class="nav-label">Principal</div>
+                <a class="nav-item">
+                    <span class="nav-icon"><i class="bi bi-speedometer2"></i></span> Dashboard
+                </a>
+                <div class="nav-label">Terrain</div>
+                <a class="nav-item active">
+                    <span class="nav-icon"><i class="bi bi-droplet-half"></i></span> Bassins
+                </a>
+                <a class="nav-item">
+                    <span class="nav-icon"><i class="bi bi-activity"></i></span> Suivi biologique
+                </a>
+                <a class="nav-item">
+                    <span class="nav-icon"><i class="bi bi-egg-fill"></i></span> Nourrissage
+                </a>
+                <!-- <a class="nav-item">
+                    <span class="nav-icon"><i class="bi bi-thermometer-half"></i></span> Environnement
+                </a> -->
+                <a class="nav-item">
+                    <span class="nav-icon"><i class="bi bi-plus-circle"></i></span> Sanitaire
+                </a>
+                <div class="nav-label">Logistique</div>
+                <a class="nav-item">
+                    <span class="nav-icon"><i class="bi bi-box-seam"></i></span> Stocks
+                </a>
+                <a class="nav-item">
+                    <span class="nav-icon"><i class="bi bi-cart3"></i></span> Commercial
+                </a>
+                <a class="nav-item">
+                    <span class="nav-icon"><i class="bi bi-truck"></i></span> Livraisons
+                </a>
+                <a class="nav-item">
+                    <span class="nav-icon"><i class="bi bi-cash-stack"></i></span> Finances
+                </a>
+                <div class="nav-label">Système</div>
+                <a class="nav-item" href="#">
+                    <span class="nav-icon"><i class="bi bi-lock"></i></span> Connexion</a>
+                <a class="nav-item">
+                    <span class="nav-icon"><i class="bi bi-gear"></i></span> Administration</a>
+                <div class="nav-label">Portail client</div>
+                <a class="nav-item">
+                    <span class="nav-icon"><i class="bi bi-person-lock"></i></span> Front Office
+                </a>
+            </div>
+        </aside>
+        <!-- MAIN WRAPPER -->
+        <div class="main-wrapper">
+            <!-- TOPBAR -->
+            <header class="topbar">
+                <button class="menu-toggle" onclick="toggleSidebar()">
+                    <i class="bi bi-list"></i>
+                </button>
+                <div class="breadcrumb">
+                    <span>Bassins</span><span class="sep">/</span><span class="active">Gestion des Bassins</span>
+                </div>
+                <div class="topbar-actions">
+                    <button class="icon-btn">
+                        <i class="bi bi-bell"></i>
+                        <div class="badge-dot"></div>
+                    </button>
+                    <div class="user-profile">
+                        <div class="user-info">
+                            <div class="user-name">Jean Dupont</div>
+                            <div class="user-role">Superviseur Site</div>
+                        </div>
+                        <div class="avatar">JD</div>
+                    </div>
+                </div>
+            </header>
+            <main class="page">
+                <!-- FILTERS -->
+                <section class="filters-section">
+                    <div class="filter-group">
+                        <label class="filter-label">État</label>
+                        <select class="filter-input" style="min-width: 160px;">
+                            <option>Tous les états</option>
+                            <option>Actif</option>
+                            <option>Vide</option>
+                            <option>Quarantaine</option>
+                            <option>Maintenance</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Disponibilité</label>
+                        <select class="filter-input" style="min-width: 140px;">
+                            <option>Tous</option>
+                            <option>Libre</option>
+                            <option>Occupé</option>
+                        </select>
+                    </div>
+                    <div class="filter-group" style="flex: 1; max-width: 300px;">
+                        <label class="filter-label">Cycle Actif</label>
+                        <input class="filter-input" placeholder="Rechercher cycle..." style="width: 100%;"
+                            type="text" />
+                    </div>
+                    <button class="btn btn-primary" style="margin-left: auto;">
+                        <i class="bi bi-plus-lg"></i> NOUVEAU BASSIN
+                    </button>
+                </section>
+                <!-- BASSIN GRID -->
+                <div class="bassin-grid" id="bassin-grid">
+                    <!-- Cards will be injected by script to ensure consistency and 9 items -->
+                </div>
+            </main>
+        </div>
+    </div>
+    <script>
+        const pondData = [
+            { id: 'B01', status: 'Actif', badge: 'badge-success', cycle: 'B01-2026-01', week: 'Semaine 10', progress: 65, weight: '18g', days: 45 },
+            { id: 'B02', status: 'Actif', badge: 'badge-success', cycle: 'B02-2026-01', week: 'Semaine 4', progress: 30, weight: '8g', days: 82 },
+            { id: 'B03', status: 'Quarantaine', badge: 'badge-danger', cycle: 'B03-2025-12', week: 'EMS détecté', progress: 0, weight: '24g', days: 3, blocked: true },
+            { id: 'B04', status: 'Vide', badge: 'badge-neutral', cycle: '-', week: 'Disponible', progress: 0, weight: '-', days: '-', empty: true },
+            { id: 'B05', status: 'Actif', badge: 'badge-success', cycle: 'B05-2026-01', week: 'Semaine 8', progress: 50, weight: '14g', days: 60 },
+            { id: 'B06', status: 'Actif', badge: 'badge-success', cycle: 'B06-2026-01', week: 'Semaine 12', progress: 75, weight: '21g', days: 30 },
+            { id: 'B07', status: 'Vide', badge: 'badge-neutral', cycle: '-', week: 'Disponible', progress: 0, weight: '-', days: '-', empty: true },
+            { id: 'B08', status: 'Maintenance', badge: 'badge-warning', cycle: '-', week: 'En réparation', progress: 0, weight: '-', days: '-', maintenance: true },
+            { id: 'B09', status: 'Actif', badge: 'badge-success', cycle: 'B09-2026-01', week: 'Semaine 7', progress: 42, weight: '11g', days: 68 }
+        ];
+
+        const container = document.getElementById('bassin-grid');
+
+        container.innerHTML = pondData.map(pond => {
+            let statusText = pond.week;
+            let progressHtml = `<div class="progress-container"><div class="progress-bar" style="width:${pond.progress}%"></div></div>`;
+
+            if (pond.blocked) {
+                progressHtml = `<div class="progress-container"><div class="progress-bar" style="width:0%; background: #ef4444"></div></div>`;
+                statusText = `<span style="color:var(--mg-danger)">${pond.week}</span>`;
+            } else if (pond.empty || pond.maintenance) {
+                progressHtml = `<div class="progress-container"><div class="progress-bar" style="width:0%"></div></div>`;
+            }
+
+            const harvestInfo = (pond.id === 'B06') ? `<div class="harvest-alert"><i class="bi bi-lightning-charge-fill"></i> Récolte proche</div>` : '';
+
+            return `
+                <div class="bassin-card">
+                    <div class="bassin-id">
+                        Bassin ${pond.id} 
+                        <span class="badge ${pond.badge}">${pond.status}</span>
+                    </div>
+                    <div class="bassin-stat-row">
+                        <span>${statusText}</span>
+                        <span>${pond.blocked ? 'Bloqué' : (pond.progress > 0 ? pond.progress + '%' : '')}</span>
+                    </div>
+                    ${progressHtml}
+                    <div class="bassin-stat-row" style="margin-bottom: 0;">
+                        ${harvestInfo || `<span class="footer-label">Cycle: ${pond.cycle}</span>`}
+                        ${pond.weight !== '-' ? `<span style="font-weight:700">Poids: ${pond.weight}</span>` : ''}
+                    </div>
+                    
+                    <div class="bassin-footer">
+                        <div class="footer-stat">
+                            <span class="footer-label">Restant</span>
+                            <span class="footer-val">${pond.days} ${pond.days !== '-' ? 'jrs' : ''}</span>
+                        </div>
+                        <button class="btn btn-secondary" style="font-size: 11px; height: 30px;">Détails</button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    </script>
+    <script>
+        function toggleSidebar() {
+            document.querySelector('.sidebar').classList.toggle('open');
+            document.querySelector('.sidebar-overlay').classList.toggle('open');
+        }
+        document.querySelector('.sidebar-overlay')
+            ?.addEventListener('click', () => {
+                document.querySelector('.sidebar').classList.remove('open');
+                document.querySelector('.sidebar-overlay').classList.remove('open');
+            });
+    </script>
+
+</body>
+
+</html>
