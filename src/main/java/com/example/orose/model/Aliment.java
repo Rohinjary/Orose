@@ -2,6 +2,7 @@ package com.example.orose.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import java.math.BigDecimal;
 
 @Entity
 @Table(name = "aliment")
@@ -16,5 +17,5 @@ public class Aliment {
     private String libelle;
 
     @Column(name = "seuil_minimum_kg", nullable = false, precision = 10, scale = 2)
-    private java.math.BigDecimal seuilMinimumKg;
+    private BigDecimal seuilMinimumKg;
 }

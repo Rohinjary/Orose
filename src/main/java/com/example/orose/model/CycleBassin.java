@@ -32,6 +32,13 @@ public class CycleBassin {
     @Column(name = "cout_post_larves", nullable = false, precision = 15, scale = 2)
     private BigDecimal coutPostLarves;
 
+    @Column(name = "densite_m2", precision = 10, scale = 2)
+    private BigDecimal densiteM2;
+
+    @ManyToOne
+    @JoinColumn(name = "id_technicien")
+    private Utilisateur technicien;
+
     @Column(name = "date_debut", nullable = false)
     private LocalDate dateDebut;
 

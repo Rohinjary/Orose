@@ -2,6 +2,7 @@ package com.example.orose.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -14,13 +15,13 @@ public class Bassin {
     private Integer id;
 
     @Column(nullable = false, unique = true, length = 20)
-    private String code; // B01, B02 ... B09
+    private String code; // B01 ... B09
 
     @Column(name = "surface_m2", nullable = false, precision = 10, scale = 2)
-    private java.math.BigDecimal surfaceM2;
+    private BigDecimal surfaceM2;
 
     @Column(name = "profondeur_metre", nullable = false, precision = 4, scale = 2)
-    private java.math.BigDecimal profondeurMetre;
+    private BigDecimal profondeurMetre;
 
     @Column(columnDefinition = "TEXT")
     private String notes;

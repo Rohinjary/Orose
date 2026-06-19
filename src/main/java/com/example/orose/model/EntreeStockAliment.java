@@ -24,6 +24,9 @@ public class EntreeStockAliment {
     @Column(name = "quantite_restante_kg", nullable = false, precision = 10, scale = 2)
     private BigDecimal quantiteRestanteKg;
 
+    @Column(name = "prix_unitaire_ar", nullable = false, precision = 15, scale = 2)
+    private BigDecimal prixUnitaireAr;
+
     @Column(name = "prix_total_ar", nullable = false, precision = 15, scale = 2)
     private BigDecimal prixTotalAr;
 
