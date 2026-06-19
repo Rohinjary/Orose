@@ -20,6 +20,7 @@ com/example/orose/model/EvolutionHebdoEspece.class
 com/example/orose/model/CreneauHoraire.class
 com/example/orose/model/Traitement.class
 com/example/orose/model/EntreeStockAliment.class
+com/example/orose/model/Inventaire.class
 com/example/orose/model/IncidentSanitaire.class
 com/example/orose/model/MouvementStockCrevette.class
 com/example/orose/model/EspeceCrevette.class

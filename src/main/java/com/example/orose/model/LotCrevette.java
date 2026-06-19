@@ -31,7 +31,7 @@ public class LotCrevette {
     private BigDecimal poidsMoyenFinalG;
 
     @Column(name = "taille_moyenne_finale_mm", nullable = false, precision = 10, scale = 2)
-    private BigDecimal tailleMoyenneFinaleM;
+    private BigDecimal tailleMoyenneFinaleMm;
 
     @Column(name = "date_recolte", nullable = false)
     private LocalDate dateRecolte;

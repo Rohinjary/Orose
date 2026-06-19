@@ -2,6 +2,7 @@ package com.example.orose.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import java.math.BigDecimal;
 
 @Entity
 @Table(name = "evolution_hebdo_espece",
@@ -21,8 +22,8 @@ public class EvolutionHebdoEspece {
     private Integer semaine;
 
     @Column(name = "poids_cible_g", nullable = false, precision = 10, scale = 2)
-    private java.math.BigDecimal poidsCibleG;
+    private BigDecimal poidsCibleG;
 
     @Column(name = "taille_cible_mm", nullable = false, precision = 10, scale = 2)
-    private java.math.BigDecimal tailleCibleMm;
+    private BigDecimal tailleCibleMm;
 }
