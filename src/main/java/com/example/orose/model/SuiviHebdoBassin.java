@@ -36,8 +36,7 @@ public class SuiviHebdoBassin {
     @Column(name = "nb_morts", nullable = false)
     private Integer nbMorts;
 
-    // biomasse_calculee_kg est une colonne GENERATED ALWAYS en base
-    // on la mappe en insertable=false, updatable=false
+    // colonne GENERATED ALWAYS en base -> jamais écrite par JPA
     @Column(name = "biomasse_calculee_kg", insertable = false, updatable = false,
             precision = 10, scale = 2)
     private BigDecimal biomasseCalculeeKg;
