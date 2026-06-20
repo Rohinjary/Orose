@@ -15,6 +15,9 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.format.annotation.DateTimeFormat;
+import java.time.LocalDateTime;
+import com.example.orose.model.HistoStatutBassin;
 
 @Controller
 @RequestMapping("/bassins")
@@ -114,5 +117,25 @@ public class BassinController {
             redirectAttributes.addFlashAttribute("erreur", e.getMessage());
         }
         return "redirect:/bassins/" + id;
+    }
+
+    @GetMapping("/{id}/historique")
+    public String historique(@PathVariable Long id,
+                            @RequestParam(required = false)
+                            @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm") LocalDateTime debut,
+                            @RequestParam(required = false)
+                            @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm") LocalDateTime fin,
+                            @RequestParam(required = false) String typeEtat,
+                            Model model) {
+
+        Bassin bassin = bassinService.getBassinById(id);
+        List<HistoStatutBassin> historique = bassinService.getHistoriqueStatuts(id, debut, fin, typeEtat);
+
+        model.addAttribute("bassin", bassin);
+        model.addAttribute("historique", historique);
+        model.addAttribute("debut", debut);
+        model.addAttribute("fin", fin);
+        model.addAttribute("typeEtat", typeEtat);
+        return "bassin/historique";
     }
 }

@@ -20,6 +20,7 @@
             <td th:text="${bassin.profondeurMetre}"></td>
             <td th:text="${bassin.statutActuel.libelle}"></td>
             <td>
+                <a th:href="@{/bassins/{id}(id=${bassin.id})}">Voir</a>
                 <a th:href="@{/bassins/{id}/modifier(id=${bassin.id})}">Modifier</a>
                 <form th:action="@{/bassins/{id}/supprimer(id=${bassin.id})}" method="post" style="display:inline">
                     <button type="submit">Supprimer</button>

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><title>Démarrer un cycle</title></head>
+<body>
+    <h1>Démarrer un cycle — Bassin <span th:text="${bassin.code}"></span></h1>
+
+    <p th:if="${erreur}" style="color:red" th:text="${erreur}"></p>
+
+    <form th:action="@{/bassins/{idBassin}/cycles(idBassin=${bassin.id})}" method="post">
+        <label>Espèce :</label>
+        <select name="idEspece">
+            <option th:each="e : ${especes}" th:value="${e.id}"
+                    th:text="${e.nomCourant != null and !#strings.isEmpty(e.nomCourant) ? e.nomCourant : e.nomScientifique}"></option>
+        </select><br/>
+
+        <label>Effectif initial :</label>
+        <input type="number" name="effectifInitial" /><br/>
+
+        <label>Coût post-larves :</label>
+        <input type="text" name="coutPostLarves" /><br/>
+
+        <button type="submit">Démarrer le cycle</button>
+    </form>
+
+    <a th:href="@{/bassins/{id}(id=${bassin.id})}">Retour au bassin</a>
+</body>
+</html>
