@@ -30,5 +30,10 @@
 
     <a th:href="@{/bassins/{id}/modifier(id=${bassin.id})}">Modifier le bassin</a><br/>
     <a th:href="@{/bassins}">Retour à la liste</a>
+    <a th:if="${bassin.statutActuel.code == 'PREPARATION'}"
+        th:href="@{/bassins/{id}/cycles/nouveau(id=${bassin.id})}">
+        Démarrer un cycle
+    </a>
+    <a th:href="@{/bassins/{id}/historique(id=${bassin.id})}">Voir l'historique</a>
 </body>
 </html>
