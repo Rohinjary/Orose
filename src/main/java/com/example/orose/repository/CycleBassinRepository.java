@@ -7,4 +7,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface CycleBassinRepository extends JpaRepository<CycleBassin, Long> {
     boolean existsByBassinId(Long bassinId);
+    boolean existsByBassinIdAndEstClotureFalse(Long bassinId);
+    long countByBassinId(Long bassinId);
 } 

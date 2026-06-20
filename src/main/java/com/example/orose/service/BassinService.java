@@ -2,28 +2,42 @@ package com.example.orose.service;
 
 import com.example.orose.dto.BassinDTO;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 
 import com.example.orose.model.Bassin;
+import com.example.orose.model.HistoStatutBassin;
 import com.example.orose.model.StatutBassin;
+import com.example.orose.model.Utilisateur;
 import com.example.orose.repository.BassinRepository;
 import com.example.orose.repository.StatutBassinRepository;
 import com.example.orose.repository.CycleBassinRepository;
+import com.example.orose.repository.HistoStatutBassinRepository;
+import com.example.orose.repository.UtilisateurRepository;
 
 @Service
 public class BassinService {    
     private final BassinRepository bassinRepository; 
     private final StatutBassinRepository statutBassinRepository;
     private final CycleBassinRepository cycleBassinRepository;
+    private final StatutBassinService statutBassinService;
+    private final HistoStatutBassinRepository histoStatutBassinRepository;
+    private final UtilisateurRepository utilisateurRepository;
 
     public BassinService(BassinRepository bassinRepository,
                          StatutBassinRepository statutBassinRepository,
-                         CycleBassinRepository cycleBassinRepository) {
+                         CycleBassinRepository cycleBassinRepository,
+                         StatutBassinService statutBassinService,
+                         HistoStatutBassinRepository histoStatutBassinRepository,
+                         UtilisateurRepository utilisateurRepository) {
         this.bassinRepository = bassinRepository;
         this.statutBassinRepository = statutBassinRepository;
         this.cycleBassinRepository = cycleBassinRepository;
+        this.statutBassinService = statutBassinService;
+        this.histoStatutBassinRepository = histoStatutBassinRepository;
+        this.utilisateurRepository = utilisateurRepository;
     }
 
     public Bassin creerBassin(BassinDTO dto) {
@@ -80,6 +94,44 @@ public class BassinService {
     public Bassin getBassinById(Long id) {
         return bassinRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Bassin introuvable"));
+    }
+
+    public void changerStatutBassin(Long idBassin, String nouveauStatut, String motif, Long idUtilisateur) {
+        Bassin bassin = getBassinById(idBassin);
+        String statutActuelCode = bassin.getStatutActuel().getCode();
+
+        statutBassinService.validerTransition(statutActuelCode, nouveauStatut);
+
+        StatutBassin nouveauStatutEntity = statutBassinRepository.findByCode(nouveauStatut)
+                .orElseThrow(() -> new IllegalArgumentException("Nouveau statut introuvable"));
+
+        bassin.setStatutActuel(nouveauStatutEntity);
+        bassinRepository.save(bassin);
+
+        Utilisateur utilisateur = utilisateurRepository.findById(idUtilisateur)
+                .orElseThrow(() -> new IllegalArgumentException("Utilisateur introuvable"));
+
+        HistoStatutBassin histo = new HistoStatutBassin();
+        histo.setBassin(bassin);
+        histo.setStatutBassin(nouveauStatutEntity);
+        histo.setUtilisateur(utilisateur);
+        histo.setMotif(motif);
+        histoStatutBassinRepository.save(histo);
+    }
+
+    public List<String> getTransitionsAutorisees(Long idBassin) {
+        Bassin bassin = getBassinById(idBassin);
+        String statutActuelCode = bassin.getStatutActuel().getCode();
+        return statutBassinService.getTransitionsAutorisees(statutActuelCode);
+    }
+
+    public List<HistoStatutBassin> getHistoriqueStatuts(Long idBassin, LocalDateTime debut, LocalDateTime fin, String typeEtat) {
+        return histoStatutBassinRepository.findHistorique(idBassin, debut, fin, typeEtat);
+    }
+
+    public HistoStatutBassin getDernierStatut(Long idBassin) {
+        return histoStatutBassinRepository.findTopByBassinIdOrderByDateChangementDesc(idBassin)
+                .orElseThrow(() -> new IllegalArgumentException("Aucun historique trouvé pour ce bassin"));
     }
 
 }
