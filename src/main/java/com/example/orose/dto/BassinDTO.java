@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 public class BassinDTO {
     @NotBlank
@@ -20,6 +21,8 @@ public class BassinDTO {
     private BigDecimal profondeur_metre;
 
     private String notes;
+
+    private LocalDate dateCreation;
 
     // Getters et Setters
     public String getCode() {
@@ -52,5 +55,13 @@ public class BassinDTO {
 
     public void setNotes(String notes) {
         this.notes = notes;
+    }
+
+    public LocalDate getDateCreation() {
+        return dateCreation;
+    }
+
+    public void setDateCreation(LocalDate dateCreation) {
+        this.dateCreation = dateCreation;
     }
 }

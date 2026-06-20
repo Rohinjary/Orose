@@ -46,8 +46,8 @@ public class BassinService {
             throw new IllegalArgumentException("Le code du bassin doit être unique");
         }
 
-        StatutBassin statutInitial = statutBassinRepository.findByCode("PREPARATION")
-                .orElseThrow(() -> new IllegalArgumentException("Statut PREPARATION introuvable"));
+        StatutBassin statutInitial = statutBassinRepository.findByCode("VIDE")
+                .orElseThrow(() -> new IllegalArgumentException("Statut VIDE introuvable"));
 
         Bassin bassin = new Bassin();
         bassin.setCode(dto.getCode());
@@ -55,6 +55,7 @@ public class BassinService {
         bassin.setNotes(dto.getNotes());
         bassin.setProfondeurMetre(dto.getProfondeur_metre());
         bassin.setStatutActuel(statutInitial);
+        bassin.setCreatedAt(dto.getDateCreation().atStartOfDay());
 
         return bassinRepository.save(bassin);
     }
@@ -140,4 +141,18 @@ public class BassinService {
                 .orElseThrow(() -> new IllegalArgumentException("Aucun historique trouvé pour ce bassin"));
     }
 
+    public List<Bassin> getBassinsParStatut(String codeStatut) {
+        return bassinRepository.findAll().stream()
+            .filter(b -> codeStatut.equals(b.getStatutActuel().getCode()))
+            .collect(Collectors.toList());
+    }
+
+    public List<HistoStatutBassin> getHistoriqueGlobal(LocalDateTime debut, LocalDateTime fin, String typeEtat) {
+        return histoStatutBassinRepository.findAllByOrderByDateChangementDesc().stream()
+            .filter(h -> debut == null || !h.getDateChangement().isBefore(debut))
+            .filter(h -> fin == null || !h.getDateChangement().isAfter(fin))
+            .filter(h -> typeEtat == null || typeEtat.isBlank()
+                || (h.getStatutBassin() != null && typeEtat.equals(h.getStatutBassin().getCode())))
+            .collect(Collectors.toList());
+    }
 }

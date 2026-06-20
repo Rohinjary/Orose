@@ -393,6 +393,7 @@ CREATE TRIGGER trg_quarantaine_auto
 -- ------------------------------------------------------------
 
 INSERT INTO statut_bassin (code, libelle) VALUES
+('VIDE', 'Vide'),
 ('PREPARATION', 'Préparation'),
 ('ACTIF', 'Actif'),
 ('EN_TRAITEMENT', 'En traitement'),

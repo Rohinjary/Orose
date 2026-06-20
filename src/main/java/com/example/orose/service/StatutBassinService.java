@@ -20,11 +20,11 @@ public class StatutBassinService {
     }
 
     private static final Map<String, List<String>> TRANSITIONS_AUTORISEES = Map.of(
+        "VIDE",         List.of("PREPARATION"),
         "PREPARATION",   List.of("ACTIF"),
-        "ACTIF",         List.of("EN_TRAITEMENT", "RECOLTE", "QUARANTAINE"),
+        "ACTIF",         List.of("EN_TRAITEMENT", "RECOLTE"),
         "EN_TRAITEMENT", List.of("ACTIF"),
-        "QUARANTAINE",   List.of("PREPARATION"),
-        "RECOLTE",       List.of()  // aucune transition sortante définie pour l'instant
+        "RECOLTE",       List.of("VIDE")
     );
 
     public boolean estTransitionAutorisee(String statutActuel, String nouveauStatut) {
