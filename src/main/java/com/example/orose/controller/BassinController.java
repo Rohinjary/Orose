@@ -1,5 +1,9 @@
 package com.example.orose.controller;
 
+import java.util.List;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 import com.example.orose.dto.BassinDTO;
 import com.example.orose.model.Bassin;
 import com.example.orose.service.BassinService;
@@ -85,5 +89,30 @@ public class BassinController {
     public String supprimer(@PathVariable Long id) {
         bassinService.supprimerBassin(id);
         return "redirect:/bassins";
+    }
+
+    @GetMapping("/{id}")
+    public String detail(@PathVariable Long id, Model model) {
+        Bassin bassin = bassinService.getBassinById(id);
+        List<String> transitions = bassinService.getTransitionsAutorisees(id);
+
+        model.addAttribute("bassin", bassin);
+        model.addAttribute("transitions", transitions);
+        return "bassin/detail";
+    }
+
+    // Traite le changement de statut
+    @PostMapping("/{id}/statut")
+    public String changerStatut(@PathVariable Long id,
+                                @RequestParam String nouveauStatut,
+                                @RequestParam String motif,
+                                RedirectAttributes redirectAttributes) {
+        Long idUtilisateur = 1L; // à remplacer plus tard par l'utilisateur connecté
+        try {
+            bassinService.changerStatutBassin(id, nouveauStatut, motif, idUtilisateur);
+        } catch (IllegalStateException e) {
+            redirectAttributes.addFlashAttribute("erreur", e.getMessage());
+        }
+        return "redirect:/bassins/" + id;
     }
 }
