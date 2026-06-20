@@ -121,7 +121,8 @@
                             <div class="card-header">
                                 <h3 class="card-title">Changer l'etat operationnel</h3>
                                 <span style="font-size: 12px; color: var(--mg-secondary);"
-                                      th:text="${#lists.size(transitions)} + ' transition(s) disponible(s)'"></span>
+                                    th:text="${bassin.statutActuel.code == 'VIDE'} ? '0 transition(s) disponible(s)' : ${#lists.size(transitions)} + ' transition(s) disponible(s)'">
+                                </span>
                             </div>
                             <form th:action="@{/bassins/{id}/statut(id=${bassin.id})}" method="post">
                                 <div class="statut-form">
@@ -129,14 +130,19 @@
                                         <label for="nouveauStatut">Nouveau statut</label>
                                         <select id="nouveauStatut" name="nouveauStatut">
                                             <option value="" disabled selected>-- Choisir --</option>
-                                            <option th:each="t : ${transitions}" th:value="${t}" th:text="${t}"></option>
+                                            <option th:unless="${bassin.statutActuel.code == 'VIDE'}"
+                                                    th:each="t : ${transitions}" 
+                                                    th:value="${t}" 
+                                                    th:text="${t}">
+                                            </option>
                                         </select>
                                     </div>
                                     <div class="form-field">
                                         <label for="motif">Motif</label>
-                                        <input type="text" id="motif" name="motif" placeholder="Raison du changement..." />
+                                        <input type="text" id="motif" name="motif" placeholder="Raison du changement..." required/>
                                     </div>
-                                    <button class="btn btn-primary" type="submit">
+                                    <button class="btn btn-primary" type="submit"
+                                            th:disabled="${bassin.statutActuel.code == 'VIDE'}">
                                         <i class="bi bi-check2"></i> Valider
                                     </button>
                                 </div>
