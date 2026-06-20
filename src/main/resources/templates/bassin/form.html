@@ -8,7 +8,11 @@
 
     <form th:action="${modeEdition} ? @{/bassins/{id}/modifier(id=${idBassin})} : @{/bassins}" method="post">
         <label>Code :</label>
-        <input type="text" name="code" th:value="${bassinDTO.code}" /><br/>
+        <select name="code">
+            <option value="" selected disabled>-- Choisir un code --</option>
+            <option th:each="i : ${#numbers.sequence(1, 9)}" th:value="${'B0' + i}" th:text="${'B0' + i}"
+                    th:selected="${bassinDTO.code == 'B0' + i}"></option>
+        </select><br/>
 
         <label>Surface (m²) :</label>
         <input type="text" name="surface_m2" th:value="${bassinDTO.surface_m2}" /><br/>
