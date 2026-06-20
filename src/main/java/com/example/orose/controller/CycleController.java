@@ -13,43 +13,43 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import java.util.List;
 
 @Controller
-@RequestMapping("/bassins/{idBassin}/cycles")
+@RequestMapping("/cycles")
 public class CycleController {
 
-    @Autowired
-    private CycleBassinService cycleService;
+    private final CycleBassinService cycleService;
+    private final EspeceCrevetteRepository especeCrevetteRepository;
+    private final BassinService bassinService;
 
     @Autowired
-    private EspeceCrevetteRepository especeCrevetteRepository;
+    public CycleController(CycleBassinService cycleService, EspeceCrevetteRepository especeCrevetteRepository, BassinService bassinService) {
+        this.cycleService = cycleService;
+        this.especeCrevetteRepository = especeCrevetteRepository;
+        this.bassinService = bassinService;
+    }
 
-    @Autowired
-    private BassinService bassinService;
-
-    // Affiche le formulaire de démarrage
-    @GetMapping("/nouveau")
-    public String formulaireDemarrage(@PathVariable Long idBassin, Model model) {
-        Bassin bassin = bassinService.getBassinById(idBassin);
-        model.addAttribute("bassin", bassin);
+    @GetMapping
+    public String formulaireDemarrage(Model model) {
+        // Plus de bassin specifique — on passe tous les bassins VIDE
+        model.addAttribute("bassinsVides", bassinService.getBassinsParStatut("VIDE"));
         model.addAttribute("especes", especeCrevetteRepository.findAll());
-        model.addAttribute("cycleDTO", new CycleDemarrageDTO());
-        
         return "cycle/form";
     }
 
     @PostMapping
-    public String demarrer(@PathVariable Long idBassin,
-                            @ModelAttribute CycleDemarrageDTO cycleDTO,
-                            RedirectAttributes redirectAttributes) {
-        Long idUtilisateur = 1L; // à remplacer par l'utilisateur connecté
+    public String demarrer(@RequestParam List<Long> idBassins,
+                           @ModelAttribute CycleDemarrageDTO cycleDTO,
+                           RedirectAttributes redirectAttributes) {
         try {
-            cycleService.demarrerCycle(idBassin, cycleDTO);
+            cycleService.demarrerCycle(idBassins, cycleDTO);
         } catch (IllegalStateException e) {
             redirectAttributes.addFlashAttribute("erreur", e.getMessage());
-            return "redirect:/bassins/" + idBassin + "/cycles/nouveau";
+            return "redirect:/cycles/nouveau";
         }
-        return "redirect:/bassins/" + idBassin;
+        return "redirect:/bassins";
     }
 }

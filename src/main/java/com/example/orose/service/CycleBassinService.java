@@ -75,4 +75,39 @@ public class CycleBassinService {
     public List<CycleBassin> getCyclesActif() {
         return cycleBassinRepository.findByEstClotureFalse();
     }
+
+    public void demarrerCycle(List<Long> idBassins, CycleDemarrageDTO dto) {
+        if (idBassins.size() != 3) {
+            throw new IllegalStateException("Exactement 3 bassins doivent etre selectionnes");
+        }
+
+        EspeceCrevette espece = especeCrevetteRepository.findById((long) dto.getIdEspece())
+                .orElseThrow(() -> new EntityNotFoundException("Espece introuvable"));
+
+        for (Long idBassin : idBassins) {
+            Bassin bassin = bassinRepository.findById(idBassin)
+                    .orElseThrow(() -> new IllegalArgumentException("Bassin introuvable : " + idBassin));
+
+            if (!"VIDE".equals(bassin.getStatutActuel().getCode())) {
+                throw new IllegalStateException("Le bassin " + bassin.getCode() + " n'est pas VIDE");
+            }
+
+            CycleBassin cycle = new CycleBassin();
+            cycle.setCodeUniqueCycle(genererCodeUniqueCycle(bassin));
+            cycle.setBassin(bassin);
+            cycle.setEspece(espece);
+            cycle.setEffectifInitial(dto.getEffectifInitial().intValue());
+            cycle.setCoutPostLarves(dto.getCoutPostLarves());
+            cycle.setDateDebut(dto.getDateDebut());
+            cycle.setDateFinPrevue(dto.getDateFinPrevue());
+            cycle.setDateFinReelle(null);
+            cycle.setPoidsMoyenActuel(null);
+            cycle.setEstCloture(false);
+
+            cycleBassinRepository.save(cycle);
+
+            // Passer en PREPARATION automatiquement
+            bassinService.changerStatutBassin(idBassin, "PREPARATION", "Cycle demarre", 1L);
+        }
+    }
 }

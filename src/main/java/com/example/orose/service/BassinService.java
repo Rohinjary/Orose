@@ -141,4 +141,9 @@ public class BassinService {
                 .orElseThrow(() -> new IllegalArgumentException("Aucun historique trouvé pour ce bassin"));
     }
 
+    public List<Bassin> getBassinsParStatut(String codeStatut) {
+        return bassinRepository.findAll().stream()
+            .filter(b -> codeStatut.equals(b.getStatutActuel().getCode()))
+            .collect(Collectors.toList());
+    }
 }
