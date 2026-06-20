@@ -9,7 +9,8 @@
     <form th:action="@{/bassins/{idBassin}/cycles(idBassin=${bassin.id})}" method="post">
         <label>Espèce :</label>
         <select name="idEspece">
-            <option th:each="e : ${especes}" th:value="${e.id}" th:text="${e.nom}"></option>
+            <option th:each="e : ${especes}" th:value="${e.id}"
+                    th:text="${e.nomCourant != null and !#strings.isEmpty(e.nomCourant) ? e.nomCourant : e.nomScientifique}"></option>
         </select><br/>
 
         <label>Effectif initial :</label>

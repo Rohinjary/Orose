@@ -16,6 +16,7 @@ import com.example.orose.repository.StatutBassinRepository;
 import com.example.orose.repository.CycleBassinRepository;
 import com.example.orose.repository.HistoStatutBassinRepository;
 import com.example.orose.repository.UtilisateurRepository;
+import java.util.stream.Collectors;
 
 @Service
 public class BassinService {    
@@ -126,7 +127,12 @@ public class BassinService {
     }
 
     public List<HistoStatutBassin> getHistoriqueStatuts(Long idBassin, LocalDateTime debut, LocalDateTime fin, String typeEtat) {
-        return histoStatutBassinRepository.findHistorique(idBassin, debut, fin, typeEtat);
+        return histoStatutBassinRepository.findByBassinIdOrderByDateChangementDesc(idBassin).stream()
+            .filter(histo -> debut == null || !histo.getDateChangement().isBefore(debut))
+            .filter(histo -> fin == null || !histo.getDateChangement().isAfter(fin))
+            .filter(histo -> typeEtat == null || typeEtat.isBlank()
+                || (histo.getStatutBassin() != null && typeEtat.equals(histo.getStatutBassin().getCode())))
+            .collect(Collectors.toList());
     }
 
     public HistoStatutBassin getDernierStatut(Long idBassin) {
