@@ -2,11 +2,10 @@ com/example/orose/model/StatutBassin.class
 com/example/orose/model/Role.class
 com/example/orose/model/LotCrevette.class
 com/example/orose/model/Aliment.class
-com/example/demo/HelloController.class
 com/example/orose/model/CycleBassin.class
 com/example/orose/model/JournalAction.class
-com/example/orose/OroseApplication.class
 com/example/orose/model/EntreeStockMedicament.class
+com/example/orose/OroseApplication.class
 com/example/orose/model/Bassin.class
 com/example/orose/model/MouvementStockMedicament.class
 com/example/orose/model/Utilisateur.class
@@ -20,7 +19,7 @@ com/example/orose/model/EvolutionHebdoEspece.class
 com/example/orose/model/CreneauHoraire.class
 com/example/orose/model/Traitement.class
 com/example/orose/model/EntreeStockAliment.class
-com/example/orose/model/Inventaire.class
 com/example/orose/model/IncidentSanitaire.class
+com/example/orose/model/Inventaire.class
 com/example/orose/model/MouvementStockCrevette.class
 com/example/orose/model/EspeceCrevette.class

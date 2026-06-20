@@ -14,9 +14,17 @@ import com.example.orose.repository.CycleBassinRepository;
 
 @Service
 public class BassinService {    
-    private BassinRepository bassinRepository; 
-    private StatutBassinRepository statutBassinRepository;
-    private CycleBassinRepository cycleBassinRepository;
+    private final BassinRepository bassinRepository; 
+    private final StatutBassinRepository statutBassinRepository;
+    private final CycleBassinRepository cycleBassinRepository;
+
+    public BassinService(BassinRepository bassinRepository,
+                         StatutBassinRepository statutBassinRepository,
+                         CycleBassinRepository cycleBassinRepository) {
+        this.bassinRepository = bassinRepository;
+        this.statutBassinRepository = statutBassinRepository;
+        this.cycleBassinRepository = cycleBassinRepository;
+    }
 
     public Bassin creerBassin(BassinDTO dto) {
         if (bassinRepository.existsByCode(dto.getCode())) {
