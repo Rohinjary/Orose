@@ -1,6 +1,7 @@
 package com.example.orose.service;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -71,8 +72,7 @@ public class CycleBassinService {
         return String.format("%s-C%02d-%d", bassin.getCode(), nbCyclesTotal + 1, annee);
     }
 
-    public CycleBassin getCyclesActif() {
-        return cycleBassinRepository.findByEstClotureFalse()
-                .orElseThrow(() -> new EntityNotFoundException("Aucun cycle actif trouvé"));
+    public List<CycleBassin> getCyclesActif() {
+        return cycleBassinRepository.findByEstClotureFalse();
     }
 }
