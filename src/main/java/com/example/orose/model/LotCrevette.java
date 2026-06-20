@@ -15,11 +15,11 @@ public class LotCrevette {
     private Integer id;
 
     @Column(name = "numero_lot_unique", nullable = false, unique = true, length = 50)
-    private String numeroLotUnique; // LOT-B01-2026
+    private String numeroLotUnique;
 
     @ManyToOne
-    @JoinColumn(name = "id_cycle", nullable = false)
-    private CycleBassin cycle;
+    @JoinColumn(name = "id_cycle_bassin_assoc", nullable = false)
+    private CycleBassinAssoc cycleBassinAssoc;
 
     @Column(name = "biomasse_totale_kg", nullable = false, precision = 10, scale = 2)
     private BigDecimal biomasseTotaleKg;

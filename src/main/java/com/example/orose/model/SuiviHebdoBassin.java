@@ -15,8 +15,8 @@ public class SuiviHebdoBassin {
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(name = "id_cycle", nullable = false)
-    private CycleBassin cycle;
+    @JoinColumn(name = "id_cycle_bassin_assoc", nullable = false)
+    private CycleBassinAssoc cycleBassinAssoc;
 
     @Column(name = "date_suivi", nullable = false)
     private LocalDate dateSuivi;
@@ -36,9 +36,7 @@ public class SuiviHebdoBassin {
     @Column(name = "nb_morts", nullable = false)
     private Integer nbMorts;
 
-    // colonne GENERATED ALWAYS en base -> jamais écrite par JPA
-    @Column(name = "biomasse_calculee_kg", insertable = false, updatable = false,
-            precision = 10, scale = 2)
+    @Column(name = "biomasse_calculee_kg", insertable = false, updatable = false, precision = 10, scale = 2)
     private BigDecimal biomasseCalculeeKg;
 
     @ManyToOne

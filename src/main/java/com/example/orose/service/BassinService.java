@@ -12,8 +12,9 @@ import com.example.orose.model.HistoStatutBassin;
 import com.example.orose.model.StatutBassin;
 import com.example.orose.model.Utilisateur;
 import com.example.orose.repository.BassinRepository;
+import com.example.orose.repository.CycleBassinAssocRepository;
 import com.example.orose.repository.StatutBassinRepository;
-import com.example.orose.repository.CycleBassinRepository;
+import com.example.orose.repository.CycleRepository;
 import com.example.orose.repository.HistoStatutBassinRepository;
 import com.example.orose.repository.UtilisateurRepository;
 import java.util.stream.Collectors;
@@ -22,20 +23,20 @@ import java.util.stream.Collectors;
 public class BassinService {    
     private final BassinRepository bassinRepository; 
     private final StatutBassinRepository statutBassinRepository;
-    private final CycleBassinRepository cycleBassinRepository;
+    private final CycleBassinAssocRepository cycleBassinAssocRepository;
     private final StatutBassinService statutBassinService;
     private final HistoStatutBassinRepository histoStatutBassinRepository;
     private final UtilisateurRepository utilisateurRepository;
 
     public BassinService(BassinRepository bassinRepository,
                          StatutBassinRepository statutBassinRepository,
-                         CycleBassinRepository cycleBassinRepository,
+                         CycleBassinAssocRepository cycleBassinAssocRepository,
                          StatutBassinService statutBassinService,
                          HistoStatutBassinRepository histoStatutBassinRepository,
                          UtilisateurRepository utilisateurRepository) {
         this.bassinRepository = bassinRepository;
         this.statutBassinRepository = statutBassinRepository;
-        this.cycleBassinRepository = cycleBassinRepository;
+        this.cycleBassinAssocRepository = cycleBassinAssocRepository;
         this.statutBassinService = statutBassinService;
         this.histoStatutBassinRepository = histoStatutBassinRepository;
         this.utilisateurRepository = utilisateurRepository;
@@ -65,7 +66,7 @@ public class BassinService {
                 .orElseThrow(() -> new IllegalArgumentException("Bassin introuvable"));
 
         // Vérifier qu'aucun cycle n'est associé (historique de cycles)
-        if (cycleBassinRepository.existsByBassinId(id)) {
+        if (cycleBassinAssocRepository.existsByBassinIdAndEstClotureFalse(id)) {
             throw new IllegalStateException("Impossible de supprimer le bassin car il est associé à des cycles");
         }
 
