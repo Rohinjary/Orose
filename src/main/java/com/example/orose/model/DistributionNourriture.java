@@ -7,7 +7,7 @@ import java.time.LocalDate;
 
 @Entity
 @Table(name = "distribution_nourriture",
-       uniqueConstraints = @UniqueConstraint(columnNames = {"id_cycle", "date_distribution", "id_creneau"}))
+       uniqueConstraints = @UniqueConstraint(columnNames = {"id_cycle_bassin_assoc", "date_distribution", "id_creneau"}))
 @Data
 public class DistributionNourriture {
 
@@ -16,8 +16,8 @@ public class DistributionNourriture {
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(name = "id_cycle", nullable = false)
-    private CycleBassin cycle;
+    @JoinColumn(name = "id_cycle_bassin_assoc", nullable = false)
+    private CycleBassinAssoc cycleBassinAssoc;
 
     @ManyToOne
     @JoinColumn(name = "id_entree_aliment", nullable = false)
@@ -41,7 +41,7 @@ public class DistributionNourriture {
     private Utilisateur responsable;
 
     @Column(nullable = false, length = 20)
-    private String statut; // EN_ATTENTE, NOURRI, RETARD, RUPTURE
+    private String statut;
 
     @Column(name = "est_valide", nullable = false)
     private Boolean estValide;

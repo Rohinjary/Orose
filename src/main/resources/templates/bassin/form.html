@@ -116,27 +116,25 @@
                             <!-- Code bassin -->
                             <div class="form-group">
                                 <label for="code">Code bassin</label>
-                                <select id="code" name="code">
-                                    <option value="" disabled th:selected="${bassinDTO.code == null}">-- Choisir un code --</option>
-                                    <option th:each="i : ${#numbers.sequence(1, 9)}"
-                                            th:value="${'B0' + i}"
-                                            th:text="${'B0' + i}"
-                                            th:selected="${bassinDTO.code == 'B0' + i}">
-                                    </option>
-                                </select>
+                                <input id="code" type="text" name="code" placeholder="Ex: B01"
+                                    th:value="${bassinDTO.code}"
+                                    maxlength="3" />
+                                <span id="code-error" style="color: #e53e3e; font-size: 12px; display: none;">
+                                    Format invalide — doit etre B01 a B09
+                                </span>
                             </div>
 
                             <!-- Surface -->
                             <div class="form-group">
-                                <label for="surface_m2">Surface (m²)</label>
-                                <input id="surface_m2" type="number" name="surface_m2" step="0.01" placeholder="0.00"
+                                <label for="surface_m2">Surface (m²) (inferieure a 100)</label>
+                                <input id="surface_m2" type="number" max="99" name="surface_m2" step="0.01" placeholder="0.00"
                                        th:value="${bassinDTO.surface_m2}" />
                             </div>
 
                             <!-- Profondeur -->
                             <div class="form-group">
-                                <label for="profondeur_metre">Profondeur (m)</label>
-                                <input id="profondeur_metre" type="number" name="profondeur_metre" step="0.1" placeholder="0.00"
+                                <label for="profondeur_metre">Profondeur (m) (inferieure a 100)</label>
+                                <input id="profondeur_metre" type="number" max="99" name="profondeur_metre" step="0.1" placeholder="0.00"
                                        th:value="${bassinDTO.profondeur_metre}" />
                             </div>
 
@@ -179,6 +177,19 @@
                 document.querySelector('.sidebar').classList.remove('open');
                 document.querySelector('.sidebar-overlay').classList.remove('open');
             });
+
+        document.getElementById('code').addEventListener('blur', function() {
+        const val = this.value.trim();
+        const regex = /^B0[1-9]$/;
+        const error = document.getElementById('code-error');
+        if (val && !regex.test(val)) {
+            error.style.display = 'block';
+            this.style.borderColor = '#e53e3e';
+        } else {
+            error.style.display = 'none';
+            this.style.borderColor = '';
+        }
+    });
     </script>
 </body>
 </html>

@@ -4,7 +4,7 @@ import com.example.orose.dto.CycleDemarrageDTO;
 import com.example.orose.model.Bassin;
 import com.example.orose.repository.EspeceCrevetteRepository;
 import com.example.orose.service.BassinService;
-import com.example.orose.service.CycleBassinService;
+import com.example.orose.service.CycleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,12 +21,12 @@ import java.util.List;
 @RequestMapping("/cycles")
 public class CycleController {
 
-    private final CycleBassinService cycleService;
+    private final CycleService cycleService;
     private final EspeceCrevetteRepository especeCrevetteRepository;
     private final BassinService bassinService;
 
     @Autowired
-    public CycleController(CycleBassinService cycleService, EspeceCrevetteRepository especeCrevetteRepository, BassinService bassinService) {
+    public CycleController(CycleService cycleService, EspeceCrevetteRepository especeCrevetteRepository, BassinService bassinService) {
         this.cycleService = cycleService;
         this.especeCrevetteRepository = especeCrevetteRepository;
         this.bassinService = bassinService;
