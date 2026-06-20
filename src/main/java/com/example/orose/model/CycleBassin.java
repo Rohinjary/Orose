@@ -64,4 +64,4 @@ public class CycleBassin {
     public void prePersist() {
         this.createdAt = LocalDateTime.now();
     }
-    }
+}

@@ -55,6 +55,7 @@ public class BassinService {
         bassin.setNotes(dto.getNotes());
         bassin.setProfondeurMetre(dto.getProfondeur_metre());
         bassin.setStatutActuel(statutInitial);
+        bassin.setCreatedAt(dto.getDateCreation().atStartOfDay());
 
         return bassinRepository.save(bassin);
     }
