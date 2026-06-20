@@ -29,5 +29,5 @@ public class HistoStatutBassin {
     private String motif;
 
     @Column(name = "date_changement", nullable = false)
-    private LocalDateTime dateChangement;
+    private LocalDateTime dateChangement = LocalDateTime.now();
 }

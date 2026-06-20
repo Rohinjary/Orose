@@ -20,12 +20,14 @@ public class CycleBassinService {
     private CycleBassinRepository cycleBassinRepository;
     private BassinRepository bassinRepository;
     private EspeceCrevetteRepository especeCrevetteRepository;
+    private final BassinService bassinService;
     
     @Autowired
-    public CycleBassinService(CycleBassinRepository cycleBassinRepository, BassinRepository bassinRepository, EspeceCrevetteRepository especeCrevetteRepository) {
+    public CycleBassinService(CycleBassinRepository cycleBassinRepository, BassinRepository bassinRepository, EspeceCrevetteRepository especeCrevetteRepository, BassinService bassinService) {
         this.cycleBassinRepository = cycleBassinRepository;
         this.bassinRepository = bassinRepository;
         this.especeCrevetteRepository = especeCrevetteRepository;
+        this.bassinService = bassinService;
     }
 
     public CycleBassin demarrerCycle(Long idBassin, CycleDemarrageDTO dto) {
@@ -36,7 +38,7 @@ public class CycleBassinService {
             throw new IllegalStateException("Le bassin doit être en statut PREPARATION pour démarrer un cycle");
         }
 
-        if (!cycleBassinRepository.existsByBassinIdAndEstClotureFalse(idBassin)) {
+        if (cycleBassinRepository.existsByBassinIdAndEstClotureFalse(idBassin)) {
             throw new IllegalStateException("Un cycle est déjà en cours pour ce bassin");
         }
 
@@ -54,9 +56,13 @@ public class CycleBassinService {
         cycle.setDateFinPrevue(dto.getDateFinPrevue());
         cycle.setDateFinReelle(null);
         cycle.setPoidsMoyenActuel(null);
-        cycle.setEstCloture(null);
+        cycle.setEstCloture(false);
 
-        return cycleBassinRepository.save(cycle);
+        CycleBassin savedCycle = cycleBassinRepository.save(cycle);
+
+        bassinService.changerStatutBassin(idBassin, "ACTIF", "Cycle demarre automatiquement", 1L);
+
+        return savedCycle;
     }
 
     private String genererCodeUniqueCycle(Bassin bassin) {

@@ -35,6 +35,7 @@ public class CycleController {
         model.addAttribute("bassin", bassin);
         model.addAttribute("especes", especeCrevetteRepository.findAll());
         model.addAttribute("cycleDTO", new CycleDemarrageDTO());
+        
         return "cycle/form";
     }
 
