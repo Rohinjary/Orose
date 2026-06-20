@@ -27,5 +27,7 @@ public interface HistoStatutBassinRepository extends JpaRepository<HistoStatutBa
             @Param("debut") LocalDateTime debut,
             @Param("fin") LocalDateTime fin,
             @Param("typeEtat") String typeEtat);
+
+    List<HistoStatutBassin> findAllByOrderByDateChangementDesc();
 }
 

@@ -3,12 +3,12 @@
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title th:text="'Historique — Bassin ' + ${bassin.code} + ' — Move Gasy'">Historique — Move Gasy</title>
+    <title>Historique Global — Move Gasy</title>
     <link href="https://fonts.googleapis.com" rel="preconnect" />
     <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
-    <link href="/css/histo_bassin.css" rel="stylesheet" />
+    <link href="/css/bassin/historique.css" rel="stylesheet" />
     <style>
         .badge-vide        { background: #f1f5f9; color: #475569; }
         .badge-preparation { background: #fef9c3; color: #854d0e; }
@@ -17,23 +17,9 @@
         .badge-traitement  { background: #e0f2fe; color: #075985; }
         .badge-recolte     { background: #f3e8ff; color: #6b21a8; }
 
-        .arrow-col {
-            width: 32px;
-            text-align: center;
-            color: var(--mg-secondary);
-        }
-
-        .date-cell {
-            font-size: 13px;
-            color: var(--mg-secondary);
-            white-space: nowrap;
-        }
-
-        .motif-cell {
-            max-width: 240px;
-            font-size: 13px;
-            color: var(--mg-secondary);
-        }
+        .arrow-col { width: 32px; text-align: center; color: var(--mg-secondary); }
+        .date-cell { font-size: 13px; color: var(--mg-secondary); white-space: nowrap; }
+        .motif-cell { max-width: 240px; font-size: 13px; color: var(--mg-secondary); }
 
         .filter-grid {
             display: grid;
@@ -42,11 +28,7 @@
             align-items: end;
         }
 
-        .filter-group {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
+        .filter-group { display: flex; flex-direction: column; gap: 6px; }
 
         .filter-label {
             font-size: 12px;
@@ -90,15 +72,19 @@
             opacity: 0.3;
         }
 
-        .empty-state p {
-            font-size: 14px;
+        .bassin-tag {
+            background: var(--mg-primary);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 700;
         }
     </style>
 </head>
 <body>
     <div class="sidebar-overlay"></div>
     <div class="layout">
-        <!-- SIDEBAR -->
         <aside class="sidebar">
             <div class="sidebar-brand">
                 <div class="brand-logo"><i class="bi bi-water"></i></div>
@@ -133,10 +119,7 @@
                 <div class="breadcrumb">
                     <span>Bassins</span>
                     <span class="sep">/</span>
-                    <a th:href="@{/bassins/{id}(id=${bassin.id})}" th:text="'Bassin ' + ${bassin.code}"
-                       style="color: var(--mg-secondary); text-decoration: none;">Bassin</a>
-                    <span class="sep">/</span>
-                    <span class="active">Historique</span>
+                    <span class="active">Historique Global</span>
                 </div>
                 <div class="topbar-actions">
                     <button class="icon-btn"><i class="bi bi-bell"></i></button>
@@ -153,17 +136,17 @@
             <main class="page">
                 <div class="page-header">
                     <div>
-                        <h2 class="page-title" th:text="'Historique — Bassin ' + ${bassin.code}">Historique</h2>
-                        <p class="page-sub">Suivi complet des transitions d'etats et interventions operationnelles.</p>
+                        <h2 class="page-title">Historique Chronologique</h2>
+                        <p class="page-sub">Suivi complet des transitions d'etats sur l'ensemble des bassins.</p>
                     </div>
-                    <a th:href="@{/bassins/{id}(id=${bassin.id})}" class="btn btn-outline">
-                        <i class="bi bi-arrow-left"></i> Retour au bassin
+                    <a th:href="@{/bassins}" class="btn btn-outline">
+                        <i class="bi bi-arrow-left"></i> Retour
                     </a>
                 </div>
 
                 <!-- Filtres -->
                 <div class="card">
-                    <form th:action="@{/bassins/{id}/historique(id=${bassin.id})}" method="get">
+                    <form th:action="@{/bassins/historique}" method="get">
                         <div class="filter-grid">
                             <div class="filter-group">
                                 <label class="filter-label">Du</label>
@@ -179,12 +162,12 @@
                                 <label class="filter-label">Type d'etat</label>
                                 <select class="filter-select" name="typeEtat">
                                     <option value="" th:selected="${typeEtat == null or typeEtat == ''}">-- Tous --</option>
-                                    <option value="VIDE"         th:selected="${typeEtat == 'VIDE'}">VIDE</option>
-                                    <option value="PREPARATION"  th:selected="${typeEtat == 'PREPARATION'}">PREPARATION</option>
-                                    <option value="ACTIF"        th:selected="${typeEtat == 'ACTIF'}">ACTIF</option>
+                                    <option value="VIDE"          th:selected="${typeEtat == 'VIDE'}">VIDE</option>
+                                    <option value="PREPARATION"   th:selected="${typeEtat == 'PREPARATION'}">PREPARATION</option>
+                                    <option value="ACTIF"         th:selected="${typeEtat == 'ACTIF'}">ACTIF</option>
                                     <option value="EN_TRAITEMENT" th:selected="${typeEtat == 'EN_TRAITEMENT'}">EN TRAITEMENT</option>
-                                    <option value="RECOLTE"      th:selected="${typeEtat == 'RECOLTE'}">RECOLTE</option>
-                                    <option value="QUARANTAINE"  th:selected="${typeEtat == 'QUARANTAINE'}">QUARANTAINE</option>
+                                    <option value="RECOLTE"       th:selected="${typeEtat == 'RECOLTE'}">RECOLTE</option>
+                                    <option value="QUARANTAINE"   th:selected="${typeEtat == 'QUARANTAINE'}">QUARANTAINE</option>
                                 </select>
                             </div>
                             <button class="btn btn-primary" type="submit" style="height: 40px;">
@@ -200,27 +183,26 @@
                         <table>
                             <thead>
                                 <tr>
-                                    <th>Date et heure</th>
+                                    <th>Bassin</th>
                                     <th>Etat</th>
+                                    <th>Date et heure</th>
                                     <th>Utilisateur</th>
                                     <th>Motif</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <!-- Vide -->
                                 <tr th:if="${#lists.isEmpty(historique)}">
-                                    <td colspan="4">
+                                    <td colspan="5">
                                         <div class="empty-state">
                                             <i class="bi bi-clock-history"></i>
-                                            <p>Aucun historique trouve pour ce bassin.</p>
+                                            <p>Aucun historique trouve.</p>
                                         </div>
                                     </td>
                                 </tr>
-
-                                <!-- Lignes -->
                                 <tr th:each="h : ${historique}">
-                                    <td class="date-cell"
-                                        th:text="${#temporals.format(h.dateChangement, 'dd MMM yyyy | HH:mm')}">—</td>
+                                    <td>
+                                        <span class="bassin-tag" th:text="${h.bassin.code}">—</span>
+                                    </td>
                                     <td>
                                         <span class="badge"
                                               th:classappend="${h.statutBassin.code == 'ACTIF'} ? 'badge-actif' :
@@ -230,14 +212,14 @@
                                                               (${h.statutBassin.code == 'RECOLTE'} ? 'badge-recolte' : 'badge-vide'))))"
                                               th:text="${h.statutBassin.libelle}">—</span>
                                     </td>
+                                    <td class="date-cell"
+                                        th:text="${#temporals.format(h.dateChangement, 'dd MMM yyyy | HH:mm')}">—</td>
                                     <td th:text="${h.utilisateur.nom + ' ' + (h.utilisateur.prenom != null ? h.utilisateur.prenom : '')}">—</td>
                                     <td class="motif-cell" th:text="${h.motif != null ? h.motif : '—'}">—</td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
-
-                    <!-- Compte total -->
                     <div style="padding: 16px 24px; border-top: 1px solid var(--mg-outline);">
                         <span style="font-size: 13px; color: var(--mg-secondary);"
                               th:text="${#lists.size(historique)} + ' entree(s) trouvee(s)'"></span>

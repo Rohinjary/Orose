@@ -146,4 +146,13 @@ public class BassinService {
             .filter(b -> codeStatut.equals(b.getStatutActuel().getCode()))
             .collect(Collectors.toList());
     }
+
+    public List<HistoStatutBassin> getHistoriqueGlobal(LocalDateTime debut, LocalDateTime fin, String typeEtat) {
+        return histoStatutBassinRepository.findAllByOrderByDateChangementDesc().stream()
+            .filter(h -> debut == null || !h.getDateChangement().isBefore(debut))
+            .filter(h -> fin == null || !h.getDateChangement().isAfter(fin))
+            .filter(h -> typeEtat == null || typeEtat.isBlank()
+                || (h.getStatutBassin() != null && typeEtat.equals(h.getStatutBassin().getCode())))
+            .collect(Collectors.toList());
+    }
 }

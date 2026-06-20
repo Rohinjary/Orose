@@ -149,6 +149,52 @@
                             </form>
                         </section>
 
+                        <!-- Historique des statuts -->
+                        <section class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">Historique des changements d'etat</h3>
+                                <span style="font-size: 12px; color: var(--mg-secondary);"
+                                    th:text="${#lists.size(historique)} + ' entree(s)'"></span>
+                            </div>
+
+                            <div th:if="${#lists.isEmpty(historique)}"
+                                style="text-align: center; padding: 32px; color: var(--mg-secondary); font-size: 14px;">
+                                <i class="bi bi-clock-history" style="font-size: 28px; display: block; margin-bottom: 8px; opacity: 0.3;"></i>
+                                Aucun historique pour ce bassin.
+                            </div>
+
+                            <div class="table-container" th:unless="${#lists.isEmpty(historique)}">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Statut</th>
+                                            <th>Utilisateur</th>
+                                            <th>Motif</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="h : ${historique}">
+                                            <td class="date-cell"
+                                                th:text="${#temporals.format(h.dateChangement, 'dd MMM yyyy | HH:mm')}">—</td>
+                                            <td>
+                                                <span class="badge"
+                                                    th:classappend="${h.statutBassin.code == 'ACTIF'} ? 'badge-actif' :
+                                                                    (${h.statutBassin.code == 'PREPARATION'} ? 'badge-preparation' :
+                                                                    (${h.statutBassin.code == 'QUARANTAINE'} ? 'badge-quarantaine' :
+                                                                    (${h.statutBassin.code == 'EN_TRAITEMENT'} ? 'badge-traitement' :
+                                                                    (${h.statutBassin.code == 'RECOLTE'} ? 'badge-recolte' : 'badge-vide'))))"
+                                                    th:text="${h.statutBassin.libelle}">—</span>
+                                            </td>
+                                            <td th:text="${h.utilisateur.nom + ' ' + (h.utilisateur.prenom != null ? h.utilisateur.prenom : '')}">—</td>
+                                            <td style="font-size: 13px; color: var(--mg-secondary);"
+                                                th:text="${h.motif != null ? h.motif : '—'}">—</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </section>
+
                         <!-- Aucune transition -->
                         <section class="card" th:if="${#lists.isEmpty(transitions)}">
                             <div style="display: flex; align-items: center; gap: 12px; color: var(--mg-secondary);">
