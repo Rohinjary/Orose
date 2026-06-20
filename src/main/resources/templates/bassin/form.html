@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><title>Formulaire bassin</title></head>
+<body>
+    <h1 th:text="${modeEdition} ? 'Modifier un bassin' : 'Créer un bassin'">Formulaire</h1>
+
+    <p th:if="${erreur}" style="color:red" th:text="${erreur}"></p>
+
+    <form th:action="${modeEdition} ? @{/bassins/{id}/modifier(id=${idBassin})} : @{/bassins}" method="post">
+        <label>Code :</label>
+        <input type="text" name="code" th:value="${bassinDTO.code}" /><br/>
+
+        <label>Surface (m²) :</label>
+        <input type="text" name="surface_m2" th:value="${bassinDTO.surface_m2}" /><br/>
+
+        <label>Profondeur (m) :</label>
+        <input type="text" name="profondeur_metre" th:value="${bassinDTO.profondeur_metre}" /><br/>
+
+        <label>Notes :</label>
+        <textarea name="notes" th:text="${bassinDTO.notes}"></textarea><br/>
+
+        <button type="submit">Enregistrer</button>
+    </form>
+
+    <a th:href="@{/bassins}">Retour à la liste</a>
+</body>
+</html>

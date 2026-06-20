@@ -31,8 +31,13 @@ public class Bassin {
     @JoinColumn(name = "id_statut_actuel", nullable = false)
     private StatutBassin statutActuel;
 
-    @Column(name = "created_at", nullable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
 
     // Getters and Setters
     public Integer getId() {

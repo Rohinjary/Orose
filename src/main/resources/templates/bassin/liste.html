@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><title>Liste des bassins</title></head>
+<body>
+    <h1>Liste des bassins</h1>
+
+    <a th:href="@{/bassins/nouveau}">+ Nouveau bassin</a>
+
+    <table border="1">
+        <tr>
+            <th>Code</th>
+            <th>Surface (m²)</th>
+            <th>Profondeur (m)</th>
+            <th>Statut</th>
+            <th>Actions</th>
+        </tr>
+        <tr th:each="bassin : ${bassins}">
+            <td th:text="${bassin.code}"></td>
+            <td th:text="${bassin.surfaceM2}"></td>
+            <td th:text="${bassin.profondeurMetre}"></td>
+            <td th:text="${bassin.statutActuel.libelle}"></td>
+            <td>
+                <a th:href="@{/bassins/{id}/modifier(id=${bassin.id})}">Modifier</a>
+                <form th:action="@{/bassins/{id}/supprimer(id=${bassin.id})}" method="post" style="display:inline">
+                    <button type="submit">Supprimer</button>
+                </form>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
