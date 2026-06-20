@@ -70,4 +70,9 @@ public class CycleBassinService {
         int annee = LocalDate.now().getYear();
         return String.format("%s-C%02d-%d", bassin.getCode(), nbCyclesTotal + 1, annee);
     }
+
+    public CycleBassin getCyclesActif() {
+        return cycleBassinRepository.findByEstClotureFalse()
+                .orElseThrow(() -> new EntityNotFoundException("Aucun cycle actif trouvé"));
+    }
 }
