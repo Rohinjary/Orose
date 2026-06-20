@@ -1,0 +1,143 @@
+ 🍽️ MODULE 3 : GESTION DU NOURRISSAGE 6 fonctionnalités
+🔹 Fonctionnalité 3.1 : Tableau de bord du jour ★ WOW
+⚙️ Fonction, paramètres, retour
+
+                            public NourrissageDashboardDTO getDashboardNourrissage()
+                            // RÈGLE : Retourner les bassins ACTIFS avec leurs créneaux (MATIN, MIDI, SOIR, NUIT)
+                            // Statut par créneau : EN_ATTENTE, NOURRI, RETARD, RUPTURE
+                            // Quantité prévue vs quantité donnée
+                            // Stock aliment disponible (kg restants + alerte seuil 7 jours)
+                            // Paramètres : aucun
+                            // Retour : NourrissageDashboardDTO
+                        
+📊 Tables utilisées
+bassin cycle_bassin distribution_nourriture creneau_horaire entree_stock_aliment
+📁 Fichiers utilisés / à créer
+NourrissageController.java NourrissageService.java NourrissageDashboardDTO.java CreneauStatusDTO.java
+🖥️ Pages concernées
+nourrissage/index.html
+🔹 Fonctionnalité 3.2 : CRUD Distribution
+⚙️ Fonction, paramètres, retour
+
+                            public DistributionNourriture validerDistribution(DistributionDTO dto)
+                            // RÈGLE : Bassin ACTIF, aliment catégorie ALIMENT
+                            // Vérifier : quantité > 0 et <= stock disponible
+                            // Décrémenter automatiquement le stock (FIFO)
+                            // Si stock insuffisant → statut = RUPTURE
+                            // Paramètres : dto (id_cycle, id_entree_aliment, id_creneau, quantite_prevue_kg, quantite_donnee_kg, id_responsable)
+                            // Retour : DistributionNourriture créée
+
+                            public List<DistributionNourriture> getDistributionsByCycle(Long idCycle)
+                            // RÈGLE : Retourner toutes les distributions d'un cycle
+                            // Paramètres : idCycle
+                            // Retour : List<DistributionNourriture>
+
+                            public DistributionNourriture getDistributionById(Long id)
+                            // RÈGLE : Retourner une distribution par son id
+                            // Paramètres : id
+                            // Retour : DistributionNourriture
+
+                            public void annulerDistribution(Long id)
+                            // RÈGLE : Annuler une distribution (restituer le stock)
+                            // Paramètres : id
+                            // Retour : void
+                        
+📊 Tables utilisées
+distribution_nourriture cycle_bassin entree_stock_aliment creneau_horaire
+📁 Fichiers utilisés / à créer
+NourrissageController.java DistributionService.java DistributionNourritureRepository.java DistributionDTO.java StockAlimentService.java
+🖥️ Pages concernées
+nourrissage/index.html
+🔹 Fonctionnalité 3.3 : Entrée stock aliment
+⚙️ Fonction, paramètres, retour
+
+                            public EntreeStockAliment enregistrerEntreeAliment(EntreeStockAlimentDTO dto)
+                            // RÈGLE : Enregistrer l'achat avec son prix
+                            // Créer l'entrée de stock (quantite_restante = quantite_initiale)
+                            // Déclencher alerte si expiration proche (< 7 jours)
+                            // Paramètres : dto (id_aliment, quantite_kg, prix_total_ar, date_expiration, id_responsable)
+                            // Retour : EntreeStockAliment créée
+
+                            public List<EntreeStockAliment> getEntreesStockAliment()
+                            // RÈGLE : Retourner toutes les entrées de stock aliment
+                            // Paramètres : aucun
+                            // Retour : List<EntreeStockAliment>
+
+                            public EntreeStockAliment getEntreeStockAlimentById(Long id)
+                            // RÈGLE : Retourner une entrée par son id
+                            // Paramètres : id
+                            // Retour : EntreeStockAliment
+                        
+📊 Tables utilisées
+entree_stock_aliment aliment utilisateur
+📁 Fichiers utilisés / à créer
+StockAlimentController.java StockAlimentService.java EntreeStockAlimentRepository.java EntreeStockAlimentDTO.java
+🖥️ Pages concernées
+nourrissage/stock.html
+🔹 Fonctionnalité 3.4 : Historique des distributions
+⚙️ Fonction, paramètres, retour
+
+                            public Page<DistributionNourriture> getHistoriqueDistributions(Long idCycle, Long idBassin, LocalDateTime debut, LocalDateTime fin, Pageable pageable)
+                            // RÈGLE : Filtrer par cycle, bassin, période
+                            // Paramètres : idCycle, idBassin, debut, fin, pageable
+                            // Retour : Page<DistributionNourriture>
+
+                            public StatistiquesConsommationDTO getStatistiquesConsommation(Long idCycle)
+                            // RÈGLE : Consommation totale par bassin, par cycle, sur période
+                            // Paramètres : idCycle
+                            // Retour : StatistiquesConsommationDTO
+                        
+📊 Tables utilisées
+distribution_nourriture cycle_bassin
+📁 Fichiers utilisés / à créer
+NourrissageController.java DistributionService.java StatistiquesConsommationDTO.java
+🖥️ Pages concernées
+nourrissage/historique.html
+🔹 Fonctionnalité 3.5 : Calcul automatique FCR ★ WOW
+⚙️ Fonction, paramètres, retour
+
+                            public FCRDTO calculerFCR(Long idCycle)
+                            // RÈGLE : FCR = total_aliments_distribués(kg) / biomasse_produite(kg)
+                            // Objectif FCR : 1.2 à 1.5
+                            // Indicateur : Bon (<1.4), Acceptable (1.4-1.6), Mauvais (>1.6)
+                            // Paramètres : idCycle
+                            // Retour : FCRDTO
+
+                            public BigDecimal getTotalAlimentsDistribues(Long idCycle)
+                            // RÈGLE : Somme des quantite_donnee_kg des distributions du cycle
+                            // Paramètres : idCycle
+                            // Retour : BigDecimal
+
+                            public BigDecimal getBiomasseProduite(Long idCycle)
+                            // RÈGLE : Récupérer la biomasse du lot_crevette ou calculer depuis suivi_hebdo_bassin
+                            // Paramètres : idCycle
+                            // Retour : BigDecimal
+                        
+📊 Tables utilisées
+distribution_nourriture cycle_bassin suivi_hebdo_bassin lot_crevette
+📁 Fichiers utilisés / à créer
+NourrissageController.java FCRService.java FCRDTO.java
+🖥️ Pages concernées
+nourrissage/historique.html
+🔹 Fonctionnalité 3.6 : Mouvement stock aliment (perte/destruction)
+⚙️ Fonction, paramètres, retour
+
+                            public MouvementStockAliment enregistrerPerteAliment(Long idEntreeStock, BigDecimal quantite, String motif, Long idUtilisateur)
+                            // RÈGLE : Vérifier quantite <= quantite_restante du lot
+                            // Décrémenter quantite_restante du lot
+                            // Enregistrer le mouvement (type_mouvement, quantite, motif, id_responsable)
+                            // Si lot expiré → seule destruction autorisée
+                            // Paramètres : idEntreeStock, quantite, motif, idUtilisateur
+                            // Retour : MouvementStockAliment créé
+
+                            public List<MouvementStockAliment> getMouvementsAlimentByEntree(Long idEntreeStock)
+                            // RÈGLE : Retourner tous les mouvements d'une entrée
+                            // Paramètres : idEntreeStock
+                            // Retour : List<MouvementStockAliment>
+                        
+📊 Tables utilisées
+mouvement_stock_aliment entree_stock_aliment
+📁 Fichiers utilisés / à créer
+StockAlimentController.java StockAlimentService.java MouvementStockAlimentRepository.java
+🖥️ Pages concernées
+stock/sortie.html

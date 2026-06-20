@@ -300,3 +300,6 @@ INSERT INTO creneau_horaire (libelle, ordre) VALUES
 
 INSERT INTO espece_crevette (nom_scientifique, nom_courant) VALUES 
 ('Fenneropenaeus indicus', 'Crevette blanche');
+
+
+
