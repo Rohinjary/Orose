@@ -46,8 +46,8 @@ public class BassinService {
             throw new IllegalArgumentException("Le code du bassin doit être unique");
         }
 
-        StatutBassin statutInitial = statutBassinRepository.findByCode("PREPARATION")
-                .orElseThrow(() -> new IllegalArgumentException("Statut PREPARATION introuvable"));
+        StatutBassin statutInitial = statutBassinRepository.findByCode("VIDE")
+                .orElseThrow(() -> new IllegalArgumentException("Statut VIDE introuvable"));
 
         Bassin bassin = new Bassin();
         bassin.setCode(dto.getCode());

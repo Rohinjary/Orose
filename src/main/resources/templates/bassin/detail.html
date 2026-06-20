@@ -1,39 +1,175 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head><title>Détail du bassin</title></head>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title th:text="'Bassin ' + ${bassin.code} + ' — Move Gasy'">Bassin — Move Gasy</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+    <link href="/css/bassin/detail.css" rel="stylesheet" />
+    <style>
+        
+    </style>
+</head>
 <body>
-    <h1>Bassin <span th:text="${bassin.code}"></span></h1>
+    <div class="sidebar-overlay"></div>
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <div class="brand-logo"><i class="bi bi-water"></i></div>
+                <div class="brand-name">MOVE GASY</div>
+            </div>
+            <div class="nav-container">
+                <div class="nav-label">Principal</div>
+                <a class="nav-item"><span class="nav-icon"><i class="bi bi-speedometer2"></i></span> Dashboard</a>
+                <div class="nav-label">Terrain</div>
+                <a class="nav-item active" th:href="@{/bassins}">
+                    <span class="nav-icon"><i class="bi bi-droplet-half"></i></span> Bassins
+                </a>
+                <a class="nav-item"><span class="nav-icon"><i class="bi bi-activity"></i></span> Suivi biologique</a>
+                <a class="nav-item"><span class="nav-icon"><i class="bi bi-egg-fill"></i></span> Nourrissage</a>
+                <a class="nav-item"><span class="nav-icon"><i class="bi bi-plus-circle"></i></span> Sanitaire</a>
+                <div class="nav-label">Logistique</div>
+                <a class="nav-item"><span class="nav-icon"><i class="bi bi-box-seam"></i></span> Stocks</a>
+                <a class="nav-item"><span class="nav-icon"><i class="bi bi-cart3"></i></span> Commercial</a>
+                <a class="nav-item"><span class="nav-icon"><i class="bi bi-truck"></i></span> Livraisons</a>
+                <a class="nav-item"><span class="nav-icon"><i class="bi bi-cash-stack"></i></span> Finances</a>
+                <div class="nav-label">Système</div>
+                <a class="nav-item" href="#"><span class="nav-icon"><i class="bi bi-lock"></i></span> Connexion</a>
+                <a class="nav-item"><span class="nav-icon"><i class="bi bi-gear"></i></span> Administration</a>
+                <div class="nav-label">Portail client</div>
+                <a class="nav-item"><span class="nav-icon"><i class="bi bi-person-lock"></i></span> Front Office</a>
+            </div>
+        </aside>
 
-    <p>Surface : <span th:text="${bassin.surfaceM2}"></span> m²</p>
-    <p>Profondeur : <span th:text="${bassin.profondeurMetre}"></span> m</p>
-    <p>Notes : <span th:text="${bassin.notes}"></span></p>
-    <p>Statut actuel : <strong th:text="${bassin.statutActuel.libelle}"></strong></p>
+        <div class="main-wrapper">
+            <header class="topbar">
+                <button class="menu-toggle" onclick="toggleSidebar()"><i class="bi bi-list"></i></button>
+                <div class="breadcrumb">
+                    <span>Bassins</span>
+                    <span class="sep">/</span>
+                    <span class="active" th:text="'Bassin ' + ${bassin.code}">Bassin</span>
+                </div>
+                <div class="topbar-actions">
+                    <button class="icon-btn"><i class="bi bi-bell"></i></button>
+                    <button class="icon-btn"><i class="bi bi-gear"></i></button>
+                    <div class="user-profile">
+                        <div class="avatar">AD</div>
+                    </div>
+                </div>
+            </header>
 
-    <p th:if="${erreur}" style="color:red" th:text="${erreur}"></p>
+            <main class="content">
 
-    <h2>Changer de statut</h2>
+                <div th:if="${erreur}" class="alert alert-warning">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                    <div th:text="${erreur}"></div>
+                </div>
 
-    <p th:if="${#lists.isEmpty(transitions)}">Aucune transition possible depuis ce statut.</p>
+                <div class="grid-detail">
+                    <div class="col-12">
 
-    <form th:unless="${#lists.isEmpty(transitions)}"
-          th:action="@{/bassins/{id}/statut(id=${bassin.id})}" method="post">
-        <label>Nouveau statut :</label>
-        <select name="nouveauStatut">
-            <option th:each="t : ${transitions}" th:value="${t}" th:text="${t}"></option>
-        </select><br/>
+                        <!-- Informations generales -->
+                        <section class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">Informations Generales</h3>
+                                <span class="badge"
+                                      th:classappend="${bassin.statutActuel.code == 'ACTIF'} ? 'badge-actif' :
+                                                      (${bassin.statutActuel.code == 'PREPARATION'} ? 'badge-preparation' :
+                                                      (${bassin.statutActuel.code == 'QUARANTAINE'} ? 'badge-quarantaine' :
+                                                      (${bassin.statutActuel.code == 'EN_TRAITEMENT'} ? 'badge-traitement' : 'badge-recolte')))"
+                                      th:text="${bassin.statutActuel.libelle}">
+                                </span>
+                            </div>
 
-        <label>Motif :</label>
-        <input type="text" name="motif" /><br/>
+                            <h2 style="font-size: 28px; font-weight: 700; margin-bottom: 4px;"
+                                th:text="'Bassin ' + ${bassin.code}">Bassin</h2>
 
-        <button type="submit">Valider</button>
-    </form>
+                            <div class="stat-group">
+                                <div class="stat-item">
+                                    <div class="label">Surface</div>
+                                    <div class="value" th:text="${bassin.surfaceM2} + ' m²'">—</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="label">Profondeur</div>
+                                    <div class="value" th:text="${bassin.profondeurMetre} + ' m'">—</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="label">Notes</div>
+                                    <div class="value" style="font-size: 14px; font-weight: 400;"
+                                         th:text="${bassin.notes != null and !#strings.isEmpty(bassin.notes)} ? ${bassin.notes} : '—'">—</div>
+                                </div>
+                            </div>
 
-    <a th:href="@{/bassins/{id}/modifier(id=${bassin.id})}">Modifier le bassin</a><br/>
-    <a th:href="@{/bassins}">Retour à la liste</a>
-    <a th:if="${bassin.statutActuel.code == 'PREPARATION'}"
-        th:href="@{/bassins/{id}/cycles/nouveau(id=${bassin.id})}">
-        Démarrer un cycle
-    </a>
-    <a th:href="@{/bassins/{id}/historique(id=${bassin.id})}">Voir l'historique</a>
+                            <div class="action-bar">
+                                <a th:href="@{/bassins/{id}/modifier(id=${bassin.id})}" class="btn btn-outline btn-sm">
+                                    <i class="bi bi-pencil"></i> Modifier
+                                </a>
+                                <a th:href="@{/bassins/{id}/historique(id=${bassin.id})}" class="btn btn-outline btn-sm">
+                                    <i class="bi bi-clock-history"></i> Historique
+                                </a>
+                                <a th:href="@{/bassins}" class="btn btn-outline btn-sm">
+                                    <i class="bi bi-arrow-left"></i> Retour
+                                </a>
+                            </div>
+                        </section>
+
+                        <!-- Changer l'etat operationnel -->
+                        <section class="card" th:unless="${#lists.isEmpty(transitions)}">
+                            <div class="card-header">
+                                <h3 class="card-title">Changer l'etat operationnel</h3>
+                                <span style="font-size: 12px; color: var(--mg-secondary);"
+                                      th:text="${#lists.size(transitions)} + ' transition(s) disponible(s)'"></span>
+                            </div>
+                            <form th:action="@{/bassins/{id}/statut(id=${bassin.id})}" method="post">
+                                <div class="statut-form">
+                                    <div class="form-field">
+                                        <label for="nouveauStatut">Nouveau statut</label>
+                                        <select id="nouveauStatut" name="nouveauStatut">
+                                            <option value="" disabled selected>-- Choisir --</option>
+                                            <option th:each="t : ${transitions}" th:value="${t}" th:text="${t}"></option>
+                                        </select>
+                                    </div>
+                                    <div class="form-field">
+                                        <label for="motif">Motif</label>
+                                        <input type="text" id="motif" name="motif" placeholder="Raison du changement..." />
+                                    </div>
+                                    <button class="btn btn-primary" type="submit">
+                                        <i class="bi bi-check2"></i> Valider
+                                    </button>
+                                </div>
+                            </form>
+                        </section>
+
+                        <!-- Aucune transition -->
+                        <section class="card" th:if="${#lists.isEmpty(transitions)}">
+                            <div style="display: flex; align-items: center; gap: 12px; color: var(--mg-secondary);">
+                                <i class="bi bi-lock" style="font-size: 20px;"></i>
+                                <div>
+                                    <div style="font-weight: 600; color: var(--mg-primary); margin-bottom: 2px;">Aucune transition possible</div>
+                                    <div style="font-size: 13px;">Le statut actuel ne permet pas de changement d'etat.</div>
+                                </div>
+                            </div>
+                        </section>
+
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        function toggleSidebar() {
+            document.querySelector('.sidebar').classList.toggle('open');
+            document.querySelector('.sidebar-overlay').classList.toggle('open');
+        }
+        document.querySelector('.sidebar-overlay')
+            ?.addEventListener('click', () => {
+                document.querySelector('.sidebar').classList.remove('open');
+                document.querySelector('.sidebar-overlay').classList.remove('open');
+            });
+    </script>
 </body>
 </html>
