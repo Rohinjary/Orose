@@ -141,3 +141,125 @@ mouvement_stock_aliment entree_stock_aliment
 StockAlimentController.java StockAlimentService.java MouvementStockAlimentRepository.java
 🖥️ Pages concernées
 stock/sortie.html
+
+
+
+
+
+
+1. Tableau de bord du jour (WOW)
+
+Une vue temps réel des bassins à nourrir dans la journée.  
+
+    Contenu : Liste des bassins actifs avec créneaux horaires (matin / midi / soir / nuit).  
+
+    Statut par créneau : EN_ATTENTE, NOURRI, RETARD, ou RUPTURE.  
+
+    Indicateurs : Quantité prévue vs donnée, stock aliment disponible, et alerte si autonomie < 7 jours.  
+
+    Action : Bouton pour valider la distribution.  
+
+2. CRUD Distribution (Enregistrement)
+
+Permet d'enregistrer une distribution de nourriture.  
+
+    Données saisies : Bassin (actifs uniquement), aliment (catégorie ALIMENT), date, heure/créneau, quantité donnée (kg), responsable.  
+
+    Automatisation : Le stock est décrémenté automatiquement après chaque validation.  
+
+3. Historique et Statistiques
+
+Historique complet avec outils d'analyse.  
+
+    Contenu : Date, heure, bassin, aliment, quantité, responsable, statut.  
+
+    Statistiques : Consommation totale par bassin, par cycle, et sur une période personnalisée.  
+
+    Filtres : Date, bassin, cycle, période.  
+
+4. Entrée stock aliment
+
+Enregistrement des achats d'aliments.  
+
+    Données : Type d'aliment, quantité reçue (kg), prix unitaire, date de réception.  
+
+    Automatisation : Génère une dépense automatique dans le module Finance (catégorie ALIMENTATION).  
+
+    Résumé : Affiche le stock actuel (kg), sa valeur (Ar) et l'autonomie estimée.  
+
+5. Calcul automatique du FCR (WOW)
+
+Calculé sur demande par cycle.  
+
+    Formule : FCR=biomasse produite (kg)total aliments distribueˊs (kg)​.  
+
+    Indicateur : Objectif de 1,2 à 1,5 ; résultat qualifié en "Bon", "Acceptable" ou "Mauvais".  
+
+Règles de gestion clés du module
+
+    Unicité : Une distribution est limitée à un bassin + une date + un créneau. Il ne peut y avoir qu'une distribution par créneau.  
+
+    Validation stock : La quantité distribuée doit être >0 et ≤ stock disponible. L'action est bloquée si le stock est insuffisant.  
+
+    FIFO : Le lot le plus ancien doit être consommé en premier.  
+
+    Alertes : Alerte automatique si l'autonomie du stock est < 7 jours.  
+
+    Restriction : Distribution possible uniquement sur un bassin à l'état ACTIF.  
+
+Pages du module
+
+    nourrissage/index.html : Tableau de bord du jour et statuts.  
+
+    nourrissage/historique.html : Historique des distributions et statistiques.  
+
+    nourrissage/stock.html : Entrée stock aliment et résumé.
+
+
+
+    --- 2 Crud 
+
+    Puisque vous avez déjà une interface de saisie fonctionnelle (l'étape 2), voici l'ordre logique des étapes à suivre pour finaliser le Module 3 — Gestion du nourrissage selon votre cahier des charges :
+
+    Implémentation du "Stock" et de l'automatisation (Phase critique) :
+
+        Développez la page nourrissage/stock.html pour enregistrer les achats d'aliments.
+
+        Programmez la logique serveur pour qu'à chaque validation de distribution, le stock soit automatiquement décrémenté.
+
+        Programmez la génération automatique du flux financier "DÉPENSE" dès qu'une entrée de stock est validée.
+
+    Gestion de l'affichage du Tableau de bord (WOW) :
+
+        Créez la page nourrissage/index.html pour afficher la liste des bassins actifs.
+
+        Configurez les statuts (EN_ATTENTE, NOURRI, RETARD, RUPTURE) pour qu'ils soient calculés en temps réel en fonction des distributions enregistrées.
+
+    Développement de l'Historique et des Statistiques :
+
+        Créez nourrissage/historique.html pour afficher la liste complète des distributions.
+
+        Implémentez les filtres (Date, Bassin, Cycle, Période) demandés.
+
+        Codez les fonctions de calcul pour la consommation totale par bassin et par cycle.
+
+    Finalisation du Calcul FCR :
+
+        Intégrez la formule FCR = total aliments distribués ÷ biomasse produite dans le module.
+
+        Ajoutez l'indicateur visuel (Bon / Acceptable / Mauvais) pour comparer le résultat à l'objectif de 1,2 à 1,5.
+
+    Tests de conformité aux règles de gestion :
+
+        Vérifiez que le système bloque toute distribution si la quantité est supérieure au stock disponible.
+
+        Assurez-vous que l'alerte automatique se déclenche si l'autonomie du stock descend en dessous de 7 jours.
+
+        Testez l'unicité de la distribution : une seule distribution par bassin, date et créneau.
+
+Quelle est la priorité immédiate pour vous : la gestion du stock ou l'affichage du tableau de bord ?
+
+
+
+
+

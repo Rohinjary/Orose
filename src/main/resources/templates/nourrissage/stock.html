@@ -10,7 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap"
         rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-<style>
+    <style>
         /* ═══════════════════════════════════════════════
            DESIGN SYSTEM : MOVE GASY (MATCHING SCREEN_2)
            Theme: LIGHT | Font: INTER | Roundness: 4px
@@ -499,6 +499,7 @@
 </head>
 
 <body>
+
     <div class="sidebar-overlay"></div>
     <div class="layout">
         <!-- SIDEBAR -->
@@ -542,12 +543,12 @@
                     <span class="nav-icon"><i class="bi bi-cash-stack"></i></span> Finances
                 </a>
                 <div class="nav-label">Système</div>
- <a class="nav-item" href="#">
-          <span class="nav-icon"><i class="bi bi-lock"></i></span> Connexion</a>
+                <a class="nav-item" href="#">
+                    <span class="nav-icon"><i class="bi bi-lock"></i></span> Connexion</a>
                 <a class="nav-item">
                     <span class="nav-icon"><i class="bi bi-gear"></i></span> Administration</a>
-                  <div class="nav-label">Portail client</div>
-                 <a class="nav-item">
+                <div class="nav-label">Portail client</div>
+                <a class="nav-item">
                     <span class="nav-icon"><i class="bi bi-person-lock"></i></span> Front Office
                 </a>
             </div>
@@ -692,89 +693,4 @@
                             </div>
                         </section>
                     </div>
-
-
-
-                    
-                    <!-- SIDEBAR ACTIONS SECTION -->
-                    <div class="col-4">
-                        <section class="card">
-                            <h3 class="card-title" style="margin-bottom: 20px;">Entrée de Stock</h3>
-                            <form>
-                                <div class="form-group"><label class="form-label">Type d'Aliment</label><select>
-                                        <option disabled="" selected="">Sélectionner un type...</option>
-                                        <option>Aliment Croissance 2mm</option>
-                                        <option>Aliment Finition 3mm</option>
-                                        <option>Artemia Cystes Premium</option>
-                                    </select></div>
-                                <div
-                                    style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
-                                    <div><label class="form-label">Quantité reçue (kg)</label><input placeholder="0.00"
-                                            type="number"></div>
-                                    <div><label class="form-label">Prix unitaire (Ar/kg)</label><input
-                                            placeholder="0.00" type="number"></div>
-                                </div>
-                                <div class="form-group"><label class="form-label">Prix total (Ar)</label><input
-                                        class="input-readonly" placeholder="Calculé automatiquement" readonly=""
-                                        type="text"></div>
-                                <div class="form-group"><label class="form-label">Date de réception</label><input
-                                        type="date"></div>
-                                <div class="alert-box"><strong><i class="bi bi-receipt"></i> Rappel Finance
-                                        :</strong><br>L'enregistrement génère automatiquement une dépense dans le module
-                                    Finance.</div><button class="btn btn-primary btn-full" type="button">Enregistrer
-                                    l'achat</button>
-                            </form>
-                        </section>
-                        <section class="card">
-                            <h3 class="card-title" style="margin-bottom: 16px;">Derniers Mouvements</h3>
-                            <div class="movement-item">
-                                <div>
-                                    <div class="m-code">AL-SHR-02</div>
-                                    <div class="m-meta">Achat — 12 Juin 2026</div>
-                                </div>
-                                <div class="m-val text-success">+500.0 kg</div>
-                            </div>
-                            <div class="movement-item">
-                                <div>
-                                    <div class="m-code">AL-SHR-01</div>
-                                    <div class="m-meta">Sortie Bassin B01 — 11 Juin 2026</div>
-                                </div>
-                                <div class="m-val text-danger">-45.0 kg</div>
-                            </div>
-                            <div class="movement-item">
-                                <div>
-                                    <div class="m-code">MI-VIT-01</div>
-                                    <div class="m-meta">Sortie Bassin B04 — 10 Juin 2026</div>
-                                </div>
-                                <div class="m-val text-danger">-2.5 kg</div>
-                            </div>
-                            <div style="margin-top: 16px;">
-                                <a href="#"
-                                    style="font-size: 12px; color: var(--mg-primary); font-weight: 700; text-decoration: none; display: flex; align-items: center; gap: 4px;"
-                                    class="">
-                                    Voir tout l'historique <i class="bi bi-arrow-right"></i>
-                                </a>
-                            </div>
-                        </section>
-                    </div>
-                </div>
-            </main>
-        </div>
-    </div>
-<script>
-    function toggleSidebar() {
-        document.querySelector('.sidebar').classList.toggle('open');
-        document.querySelector('.sidebar-overlay').classList.toggle('open');
-    }
-    document.querySelector('.sidebar-overlay')
-        ?.addEventListener('click', () => {
-            document.querySelector('.sidebar').classList.remove('open');
-            document.querySelector('.sidebar-overlay').classList.remove('open');
-        });
-</script>
-
-
-
 </body>
-
-</html>

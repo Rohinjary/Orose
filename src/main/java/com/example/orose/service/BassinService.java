@@ -19,8 +19,8 @@ import com.example.orose.repository.UtilisateurRepository;
 import java.util.stream.Collectors;
 
 @Service
-public class BassinService {    
-    private final BassinRepository bassinRepository; 
+public class BassinService {
+    private final BassinRepository bassinRepository;
     private final StatutBassinRepository statutBassinRepository;
     private final CycleBassinRepository cycleBassinRepository;
     private final StatutBassinService statutBassinService;
@@ -28,11 +28,11 @@ public class BassinService {
     private final UtilisateurRepository utilisateurRepository;
 
     public BassinService(BassinRepository bassinRepository,
-                         StatutBassinRepository statutBassinRepository,
-                         CycleBassinRepository cycleBassinRepository,
-                         StatutBassinService statutBassinService,
-                         HistoStatutBassinRepository histoStatutBassinRepository,
-                         UtilisateurRepository utilisateurRepository) {
+            StatutBassinRepository statutBassinRepository,
+            CycleBassinRepository cycleBassinRepository,
+            StatutBassinService statutBassinService,
+            HistoStatutBassinRepository histoStatutBassinRepository,
+            UtilisateurRepository utilisateurRepository) {
         this.bassinRepository = bassinRepository;
         this.statutBassinRepository = statutBassinRepository;
         this.cycleBassinRepository = cycleBassinRepository;
@@ -88,13 +88,19 @@ public class BassinService {
         return bassinRepository.save(bassin);
     }
 
-    public List<Bassin> listerBassins(){
+    public List<Bassin> listerBassins() {
         return bassinRepository.findAll();
     }
 
     public Bassin getBassinById(Long id) {
         return bassinRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Bassin introuvable"));
+    }
+
+    public List<Bassin> listerBassinsActifs() {
+        return bassinRepository.findAll().stream()
+                .filter(b -> "ACTIF".equals(b.getStatutActuel().getCode())) // Ajustez selon votre code de statut
+                .collect(Collectors.toList());
     }
 
     public void changerStatutBassin(Long idBassin, String nouveauStatut, String motif, Long idUtilisateur) {
@@ -126,13 +132,14 @@ public class BassinService {
         return statutBassinService.getTransitionsAutorisees(statutActuelCode);
     }
 
-    public List<HistoStatutBassin> getHistoriqueStatuts(Long idBassin, LocalDateTime debut, LocalDateTime fin, String typeEtat) {
+    public List<HistoStatutBassin> getHistoriqueStatuts(Long idBassin, LocalDateTime debut, LocalDateTime fin,
+            String typeEtat) {
         return histoStatutBassinRepository.findByBassinIdOrderByDateChangementDesc(idBassin).stream()
-            .filter(histo -> debut == null || !histo.getDateChangement().isBefore(debut))
-            .filter(histo -> fin == null || !histo.getDateChangement().isAfter(fin))
-            .filter(histo -> typeEtat == null || typeEtat.isBlank()
-                || (histo.getStatutBassin() != null && typeEtat.equals(histo.getStatutBassin().getCode())))
-            .collect(Collectors.toList());
+                .filter(histo -> debut == null || !histo.getDateChangement().isBefore(debut))
+                .filter(histo -> fin == null || !histo.getDateChangement().isAfter(fin))
+                .filter(histo -> typeEtat == null || typeEtat.isBlank()
+                        || (histo.getStatutBassin() != null && typeEtat.equals(histo.getStatutBassin().getCode())))
+                .collect(Collectors.toList());
     }
 
     public HistoStatutBassin getDernierStatut(Long idBassin) {
