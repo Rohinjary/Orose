@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Alertes biologiques — Move Gasy</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="/css/biologique/alertes.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="sidebar-overlay"></div>
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <div class="brand-logo"><i class="bi bi-water"></i></div>
+                <div class="brand-name">MOVE GASY</div>
+            </div>
+            <div class="nav-container">
+                <div class="nav-label">Terrain</div>
+                <a class="nav-item" th:href="@{/bassins}"><span class="nav-icon"><i class="bi bi-droplet-half"></i></span> Bassins</a>
+                <a class="nav-item active" th:href="@{/biologique}"><span class="nav-icon"><i class="bi bi-activity"></i></span> Suivi biologique</a>
+            </div>
+        </aside>
+
+        <div class="main-wrapper">
+            <header class="topbar">
+                <button class="menu-toggle" onclick="toggleSidebar()"><i class="bi bi-list"></i></button>
+                <div class="breadcrumb">
+                    <a th:href="@{/biologique}" style="color:inherit;text-decoration:none;">Suivi biologique</a>
+                    <span class="sep">/</span>
+                    <span class="active">Alertes</span>
+                </div>
+            </header>
+
+            <main class="content">
+                <div th:if="${succes}" class="alert alert-success" th:text="${succes}"></div>
+                <div th:if="${erreur}" class="alert alert-danger" th:text="${erreur}"></div>
+
+                <div class="page-header">
+                    <h1>🚨 Alertes biologiques actives (<span th:text="${#lists.size(alertes)}">0</span>)</h1>
+                    <a th:href="@{/biologique}" class="btn btn-outline-secondary btn-sm">
+                        <i class="bi bi-arrow-left"></i> Retour suivi biologique
+                    </a>
+                </div>
+
+                <div th:if="${#lists.isEmpty(alertes)}" class="alert-empty">
+                    <i class="bi bi-check-circle fs-1 d-block mb-2"></i>
+                    Aucune alerte biologique active. Tout est normal.
+                </div>
+
+                <div th:each="alerte : ${alertes}"
+                     th:class="'alerte-card niveau-' + ${alerte.niveau}">
+                    <div th:class="'alerte-header ' +
+                                    (${alerte.niveau == 'ROUGE'} ? 'bg-danger text-white' :
+                                    (${alerte.niveau == 'ORANGE'} ? 'bg-warning text-dark' : 'bg-success text-white'))">
+                        <span th:text="${alerte.typeAlerte}">TYPE</span>
+                        <span class="float-end" th:text="${alerte.niveau}">NIVEAU</span>
+                    </div>
+                    <div class="alerte-body">
+                        <p th:text="${alerte.message}">Message</p>
+                        <div class="alerte-meta" th:if="${alerte.cycleBassinAssoc != null}">
+                            Bassin / Cycle :
+                            <strong th:text="${alerte.cycleBassinAssoc.bassin.code} + ' · ' + ${alerte.cycleBassinAssoc.cycle.codeUniqueCycle}">—</strong>
+                        </div>
+                        <div class="alerte-meta">
+                            Date : <span th:text="${#temporals.format(alerte.dateCreation, 'dd/MM/yyyy HH:mm')}">—</span>
+                        </div>
+                    </div>
+                    <div class="alerte-footer">
+                        <form th:action="@{/biologique/alertes/{id}/resoudre(id=${alerte.id})}" method="post" style="display:inline;">
+                            <button type="submit" class="btn btn-sm btn-outline-dark">
+                                <i class="bi bi-check-lg"></i> Marquer comme résolue
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        function toggleSidebar() {
+            document.querySelector('.sidebar').classList.toggle('open');
+            document.querySelector('.sidebar-overlay').classList.toggle('open');
+        }
+    </script>
+</body>
+</html>

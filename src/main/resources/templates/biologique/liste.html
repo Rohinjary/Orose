@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Suivi Biologique — Move Gasy</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="/css/biologique/liste.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="sidebar-overlay"></div>
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <div class="brand-logo"><i class="bi bi-water"></i></div>
+                <div class="brand-name">MOVE GASY</div>
+            </div>
+            <div class="nav-container">
+                <div class="nav-label">Principal</div>
+                <a class="nav-item"><span class="nav-icon"><i class="bi bi-speedometer2"></i></span> Dashboard</a>
+                <div class="nav-label">Terrain</div>
+                <a class="nav-item" th:href="@{/bassins}">
+                    <span class="nav-icon"><i class="bi bi-droplet-half"></i></span> Bassins
+                </a>
+                <a class="nav-item active" th:href="@{/biologique}">
+                    <span class="nav-icon"><i class="bi bi-activity"></i></span> Suivi biologique
+                </a>
+                <a class="nav-item"><span class="nav-icon"><i class="bi bi-egg-fill"></i></span> Nourrissage</a>
+                <a class="nav-item"><span class="nav-icon"><i class="bi bi-plus-circle"></i></span> Sanitaire</a>
+            </div>
+        </aside>
+
+        <div class="main-wrapper">
+            <header class="topbar">
+                <button class="menu-toggle" onclick="toggleSidebar()"><i class="bi bi-list"></i></button>
+                <div class="breadcrumb">
+                    <span class="active">Suivi biologique</span>
+                </div>
+                <div class="topbar-actions">
+                    <a th:href="@{/biologique/alertes}" class="icon-btn" title="Alertes">
+                        <i class="bi bi-bell"></i>
+                    </a>
+                    <div class="user-profile"><div class="avatar">AD</div></div>
+                </div>
+            </header>
+
+            <main class="content">
+                <div class="page-header">
+                    <h1>🔬 Suivi Biologique — Bassins actifs (<span th:text="${#lists.size(bassinsEnSuivi)}">0</span>)</h1>
+                    <a th:href="@{/biologique/alertes}" class="btn btn-warning btn-sm">
+                        <i class="bi bi-exclamation-triangle"></i> Voir les alertes biologiques
+                    </a>
+                </div>
+
+                <div th:if="${#lists.isEmpty(bassinsEnSuivi)}" class="alert alert-info">
+                    Aucun bassin en suivi actif pour le moment.
+                </div>
+
+                <div th:unless="${#lists.isEmpty(bassinsEnSuivi)}" class="table-responsive">
+                    <table class="table-bio">
+                        <thead>
+                            <tr>
+                                <th>Bassin</th>
+                                <th>Cycle</th>
+                                <th>Semaine</th>
+                                <th>Dernier pesage</th>
+                                <th>Poids moyen</th>
+                                <th>Taux survie</th>
+                                <th>Statut croissance</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="b : ${bassinsEnSuivi}"
+                                th:classappend="${b.statutCroissance == 'CRITIQUE'} ? 'statut-critique' :
+                                                (${b.statutCroissance == 'RETARD'} ? 'statut-retard' : '')">
+                                <td><span class="badge-bassin" th:text="${b.codeBassin}">B01</span></td>
+                                <td th:text="${b.codeUniqueCycle}">C01</td>
+                                <td th:text="'S' + ${b.semaine}">S1</td>
+                                <td th:text="${b.dateDernierePesee != null} ? ${#temporals.format(b.dateDernierePesee, 'dd/MM/yyyy')} : '—'">—</td>
+                                <td th:text="${b.poidsMoyenActuel != null and b.poidsMoyenActuel.compareTo(T(java.math.BigDecimal).ZERO) > 0} ? ${b.poidsMoyenActuel} + 'g' : '—'">—</td>
+                                <td>
+                                    <span th:if="${b.tauxSurvie != null}"
+                                          th:classappend="${b.tauxSurvie.compareTo(T(java.math.BigDecimal).valueOf(40)) < 0} ? 'taux-survie-rouge' :
+                                                          (${b.tauxSurvie.compareTo(T(java.math.BigDecimal).valueOf(70)) < 0} ? 'taux-survie-orange' : 'taux-survie-vert')"
+                                          th:text="${b.tauxSurvie} + '%'">—</span>
+                                    <span th:if="${b.tauxSurvie == null}">—</span>
+                                </td>
+                                <td>
+                                    <span th:if="${b.statutCroissance == 'CRITIQUE'}" class="badge bg-danger badge-statut-critique">CRITIQUE</span>
+                                    <span th:if="${b.statutCroissance == 'RETARD'}" class="badge bg-warning text-dark">RETARD</span>
+                                    <span th:if="${b.statutCroissance == 'NORMAL'}" class="badge bg-success">NORMAL</span>
+                                </td>
+                                <td class="actions-cell">
+                                    <a th:href="@{/biologique/{id}/detail(id=${b.idCycleBassinAssoc})}" class="btn btn-outline-primary btn-sm">
+                                        <i class="bi bi-eye"></i> Détail
+                                    </a>
+                                    <a th:href="@{/biologique/{id}/pesee/nouvelle(id=${b.idCycleBassinAssoc})}" class="btn btn-primary btn-sm">
+                                        <i class="bi bi-plus"></i> Nouvelle pesée
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        function toggleSidebar() {
+            document.querySelector('.sidebar').classList.toggle('open');
+            document.querySelector('.sidebar-overlay').classList.toggle('open');
+        }
+        document.querySelector('.sidebar-overlay')?.addEventListener('click', () => {
+            document.querySelector('.sidebar').classList.remove('open');
+            document.querySelector('.sidebar-overlay').classList.remove('open');
+        });
+    </script>
+</body>
+</html>
