@@ -45,8 +45,8 @@
             <button class="menu-toggle" onclick="toggleSidebar()"><i class="bi bi-list"></i></button>
             <div class="breadcrumb">
                 <span>Bassins</span>
-                <span class="sep">/</span>
-                <span class="active">Gestion des Bassins</span>
+                <!-- <span class="sep">/</span>
+                <span class="active">Gestion des Bassins</span> -->
             </div>
             <div class="topbar-actions">
                 <button class="icon-btn"><i class="bi bi-bell"></i></button>
@@ -59,6 +59,16 @@
                 </div>
             </div>
         </header>
+
+        <div th:if="${erreur}" class="alert alert-danger">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            <span th:text="${erreur}"></span>
+        </div>
+
+        <div th:if="${succes}" class="alert alert-success">
+            <i class="bi bi-check-circle-fill"></i>
+            <span th:text="${succes}"></span>
+        </div>
 
         <main class="page">
 
@@ -97,6 +107,9 @@
                     </a>
                     <a th:href="@{/bassins/nouveau}" class="btn btn-primary">
                         <i class="bi bi-plus"></i> Nouveau Bassin
+                    </a>
+                    <a th:href="@{/bassins/nouveau}" class="btn btn-primary">
+                        <i class="bi bi-plus"></i> Démarrer un cycle
                     </a>
                 </div>
             </form>

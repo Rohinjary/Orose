@@ -42,13 +42,20 @@ public class BassinService {
         this.utilisateurRepository = utilisateurRepository;
     }
 
-    public Bassin creerBassin(BassinDTO dto) {
+    public Bassin creerBassin(BassinDTO dto, Long idUtilisateur) {
         if (bassinRepository.existsByCode(dto.getCode())) {
             throw new IllegalArgumentException("Le code du bassin doit être unique");
         }
 
+        if (bassinRepository.count() >= 9) {
+            throw new IllegalArgumentException("Il ne peut y avoir que 9 bassins maximum");
+        }
+
         StatutBassin statutInitial = statutBassinRepository.findByCode("VIDE")
                 .orElseThrow(() -> new IllegalArgumentException("Statut VIDE introuvable"));
+
+        Utilisateur utilisateur = utilisateurRepository.findById(idUtilisateur)
+                .orElseThrow(() -> new IllegalArgumentException("Utilisateur introuvable"));
 
         Bassin bassin = new Bassin();
         bassin.setCode(dto.getCode());
@@ -58,7 +65,16 @@ public class BassinService {
         bassin.setStatutActuel(statutInitial);
         bassin.setCreatedAt(dto.getDateCreation().atStartOfDay());
 
-        return bassinRepository.save(bassin);
+        Bassin bassinSauvegarde = bassinRepository.save(bassin);
+
+        HistoStatutBassin histoInitial = new HistoStatutBassin();
+        histoInitial.setBassin(bassinSauvegarde);
+        histoInitial.setStatutBassin(statutInitial);
+        histoInitial.setUtilisateur(utilisateur);
+        histoInitial.setMotif("Création du bassin");
+        histoStatutBassinRepository.save(histoInitial);
+
+        return bassinSauvegarde;
     }
 
     public void supprimerBassin(Long id) {
@@ -232,6 +248,7 @@ public class BassinService {
     private String badgeCss(String code) {
         if (code == null) return "badge-vide";
         return switch (code) {
+            case "VIDE"         -> "badge-vide";
             case "ACTIF"         -> "badge-actif";
             case "EN_TRAITEMENT" -> "badge-traitement";
             case "QUARANTAINE"   -> "badge-quarantaine";

@@ -82,7 +82,7 @@ public class BassinController {
     @PostMapping
     public String creer(@ModelAttribute BassinDTO bassinDTO, Model model) {
         try {
-            bassinService.creerBassin(bassinDTO);
+            bassinService.creerBassin(bassinDTO, 1L);
             return "redirect:/bassins";
         } catch (IllegalArgumentException e) {
             model.addAttribute("erreur", e.getMessage());
@@ -121,9 +121,27 @@ public class BassinController {
     }
 
     @PostMapping("/{id}/supprimer")
-    public String supprimer(@PathVariable Long id) {
-        bassinService.supprimerBassin(id);
-        return "redirect:/bassins";
+    public String supprimer(@PathVariable Long id,
+                            RedirectAttributes redirectAttributes) {
+        try {
+            bassinService.supprimerBassin(id);
+
+            redirectAttributes.addFlashAttribute(
+                "succes",
+                "Bassin supprimé avec succès."
+            );
+
+            return "redirect:/bassins";
+
+        } catch (IllegalStateException e) {
+
+            redirectAttributes.addFlashAttribute(
+                "erreur",
+                e.getMessage()
+            );
+
+            return "redirect:/bassins/" + id;
+        }
     }
 
     @GetMapping("/{id}")
