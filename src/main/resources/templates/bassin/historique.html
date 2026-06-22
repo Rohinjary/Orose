@@ -158,7 +158,7 @@
                                 <option value="" th:selected="${idBassinSelected == null}">Tous les bassins</option>
                                 <option th:each="b : ${bassins}"
                                         th:value="${b.id}"
-                                        th:selected="${idBassinSelected != null and idBassinSelected == b.id}"
+                                        th:selected="${idBassinSelected != null and b.id.longValue() == idBassinSelected}"
                                         th:text="'Bassin ' + ${b.code}">Bassin B01</option>
                             </select>
                         </div>

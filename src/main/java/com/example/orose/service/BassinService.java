@@ -16,7 +16,6 @@ import com.example.orose.model.Utilisateur;
 import com.example.orose.repository.BassinRepository;
 import com.example.orose.repository.CycleBassinAssocRepository;
 import com.example.orose.repository.StatutBassinRepository;
-import com.example.orose.repository.CycleRepository;
 import com.example.orose.repository.HistoStatutBassinRepository;
 import com.example.orose.repository.UtilisateurRepository;
 
@@ -166,8 +165,19 @@ public class BassinService {
                                                                  LocalDateTime debut,
                                                                  LocalDateTime fin,
                                                                  String typeEtat) {
-        List<HistoStatutBassin> records =
-                histoStatutBassinRepository.rechercher(idBassin, debut, fin, typeEtat);
+        List<HistoStatutBassin> records = idBassin != null
+                ? histoStatutBassinRepository.findByBassinIdOrderByDateChangementDesc(idBassin)
+                : histoStatutBassinRepository.findAllByOrderByDateChangementDesc();
+
+        if (debut != null)
+            records = records.stream().filter(h -> !h.getDateChangement().isBefore(debut)).collect(Collectors.toList());
+        if (fin != null)
+            records = records.stream().filter(h -> !h.getDateChangement().isAfter(fin)).collect(Collectors.toList());
+        if (typeEtat != null && !typeEtat.isBlank())
+            records = records.stream()
+                    .filter(h -> h.getStatutBassin() != null && typeEtat.equals(h.getStatutBassin().getCode()))
+                    .collect(Collectors.toList());
+
         return buildAvecAvant(records);
     }
 

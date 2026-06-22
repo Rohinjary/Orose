@@ -208,7 +208,7 @@
                             <div class="stat-item">
                                 <div class="label">Mise en Service</div>
                                 <div class="value"
-                                     th:text="${detail.miseEnService != null} ? ${#temporals.format(detail.miseEnService, 'dd MMM yyyy')} : '—'">—</div>
+                                     th:text="${detail.miseEnService != null ? #temporals.format(detail.miseEnService, 'dd MMM yyyy') : '—'}">—</div>
                             </div>
                         </div>
 
@@ -253,14 +253,14 @@
                                 <div class="label">Date Début</div>
                                 <div class="value">
                                     <i class="bi bi-calendar3"></i>
-                                    <span th:text="${detail.cycleEnCours.dateDebut != null} ? ${#temporals.format(detail.cycleEnCours.dateDebut, 'dd MMM yyyy')} : '—'">15 Mars 2026</span>
+                                    <span th:text="${detail.cycleEnCours.dateDebut != null ? #temporals.format(detail.cycleEnCours.dateDebut, 'dd MMM yyyy') : '—'}">15 Mars 2026</span>
                                 </div>
                             </div>
                             <div class="cycle-date-item">
                                 <div class="label">Fin Estimée</div>
                                 <div class="value">
                                     <i class="bi bi-calendar-check"></i>
-                                    <span th:text="${detail.cycleEnCours.dateFinPrevue != null} ? ${#temporals.format(detail.cycleEnCours.dateFinPrevue, 'dd MMM yyyy')} : '—'">20 Juin 2026</span>
+                                    <span th:text="${detail.cycleEnCours.dateFinPrevue != null ? #temporals.format(detail.cycleEnCours.dateFinPrevue, 'dd MMM yyyy') : '—'}">20 Juin 2026</span>
                                 </div>
                             </div>
                             <div class="cycle-date-item">
