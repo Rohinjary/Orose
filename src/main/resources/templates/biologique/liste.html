@@ -80,11 +80,11 @@
                                 <td th:text="${b.codeUniqueCycle}">C01</td>
                                 <td th:text="'S' + ${b.semaine}">S1</td>
                                 <td th:text="${b.dateDernierePesee != null} ? ${#temporals.format(b.dateDernierePesee, 'dd/MM/yyyy')} : '—'">—</td>
-                                <td th:text="${b.poidsMoyenActuel != null and b.poidsMoyenActuel.compareTo(T(java.math.BigDecimal).ZERO) > 0} ? ${b.poidsMoyenActuel} + 'g' : '—'">—</td>
+                                <td th:text="${b.poidsMoyenActuel != null and b.poidsMoyenActuel.doubleValue() > 0} ? ${b.poidsMoyenActuel} + 'g' : '—'">—</td>
                                 <td>
                                     <span th:if="${b.tauxSurvie != null}"
-                                          th:classappend="${b.tauxSurvie.compareTo(T(java.math.BigDecimal).valueOf(40)) < 0} ? 'taux-survie-rouge' :
-                                                          (${b.tauxSurvie.compareTo(T(java.math.BigDecimal).valueOf(70)) < 0} ? 'taux-survie-orange' : 'taux-survie-vert')"
+                                          th:classappend="${b.tauxSurvie.doubleValue() < 40} ? 'taux-survie-rouge' :
+                                                          (${b.tauxSurvie.doubleValue() < 70} ? 'taux-survie-orange' : 'taux-survie-vert')"
                                           th:text="${b.tauxSurvie} + '%'">—</span>
                                     <span th:if="${b.tauxSurvie == null}">—</span>
                                 </td>

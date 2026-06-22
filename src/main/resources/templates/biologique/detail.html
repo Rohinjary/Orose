@@ -63,8 +63,8 @@
                         <div class="kpi-value" th:text="${detail.biomassActuelleKg != null} ? ${detail.biomassActuelleKg} + ' kg' : '—'">—</div>
                     </div>
                     <div class="kpi-card kpi-survie"
-                         th:classappend="${detail.tauxSurvie != null and detail.tauxSurvie.compareTo(T(java.math.BigDecimal).valueOf(40)) < 0} ? 'kpi-danger' :
-                                         (${detail.tauxSurvie != null and detail.tauxSurvie.compareTo(T(java.math.BigDecimal).valueOf(70)) < 0} ? 'kpi-warning' : 'kpi-success')">
+                         th:classappend="${detail.tauxSurvie != null and detail.tauxSurvie.doubleValue() < 40} ? 'kpi-danger' :
+                                         (${detail.tauxSurvie != null and detail.tauxSurvie.doubleValue() < 70} ? 'kpi-warning' : 'kpi-success')">
                         <div class="kpi-icon"><i class="bi bi-heart-pulse"></i></div>
                         <div class="kpi-label">Taux survie</div>
                         <div class="kpi-value" th:text="${detail.tauxSurvie != null} ? ${detail.tauxSurvie} + ' %' : '—'">—</div>
@@ -75,7 +75,7 @@
                         <div class="kpi-value" th:text="${detail.poidsMoyen != null} ? ${detail.poidsMoyen} + ' g' : '—'">—</div>
                     </div>
                     <div class="kpi-card"
-                         th:classappend="${detail.tailleMoyenne != null and detail.tailleMoyenne.compareTo(T(java.math.BigDecimal).valueOf(110)) >= 0} ? 'kpi-success' : ''">
+                         th:classappend="${detail.tailleMoyenne != null and detail.tailleMoyenne.doubleValue() >= 110} ? 'kpi-success' : ''">
                         <div class="kpi-icon"><i class="bi bi-rulers"></i></div>
                         <div class="kpi-label">Taille moyenne</div>
                         <div class="kpi-value" th:text="${detail.tailleMoyenne != null} ? ${detail.tailleMoyenne} + ' mm' : '—'">—</div>
