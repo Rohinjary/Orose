@@ -1,224 +1,394 @@
 <!DOCTYPE html>
 <html lang="fr" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="utf-8" />
-    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title th:text="'Bassin ' + ${bassin.code} + ' — Move Gasy'">Bassin — Move Gasy</title>
-    <link href="https://fonts.googleapis.com" rel="preconnect" />
-    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
-    <link href="/css/bassin/detail.css" rel="stylesheet" />
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title th:text="'Bassin ' + ${detail.code} + ' — Move Gasy'">Bassin — Move Gasy</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet"/>
+    <link href="/css/bassin/detail.css" rel="stylesheet"/>
     <style>
-        
+        /* Badges */
+        .badge-preparation { background:#fef9c3; color:#854d0e; }
+        .badge-actif       { background:#dcfce7; color:#166534; }
+        .badge-quarantaine { background:#fee2e2; color:#991b1b; }
+        .badge-traitement  { background:#ffedd5; color:#9a3412; }
+        .badge-recolte     { background:#f3e8ff; color:#6b21a8; }
+        .badge-vide        { background:#f1f5f9; color:#475569; }
+
+        /* Notification banner */
+        .notification-bar {
+            display: flex; align-items: center; gap: 12px;
+            padding: 14px 20px; border-radius: var(--radius);
+            margin-bottom: 24px; font-size: 14px; border: 1px solid transparent;
+        }
+        .notif-info    { background:#eff6ff; border-color:#bfdbfe; color:#1e40af; }
+        .notif-danger  { background:#fef2f2; border-color:#fecaca; color:#991b1b; }
+        .notif-warning { background:#fffbeb; border-color:#fde68a; color:#92400e; }
+
+        /* 2-column layout for detail */
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 280px;
+            gap: 24px;
+            align-items: start;
+        }
+        .detail-main { min-width: 0; }
+        .detail-sidebar { display: flex; flex-direction: column; gap: 16px; }
+
+        /* Cycle card */
+        .cycle-progress-label {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 8px; font-size: 13px; color: var(--mg-secondary);
+        }
+        .cycle-progress-pct { font-weight: 700; font-size: 18px; color: var(--mg-primary); }
+
+        .cycle-dates {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
+            padding-top: 16px; border-top: 1px solid var(--mg-outline); margin-top: 16px;
+        }
+        .cycle-date-item .label {
+            font-size: 11px; font-weight: 700; text-transform: uppercase;
+            color: var(--mg-secondary); letter-spacing: 0.04em; margin-bottom: 4px;
+        }
+        .cycle-date-item .value {
+            font-size: 14px; font-weight: 600; color: var(--mg-primary);
+            display: flex; align-items: center; gap: 6px;
+        }
+        .cycle-date-item .value.big {
+            font-size: 22px; font-weight: 700;
+        }
+
+        /* Sidebar control card */
+        .ctrl-card {
+            background: var(--mg-surface-bright);
+            border: 1px solid var(--mg-outline);
+            border-radius: var(--radius);
+            padding: 20px;
+        }
+        .ctrl-title {
+            font-size: 12px; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 0.05em; color: var(--mg-secondary); margin-bottom: 14px;
+        }
+        .ctrl-card select {
+            width: 100%; padding: 10px 32px 10px 12px;
+            border: 1px solid var(--mg-outline); border-radius: var(--radius);
+            font-family: var(--font-main); font-size: 14px; background: white;
+            appearance: none; cursor: pointer; margin-bottom: 12px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%234a4a4a' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat; background-position: right 12px center;
+        }
+        .ctrl-card-dark {
+            background: var(--mg-primary); border-radius: var(--radius);
+            padding: 20px; color: white;
+        }
+        .ctrl-dark-title {
+            font-size: 12px; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 0.05em; color: rgba(255,255,255,0.6); margin-bottom: 10px;
+        }
+        .ctrl-dark-desc {
+            font-size: 13px; color: rgba(255,255,255,0.75); margin-bottom: 16px; line-height: 1.5;
+        }
+        .btn-white {
+            background: white; color: var(--mg-primary); border: none;
+            padding: 10px 16px; border-radius: var(--radius);
+            font-family: var(--font-main); font-size: 13px; font-weight: 600;
+            cursor: pointer; display: flex; align-items: center; gap: 8px;
+            width: 100%; justify-content: center; text-decoration: none;
+        }
+        .btn-white:hover { background: #f1f5f9; }
+
+        /* Historique table — état avant/après */
+        .arrow-cell { width: 24px; text-align: center; color: var(--mg-secondary); padding: 0 4px; }
+        .date-cell  { font-size: 12px; color: var(--mg-secondary); white-space: nowrap; }
+
+        @media (max-width: 900px) {
+            .detail-grid { grid-template-columns: 1fr; }
+            .detail-sidebar { order: -1; }
+            .cycle-dates { grid-template-columns: repeat(2, 1fr); }
+        }
     </style>
 </head>
 <body>
-    <div class="sidebar-overlay"></div>
-    <div class="layout">
-        <aside class="sidebar">
-            <div class="sidebar-brand">
-                <div class="brand-logo"><i class="bi bi-water"></i></div>
-                <div class="brand-name">MOVE GASY</div>
-            </div>
-            <div class="nav-container">
-                <div class="nav-label">Principal</div>
-                <a class="nav-item"><span class="nav-icon"><i class="bi bi-speedometer2"></i></span> Dashboard</a>
-                <div class="nav-label">Terrain</div>
-                <a class="nav-item active" th:href="@{/bassins}">
-                    <span class="nav-icon"><i class="bi bi-droplet-half"></i></span> Bassins
-                </a>
-                <a class="nav-item"><span class="nav-icon"><i class="bi bi-activity"></i></span> Suivi biologique</a>
-                <a class="nav-item"><span class="nav-icon"><i class="bi bi-egg-fill"></i></span> Nourrissage</a>
-                <a class="nav-item"><span class="nav-icon"><i class="bi bi-plus-circle"></i></span> Sanitaire</a>
-                <div class="nav-label">Logistique</div>
-                <a class="nav-item"><span class="nav-icon"><i class="bi bi-box-seam"></i></span> Stocks</a>
-                <a class="nav-item"><span class="nav-icon"><i class="bi bi-cart3"></i></span> Commercial</a>
-                <a class="nav-item"><span class="nav-icon"><i class="bi bi-truck"></i></span> Livraisons</a>
-                <a class="nav-item"><span class="nav-icon"><i class="bi bi-cash-stack"></i></span> Finances</a>
-                <div class="nav-label">Système</div>
-                <a class="nav-item" href="#"><span class="nav-icon"><i class="bi bi-lock"></i></span> Connexion</a>
-                <a class="nav-item"><span class="nav-icon"><i class="bi bi-gear"></i></span> Administration</a>
-                <div class="nav-label">Portail client</div>
-                <a class="nav-item"><span class="nav-icon"><i class="bi bi-person-lock"></i></span> Front Office</a>
-            </div>
-        </aside>
+<div class="sidebar-overlay"></div>
+<div class="layout">
 
-        <div class="main-wrapper">
-            <header class="topbar">
-                <button class="menu-toggle" onclick="toggleSidebar()"><i class="bi bi-list"></i></button>
-                <div class="breadcrumb">
-                    <span>Bassins</span>
-                    <span class="sep">/</span>
-                    <span class="active" th:text="'Bassin ' + ${bassin.code}">Bassin</span>
-                </div>
-                <div class="topbar-actions">
-                    <button class="icon-btn"><i class="bi bi-bell"></i></button>
-                    <button class="icon-btn"><i class="bi bi-gear"></i></button>
-                    <div class="user-profile">
-                        <div class="avatar">AD</div>
-                    </div>
-                </div>
-            </header>
-
-            <main class="content">
-
-                <div th:if="${erreur}" class="alert alert-warning">
-                    <i class="bi bi-exclamation-triangle-fill"></i>
-                    <div th:text="${erreur}"></div>
-                </div>
-
-                <div class="grid-detail">
-                    <div class="col-12">
-
-                        <!-- Informations generales -->
-                        <section class="card">
-                            <div class="card-header">
-                                <h3 class="card-title">Informations Generales</h3>
-                                <span class="badge"
-                                      th:classappend="${bassin.statutActuel.code == 'ACTIF'} ? 'badge-actif' :
-                                                      (${bassin.statutActuel.code == 'PREPARATION'} ? 'badge-preparation' :
-                                                      (${bassin.statutActuel.code == 'QUARANTAINE'} ? 'badge-quarantaine' :
-                                                      (${bassin.statutActuel.code == 'EN_TRAITEMENT'} ? 'badge-traitement' : 'badge-recolte')))"
-                                      th:text="${bassin.statutActuel.libelle}">
-                                </span>
-                            </div>
-
-                            <h2 style="font-size: 28px; font-weight: 700; margin-bottom: 4px;"
-                                th:text="'Bassin ' + ${bassin.code}">Bassin</h2>
-
-                            <div class="stat-group">
-                                <div class="stat-item">
-                                    <div class="label">Surface</div>
-                                    <div class="value" th:text="${bassin.surfaceM2} + ' m²'">—</div>
-                                </div>
-                                <div class="stat-item">
-                                    <div class="label">Profondeur</div>
-                                    <div class="value" th:text="${bassin.profondeurMetre} + ' m'">—</div>
-                                </div>
-                                <div class="stat-item">
-                                    <div class="label">Notes</div>
-                                    <div class="value" style="font-size: 14px; font-weight: 400;"
-                                         th:text="${bassin.notes != null and !#strings.isEmpty(bassin.notes)} ? ${bassin.notes} : '—'">—</div>
-                                </div>
-                            </div>
-
-                            <div class="action-bar">
-                                <a th:href="@{/bassins/{id}/modifier(id=${bassin.id})}" class="btn btn-outline btn-sm">
-                                    <i class="bi bi-pencil"></i> Modifier
-                                </a>
-                                <a th:href="@{/bassins}" class="btn btn-outline btn-sm">
-                                    <i class="bi bi-arrow-left"></i> Retour
-                                </a>
-                            </div>
-                        </section>
-
-                        <!-- Changer l'etat operationnel -->
-                        <section class="card" th:unless="${#lists.isEmpty(transitions)}">
-                            <div class="card-header">
-                                <h3 class="card-title">Changer l'etat operationnel</h3>
-                                <span style="font-size: 12px; color: var(--mg-secondary);"
-                                    th:text="${bassin.statutActuel.code == 'VIDE'} ? '0 transition(s) disponible(s)' : ${#lists.size(transitions)} + ' transition(s) disponible(s)'">
-                                </span>
-                            </div>
-                            <form th:action="@{/bassins/{id}/statut(id=${bassin.id})}" method="post">
-                                <div class="statut-form">
-                                    <div class="form-field">
-                                        <label for="nouveauStatut">Nouveau statut</label>
-                                        <select id="nouveauStatut" name="nouveauStatut">
-                                            <option value="" disabled selected>-- Choisir --</option>
-                                            <option th:unless="${bassin.statutActuel.code == 'VIDE'}"
-                                                    th:each="t : ${transitions}" 
-                                                    th:value="${t}" 
-                                                    th:text="${t}">
-                                            </option>
-                                        </select>
-                                    </div>
-                                    <div class="form-field">
-                                        <label for="motif">Motif</label>
-                                        <input type="text" id="motif" name="motif" placeholder="Raison du changement..." required/>
-                                    </div>
-                                    <button class="btn btn-primary" type="submit"
-                                            th:disabled="${bassin.statutActuel.code == 'VIDE'}">
-                                        <i class="bi bi-check2"></i> Valider
-                                    </button>
-                                </div>
-                            </form>
-                        </section>
-
-                        <!-- Historique des statuts -->
-                        <section class="card">
-                            <div class="card-header">
-                                <h3 class="card-title">Historique des changements d'etat</h3>
-                                <span style="font-size: 12px; color: var(--mg-secondary);"
-                                    th:text="${#lists.size(historique)} + ' entree(s)'"></span>
-                            </div>
-
-                            <div th:if="${#lists.isEmpty(historique)}"
-                                style="text-align: center; padding: 32px; color: var(--mg-secondary); font-size: 14px;">
-                                <i class="bi bi-clock-history" style="font-size: 28px; display: block; margin-bottom: 8px; opacity: 0.3;"></i>
-                                Aucun historique pour ce bassin.
-                            </div>
-
-                            <div class="table-container" th:unless="${#lists.isEmpty(historique)}">
-                                <table>
-                                    <thead>
-                                        <tr>
-                                            <th>Date</th>
-                                            <th>Statut</th>
-                                            <th>Utilisateur</th>
-                                            <th>Motif</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr th:each="h : ${historique}">
-                                            <td class="date-cell"
-                                                th:text="${#temporals.format(h.dateChangement, 'dd MMM yyyy | HH:mm')}">—</td>
-                                            <td>
-                                                <span class="badge"
-                                                    th:classappend="${h.statutBassin.code == 'ACTIF'} ? 'badge-actif' :
-                                                                    (${h.statutBassin.code == 'PREPARATION'} ? 'badge-preparation' :
-                                                                    (${h.statutBassin.code == 'QUARANTAINE'} ? 'badge-quarantaine' :
-                                                                    (${h.statutBassin.code == 'EN_TRAITEMENT'} ? 'badge-traitement' :
-                                                                    (${h.statutBassin.code == 'RECOLTE'} ? 'badge-recolte' : 'badge-vide'))))"
-                                                    th:text="${h.statutBassin.libelle}">—</span>
-                                            </td>
-                                            <td th:text="${h.utilisateur.nom + ' ' + (h.utilisateur.prenom != null ? h.utilisateur.prenom : '')}">—</td>
-                                            <td style="font-size: 13px; color: var(--mg-secondary);"
-                                                th:text="${h.motif != null ? h.motif : '—'}">—</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </section>
-
-                        <!-- Aucune transition -->
-                        <section class="card" th:if="${#lists.isEmpty(transitions)}">
-                            <div style="display: flex; align-items: center; gap: 12px; color: var(--mg-secondary);">
-                                <i class="bi bi-lock" style="font-size: 20px;"></i>
-                                <div>
-                                    <div style="font-weight: 600; color: var(--mg-primary); margin-bottom: 2px;">Aucune transition possible</div>
-                                    <div style="font-size: 13px;">Le statut actuel ne permet pas de changement d'etat.</div>
-                                </div>
-                            </div>
-                        </section>
-
-                    </div>
-                </div>
-            </main>
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <div class="brand-logo"><i class="bi bi-water"></i></div>
+            <div class="brand-name">MOVE GASY</div>
         </div>
-    </div>
+        <div class="nav-container">
+            <div class="nav-label">Principal</div>
+            <a class="nav-item" href="#"><span class="nav-icon"><i class="bi bi-speedometer2"></i></span> Dashboard</a>
+            <div class="nav-label">Terrain</div>
+            <a class="nav-item active" th:href="@{/bassins}">
+                <span class="nav-icon"><i class="bi bi-droplet-half"></i></span> Bassins
+            </a>
+            <a class="nav-item" href="#"><span class="nav-icon"><i class="bi bi-activity"></i></span> Suivi biologique</a>
+            <a class="nav-item" href="#"><span class="nav-icon"><i class="bi bi-egg-fill"></i></span> Nourrissage</a>
+            <a class="nav-item" href="#"><span class="nav-icon"><i class="bi bi-thermometer-half"></i></span> Environnement</a>
+            <a class="nav-item" href="#"><span class="nav-icon"><i class="bi bi-plus-circle"></i></span> Sanitaire</a>
+            <div class="nav-label">Logistique</div>
+            <a class="nav-item" href="#"><span class="nav-icon"><i class="bi bi-box-seam"></i></span> Stocks</a>
+            <a class="nav-item" href="#"><span class="nav-icon"><i class="bi bi-cart3"></i></span> Commercial</a>
+            <a class="nav-item" href="#"><span class="nav-icon"><i class="bi bi-truck"></i></span> Livraisons</a>
+            <a class="nav-item" href="#"><span class="nav-icon"><i class="bi bi-cash-stack"></i></span> Finances</a>
+            <div class="nav-label">Système</div>
+            <a class="nav-item" href="#"><span class="nav-icon"><i class="bi bi-gear"></i></span> Administration</a>
+        </div>
+    </aside>
 
-    <script>
-        function toggleSidebar() {
-            document.querySelector('.sidebar').classList.toggle('open');
-            document.querySelector('.sidebar-overlay').classList.toggle('open');
-        }
-        document.querySelector('.sidebar-overlay')
-            ?.addEventListener('click', () => {
-                document.querySelector('.sidebar').classList.remove('open');
-                document.querySelector('.sidebar-overlay').classList.remove('open');
-            });
-    </script>
+    <div class="main-wrapper">
+        <!-- TOPBAR -->
+        <header class="topbar">
+            <button class="menu-toggle" onclick="toggleSidebar()"><i class="bi bi-list"></i></button>
+            <div class="breadcrumb">
+                <a th:href="@{/bassins}" style="color: inherit; text-decoration: none;">
+                    Bassins
+                </a>
+                <span class="sep">/</span>
+                <span class="active" th:text="'Bassin ' + ${detail.code}">Bassin B01</span>
+            </div>
+            <div class="topbar-actions">
+                <button class="icon-btn"><i class="bi bi-bell"></i></button>
+                <button class="icon-btn"><i class="bi bi-gear"></i></button>
+                <div class="user-profile">
+                    <div class="avatar">AD</div>
+                </div>
+            </div>
+        </header>
+
+        <main class="content">
+
+            <!-- NOTIFICATION BANNER -->
+            <div th:if="${detail.notification != null}"
+                 class="notification-bar"
+                 th:classappend="${detail.niveauNotification == 'DANGER'} ? 'notif-danger' :
+                                 (${detail.niveauNotification == 'WARNING'} ? 'notif-warning' : 'notif-info')">
+                <i class="bi"
+                   th:classappend="${detail.niveauNotification == 'DANGER'} ? 'bi-exclamation-triangle-fill' :
+                                   (${detail.niveauNotification == 'WARNING'} ? 'bi-exclamation-circle-fill' : 'bi-info-circle-fill')"></i>
+                <div>
+                    <strong>Notification</strong> — <span th:text="${detail.notification}"></span>
+                </div>
+            </div>
+
+            <!-- ERREUR FLASH -->
+            <div th:if="${erreur}" class="alert alert-warning">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                <div th:text="${erreur}"></div>
+            </div>
+
+            <!-- 2-COLONNES -->
+            <div class="detail-grid">
+
+                <!-- COLONNE PRINCIPALE -->
+                <div class="detail-main">
+
+                    <!-- Informations Générales -->
+                    <section class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Informations Générales</h3>
+                            <span class="badge"
+                                  th:classappend="${detail.badgeCss}"
+                                  th:text="${detail.statutLibelle}">ACTIF</span>
+                        </div>
+                        <h2 style="font-size:28px; font-weight:700; margin-bottom:4px;"
+                            th:text="'Bassin ' + ${detail.code}">Bassin B01</h2>
+
+                        <div class="stat-group">
+                            <div class="stat-item">
+                                <div class="label">Surface</div>
+                                <div class="value" th:text="${detail.surfaceM2} + ' m²'">—</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="label">Profondeur</div>
+                                <div class="value" th:text="${detail.profondeurMetre} + ' m'">—</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="label">Mise en Service</div>
+                                <div class="value"
+                                     th:text="${detail.miseEnService != null ? #temporals.format(detail.miseEnService, 'dd MMM yyyy') : '—'}">—</div>
+                            </div>
+                        </div>
+
+                        <div class="action-bar">
+                            <a th:href="@{/bassins/{id}/modifier(id=${detail.id})}" class="btn btn-outline btn-sm">
+                                <i class="bi bi-pencil"></i> Modifier
+                            </a>
+                            <form th:action="@{/bassins/{id}/supprimer(id=${detail.id})}" method="post"
+                                style="display:inline;"
+                                onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce bassin ?');">
+
+                                <button type="submit" class="btn btn-outline btn-sm">
+                                    <i class="bi bi-trash"></i> Supprimer
+                                </button>
+                            </form>
+                            <a th:href="@{/bassins}" class="btn btn-outline btn-sm">
+                                <i class="bi bi-arrow-left"></i> Retour
+                            </a>
+                        </div>
+                    </section>
+
+                    <!-- Cycle en cours -->
+                    <section class="card" th:if="${detail.cycleEnCours != null}">
+                        <div class="card-header">
+                            <h3 class="card-title">Cycle en Cours</h3>
+                            <a href="#" class="btn btn-outline btn-sm">
+                                <i class="bi bi-eye"></i> Détails cycle
+                            </a>
+                        </div>
+
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                            <span style="font-size:13px; color:var(--mg-secondary);"
+                                  th:text="'ID: ' + ${detail.cycleEnCours.codeUniqueCycle}">ID: B01-2026-01</span>
+                            <span class="cycle-progress-pct"
+                                  th:text="${detail.cycleEnCours.tauxAvancement} + '%'">65%</span>
+                        </div>
+
+                        <div class="progress-container">
+                            <div class="progress-bar"
+                                 th:style="'width:' + ${detail.cycleEnCours.tauxAvancement} + '%'"></div>
+                        </div>
+
+                        <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--mg-secondary); margin-top:4px; margin-bottom:0;">
+                            <span>Progression temporelle</span>
+                            <span th:text="'Semaine ' + ${detail.cycleEnCours.semaineActuelle} + ' / ' + ${detail.cycleEnCours.dureeTotaleSemaines}">Semaine 10 / 15</span>
+                        </div>
+
+                        <div class="cycle-dates">
+                            <div class="cycle-date-item">
+                                <div class="label">Date Début</div>
+                                <div class="value">
+                                    <i class="bi bi-calendar3"></i>
+                                    <span th:text="${detail.cycleEnCours.dateDebut != null ? #temporals.format(detail.cycleEnCours.dateDebut, 'dd MMM yyyy') : '—'}">15 Mars 2026</span>
+                                </div>
+                            </div>
+                            <div class="cycle-date-item">
+                                <div class="label">Fin Estimée</div>
+                                <div class="value">
+                                    <i class="bi bi-calendar-check"></i>
+                                    <span th:text="${detail.cycleEnCours.dateFinPrevue != null ? #temporals.format(detail.cycleEnCours.dateFinPrevue, 'dd MMM yyyy') : '—'}">20 Juin 2026</span>
+                                </div>
+                            </div>
+                            <div class="cycle-date-item">
+                                <div class="label">Post-Larves</div>
+                                <div class="value big"
+                                     th:text="${detail.cycleEnCours.effectifInitial != null} ? ${#numbers.formatInteger(detail.cycleEnCours.effectifInitial, 1, 'DEFAULT')} : '—'">150 000</div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Historique des changements d'état -->
+                    <section class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Historique des Changements d'État</h3>
+                            <a th:href="@{/bassins/historique(idBassin=${detail.id})}" class="btn btn-outline btn-sm">
+                                <i class="bi bi-clock-history"></i> Voir tout
+                            </a>
+                        </div>
+
+                        <div th:if="${#lists.isEmpty(detail.historiqueRecent)}"
+                             style="text-align:center; padding:32px; color:var(--mg-secondary);">
+                            <i class="bi bi-clock-history" style="font-size:28px; display:block; margin-bottom:8px; opacity:0.3;"></i>
+                            Aucun historique pour ce bassin.
+                        </div>
+
+                        <div class="table-container" th:unless="${#lists.isEmpty(detail.historiqueRecent)}">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Ancien État</th>
+                                        <th></th>
+                                        <th>Nouvel État</th>
+                                        <th>Utilisateur</th>
+                                        <th>Motif</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="h : ${detail.historiqueRecent}">
+                                        <td class="date-cell"
+                                            th:text="${#temporals.format(h.dateChangement, 'dd MMM yyyy | HH:mm')}">—</td>
+                                        <td>
+                                            <span class="badge"
+                                                  th:classappend="${h.statutAvantBadge}"
+                                                  th:text="${h.statutAvantLibelle}">—</span>
+                                        </td>
+                                        <td class="arrow-cell"><i class="bi bi-arrow-right"></i></td>
+                                        <td>
+                                            <span class="badge"
+                                                  th:classappend="${h.statutApresBadge}"
+                                                  th:text="${h.statutApresLibelle}">—</span>
+                                        </td>
+                                        <td th:text="${h.utilisateurNom}">—</td>
+                                        <td style="font-size:13px; color:var(--mg-secondary);"
+                                            th:text="${h.motif != null ? h.motif : '—'}">—</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+
+                </div>
+
+                <!-- COLONNE SIDEBAR -->
+                <div class="detail-sidebar">
+
+                    <!-- Contrôle du Bassin -->
+                    <div class="ctrl-card">
+                        <div class="ctrl-title">Contrôle du Bassin</div>
+                        <p style="font-size:12px; color:var(--mg-secondary); margin-bottom:12px;">Changer l'état opérationnel</p>
+
+                        <div th:if="${#lists.isEmpty(detail.transitionsAutorisees)}"
+                             style="display:flex; align-items:center; gap:10px; color:var(--mg-secondary); font-size:13px; padding:12px 0;">
+                            <i class="bi bi-lock"></i>
+                            <span>Aucune transition possible depuis cet état.</span>
+                        </div>
+
+                        <form th:unless="${#lists.isEmpty(detail.transitionsAutorisees)}"
+                              th:action="@{/bassins/{id}/statut(id=${detail.id})}" method="post">
+                            <select name="nouveauStatut">
+                                <option value="" disabled selected>-- Choisir --</option>
+                                <option th:each="t : ${detail.transitionsAutorisees}"
+                                        th:value="${t}" th:text="${t}"></option>
+                            </select>
+                            <input type="text" name="motif" placeholder="Motif du changement..."
+                                   style="width:100%; padding:10px 12px; border:1px solid var(--mg-outline); border-radius:var(--radius); font-family:var(--font-main); font-size:14px; margin-bottom:12px;"
+                                   required/>
+                            <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center;">
+                                Mettre à jour l'état
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Gestion Cycle -->
+                    <!-- <div class="ctrl-card-dark">
+                        <div class="ctrl-dark-title">Gestion Cycle</div>
+                        <p class="ctrl-dark-desc">Lancer un nouveau cycle de production pour ce bassin.</p>
+                        <a href="/cycles" class="btn-white">
+                            <i class="bi bi-plus-circle"></i> Démarrer un cycle
+                        </a>
+                    </div> -->
+
+                </div>
+            </div>
+
+        </main>
+    </div>
+</div>
+
+<script>
+    function toggleSidebar() {
+        document.querySelector('.sidebar').classList.toggle('open');
+        document.querySelector('.sidebar-overlay').classList.toggle('open');
+    }
+    document.querySelector('.sidebar-overlay')?.addEventListener('click', () => {
+        document.querySelector('.sidebar').classList.remove('open');
+        document.querySelector('.sidebar-overlay').classList.remove('open');
+    });
+</script>
 </body>
 </html>
