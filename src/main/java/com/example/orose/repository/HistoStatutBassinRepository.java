@@ -15,14 +15,15 @@ import java.util.Optional;
 public interface HistoStatutBassinRepository extends JpaRepository<HistoStatutBassin, Long> {
     List<HistoStatutBassin> findByBassinIdOrderByDateChangementDesc(Long bassinId);
     Optional<HistoStatutBassin> findTopByBassinIdOrderByDateChangementDesc(Long idBassin);
+    List<HistoStatutBassin> findTop5ByBassinIdOrderByDateChangementDesc(Long bassinId);
 
-    @Query("SELECT h FROM HistoStatutBassin h " +
-           "WHERE h.bassin.id = :idBassin " +
-           "AND (:debut IS NULL OR h.dateChangement >= :debut) " +
-           "AND (:fin IS NULL OR h.dateChangement <= :fin) " +
-           "AND (:typeEtat IS NULL OR h.statutBassin.code = :typeEtat) " +
+    @Query("SELECT h FROM HistoStatutBassin h WHERE " +
+           "(:idBassin IS NULL OR h.bassin.id = :idBassin) AND " +
+           "(:debut IS NULL OR h.dateChangement >= :debut) AND " +
+           "(:fin IS NULL OR h.dateChangement <= :fin) AND " +
+           "(:typeEtat IS NULL OR h.statutBassin.code = :typeEtat) " +
            "ORDER BY h.dateChangement DESC")
-    List<HistoStatutBassin> findHistorique(
+    List<HistoStatutBassin> rechercher(
             @Param("idBassin") Long idBassin,
             @Param("debut") LocalDateTime debut,
             @Param("fin") LocalDateTime fin,
@@ -30,4 +31,3 @@ public interface HistoStatutBassinRepository extends JpaRepository<HistoStatutBa
 
     List<HistoStatutBassin> findAllByOrderByDateChangementDesc();
 }
-

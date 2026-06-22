@@ -1,33 +1,190 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head><title>Liste des bassins</title></head>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Gestion des Bassins — Move Gasy</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet"/>
+    <link href="/css/bassin/liste.css" rel="stylesheet"/>
+</head>
 <body>
-    <h1>Liste des bassins</h1>
-    <a th:href="@{/bassins/historique}">Historique des changements</a>
-    <a th:href="@{/bassins/nouveau}">+ Nouveau bassin</a>
-    <a th:href="@{/cycles}">Cycles</a>
+<div class="sidebar-overlay"></div>
+<div class="layout">
 
-    <table border="1">
-        <tr>
-            <th>Code</th>
-            <th>Surface (m²)</th>
-            <th>Profondeur (m)</th>
-            <th>Statut</th>
-            <th>Actions</th>
-        </tr>
-        <tr th:each="bassin : ${bassins}">
-            <td th:text="${bassin.code}"></td>
-            <td th:text="${bassin.surfaceM2}"></td>
-            <td th:text="${bassin.profondeurMetre}"></td>
-            <td th:text="${bassin.statutActuel.libelle}"></td>
-            <td>
-                <a th:href="@{/bassins/{id}(id=${bassin.id})}">Voir</a>
-                <a th:href="@{/bassins/{id}/modifier(id=${bassin.id})}">Modifier</a>
-                <form th:action="@{/bassins/{id}/supprimer(id=${bassin.id})}" method="post" style="display:inline">
-                    <button type="submit">Supprimer</button>
-                </form>
-            </td>
-        </tr>
-    </table>
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <div class="brand-logo"><i class="bi bi-water"></i></div>
+            <div class="brand-name">MOVE GASY</div>
+        </div>
+        <div class="nav-container">
+            <div class="nav-label">Principal</div>
+            <a class="nav-item" href="#"><span class="nav-icon"><i class="bi bi-speedometer2"></i></span> Dashboard</a>
+            <div class="nav-label">Terrain</div>
+            <a class="nav-item active" th:href="@{/bassins}">
+                <span class="nav-icon"><i class="bi bi-droplet-half"></i></span> Bassins
+            </a>
+            <a class="nav-item" href="#"><span class="nav-icon"><i class="bi bi-activity"></i></span> Suivi biologique</a>
+            <a class="nav-item" href="#"><span class="nav-icon"><i class="bi bi-egg-fill"></i></span> Nourrissage</a>
+            <a class="nav-item" href="#"><span class="nav-icon"><i class="bi bi-thermometer-half"></i></span> Environnement</a>
+            <a class="nav-item" href="#"><span class="nav-icon"><i class="bi bi-plus-circle"></i></span> Sanitaire</a>
+            <div class="nav-label">Logistique</div>
+            <a class="nav-item" href="#"><span class="nav-icon"><i class="bi bi-box-seam"></i></span> Stocks</a>
+            <a class="nav-item" href="#"><span class="nav-icon"><i class="bi bi-cart3"></i></span> Commercial</a>
+            <a class="nav-item" href="#"><span class="nav-icon"><i class="bi bi-truck"></i></span> Livraisons</a>
+            <a class="nav-item" href="#"><span class="nav-icon"><i class="bi bi-cash-stack"></i></span> Finances</a>
+            <div class="nav-label">Système</div>
+            <a class="nav-item" href="#"><span class="nav-icon"><i class="bi bi-gear"></i></span> Administration</a>
+        </div>
+    </aside>
+
+    <div class="main-wrapper">
+        <!-- TOPBAR -->
+        <header class="topbar">
+            <button class="menu-toggle" onclick="toggleSidebar()"><i class="bi bi-list"></i></button>
+            <div class="breadcrumb">
+                <span>Bassins</span>
+                <span class="sep">/</span>
+                <span class="active">Gestion des Bassins</span>
+            </div>
+            <div class="topbar-actions">
+                <button class="icon-btn"><i class="bi bi-bell"></i></button>
+                <div class="user-profile">
+                    <div class="user-info">
+                        <div class="user-name">Jean Dupont</div>
+                        <div class="user-role">Superviseur Site</div>
+                    </div>
+                    <div class="avatar">JD</div>
+                </div>
+            </div>
+        </header>
+
+        <main class="page">
+
+            <!-- BARRE DE FILTRES -->
+            <form th:action="@{/bassins}" method="get">
+                <div class="filter-bar">
+                    <div class="filter-group">
+                        <label class="filter-label">État</label>
+                        <select class="filter-select" name="statut">
+                            <option value="" th:selected="${statut == null or statut == ''}">Tous les états</option>
+                            <option value="ACTIF"         th:selected="${statut == 'ACTIF'}">Actif</option>
+                            <option value="VIDE"          th:selected="${statut == 'VIDE'}">Vide</option>
+                            <option value="PREPARATION"   th:selected="${statut == 'PREPARATION'}">Préparation</option>
+                            <option value="EN_TRAITEMENT" th:selected="${statut == 'EN_TRAITEMENT'}">Maintenance</option>
+                            <option value="QUARANTAINE"   th:selected="${statut == 'QUARANTAINE'}">Quarantaine</option>
+                            <option value="RECOLTE"       th:selected="${statut == 'RECOLTE'}">Récolte</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Disponibilité</label>
+                        <select class="filter-select" name="disponibilite">
+                            <option value="" th:selected="${disponibilite == null or disponibilite == ''}">Tous</option>
+                            <option value="disponible" th:selected="${disponibilite == 'disponible'}">Disponible</option>
+                            <option value="occupe"     th:selected="${disponibilite == 'occupe'}">Occupé</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Cycle Actif</label>
+                        <input class="filter-input" type="text" name="cycleActif"
+                               placeholder="Rechercher cycle..."
+                               th:value="${cycleActif}"/>
+                    </div>
+                    <div class="filter-spacer"></div>
+                    <a th:href="@{/bassins/historique}" class="btn btn-outline">
+                        <i class="bi bi-clock-history"></i> Historique
+                    </a>
+                    <a th:href="@{/bassins/nouveau}" class="btn btn-primary">
+                        <i class="bi bi-plus"></i> Nouveau Bassin
+                    </a>
+                </div>
+            </form>
+
+            <!-- GRILLE 3×3 -->
+            <div class="bassins-grid">
+
+                <div th:if="${#lists.isEmpty(grille)}" class="empty-grid">
+                    <i class="bi bi-droplet-slash"></i>
+                    <p>Aucun bassin ne correspond aux filtres sélectionnés.</p>
+                </div>
+
+                <div th:each="b : ${grille}" class="bassin-card">
+
+                    <!-- En-tête carte -->
+                    <div class="card-header-row">
+                        <div class="card-title" th:text="'Bassin ' + ${b.code}">Bassin B01</div>
+                        <span class="badge"
+                              th:classappend="${b.badgeCss}"
+                              th:text="${b.statutLibelle}">Actif</span>
+                    </div>
+
+                    <!-- Sous-titre / alerte -->
+                    <div class="card-subtitle"
+                         th:classappend="${b.bloque} ? 'text-danger' : (${b.recoltePossible} ? 'text-success' : '')"
+                         th:with="sub=${b.codeUniqueCycle == null ? 'Disponible' :
+                                       (b.bloque ? 'Bloqué' :
+                                       (b.recoltePossible ? '⚡ Récolte proche' :
+                                       (b.statutCode == 'EN_TRAITEMENT' ? 'En réparation' : '')))}">
+                        <span th:text="${sub}"></span>
+                    </div>
+
+                    <!-- Semaine + avancement -->
+                    <div th:if="${b.codeUniqueCycle != null}">
+                        <div class="semaine-row">
+                            <span th:text="'Semaine ' + ${b.semaineActuelle}">Semaine 10</span>
+                            <span class="semaine-pct"
+                                  th:text="${b.bloque ? 'Bloqué' : (b.tauxAvancement != null ? b.tauxAvancement + '%' : '-')}">65%</span>
+                        </div>
+                        <div class="progress-wrap">
+                            <div class="progress-bar"
+                                 th:classappend="${b.bloque ? 'bar-danger' : ''}"
+                                 th:style="'width:' + (${b.bloque ? 0 : (b.tauxAvancement != null ? b.tauxAvancement : 0)}) + '%'"></div>
+                        </div>
+                    </div>
+                    <div th:if="${b.codeUniqueCycle == null}" style="margin-bottom: 26px;"></div>
+
+                    <!-- Cycle + Poids -->
+                    <div class="card-meta">
+                        <span>Cycle</span>
+                        <span th:if="${b.poidsMoyenActuel != null}">Poids</span>
+                    </div>
+                    <div class="card-meta-val">
+                        <span th:text="${b.codeUniqueCycle != null ? b.codeUniqueCycle : '-'}">B01-2026-01</span>
+                        <span th:if="${b.poidsMoyenActuel != null}"
+                              th:text="${b.poidsMoyenActuel} + 'g'">18g</span>
+                    </div>
+
+                    <div class="card-divider"></div>
+
+                    <!-- Footer : Restant + bouton -->
+                    <div class="card-footer">
+                        <div>
+                            <div class="restant-label">Restant</div>
+                            <div class="restant-val"
+                                 th:text="${b.joursRestants != null ? b.joursRestants + ' jrs' : '-'}">45 jrs</div>
+                        </div>
+                        <a th:href="@{/bassins/{id}(id=${b.id})}" class="btn btn-outline btn-sm">
+                            Détails
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+
+        </main>
+    </div>
+</div>
+
+<script>
+    function toggleSidebar() {
+        document.querySelector('.sidebar').classList.toggle('open');
+        document.querySelector('.sidebar-overlay').classList.toggle('open');
+    }
+    document.querySelector('.sidebar-overlay')?.addEventListener('click', () => {
+        document.querySelector('.sidebar').classList.remove('open');
+        document.querySelector('.sidebar-overlay').classList.remove('open');
+    });
+</script>
 </body>
 </html>

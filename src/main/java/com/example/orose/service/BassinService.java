@@ -1,9 +1,11 @@
 package com.example.orose.service;
 
 import com.example.orose.dto.BassinDTO;
+import com.example.orose.dto.HistoAvecAvantDTO;
 
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
@@ -17,11 +19,10 @@ import com.example.orose.repository.StatutBassinRepository;
 import com.example.orose.repository.CycleRepository;
 import com.example.orose.repository.HistoStatutBassinRepository;
 import com.example.orose.repository.UtilisateurRepository;
-import java.util.stream.Collectors;
 
 @Service
-public class BassinService {    
-    private final BassinRepository bassinRepository; 
+public class BassinService {
+    private final BassinRepository bassinRepository;
     private final StatutBassinRepository statutBassinRepository;
     private final CycleBassinAssocRepository cycleBassinAssocRepository;
     private final StatutBassinService statutBassinService;
@@ -65,7 +66,6 @@ public class BassinService {
         Bassin bassin = bassinRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Bassin introuvable"));
 
-        // Vérifier qu'aucun cycle n'est associé (historique de cycles)
         if (cycleBassinAssocRepository.existsByBassinIdAndEstClotureFalse(id)) {
             throw new IllegalStateException("Impossible de supprimer le bassin car il est associé à des cycles");
         }
@@ -77,7 +77,6 @@ public class BassinService {
         Bassin bassin = bassinRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Bassin introuvable"));
 
-        // Vérifier que le code est unique si modifié
         if (bassinRepository.existsByCodeAndIdNot(dto.getCode(), id)) {
             throw new IllegalArgumentException("Le code du bassin doit être unique");
         }
@@ -90,7 +89,7 @@ public class BassinService {
         return bassinRepository.save(bassin);
     }
 
-    public List<Bassin> listerBassins(){
+    public List<Bassin> listerBassins() {
         return bassinRepository.findAll();
     }
 
@@ -155,5 +154,80 @@ public class BassinService {
             .filter(h -> typeEtat == null || typeEtat.isBlank()
                 || (h.getStatutBassin() != null && typeEtat.equals(h.getStatutBassin().getCode())))
             .collect(Collectors.toList());
+    }
+
+    public List<HistoAvecAvantDTO> getHistoriqueAvecAvant(Long idBassin) {
+        List<HistoStatutBassin> records =
+                histoStatutBassinRepository.findByBassinIdOrderByDateChangementDesc(idBassin);
+        return buildAvecAvant(records);
+    }
+
+    public List<HistoAvecAvantDTO> getHistoriqueGlobalAvecAvant(Long idBassin,
+                                                                 LocalDateTime debut,
+                                                                 LocalDateTime fin,
+                                                                 String typeEtat) {
+        List<HistoStatutBassin> records =
+                histoStatutBassinRepository.rechercher(idBassin, debut, fin, typeEtat);
+        return buildAvecAvant(records);
+    }
+
+    private List<HistoAvecAvantDTO> buildAvecAvant(List<HistoStatutBassin> records) {
+        // Group all records by bassin and sort each group by date DESC to find "avant"
+        Map<Integer, List<HistoStatutBassin>> parBassin = new LinkedHashMap<>();
+        for (HistoStatutBassin h : records) {
+            parBassin.computeIfAbsent(h.getBassin().getId(), k -> new ArrayList<>()).add(h);
+        }
+
+        Map<Integer, List<HistoStatutBassin>> sortedParBassin = new HashMap<>();
+        parBassin.forEach((id, list) -> {
+            List<HistoStatutBassin> sorted = list.stream()
+                    .sorted(Comparator.comparing(HistoStatutBassin::getDateChangement).reversed())
+                    .collect(Collectors.toList());
+            sortedParBassin.put(id, sorted);
+        });
+
+        List<HistoAvecAvantDTO> result = new ArrayList<>();
+        for (HistoStatutBassin h : records) {
+            HistoAvecAvantDTO dto = new HistoAvecAvantDTO();
+            dto.setId(h.getId());
+            dto.setCodeBassin(h.getBassin().getCode());
+            dto.setStatutApresCode(h.getStatutBassin().getCode());
+            dto.setStatutApresLibelle(h.getStatutBassin().getLibelle());
+            dto.setStatutApresBadge(badgeCss(h.getStatutBassin().getCode()));
+            dto.setDateChangement(h.getDateChangement());
+            String nom = h.getUtilisateur().getNom();
+            String prenom = h.getUtilisateur().getPrenom();
+            dto.setUtilisateurNom(nom + (prenom != null ? " " + prenom : ""));
+            dto.setMotif(h.getMotif());
+
+            List<HistoStatutBassin> bassinRecords = sortedParBassin.get(h.getBassin().getId());
+            int idx = bassinRecords.indexOf(h);
+            if (idx < bassinRecords.size() - 1) {
+                StatutBassin avant = bassinRecords.get(idx + 1).getStatutBassin();
+                dto.setStatutAvantCode(avant.getCode());
+                dto.setStatutAvantLibelle(avant.getLibelle());
+                dto.setStatutAvantBadge(badgeCss(avant.getCode()));
+            } else {
+                dto.setStatutAvantCode("—");
+                dto.setStatutAvantLibelle("—");
+                dto.setStatutAvantBadge("badge-vide");
+            }
+            result.add(dto);
+        }
+
+        result.sort(Comparator.comparing(HistoAvecAvantDTO::getDateChangement).reversed());
+        return result;
+    }
+
+    private String badgeCss(String code) {
+        if (code == null) return "badge-vide";
+        return switch (code) {
+            case "ACTIF"         -> "badge-actif";
+            case "EN_TRAITEMENT" -> "badge-traitement";
+            case "QUARANTAINE"   -> "badge-quarantaine";
+            case "RECOLTE"       -> "badge-recolte";
+            case "PREPARATION"   -> "badge-preparation";
+            default              -> "badge-vide";
+        };
     }
 }
