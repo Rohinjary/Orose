@@ -501,196 +501,122 @@
 <body>
 
     <div class="sidebar-overlay"></div>
-    <div class="layout">
-        <!-- SIDEBAR -->
-        <aside class="sidebar">
-            <div class="sidebar-brand">
-                <div class="brand-logo"><i class="bi bi-water"></i></div>
-                <div class="brand-name">MOVE GASY</div>
+    <div class="col-4">
+        <section class="card">
+            <h3 class="card-title" style="margin-bottom: 20px;">Entrée de Stock</h3>
+            <form th:action="@{/nourrissage/stock/enregistrer}" th:object="${entreeStockDTO}" method="post">
+                <div class="form-group">
+                    <label class="form-label">Type d'Aliment</label>
+                    <select th:field="*{idAliment}" class="form-control" required>
+                        <option value="" disabled selected>Sélectionner un type...</option>
+                        <option th:each="al : ${aliments}" th:value="${al.id}" th:text="${al.libelle}"></option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Responsable</label>
+                    <select th:field="*{idResponsable}" class="form-control" required>
+                        <option value="" disabled selected>Sélectionner un responsable...</option>
+                        <option th:each="u : ${utilisateurs}" th:value="${u.id}" th:text="${u.nom}"></option>
+                    </select>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
+                    <div>
+                        <label class="form-label">Quantité reçue (kg)</label>
+                        <input id="quantite" th:field="*{quantiteKg}" placeholder="0.00" type="number" step="0.01"
+                            required>
+                    </div>
+                    <div>
+                        <label class="form-label">Prix unitaire (Ar/kg)</label>
+                        <input id="prixUnitaire" th:field="*{prixUnitaire}" placeholder="0.00" type="number" step="0.01"
+                            required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Coût total (Ar)</label>
+                    <input type="text" id="totalGeneral" class="form-control" readonly
+                        style="background-color: #e9ecef;">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Date de réception</label>
+                    <input type="date" th:field="*{dateReception}" class="form-control" required>
+                </div>
+
+                <button class="btn btn-primary btn-full" type="submit">Enregistrer l'achat</button>
+            </form>
+        </section>
+        <section class="card">
+            <h3 class="card-title" style="margin-bottom: 16px;">Derniers Mouvements</h3>
+            <div class="movement-item">
+                <div>
+                    <div class="m-code">AL-SHR-02</div>
+                    <div class="m-meta">Achat — 12 Juin 2026</div>
+                </div>
+                <div class="m-val text-success">+500.0 kg</div>
             </div>
-            <div class="nav-container">
-                <div class="nav-label">Principal</div>
-                <a class="nav-item">
-                    <span class="nav-icon"><i class="bi bi-speedometer2"></i></span> Dashboard
-                </a>
-                <div class="nav-label">Terrain</div>
-                <a class="nav-item ">
-                    <span class="nav-icon"><i class="bi bi-droplet-half"></i></span> Bassins
-                </a>
-                <a class="nav-item">
-                    <span class="nav-icon"><i class="bi bi-activity"></i></span> Suivi biologique
-                </a>
-                <a class="nav-item active">
-                    <span class="nav-icon"><i class="bi bi-egg-fill"></i></span> Nourrissage
-                </a>
-                <!-- <a class="nav-item">
-                    <span class="nav-icon"><i class="bi bi-thermometer-half"></i></span> Environnement
-                </a> -->
-                <a class="nav-item">
-                    <span class="nav-icon"><i class="bi bi-plus-circle"></i></span> Sanitaire
-                </a>
-                <div class="nav-label">Logistique</div>
-                <a class="nav-item">
-                    <span class="nav-icon"><i class="bi bi-box-seam"></i></span> Stocks
-                </a>
-                <a class="nav-item">
-                    <span class="nav-icon"><i class="bi bi-cart3"></i></span> Commercial
-                </a>
-                <a class="nav-item">
-                    <span class="nav-icon"><i class="bi bi-truck"></i></span> Livraisons
-                </a>
-                <a class="nav-item">
-                    <span class="nav-icon"><i class="bi bi-cash-stack"></i></span> Finances
-                </a>
-                <div class="nav-label">Système</div>
-                <a class="nav-item" href="#">
-                    <span class="nav-icon"><i class="bi bi-lock"></i></span> Connexion</a>
-                <a class="nav-item">
-                    <span class="nav-icon"><i class="bi bi-gear"></i></span> Administration</a>
-                <div class="nav-label">Portail client</div>
-                <a class="nav-item">
-                    <span class="nav-icon"><i class="bi bi-person-lock"></i></span> Front Office
+            <div class="movement-item">
+                <div>
+                    <div class="m-code">AL-SHR-01</div>
+                    <div class="m-meta">Sortie Bassin B01 — 11 Juin 2026</div>
+                </div>
+                <div class="m-val text-danger">-45.0 kg</div>
+            </div>
+            <div class="movement-item">
+                <div>
+                    <div class="m-code">MI-VIT-01</div>
+                    <div class="m-meta">Sortie Bassin B04 — 10 Juin 2026</div>
+                </div>
+                <div class="m-val text-danger">-2.5 kg</div>
+            </div>
+            <div style="margin-top: 16px;">
+                <a href="#"
+                    style="font-size: 12px; color: var(--mg-primary); font-weight: 700; text-decoration: none; display: flex; align-items: center; gap: 4px;"
+                    class="">
+                    Voir tout l'historique <i class="bi bi-arrow-right"></i>
                 </a>
             </div>
-        </aside>
-        <!-- MAIN WRAPPER -->
-        <div class="main-wrapper">
-            <!-- TOPBAR -->
-            <header class="topbar">
-                <button class="menu-toggle" onclick="toggleSidebar()">
-                    <i class="bi bi-list"></i>
-                </button>
-                <div class="breadcrumb">
-                    <span class="">Logistique</span>
-                    <span class="sep">/</span>
-                    <span class="active">Stocks</span>
-                </div>
-                <div class="topbar-actions">
-                    <button class="icon-btn"><i class="bi bi-bell"></i></button>
-                    <button class="icon-btn"><i class="bi bi-gear"></i></button>
-                    <div class="user-profile">
-                        <div class="avatar">AD</div>
-                    </div>
-                </div>
-            </header>
-            <!-- MAIN CONTENT -->
-            <main class="content">
-                <!-- KPI Section -->
-                <div class="kpi-row">
-                    <div class="kpi-card">
-                        <div class="kpi-label">Stock actuel (kg)</div>
-                        <div class="kpi-value">1,740.0 <span
-                                style="font-size: 14px; font-weight: 400; margin-left: 4px;" class="">kg</span></div>
-                        <div class="kpi-sub text-success"><i class="bi bi-graph-up-arrow"></i> +120kg cette semaine
-                        </div>
-                    </div>
-                    <div class="kpi-card">
-                        <div class="kpi-label">Valeur du stock (Ar)</div>
-                        <div class="kpi-value">12.450.000 <span
-                                style="font-size: 14px; font-weight: 400; margin-left: 4px;" class="">Ar</span></div>
-                        <div class="kpi-sub" style="color: var(--mg-secondary);">Total basé sur les prix unitaires</div>
-                    </div>
-                    <div class="kpi-card" style="background: var(--mg-primary); color: white; border: none;">
-                        <div class="kpi-label" style="color: rgba(255, 255, 255, 0.7);">Autonomie estimée</div>
-                        <div class="kpi-value">14 <span style="font-size: 14px; font-weight: 400; margin-left: 4px;"
-                                class="">Jours</span></div>
-                        <div style="margin-top: 12px; display: flex; flex-direction: column; gap: 8px;">
-                            <div class="kpi-sub text-danger" style="font-weight: 600; margin: 0; color: #ff8a8a;"><i
-                                    class="bi bi-exclamation-triangle-fill"></i> Rupture : AL-SHR-03</div>
-                            <div class="kpi-sub text-warning" style="font-weight: 600; margin: 0; color: #ffcc00;"><i
-                                    class="bi bi-exclamation-circle-fill"></i> Stock Bas : AL-SHR-01</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="grid-layout">
-                    <!-- MAIN TABLE SECTION -->
-                    <div class="col-8">
-                        <section class="card">
-                            <div class="card-header">
-                                <h3 class="card-title">Stocks Physiques</h3>
-                                <div style="display: flex; gap: 8px;">
-                                    <button class="btn btn-outline btn-sm">Exporter PDF</button>
-                                    <button class="btn btn-primary btn-sm">Inventaire Complet</button>
-                                </div>
-                            </div>
-                            <div class="table-container">
-                                <table>
-                                    <thead>
-                                        <tr>
-                                            <th class="">Code</th>
-                                            <th class="">Désignation</th>
-                                            <th style="text-align: right;" class="">Stock (kg)</th>
-                                            <th style="text-align: center;" class="">Autonomie</th>
-                                            <th style="text-align: center;" class="">Statut</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td class=""><strong>AL-SHR-01</strong></td>
-                                            <td class="">Aliment Croissance 2mm</td>
-                                            <td style="text-align: right;" class="">450.0</td>
-                                            <td style="text-align: center;" class="">10 Jours</td>
-                                            <td style="text-align: center;" class=""><span class="badge badge-warning">À
-                                                    Commander</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td class=""><strong>AL-SHR-02</strong></td>
-                                            <td class="">Aliment Finition 3mm</td>
-                                            <td style="text-align: right;" class="">1,200.0</td>
-                                            <td style="text-align: center;" class="">30 Jours</td>
-                                            <td style="text-align: center;" class=""><span
-                                                    class="badge badge-success">En Stock</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td class=""><strong>AL-SHR-03</strong></td>
-                                            <td class="">Artemia Cystes Premium</td>
-                                            <td style="text-align: right;" class="">5.0</td>
-                                            <td style="text-align: center; color: var(--mg-danger); font-weight: 700;"
-                                                class="">2 Jours</td>
-                                            <td style="text-align: center;" class=""><span
-                                                    class="badge badge-danger">Rupture</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td class=""><strong>MI-VIT-01</strong></td>
-                                            <td class="">Mix Vitaminé Aquastim</td>
-                                            <td style="text-align: right;" class="">85.0</td>
-                                            <td style="text-align: center;" class="">17 Jours</td>
-                                            <td style="text-align: center;" class=""><span
-                                                    class="badge badge-success">En Stock</span></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </section>
-                        <!-- Bottom block matching SCREEN_2 style -->
-                        <section class="card">
-                            <div class="card-header">
-                                <h3 class="card-title">Analyse Prédictive de consommation</h3>
-                            </div>
-                            <div style="display: flex; gap: 40px; align-items: center;">
-                                <div style="flex: 1;">
-                                    <p style="font-size: 13px; color: var(--mg-secondary); margin-bottom: 8px;"
-                                        class="">Consommation moyenne journalière (tous bassins)</p>
-                                    <div style="font-size: 24px; font-weight: 700;" class="">124.5 kg <span
-                                            style="font-size: 14px; font-weight: 400; color: var(--mg-secondary);"
-                                            class="">/ jour</span></div>
-                                </div>
-                                <div style="flex: 2; border-left: 1px solid var(--mg-outline); padding-left: 40px;">
-                                    <p style="font-size: 13px; color: var(--mg-secondary); margin-bottom: 8px;"
-                                        class="">Projection fin de mois</p>
-                                    <div
-                                        style="height: 8px; background: var(--mg-surface-container); border-radius: 4px; margin-bottom: 8px;">
-                                        <div
-                                            style="height: 100%; width: 78%; background: var(--mg-primary); border-radius: 4px;">
-                                        </div>
-                                    </div>
-                                    <div
-                                        style="display: flex; justify-content: space-between; font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--mg-secondary);">
-                                        <span class="">Utilisé: 3,860kg</span>
-                                        <span class="">Capacité Max: 5,000kg</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </section>
-                    </div>
+        </section>
+    </div>
+    </div>
+    </main>
+    </div>
+    </div>
 </body>
+
+<script>
+    function toggleSidebar() {
+        document.querySelector('.sidebar').classList.toggle('open');
+        document.querySelector('.sidebar-overlay').classList.toggle('open');
+    }
+    document.querySelector('.sidebar-overlay')
+        ?.addEventListener('click', () => {
+            document.querySelector('.sidebar').classList.remove('open');
+            document.querySelector('.sidebar-overlay').classList.remove('open');
+        });
+    function initCalculTotal(idQuantite, idPrix, idTotal) {
+        const inputQuantite = document.getElementById(idQuantite);
+        const inputPrix = document.getElementById(idPrix);
+        const inputTotal = document.getElementById(idTotal);
+
+        function calculer() {
+            const qte = parseFloat(inputQuantite.value) || 0;
+            const prix = parseFloat(inputPrix.value) || 0;
+            const total = qte * prix;
+
+            // Formatage en monnaie malgache (Ar)
+            inputTotal.value = total.toLocaleString('fr-MG', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
+
+        // Ajout des écouteurs
+        inputQuantite.addEventListener('input', calculer);
+        inputPrix.addEventListener('input', calculer);
+    }
+
+    // Appel de la fonction une fois que le DOM est chargé
+    document.addEventListener('DOMContentLoaded', () => {
+        initCalculTotal('quantite', 'prixUnitaire', 'totalGeneral');
+    });
+</script>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><title>Historique du bassin</title></head>
+<body>
+    <h1>Historique des statuts — Bassin <span th:text="${bassin.code}"></span></h1>
+
+    <form th:action="@{/bassins/{id}/historique(id=${bassin.id})}" method="get">
+        <label>Du :</label>
+        <input type="datetime-local" name="debut" th:value="${debut}" /><br/>
+
+        <label>Au :</label>
+        <input type="datetime-local" name="fin" th:value="${fin}" /><br/>
+
+        <label>Type d'état :</label>
+        <select name="typeEtat">
+            <option value="">-- Tous --</option>
+            <option value="PREPARATION" th:selected="${typeEtat == 'PREPARATION'}">PREPARATION</option>
+            <option value="ACTIF" th:selected="${typeEtat == 'ACTIF'}">ACTIF</option>
+            <option value="EN_TRAITEMENT" th:selected="${typeEtat == 'EN_TRAITEMENT'}">EN_TRAITEMENT</option>
+            <option value="RECOLTE" th:selected="${typeEtat == 'RECOLTE'}">RECOLTE</option>
+            <option value="QUARANTAINE" th:selected="${typeEtat == 'QUARANTAINE'}">QUARANTAINE</option>
+        </select><br/>
+
+        <button type="submit">Filtrer</button>
+    </form>
+
+    <table border="1">
+        <tr>
+            <th>Date</th>
+            <th>Statut</th>
+            <th>Motif</th>
+            <th>Utilisateur</th>
+        </tr>
+        <tr th:each="h : ${historique}">
+            <td th:text="${h.dateChangement}"></td>
+            <td th:text="${h.statutBassin.libelle}"></td>
+            <td th:text="${h.motif}"></td>
+            <td th:text="${h.utilisateur.nom}"></td>
+        </tr>
+    </table>
+
+    <a th:href="@{/bassins/{id}(id=${bassin.id})}">Retour au bassin</a>
+</body>
+</html>

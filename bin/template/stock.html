@@ -1,0 +1,1095 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Move Gasy — Nouveau Produit</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+<link href="css/stock.css" rel="stylesheet" />
+    <link href="css/responsive.css" rel="stylesheet" />
+</head>
+
+<body>
+        <div class="sidebar-overlay"></div>
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <div class="brand-logo"><i class="bi bi-water"></i></div>
+                <div class="brand-name">MOVE GASY</div>
+            </div>
+            <div class="nav-container">
+                <div class="nav-label">Principal</div>
+                <a class="nav-item" href="dashboard.html">
+                    <span class="nav-icon"><i class="bi bi-speedometer2"></i></span> Dashboard
+                </a>
+                <div class="nav-label">Terrain</div>
+                <a class="nav-item " href="#">
+                    <span class="nav-icon"><i class="bi bi-droplet-half"></i></span> Bassins
+                </a>
+                <a class="nav-item" href="bio.html">
+                    <span class="nav-icon"><i class="bi bi-activity"></i></span> Suivi biologique
+                </a>
+                <a class="nav-item" href="nourrissage.html">
+                    <span class="nav-icon"><i class="bi bi-egg-fill"></i></span> Nourrissage
+                </a>
+                <!--  <a class="nav-item">
+                    <span class="nav-icon"><i class="bi bi-thermometer-half"></i></span> Environnement
+                </a> -->
+                <a class="nav-item " href="sanitaire.html">
+                    <span class="nav-icon"><i class="bi bi-plus-circle"></i></span> Sanitaire
+                </a>
+                <div class="nav-label">Logistique</div>
+                <a class="nav-item active" href="#">
+                    <span class="nav-icon"><i class="bi bi-box-seam"></i></span> Stocks
+                </a>
+                <a class="nav-item" href="commercial.html">
+                    <span class="nav-icon"><i class="bi bi-cart3"></i></span> Commercial
+                </a>
+                <a class="nav-item" href="livraisons.html">
+                    <span class="nav-icon"><i class="bi bi-truck"></i></span> Livraisons
+                </a>
+                <a class="nav-item" href="finances.html">
+                    <span class="nav-icon"><i class="bi bi-cash-stack"></i></span> Finances
+                </a>
+                <div class="nav-label">Système</div>
+                <a class="nav-item" href="login.html">
+                    <span class="nav-icon"><i class="bi bi-lock"></i></span> Connexion</a>
+                <a class="nav-item" href="administration.html">
+                    <span class="nav-icon"><i class="bi bi-gear"></i></span> Administration</a>
+                <div class="nav-label">Portail client</div>
+                <a class="nav-item" href="front-office.html">
+                    <span class="nav-icon"><i class="bi bi-person-lock"></i></span> Front Office
+                </a>
+            </div>
+        </aside>
+
+        <div class="main-wrapper">
+            <header class="topbar">
+                
+                <button class="menu-toggle" onclick="toggleSidebar()">
+                    <i class="bi bi-list"></i>
+                </button>
+<div class="breadcrumb">
+                    <span>Stocks</span><span class="sep">/</span><span class="active">Nouveau Produit</span>
+                </div>
+                <div class="topbar-actions">
+                    <button class="icon-btn"><i class="bi bi-bell"></i></button>
+                    <button class="icon-btn"><i class="bi bi-gear"></i></button>
+                    <div class="user-profile">
+                        <div class="avatar">AD</div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dashboard stock -->
+            <main class="content">
+                <div class="alert-banner" style="display: flex; justify-content: space-between; align-items: center;">
+                    <div class="alert-content">
+                        <div class="alert-icon"><i class="bi bi-exclamation-triangle-fill"></i></div>
+                        <div class="alert-text">
+                            <h4 class="">Alerte Critique : Rupture de Stock Imminente</h4>
+                            <p class="">Le lot <strong>Aliment Croissance #4</strong> au Bassin <strong>B-12</strong>
+                                est à moins de 2 jours d'autonomie estimée.</p>
+                        </div>
+                    </div>
+                    <button class="btn btn-danger">COMMANDER DIRECTEMENT</button>
+                </div>
+                <header class="header-section"
+                    style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <h2 class="header-title">Tableau de bord Stock</h2>
+                        <p class="header-sub">Vue globale et alertes critiques</p>
+                    </div>
+                    <div style="display: flex; gap: 12px;">
+                        <button class="btn btn-outline"><i class="bi bi-plus"></i> NOUVELLE ENTRÉE</button>
+                        <button class="btn btn-primary"><i class="bi bi-dash"></i> NOUVELLE SORTIE</button>
+                    </div>
+                </header>
+                <div class="kpi-row">
+                    <div class="kpi-card crevettes">
+                        <span class="kpi-label">Stock Crevettes</span>
+                        <span class="kpi-value">12 450 <span
+                                style="font-size: 14px; font-weight: 400; color: var(--mg-secondary);"
+                                class="">kg</span></span>
+                        <span class="kpi-sub">Valeur : 373 500 000 Ar</span>
+                    </div>
+                    <div class="kpi-card aliments">
+                        <span class="kpi-label">Stock Aliments</span>
+                        <span class="kpi-value">4 200 <span
+                                style="font-size: 14px; font-weight: 400; color: var(--mg-secondary);"
+                                class="">kg</span></span>
+                        <span class="kpi-sub">Autonomie : <span style="color: var(--mg-success); font-weight: 700;"
+                                class="">18 JOURS</span></span>
+                    </div>
+                    <div class="kpi-card faible">
+                        <span class="kpi-label">Alertes Niveau</span>
+                        <span class="kpi-value">08 <span
+                                style="font-size: 14px; font-weight: 400; color: var(--mg-secondary);"
+                                class="">Produits</span></span>
+                        <span class="kpi-sub" style="color: var(--mg-danger); font-weight: 600;">Niveau critique
+                            atteint</span>
+                    </div>
+                    <div class="kpi-card expirations">
+                        <span class="kpi-label">Péremption &lt; 30j</span>
+                        <span class="kpi-value">03 <span
+                                style="font-size: 14px; font-weight: 400; color: var(--mg-secondary);"
+                                class="">Lots</span></span>
+                        <span class="kpi-sub">Prochaine : 12 Mai 2024</span>
+                    </div>
+                </div>
+                <div class="grid-detail">
+                    <div class="col-4">
+                        <div class="card" style="padding: 0; overflow: hidden;">
+                            <div class="card-header"
+                                style="padding: 20px 24px; margin-bottom: 0; border-bottom: 1px solid var(--mg-outline);">
+                                <h3 class="card-title">Alertes Actives</h3>
+                                <span class="badge badge-neutral">8 TOTAL</span>
+                            </div>
+                            <div class="alert-list" style="padding: 12px;">
+                                <div class="alert-item warning">
+                                    <div class="alert-item-icon"><i class="bi bi-box-seam"></i></div>
+                                    <div class="alert-item-content">
+                                        <span class="alert-item-name">Aliment Démarrage A1</span>
+                                        <div class="alert-item-meta">
+                                            <span class="">150 kg restants</span>
+                                        </div>
+                                        <div class="progress-bar">
+                                            <div class="progress-fill"
+                                                style="width: 12%; background: var(--mg-warning);"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="alert-item danger">
+                                    <div class="alert-item-icon"><i class="bi bi-calendar-x"></i></div>
+                                    <div class="alert-item-content">
+                                        <span class="alert-item-name">Traitement Parasitaire #22</span>
+                                        <div class="alert-item-meta">
+                                            <span class="">Lot: BIO-SEC-88</span>
+                                            <span style="color: var(--mg-danger); font-weight: 700;" class="">Expire
+                                                J-8</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="alert-item warning">
+                                    <div class="alert-item-icon"><i class="bi bi-hourglass-split"></i></div>
+                                    <div class="alert-item-content">
+                                        <span class="alert-item-name">Sel Marin Purifié</span>
+                                        <div class="alert-item-meta">
+                                            <span class="">2 T restants</span>
+                                        </div>
+                                        <div class="progress-bar">
+                                            <div class="progress-fill"
+                                                style="width: 25%; background: var(--mg-warning);"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="btn btn-outline btn-full"
+                                style="border: none; border-top: 1px solid var(--mg-outline); border-radius: 0; padding: 15px;">VOIR
+                                TOUTES LES ALERTES</button>
+                        </div>
+                    </div>
+                    <div class="col-8">
+                        <div class="card" style="padding: 0; overflow: hidden;">
+                            <div class="card-header"
+                                style="padding: 20px 24px; margin-bottom: 0; border-bottom: 1px solid var(--mg-outline);">
+                                <h3 class="card-title">Derniers Mouvements de Stock</h3>
+                                <div style="display: flex; gap: 8px;">
+                                    <button class="icon-btn" style="width: 28px; height: 28px;"><i
+                                            class="bi bi-filter"></i></button>
+                                    <button class="icon-btn" style="width: 28px; height: 28px;"><i
+                                            class="bi bi-download"></i></button>
+                                </div>
+                            </div>
+                            <div class="table-container">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th class="">Date</th>
+                                            <th class="">Produit / Lot</th>
+                                            <th class="">Type</th>
+                                            <th class="">Quantité</th>
+                                            <th class="">Opérateur</th>
+                                            <th class="">Statut</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td class="">12/04 08:45</td>
+                                            <td class=""><strong>Aliment Croissance #4</strong><br><small
+                                                    style="color:var(--mg-secondary)">Lot: AC4-889</small></td>
+                                            <td class=""><span
+                                                    style="color:var(--mg-danger); font-weight:700; font-size:10px;"
+                                                    class=""><i class="bi bi-arrow-up-right"></i> SORTIE</span></td>
+                                            <td style="font-weight:700" class="">- 45.00 kg</td>
+                                            <td class="">M. Rakoto</td>
+                                            <td class=""><span class="badge badge-success">Validé</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="">12/04 07:30</td>
+                                            <td class=""><strong>Chlore Granulé</strong><br><small
+                                                    style="color:var(--mg-secondary)">Lot: CH-X-01</small></td>
+                                            <td class=""><span
+                                                    style="color:var(--mg-success); font-weight:700; font-size:10px;"
+                                                    class=""><i class="bi bi-arrow-down-left"></i> ENTRÉE</span></td>
+                                            <td style="font-weight:700" class="">+ 250.00 kg</td>
+                                            <td class="">L. Razafy</td>
+                                            <td class=""><span class="badge badge-success">Validé</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="">11/04 16:20</td>
+                                            <td class=""><strong>Crevettes Penaeus Mon.</strong><br><small
+                                                    style="color:var(--mg-secondary)">Récolte B04</small></td>
+                                            <td class=""><span
+                                                    style="color:var(--mg-success); font-weight:700; font-size:10px;"
+                                                    class=""><i class="bi bi-arrow-down-left"></i> ENTRÉE</span></td>
+                                            <td style="font-weight:700" class="">+ 1 240.00 kg</td>
+                                            <td class="">A. Doro</td>
+                                            <td class=""><span class="badge badge-success">Validé</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="">11/04 09:05</td>
+                                            <td class=""><strong>Vitamine C / Suppl.</strong><br><small
+                                                    style="color:var(--mg-secondary)">Lot: VITC-44</small></td>
+                                            <td class=""><span
+                                                    style="color:var(--mg-danger); font-weight:700; font-size:10px;"
+                                                    class=""><i class="bi bi-arrow-up-right"></i> SORTIE</span></td>
+                                            <td style="font-weight:700" class="">- 2.00 L</td>
+                                            <td class="">L. Razafy</td>
+                                            <td class=""><span class="badge badge-pending">En attente</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <button class="btn btn-outline btn-full"
+                                style="border: none; border-top: 1px solid var(--mg-outline); border-radius: 0; padding: 15px;">VOIR
+                                TOUT L'HISTORIQUE</button>
+                        </div>
+                    </div>
+                    <div class="col-12">
+
+                    </div>
+                </div>
+            </main>
+
+            <!-- Historique -->
+            <main class="content">
+                <header class="header-section"
+                    style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <h2 class="header-title">Journal des Mouvements</h2>
+                        <p class="header-sub">Historique complet des entrées, sorties et ajustements d'inventaire.</p>
+                    </div>
+                    <button class="btn btn-primary"><i class="bi bi-download"></i> EXPORTER CSV</button>
+                </header>
+                <!-- KPI ROW -->
+                <div class="kpi-row">
+                    <div class="kpi-card mouvements">
+                        <span class="kpi-label">Mouvements 24h</span>
+                        <span class="kpi-value">124</span>
+                        <span class="kpi-sub" style="color: var(--mg-success);">+12% vs hier</span>
+                    </div>
+                    <div class="kpi-card entrees">
+                        <span class="kpi-label">Entrées Semaine</span>
+                        <span class="kpi-value">2,450 kg</span>
+                        <span class="kpi-sub">Aliments &amp; Fertilisants</span>
+                    </div>
+                    <div class="kpi-card sorties">
+                        <span class="kpi-label">Sorties Semaine</span>
+                        <span class="kpi-value">1,890 kg</span>
+                        <span class="kpi-sub">Distribution bassins</span>
+                    </div>
+                    <div class="kpi-card alertes">
+                        <span class="kpi-label">Alertes Stock</span>
+                        <span class="kpi-value">03</span>
+                        <span class="kpi-sub" style="color: var(--mg-danger);">Écarts détectés</span>
+                    </div>
+                </div>
+                <!-- FILTERS -->
+                <div class="filters-bar">
+                    <div class="filter-group">
+                        <label class="filter-label">Période</label>
+                        <input class="filter-select" type="date" />
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Produit</label>
+                        <select class="filter-select">
+                            <option>Tous les produits</option>
+                            <option>Aliment Croissance XL</option>
+                            <option>Fertilisant Bio-Grow</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Type</label>
+                        <select class="filter-select">
+                            <option>Tous les types</option>
+                            <option>Entrée</option>
+                            <option>Sortie</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-outline" style="align-self: flex-end;"><i class="bi bi-filter"></i></button>
+                </div>
+                <!-- TABLE -->
+                <div class="card" style="padding: 0; overflow: hidden;">
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Date &amp; Heure</th>
+                                    <th>Produit</th>
+                                    <th>Type</th>
+                                    <th>Quantité</th>
+                                    <th>Motif</th>
+                                    <th>Source / Dest.</th>
+                                    <th>Responsable</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        24/05/2024
+                                        <span class="data-meta">14:22:15</span>
+                                    </td>
+                                    <td><strong>Aliment Croissance XL</strong></td>
+                                    <td><span class="badge badge-success">Entrée</span></td>
+                                    <td class="val-positive">+500 kg</td>
+                                    <td>Réception Fournisseur</td>
+                                    <td>Entrepôt Central</td>
+                                    <td>R. Mickaël</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        24/05/2024
+                                        <span class="data-meta">11:05:30</span>
+                                    </td>
+                                    <td><strong>Aliment Croissance XL</strong></td>
+                                    <td><span class="badge badge-neutral">Sortie</span></td>
+                                    <td class="val-negative">-25 kg</td>
+                                    <td>Nourrissage Bassin B-04</td>
+                                    <td>Bassin B-04</td>
+                                    <td>J. Luc</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        23/05/2024
+                                        <span class="data-meta">09:15:00</span>
+                                    </td>
+                                    <td><strong>Fertilisant Bio-Grow</strong></td>
+                                    <td><span class="badge badge-neutral">Ajustement</span></td>
+                                    <td class="val-negative">-12 kg</td>
+                                    <td>Perte / Péremption</td>
+                                    <td>Inventaire Mensuel</td>
+                                    <td>A. David</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        23/05/2024
+                                        <span class="data-meta">16:40:12</span>
+                                    </td>
+                                    <td><strong>Chaux Agricole (Sacs)</strong></td>
+                                    <td><span class="badge badge-success">Entrée</span></td>
+                                    <td class="val-positive">+100 sacs</td>
+                                    <td>Transfert inter-site</td>
+                                    <td>Site B (Mahajanga)</td>
+                                    <td>R. Mickaël</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="pagination">
+                            <span>Affichage de 1-4 sur 10 pages</span>
+                            <div style="display: flex; gap: 8px;">
+                                <button class="btn btn-outline btn-sm" style="padding: 4px 8px;"><i
+                                        class="bi bi-chevron-left"></i></button>
+                                <button class="btn btn-primary btn-sm" style="padding: 4px 12px;">1</button>
+                                <button class="btn btn-outline btn-sm" style="padding: 4px 12px;">2</button>
+                                <button class="btn btn-outline btn-sm" style="padding: 4px 8px;"><i
+                                        class="bi bi-chevron-right"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <!-- CRUD Produits -->
+            <main class="content">
+                <header class="header-section" style="display: block;">
+                    <h2 class="header-title">Création de Produit</h2>
+                    <p class="header-sub">Enregistrez une nouvelle référence dans le catalogue des intrants ou produits
+                        finis.</p>
+                </header>
+
+                <div class="grid-detail">
+                    <div class="col-8">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">Informations Générales</h3>
+                            </div>
+                            <form>
+                                <div class="form-group">
+                                    <label class="form-label">Nom du produit</label>
+                                    <input type="text" class="form-control" placeholder="Ex: Aliment Croissance HP3">
+                                </div>
+
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                                    <div class="form-group">
+                                        <label class="form-label">Catégorie</label>
+                                        <select class="form-control">
+                                            <option value="">Sélectionner une catégorie</option>
+                                            <option value="ALIMENT">ALIMENT</option>
+                                            <option value="MÉDICAMENT">MÉDICAMENT</option>
+                                            <option value="CREVETTE">CREVETTE</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Unité de mesure</label>
+                                        <select class="form-control">
+                                            <option value="">Sélectionner une unité</option>
+                                            <option value="kg">kg</option>
+                                            <option value="litre">litre</option>
+                                            <option value="pièce">pièce</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">Seuil minimum de stock (Alerte)</label>
+                                    <input type="number" class="form-control" placeholder="0.00">
+                                    <p style="font-size: 11px; color: var(--mg-secondary); margin-top: 4px;">Le système
+                                        déclenchera une alerte lorsque le stock descendra sous cette valeur.</p>
+                                </div>
+
+                                <div style="margin-top: 32px; display: flex; gap: 12px;">
+                                    <button type="submit" class="btn btn-primary">ENREGISTRER LE PRODUIT</button>
+                                    <button type="button" class="btn btn-outline">ANNULER</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="col-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">Règle Logistique</h3>
+                            </div>
+                            <p style="font-size: 13px; color: var(--mg-secondary); margin-bottom: 16px;">
+                                Les produits de catégorie <strong>ALIMENT</strong> et <strong>MÉDICAMENT</strong> sont
+                                gérés selon la méthode <strong>FIFO</strong> (First In, First Out).
+                            </p>
+                            <div class="alert-box">
+                                <i class="bi bi-info-circle"></i>
+                                <span>L'ajout d'une nouvelle référence permet ensuite de saisir des entrées de stock
+                                    associées à des numéros de lot et des dates d'expiration.</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <!-- Liste produits -->
+            <main class="content">
+                <header class="header-section"
+                    style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <h2 class="header-title">Référentiel Produits</h2>
+                        <p class="header-sub">Gérez le catalogue officiel des intrants et produits de l'exploitation.
+                        </p>
+                    </div>
+                    <button class="btn btn-primary"><i class="bi bi-plus-lg"></i> NOUVEAU PRODUIT</button>
+                </header>
+
+                <div class="card">
+                    <div class="filter-bar">
+                        <select class="filter-select">
+                            <option value="">Toutes les catégories</option>
+                            <option value="ALIMENT">ALIMENT</option>
+                            <option value="MÉDICAMENT">MÉDICAMENT</option>
+                            <option value="CREVETTE">CREVETTE</option>
+                        </select>
+                        <select class="filter-select">
+                            <option value="">Tous les statuts</option>
+                            <option value="OPTIMAL">OPTIMAL</option>
+                            <option value="FAIBLE">STOCK FAIBLE</option>
+                            <option value="RUPTURE">RUPTURE</option>
+                        </select>
+                        <button class="btn btn-outline btn-sm"><i class="bi bi-funnel"></i> FILTRER</button>
+                    </div>
+
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th class="">Nom du produit</th>
+                                    <th class="">Catégorie</th>
+                                    <th class="">Unité</th>
+                                    <th class="">Stock actuel</th>
+                                    <th class="">Seuil min.</th>
+                                    <th class="">Statut</th>
+                                    <th class="">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class=""><strong>Aliment Croissance G2</strong></td>
+                                    <td class=""><span class="badge"
+                                            style="background:#f1f5f9; color:#475569">ALIMENT</span></td>
+                                    <td class="">kg</td>
+                                    <td class="">1 250.00</td>
+                                    <td class="">500.00</td>
+                                    <td class=""><span class="badge badge-success">OPTIMAL</span></td>
+                                    <td style="display:flex; gap:8px">
+                                        <button class="btn-outline btn-sm" title="Modifier"><i
+                                                class="bi bi-pencil"></i></button>
+                                        <button class="btn-outline btn-sm" title="Supprimer"><i
+                                                class="bi bi-trash"></i></button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class=""><strong>Probiotique AquaClean Pro</strong></td>
+                                    <td class=""><span class="badge"
+                                            style="background:#f1f5f9; color:#475569">MÉDICAMENT</span></td>
+                                    <td class="">L</td>
+                                    <td class="">12.50</td>
+                                    <td class="">40.00</td>
+                                    <td class=""><span class="badge badge-danger">RUPTURE</span></td>
+                                    <td style="display:flex; gap:8px">
+                                        <button class="btn-outline btn-sm" title="Modifier"><i
+                                                class="bi bi-pencil"></i></button>
+                                        <button class="btn-outline btn-sm" title="Supprimer"><i
+                                                class="bi bi-trash"></i></button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class=""><strong>Sonde pH Remplacement</strong></td>
+                                    <td class=""><span class="badge"
+                                            style="background:#f1f5f9; color:#475569">MATÉRIEL</span></td>
+                                    <td class="">pièce</td>
+                                    <td class="">5.00</td>
+                                    <td class="">2.00</td>
+                                    <td class=""><span class="badge badge-success">OPTIMAL</span></td>
+                                    <td style="display:flex; gap:8px">
+                                        <button class="btn-outline btn-sm" title="Modifier"><i
+                                                class="bi bi-pencil"></i></button>
+                                        <button class="btn-outline btn-sm" title="Supprimer"><i
+                                                class="bi bi-trash"></i></button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class=""><strong>Sacs de Récolte 50kg</strong></td>
+                                    <td class=""><span class="badge"
+                                            style="background:#f1f5f9; color:#475569">LOGISTIQUE</span></td>
+                                    <td class="">pièce</td>
+                                    <td class="">45.00</td>
+                                    <td class="">100.00</td>
+                                    <td class=""><span class="badge badge-warning">FAIBLE</span></td>
+                                    <td style="display:flex; gap:8px">
+                                        <button class="btn-outline btn-sm" title="Modifier"><i
+                                                class="bi bi-pencil"></i></button>
+                                        <button class="btn-outline btn-sm" title="Supprimer"><i
+                                                class="bi bi-trash"></i></button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="pagination">
+                            <span>Affichage de 1-4 sur 128 produits</span>
+                            <div style="display: flex; gap: 8px;">
+                                <button class="btn btn-outline btn-sm" style="padding: 4px 8px;"><i
+                                        class="bi bi-chevron-left"></i></button>
+                                <button class="btn btn-primary btn-sm" style="padding: 4px 12px;">1</button>
+                                <button class="btn btn-outline btn-sm" style="padding: 4px 12px;">2</button>
+                                <button class="btn btn-outline btn-sm" style="padding: 4px 8px;"><i
+                                        class="bi bi-chevron-right"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <!-- Stock crevettes -->
+            <main class="content">
+                <header class="header-section" style="display: block;">
+                    <h2 class="header-title">Registre des Récoltes</h2>
+                    <p class="header-sub">Suivi des entrées automatiques de stock générées par le passage en état
+                        "RÉCOLTÉ".</p>
+                </header>
+
+                <div class="alert-banner">
+                    <i class="bi bi-info-circle"></i>
+                    <span class=""><strong>Automatisation active :</strong> Aucune entrée crevette n'est saisie
+                        manuellement. Les lots ci-dessous sont créés dès qu'un bassin est marqué comme récolté.</span>
+                </div>
+
+                <div class="kpi-row">
+                    <div class="kpi-card">
+                        <span class="kpi-label">Stock Crevettes Total</span>
+                        <span class="kpi-value">12 450 kg</span>
+                        <span class="kpi-sub">+1 240 kg cette semaine</span>
+                    </div>
+                    <div class="kpi-card">
+                        <span class="kpi-label">Lots Récoltés (30j)</span>
+                        <span class="kpi-value">08</span>
+                        <span class="kpi-sub">Dernière récolte : 24/05/2024</span>
+                    </div>
+                    <div class="kpi-card">
+                        <span class="kpi-label">Biomasse Moyenne</span>
+                        <span class="kpi-value">1 556 kg</span>
+                        <span class="kpi-sub">Par lot récolté</span>
+                    </div>
+                    <div class="kpi-card">
+                        <span class="kpi-label">Qualité Cible (≥15g)</span>
+                        <span class="kpi-value">100%</span>
+                        <span class="kpi-sub">Conformité des lots</span>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Dernières Entrées Automatiques</h3>
+                        <div style="display: flex; gap: 8px;">
+
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th class="text-left">Date &amp; Heure</th>
+                                    <th class="text-left">N° Lot</th>
+                                    <th class="text-left">Produit</th>
+                                    <th class="text-right">Quantité (kg)</th>
+                                    <th class="text-left">Origine (Bassin / Cycle)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="text-left">24/05/2024 - 11:20</td>
+                                    <td class="text-left"><span class="lot-number">B04-20240524</span></td>
+                                    <td class="text-left">Crevettes (calibre ≥ 15g)</td>
+                                    <td class="text-right"><code class="font-bold">+ 1 240.00</code></td>
+                                    <td class="text-left">Bassin B04 / Cycle 2024-Q2</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-left">20/05/2024 - 09:45</td>
+                                    <td class="text-left"><span class="lot-number">B01-20240520</span></td>
+                                    <td class="text-left">Crevettes (calibre ≥ 15g)</td>
+                                    <td class="text-right"><code class="font-bold">+ 1 520.00</code></td>
+                                    <td class="text-left">Bassin B01 / Cycle 2024-Q1</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-left">15/05/2024 - 16:30</td>
+                                    <td class="text-left"><span class="lot-number">B06-20240515</span></td>
+                                    <td class="text-left">Crevettes (calibre ≥ 15g)</td>
+                                    <td class="text-right"><code class="font-bold">+ 1 180.00</code></td>
+                                    <td class="text-left">Bassin B06 / Cycle 2024-Q2</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-left">08/05/2024 - 10:15</td>
+                                    <td class="text-left"><span class="lot-number">B02-20240508</span></td>
+                                    <td class="text-left">Crevettes (calibre ≥ 15g)</td>
+                                    <td class="text-right"><code class="font-bold">+ 1 450.00</code></td>
+                                    <td class="text-left">Bassin B02 / Cycle 2024-Q1</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card" style="background: #f8fafc; border-style: dashed;">
+                    <div class="card-header">
+                        <h3 class="card-title" style="color: var(--mg-secondary);">Rappel Fonctionnel (RG-STK-02)</h3>
+                    </div>
+                    <p style="font-size: 12.5px; color: var(--mg-secondary);" class="">
+                        Ce module applique strictement la règle de gestion : la validation de la
+                        récolte sur le module Terrain déclenche instantanément l'incrémentation du stock logistique. Le
+                        numéro de lot est composé du code bassin et de la date du jour pour garantir une traçabilité
+                        100% automatisée.
+                    </p>
+                </div>
+            </main>
+
+
+            <!-- Entrée stock intrant -->
+            <main class="content">
+                <header class="header-section" style="display: block">
+                    <h2 class="header-title">Réception de Marchandise</h2>
+                    <p class="header-sub">Enregistrement d'un nouvel arrivage d'intrants.</p>
+                </header>
+                <div class="grid-detail">
+                    <!-- FORM COLUMN -->
+                    <div class="col-8">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">Détails de l'Entrée</h3>
+                            </div>
+                            <form>
+                                <div class="form-group">
+                                    <label class="form-label">Produit</label>
+                                    <select class="form-control">
+                                        <option disabled="" selected="" value="">Sélectionner un produit</option>
+                                        <option>Aliment Démarrage S1 (BioMar)</option>
+                                        <option>Aliment Croissance C2 (BioMar)</option>
+                                        <option>Sel Industriel</option>
+                                        <option>Chaux Vive</option>
+                                    </select>
+                                </div>
+                                <div class="grid-detail" style="gap: 16px;">
+                                    <div class="col-6" style="grid-column: span 6;">
+                                        <div class="form-group">
+                                            <label class="form-label">Quantité reçue (kg/unité)</label>
+                                            <input class="form-control" placeholder="0.00" type="number" />
+                                        </div>
+                                    </div>
+                                    <div class="col-6" style="grid-column: span 6;">
+                                        <div class="form-group">
+                                            <label class="form-label">Prix Total (MGA)</label>
+                                            <input class="form-control" placeholder="Ar" type="number" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="grid-detail" style="gap: 16px;">
+                                    <div class="col-6" style="grid-column: span 6;">
+                                        <div class="form-group">
+                                            <label class="form-label">Date Réception</label>
+                                            <input class="form-control" type="date" />
+                                        </div>
+                                    </div>
+                                    <div class="col-6" style="grid-column: span 6;">
+                                        <div class="form-group">
+                                            <label class="form-label">Date Expiration</label>
+                                            <input class="form-control" type="date" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Observations / Numéro de Lot</label>
+                                    <textarea class="form-control" placeholder="Notes complémentaires..."
+                                        rows="3"></textarea>
+                                </div>
+                                <div style="margin-top: 24px; display: flex; gap: 12px;">
+                                    <button class="btn btn-primary" type="submit">ENREGISTRER LE MOUVEMENT</button>
+                                    <button class="btn btn-outline" type="button">ANNULER</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <!-- SIDE INFO COLUMN -->
+                    <div class="col-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">Résumé Stock Actuel</h3>
+                            </div>
+                            <div style="display: flex; flex-direction: column; gap: 20px;">
+                                <div>
+                                    <span
+                                        style="font-size: 11px; font-weight: 700; color: var(--mg-secondary); text-transform: uppercase;">Stock
+                                        en main</span>
+                                    <div
+                                        style="font-size: 28px; font-weight: 700; color: var(--mg-primary); margin-top: 4px;">
+                                        1,240.5 <span
+                                            style="font-size: 14px; font-weight: 400; color: var(--mg-secondary);">kg</span>
+                                    </div>
+                                </div>
+                                <div
+                                    style="background: var(--mg-surface); padding: 12px; border-radius: var(--radius); border-left: 3px solid var(--mg-primary);">
+                                    <span
+                                        style="font-size: 11px; font-weight: 700; color: var(--mg-secondary); text-transform: uppercase;">Autonomie
+                                        estimée</span>
+                                    <div
+                                        style="font-size: 18px; font-weight: 700; color: var(--mg-primary); margin-top: 4px;">
+                                        14 Jours</div>
+                                    <p style="font-size: 11px; color: var(--mg-secondary); margin-top: 4px;">Basé sur la
+                                        consommation moyenne.</p>
+                                </div>
+                                <div>
+                                    <span
+                                        style="font-size: 11px; font-weight: 700; color: var(--mg-secondary); text-transform: uppercase; display: block; margin-bottom: 12px;">Dernières
+                                        entrées</span>
+                                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                                        <div
+                                            style="display: flex; justify-content: space-between; align-items: center; font-size: 13px;">
+                                            <div>
+                                                <div style="font-weight: 600;">Lot #BM-9921</div>
+                                                <div style="font-size: 11px; color: var(--mg-secondary);">12 Oct. 2023
+                                                </div>
+                                            </div>
+                                            <span style="font-weight: 700; color: var(--mg-success);">+500 kg</span>
+                                        </div>
+                                        <div
+                                            style="display: flex; justify-content: space-between; align-items: center; font-size: 13px;">
+                                            <div>
+                                                <div style="font-weight: 600;">Lot #BM-9844</div>
+                                                <div style="font-size: 11px; color: var(--mg-secondary);">28 Sep. 2023
+                                                </div>
+                                            </div>
+                                            <span style="font-weight: 700; color: var(--mg-success);">+750 kg</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card" style="background: #eff6ff; border-color: #bfdbfe;">
+                            <div class="card-header">
+                                <h3 class="card-title" style="color: #1e40af;">Conseil Logistique</h3>
+                            </div>
+                            <p style="font-size: 12px; color: #1e40af;">
+                                Pensez à vérifier l'intégrité des emballages à la réception et à mettre à jour les dates
+                                de péremption pour la gestion FIFO.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <!-- Sortie d'intrants -->
+            <main class="content">
+                <header class="header-section" style="display: block;">
+                    <h2 class="header-title">Sortie d'Intrant</h2>
+                    <p class="header-sub">Enregistrez une perte ou une destruction d'aliment ou de médicament.</p>
+                </header>
+                <div class="grid-detail">
+                    <!-- FORM COLUMN -->
+                    <div class="col-8">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">Saisie de Sortie Exceptionnelle</h3>
+                            </div>
+                            <form id="stockExitForm">
+                                <div class="grid-detail" style="gap: 16px;">
+                                    <div class="col-6" style="grid-column: span 6;">
+                                        <div class="form-group">
+                                            <label class="form-label">Produit</label>
+                                            <select class="form-control" id="product">
+                                                <option value="">Sélectionner un article...</option>
+                                                <option value="feed_p1">Aliment Crevette P1</option>
+                                                <option value="feed_p2">Aliment Crevette P2</option>
+                                                <option value="med_a">Antibiotique type A</option>
+                                                <option value="med_b">Vitamine Complexe B</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-6" style="grid-column: span 6;">
+                                        <div class="form-group">
+                                            <label class="form-label">Quantité (kg)</label>
+                                            <input class="form-control" id="quantity" placeholder="0.00" step="0.01"
+                                                type="number" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="grid-detail" style="gap: 16px;">
+                                    <div class="col-6" style="grid-column: span 6;">
+                                        <div class="form-group">
+                                            <label class="form-label">Motif</label>
+                                            <select class="form-control">
+                                                <option value="loss">Perte (Détérioration/Vol)</option>
+                                                <option value="destruction">Destruction (Périmé)</option>
+                                                <option value="sanitary">Élimination Sanitaire</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-6" style="grid-column: span 6;">
+                                        <div class="form-group">
+                                            <label class="form-label">Date</label>
+                                            <input class="form-control" type="date" value="2026-12-06" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Responsable</label>
+                                    <input class="form-control" placeholder="Nom du superviseur" type="text"
+                                        value="Armand D." />
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Commentaires / Justification</label>
+                                    <textarea class="form-control" placeholder="Précisez les circonstances..." rows="4"
+                                        style="resize: vertical;"></textarea>
+                                </div>
+                                <div style="margin-top: 24px; display: flex; gap: 12px;">
+                                    <button class="btn btn-primary" type="submit">VALIDER LA SORTIE</button>
+                                    <button class="btn btn-outline" type="button">ANNULER</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <!-- IMPACT COLUMN -->
+                    <div class="col-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">Impact sur le Stock</h3>
+                            </div>
+                            <div style="display: flex; flex-direction: column; gap: 16px;">
+                                <div style="display: flex; flex-direction: column;">
+                                    <span style="color: var(--mg-secondary); font-size: 12px;">Stock Théorique
+                                        Actuel</span>
+                                    <span style="font-size: 24px; font-weight: 700;">1 240.50 kg</span>
+                                </div>
+                                <div style="display: flex; flex-direction: column;">
+                                    <span style="color: var(--mg-secondary); font-size: 12px;">Sortie Déclarée</span>
+                                    <span style="font-size: 24px; font-weight: 700; color: var(--mg-danger);">- 0.00
+                                        kg</span>
+                                </div>
+                                <div style="height: 1px; background: var(--mg-outline); margin: 8px 0;"></div>
+                                <div style="display: flex; flex-direction: column;">
+                                    <span style="color: var(--mg-primary); font-size: 12px; font-weight: 600;">Nouveau
+                                        Stock Résiduel</span>
+                                    <span style="font-size: 24px; font-weight: 700; color: var(--mg-primary);">1 240.50
+                                        kg</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card"
+                            style="background: var(--mg-surface-container); border-color: var(--mg-outline);">
+                            <div class="card-header" style="margin-bottom: 12px;">
+                                <h3 class="card-title"><i class="bi bi-info-circle"
+                                        style="margin-right: 6px;"></i>Information</h3>
+                            </div>
+                            <ul
+                                style="font-size: 12px; color: var(--mg-secondary); padding-left: 16px; display: flex; flex-direction: column; gap: 8px;">
+                                <li>Les sorties pour destruction sont irréversibles.</li>
+                                <li>Un inventaire physique sera déclenché automatiquement.</li>
+                                <li>Toute perte &gt; 5% nécessite une validation de la direction.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <!-- Inventaire -->
+            <main class="content">
+                <header class="header-section" style="display: block;">
+                    <h2 class="header-title">Rapprochement d'Inventaire</h2>
+                    <p class="header-sub">Recensez les quantités réelles et détectez les écarts.</p>
+                </header>
+                <div class="card">
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Produit</th>
+                                    <th class="text-right">Stock Théorique</th>
+                                    <th class="text-center">Stock Réel (Input)</th>
+                                    <th class="text-right">Écart</th>
+                                    <th class="text-right">Valeur Écart</th>
+                                    <th class="text-center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <strong>Aliment Croissance G2</strong><br />
+                                        <small style="color:var(--mg-secondary)">SKU-2983-V</small>
+                                    </td>
+                                    <td class="text-right mono">1,250.00 kg</td>
+                                    <td class="text-center">
+                                        <input class="form-control" type="number" value="1250.00" />
+                                    </td>
+                                    <td class="text-right">
+                                        <span class="badge badge-neutral">Conforme</span>
+                                    </td>
+                                    <td class="text-right mono">0.00 Ar</td>
+                                    <td class="text-center">
+                                        <button class="icon-btn"><i class="bi bi-three-dots-vertical"></i></button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <strong>Probiotiques AquaFix</strong><br />
+                                        <small style="color:var(--mg-secondary)">SKU-4412-B</small>
+                                    </td>
+                                    <td class="text-right mono">84.00 L</td>
+                                    <td class="text-center">
+                                        <input class="form-control"
+                                            style="border-color: var(--mg-danger); color: var(--mg-danger);"
+                                            type="number" value="82.50" />
+                                    </td>
+                                    <td class="text-right">
+                                        <span class="badge badge-danger">-1.50 L</span>
+                                    </td>
+                                    <td class="text-right mono text-danger">-18.75 Ar</td>
+                                    <td class="text-center">
+                                        <button class="icon-btn"><i class="bi bi-three-dots-vertical"></i></button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <strong>Bacs de transport 60L</strong><br />
+                                        <small style="color:var(--mg-secondary)">SKU-1002-H</small>
+                                    </td>
+                                    <td class="text-right mono">215 u</td>
+                                    <td class="text-center">
+                                        <input class="form-control"
+                                            style="border-color: var(--mg-success); color: var(--mg-success);"
+                                            type="number" value="218" />
+                                    </td>
+                                    <td class="text-right">
+                                        <span class="badge badge-success">+3.00 u</span>
+                                    </td>
+                                    <td class="text-right mono text-success">+45.00 Ar</td>
+                                    <td class="text-center">
+                                        <button class="icon-btn"><i class="bi bi-three-dots-vertical"></i></button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <strong>Sondes de rechange O2</strong><br />
+                                        <small style="color:var(--mg-secondary)">SKU-8854-X</small>
+                                    </td>
+                                    <td class="text-right mono">12 u</td>
+                                    <td class="text-center">
+                                        <input class="form-control" type="number" value="12" />
+                                    </td>
+                                    <td class="text-right">
+                                        <span class="badge badge-neutral">Conforme</span>
+                                    </td>
+                                    <td class="text-right mono">0.00 Ar</td>
+                                    <td class="text-center">
+                                        <button class="icon-btn"><i class="bi bi-three-dots-vertical"></i></button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+            <!-- FOOTER -->
+            <footer class="footer-sticky">
+                <div class="footer-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">Total écarts</span>
+                        <span class="stat-value text-success">+26.25 Ar</span>
+                    </div>
+                    <div class="stat-item" style="border-left: 1px solid var(--mg-outline); padding-left: 32px;">
+                        <span class="stat-label">Statut Inventaire</span>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <div style="width: 8px; height: 8px; background: var(--mg-warning); border-radius: 50%;">
+                            </div>
+                            <span class="stat-value" style="font-size: 13px;">EN COURS</span>
+                        </div>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 12px;">
+                    <button class="btn btn-outline">SUSPENDRE</button>
+                    <button class="btn btn-primary"><i class="bi bi-check-all"></i> CLÔTURER L'INVENTAIRE</button>
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    <script>
+        function toggleSidebar() {
+            document.querySelector('.sidebar').classList.toggle('open');
+            document.querySelector('.sidebar-overlay').classList.toggle('open');
+        }
+        document.querySelector('.sidebar-overlay')
+            ?.addEventListener('click', () => {
+                document.querySelector('.sidebar').classList.remove('open');
+                document.querySelector('.sidebar-overlay').classList.remove('open');
+            });
+    </script>
+</body>
+
+</html>

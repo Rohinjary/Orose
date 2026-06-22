@@ -499,31 +499,50 @@
 </head>
 
 <body>
-    
+
     <div class="sidebar-overlay"></div>
     <div class="col-4">
         <section class="card">
             <h3 class="card-title" style="margin-bottom: 20px;">Entrée de Stock</h3>
-            <form>
-                <div class="form-group"><label class="form-label">Type d'Aliment</label><select>
-                        <option disabled="" selected="">Sélectionner un type...</option>
-                        <option>Aliment Croissance 2mm</option>
-                        <option>Aliment Finition 3mm</option>
-                        <option>Artemia Cystes Premium</option>
-                    </select></div>
+            <form th:action="@{/nourrissage/stock/enregistrer}" th:object="${entreeStockDTO}" method="post">
+                <div class="form-group">
+                    <label class="form-label">Type d'Aliment</label>
+                    <select th:field="*{idAliment}" class="form-control" required>
+                        <option value="" disabled selected>Sélectionner un type...</option>
+                        <option th:each="al : ${aliments}" th:value="${al.id}" th:text="${al.libelle}"></option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Responsable</label>
+                    <select th:field="*{idResponsable}" class="form-control" required>
+                        <option value="" disabled selected>Sélectionner un responsable...</option>
+                        <option th:each="u : ${utilisateurs}" th:value="${u.id}" th:text="${u.nom}"></option>
+                    </select>
+                </div>
+
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
-                    <div><label class="form-label">Quantité reçue (kg)</label><input placeholder="0.00" type="number">
+                    <div>
+                        <label class="form-label">Quantité reçue (kg)</label>
+                        <input id="quantite" th:field="*{quantiteKg}" placeholder="0.00" type="number" step="0.01"
+                            required>
                     </div>
-                    <div><label class="form-label">Prix unitaire (Ar/kg)</label><input placeholder="0.00" type="number">
+                    <div>
+                        <label class="form-label">Prix unitaire (Ar/kg)</label>
+                        <input id="prixUnitaire" th:field="*{prixUnitaire}" placeholder="0.00" type="number" step="0.01"
+                            required>
                     </div>
                 </div>
-                <div class="form-group"><label class="form-label">Prix total (Ar)</label><input class="input-readonly"
-                        placeholder="Calculé automatiquement" readonly="" type="text"></div>
-                <div class="form-group"><label class="form-label">Date de réception</label><input type="date"></div>
-                <div class="alert-box"><strong><i class="bi bi-receipt"></i> Rappel Finance
-                        :</strong><br>L'enregistrement génère automatiquement une dépense dans le module
-                    Finance.</div><button class="btn btn-primary btn-full" type="button">Enregistrer
-                    l'achat</button>
+                <div class="form-group">
+                    <label class="form-label">Coût total (Ar)</label>
+                    <input type="text" id="totalGeneral" class="form-control" readonly
+                        style="background-color: #e9ecef;">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Date de réception</label>
+                    <input type="date" th:field="*{dateReception}" class="form-control" required>
+                </div>
+
+                <button class="btn btn-primary btn-full" type="submit">Enregistrer l'achat</button>
             </form>
         </section>
         <section class="card">
@@ -574,4 +593,30 @@
             document.querySelector('.sidebar').classList.remove('open');
             document.querySelector('.sidebar-overlay').classList.remove('open');
         });
+    function initCalculTotal(idQuantite, idPrix, idTotal) {
+        const inputQuantite = document.getElementById(idQuantite);
+        const inputPrix = document.getElementById(idPrix);
+        const inputTotal = document.getElementById(idTotal);
+
+        function calculer() {
+            const qte = parseFloat(inputQuantite.value) || 0;
+            const prix = parseFloat(inputPrix.value) || 0;
+            const total = qte * prix;
+
+            // Formatage en monnaie malgache (Ar)
+            inputTotal.value = total.toLocaleString('fr-MG', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
+
+        // Ajout des écouteurs
+        inputQuantite.addEventListener('input', calculer);
+        inputPrix.addEventListener('input', calculer);
+    }
+
+    // Appel de la fonction une fois que le DOM est chargé
+    document.addEventListener('DOMContentLoaded', () => {
+        initCalculTotal('quantite', 'prixUnitaire', 'totalGeneral');
+    });
 </script>

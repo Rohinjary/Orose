@@ -594,8 +594,8 @@
                             <div class="card-header">
                                 <h3 class="card-title">Formulaire de distribution</h3>
                             </div>
-                            <form id="nourrissageForm" th:action="@{/nourrissage/stock/enregistrer}"
-                                th:object="${entreeStockAlimentDTO}" method="POST">
+                            <form id="nourrissageForm" th:action="@{/nourrissage/distribution/enregistrer}"
+                                th:object="${distributionDTO}" method="POST">
                                 <div
                                     style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
                                     <div class="form-group">

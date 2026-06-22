@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+
+<html lang="fr" style="">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Move Gasy — Journal des Flux</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+<style>
+        :root {
+            --mg-primary: #1a1a1a;
+            --mg-secondary: #4a4a4a;
+            --mg-surface: #f7f9fb;
+            --mg-surface-bright: #ffffff;
+            --mg-surface-container: #eceef0;
+            --mg-outline: #d1d5db;
+            --mg-success: #10b981;
+            --mg-warning: #f59e0b;
+            --mg-danger: #ef4444;
+            --radius: 4px;
+            --sidebar-w: 240px;
+            --topbar-h: 64px;
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--mg-surface);
+            color: var(--mg-primary);
+            font-size: 13.5px;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: var(--sidebar-w);
+            background: var(--mg-surface-bright);
+            border-right: 1px solid var(--mg-outline);
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+        }
+
+        .sidebar-brand {
+            height: var(--topbar-h);
+            padding: 0 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid var(--mg-outline);
+        }
+
+        .brand-logo {
+            width: 32px;
+            height: 32px;
+            background: var(--mg-primary);
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: white;
+        }
+
+        .brand-name {
+            font-weight: 700;
+            font-size: 16px;
+            letter-spacing: -0.02em;
+        }
+
+        .nav-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px 12px;
+        }
+
+        .nav-label {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--mg-secondary);
+            margin: 24px 12px 8px;
+            letter-spacing: 0.05em;
+        }
+
+        .nav-label:first-child {
+            margin-top: 0;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            border-radius: var(--radius);
+            color: var(--mg-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+            cursor: pointer;
+            margin-bottom: 2px;
+        }
+
+        .nav-item:hover {
+            background: var(--mg-surface-container);
+            color: var(--mg-primary);
+        }
+
+        .nav-item.active {
+            background: var(--mg-primary);
+            color: white;
+        }
+
+        .nav-icon {
+            font-size: 18px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .main-wrapper {
+            margin-left: var(--sidebar-w);
+            width: calc(100% - var(--sidebar-w));
+        }
+
+        .topbar {
+            height: var(--topbar-h);
+            background: var(--mg-surface-bright);
+            border-bottom: 1px solid var(--mg-outline);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 32px;
+            position: sticky;
+            top: 0;
+            z-index: 90;
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--mg-secondary);
+        }
+
+        .breadcrumb span.active {
+            color: var(--mg-primary);
+            font-weight: 600;
+        }
+
+        .breadcrumb .sep {
+            color: var(--mg-outline);
+        }
+
+        .topbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .icon-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            width: 36px;
+            height: 36px;
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--mg-secondary);
+            transition: background 0.2s;
+        }
+
+        .icon-btn:hover {
+            background: var(--mg-surface-container);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-left: 16px;
+            border-left: 1px solid var(--mg-outline);
+        }
+
+        .avatar {
+            width: 32px;
+            height: 32px;
+            background: var(--mg-primary);
+            color: white;
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        .content {
+            padding: 32px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header-section {
+            margin-bottom: 32px;
+        }
+
+        .header-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--mg-primary);
+        }
+
+        .header-sub {
+            font-size: 14px;
+            color: var(--mg-secondary);
+            margin-top: 4px;
+        }
+
+        .card {
+            background: var(--mg-surface-bright);
+            border: 1px solid var(--mg-outline);
+            border-radius: var(--radius);
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--mg-primary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        thead th {
+            background: var(--mg-surface);
+            padding: 12px 16px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--mg-secondary);
+            border-bottom: 1px solid var(--mg-outline);
+            letter-spacing: 0.05em;
+        }
+
+        tbody td {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--mg-outline);
+            font-size: 13px;
+        }
+
+        tbody tr:hover td {
+            background: var(--mg-surface);
+        }
+
+        .badge {
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            display: inline-block;
+            text-transform: uppercase;
+        }
+
+        .badge-success {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .badge-danger {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .badge-neutral {
+            background: #f3f4f6;
+            color: #4b5563;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: var(--radius);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            border: 1px solid transparent;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Inter', sans-serif;
+            text-decoration: none;
+            justify-content: center;
+        }
+
+        .btn-primary {
+            background: var(--mg-primary);
+            color: white;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border-color: var(--mg-outline);
+            color: var(--mg-primary);
+        }
+
+        .data-mono {
+            font-family: 'Inter', monospace;
+            font-weight: 600;
+        }
+    </style>
+    <link rel="stylesheet" href="../css/responsive.css">
+</head>
+
+<body>
+        <div class="sidebar-overlay"></div>
+    <div class="layout">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <div class="brand-logo"><i class="bi bi-water"></i></div>
+                <div class="brand-name">MOVE GASY</div>
+            </div>
+            <div class="nav-container">
+                <div class="nav-label">Principal</div>
+                <a class="nav-item" href="#">
+                    <span class="nav-icon"><i class="bi bi-speedometer2"></i></span> Dashboard
+                </a>
+                <div class="nav-label">Terrain</div>
+                <a class="nav-item" href="#">
+                    <span class="nav-icon"><i class="bi bi-droplet-half"></i></span> Bassins
+                </a>
+                <a class="nav-item" href="#">
+                    <span class="nav-icon"><i class="bi bi-activity"></i></span> Suivi biologique
+                </a>
+                <a class="nav-item" href="#">
+                    <span class="nav-icon"><i class="bi bi-egg-fill"></i></span> Nourrissage
+                </a>
+                <a class="nav-item " href="#">
+                    <span class="nav-icon"><i class="bi bi-plus-circle"></i></span> Sanitaire
+                </a>
+                <div class="nav-label">Logistique</div>
+                <a class="nav-item" href="#">
+                    <span class="nav-icon"><i class="bi bi-box-seam"></i></span> Stocks
+                </a>
+                <a class="nav-item" href="#">
+                    <span class="nav-icon"><i class="bi bi-cart3"></i></span> Commercial
+                </a>
+                <a class="nav-item " href="#">
+                    <span class="nav-icon"><i class="bi bi-truck"></i></span> Livraisons
+                </a>
+                <a class="nav-item active" href="#">
+                    <span class="nav-icon"><i class="bi bi-cash-stack"></i></span> Finances
+                </a>
+                <div class="nav-label">Système</div>
+ <a class="nav-item" href="#">
+          <span class="nav-icon"><i class="bi bi-lock"></i></span> Connexion</a>
+                <a class="nav-item" href="#">
+                    <span class="nav-icon"><i class="bi bi-gear"></i></span> Administration</a>
+                  <div class="nav-label">Portail client</div>
+                 <a class="nav-item">
+                    <span class="nav-icon"><i class="bi bi-person-lock"></i></span> Front Office
+                </a>
+            </div>
+        </aside>
+
+        <div class="main-wrapper">
+            <!-- TOPBAR -->
+            <header class="topbar">
+                
+                <button class="menu-toggle" onclick="toggleSidebar()">
+                    <i class="bi bi-list"></i>
+                </button>
+<div class="breadcrumb"><span class="">Finances</span><span class="sep">/</span><span
+                        class="active">Saisie Manuelle</span></div>
+                <div class="topbar-actions">
+                    <button class="icon-btn"><i class="bi bi-bell"></i></button>
+                    <button class="icon-btn"><i class="bi bi-gear"></i></button>
+                    <div class="user-profile">
+                        <div class="avatar">AD</div>
+                    </div>
+                </div>
+            </header>
+            <!-- MAIN CONTENT -->
+            <main class="content">
+                <header class="header-section">
+                    <div style="display:flex; justify-content: space-between; align-items: flex-end;">
+                        <div>
+                            <h2 class="header-title">Saisie Manuelle de Dépense</h2>
+                            <p class="header-sub">Enregistrez les charges non automatisées (salaires, électricité,
+                                entretien...).</p>
+                        </div><a class="btn btn-outline btn-sm" href="#"><i class="bi bi-arrow-left"></i> Retour au
+                            journal</a>
+                    </div>
+                </header>
+                <div style="display: grid; grid-template-columns: repeat(12, 1fr); gap: 24px;">
+                    <div style="grid-column: span 8;">
+                        <div class="card">
+                            <form>
+                                <div
+                                    style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                                    <div class="form-group"><label class="card-title"
+                                            style="display: block; margin-bottom: 8px;">Catégorie</label><select
+                                            class="form-control"
+                                            style="width: 100%; padding: 10px; border: 1px solid var(--mg-outline); border-radius: var(--radius);">
+                                            <option>Sélectionner une catégorie</option>
+                                            <option>SALAIRE</option>
+                                            <option>ALIMENTATION</option>
+                                            <option>ENTRETIEN</option>
+                                            <option>ÉLECTRICITÉ</option>
+                                            <option>AUTRE</option>
+                                        </select></div>
+                                    <div class="form-group"><label class="card-title"
+                                            style="display: block; margin-bottom: 8px;">Montant (Ar)</label><input
+                                            class="form-control" placeholder="0"
+                                            style="width: 100%; padding: 10px; border: 1px solid var(--mg-outline); border-radius: var(--radius);"
+                                            type="number" /></div>
+                                </div>
+                                <div
+                                    style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                                    <div class="form-group"><label class="card-title"
+                                            style="display: block; margin-bottom: 8px;">Cycle lié</label><select
+                                            class="form-control"
+                                            style="width: 100%; padding: 10px; border: 1px solid var(--mg-outline); border-radius: var(--radius);">
+                                            <option>Général (Hors cycle)</option>
+                                            <option>B01-2024-01</option>
+                                            <option>B02-2024-01</option>
+                                        </select></div>
+                                    <div class="form-group"><label class="card-title"
+                                            style="display: block; margin-bottom: 8px;">Date</label><input
+                                            class="form-control"
+                                            style="width: 100%; padding: 10px; border: 1px solid var(--mg-outline); border-radius: var(--radius);"
+                                            type="date" /></div>
+                                </div>
+                                <div class="form-group" style="margin-bottom: 24px;"><label class="card-title"
+                                        style="display: block; margin-bottom: 8px;">Description</label><textarea
+                                        class="form-control" placeholder="Détails de la dépense..." rows="4"
+                                        style="width: 100%; padding: 10px; border: 1px solid var(--mg-outline); border-radius: var(--radius); resize: none;"></textarea>
+                                </div>
+                                <div style="display: flex; gap: 12px; justify-content: flex-end;"><button
+                                        class="btn btn-outline" type="button">Annuler</button><button
+                                        class="btn btn-primary" type="submit">Enregistrer la dépense</button></div>
+                            </form>
+                        </div>
+                    </div>
+                    <div style="grid-column: span 4;">
+                        <div class="card">
+                            <h3 class="card-title" style="margin-bottom: 16px;">Règles de gestion</h3>
+                            <ul style="list-style: none; color: var(--mg-secondary); font-size: 13px;">
+                                <li style="margin-bottom: 12px; display: flex; gap: 8px;"><i class="bi bi-info-circle"
+                                        style="color: var(--mg-primary);"></i> Les dépenses manuelles sont marquées
+                                    comme source 'MANUEL' dans le journal.</li>
+                                <li style="margin-bottom: 12px; display: flex; gap: 8px;"><i class="bi bi-info-circle"
+                                        style="color: var(--mg-primary);"></i> Liez la dépense à un cycle spécifique
+                                    pour un calcul précis de la rentabilité par bassin.</li>
+                                <li style="margin-bottom: 12px; display: flex; gap: 8px;"><i class="bi bi-info-circle"
+                                        style="color: var(--mg-primary);"></i> Toute saisie est définitive et impacte
+                                    immédiatement le solde de trésorerie théorique.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        function toggleSidebar() {
+            document.querySelector('.sidebar').classList.toggle('open');
+            document.querySelector('.sidebar-overlay').classList.toggle('open');
+        }
+        document.querySelector('.sidebar-overlay')
+            ?.addEventListener('click', () => {
+                document.querySelector('.sidebar').classList.remove('open');
+                document.querySelector('.sidebar-overlay').classList.remove('open');
+            });
+    </script>
+</body>
+
+</html>

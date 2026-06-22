@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><title>Détail du bassin</title></head>
+<body>
+    <h1>Bassin <span th:text="${bassin.code}"></span></h1>
+
+    <p>Surface : <span th:text="${bassin.surfaceM2}"></span> m²</p>
+    <p>Profondeur : <span th:text="${bassin.profondeurMetre}"></span> m</p>
+    <p>Notes : <span th:text="${bassin.notes}"></span></p>
+    <p>Statut actuel : <strong th:text="${bassin.statutActuel.libelle}"></strong></p>
+
+    <p th:if="${erreur}" style="color:red" th:text="${erreur}"></p>
+
+    <h2>Changer de statut</h2>
+
+    <p th:if="${#lists.isEmpty(transitions)}">Aucune transition possible depuis ce statut.</p>
+
+    <form th:unless="${#lists.isEmpty(transitions)}"
+          th:action="@{/bassins/{id}/statut(id=${bassin.id})}" method="post">
+        <label>Nouveau statut :</label>
+        <select name="nouveauStatut">
+            <option th:each="t : ${transitions}" th:value="${t}" th:text="${t}"></option>
+        </select><br/>
+
+        <label>Motif :</label>
+        <input type="text" name="motif" /><br/>
+
+        <button type="submit">Valider</button>
+    </form>
+
+    <a th:href="@{/bassins/{id}/modifier(id=${bassin.id})}">Modifier le bassin</a><br/>
+    <a th:href="@{/bassins}">Retour à la liste</a>
+    <a th:if="${bassin.statutActuel.code == 'PREPARATION'}"
+        th:href="@{/bassins/{id}/cycles/nouveau(id=${bassin.id})}">
+        Démarrer un cycle
+    </a>
+    <a th:href="@{/bassins/{id}/historique(id=${bassin.id})}">Voir l'historique</a>
+</body>
+</html>
