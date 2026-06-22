@@ -1,27 +1,31 @@
 package com.example.orose.service;
 
-import java.time.LocalDateTime;
-import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
-import com.example.orose.dto.BassinDTO;
 import com.example.orose.model.Bassin;
+import com.example.orose.model.CreneauHoraire;
 import com.example.orose.model.HistoStatutBassin;
 import com.example.orose.model.StatutBassin;
 import com.example.orose.model.Utilisateur;
 import com.example.orose.repository.BassinRepository;
 import com.example.orose.repository.CycleBassinAssocRepository;
+import com.example.orose.repository.DistributionNourritureRepository;
 import com.example.orose.repository.HistoStatutBassinRepository;
 import com.example.orose.repository.StatutBassinRepository;
 import com.example.orose.repository.UtilisateurRepository;
+import com.example.orose.dto.*;
+import com.example.orose.model.DistributionNourriture;
+import java.util.*;
+import java.time.*;
 
 @Service
 public class BassinService {
     private final BassinRepository bassinRepository;
     private final StatutBassinRepository statutBassinRepository;
     private final CycleBassinAssocRepository cycleBassinAssocRepository;
+    private final DistributionNourritureRepository distributionNourritureRepository;
     private final StatutBassinService statutBassinService;
     private final HistoStatutBassinRepository histoStatutBassinRepository;
     private final UtilisateurRepository utilisateurRepository;
@@ -29,16 +33,20 @@ public class BassinService {
     public BassinService(BassinRepository bassinRepository,
             StatutBassinRepository statutBassinRepository,
             CycleBassinAssocRepository cycleBassinAssocRepository,
+            DistributionNourritureRepository distributionNourritureRepository,
             StatutBassinService statutBassinService,
             HistoStatutBassinRepository histoStatutBassinRepository,
             UtilisateurRepository utilisateurRepository) {
         this.bassinRepository = bassinRepository;
         this.statutBassinRepository = statutBassinRepository;
         this.cycleBassinAssocRepository = cycleBassinAssocRepository;
+        this.distributionNourritureRepository = distributionNourritureRepository;
         this.statutBassinService = statutBassinService;
         this.histoStatutBassinRepository = histoStatutBassinRepository;
         this.utilisateurRepository = utilisateurRepository;
     }
+
+    // ... reste de vos méthodes
 
     public Bassin creerBassin(BassinDTO dto) {
         if (bassinRepository.existsByCode(dto.getCode())) {
@@ -159,4 +167,6 @@ public class BassinService {
                         || (h.getStatutBassin() != null && typeEtat.equals(h.getStatutBassin().getCode())))
                 .collect(Collectors.toList());
     }
+
+   
 }

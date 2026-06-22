@@ -13,16 +13,6 @@ FROM suivi_hebdo_bassin s
 JOIN cycle_bassin_assoc cba ON cba.id = s.id_cycle_bassin_assoc;
 
 
----2 rectification 
-
-
-ALTER TABLE creneau_horaire 
-ADD COLUMN heure_debut TIME,
-ADD COLUMN heure_fin TIME;
-
-
-
-
 
 
 ------rectification Bassin 

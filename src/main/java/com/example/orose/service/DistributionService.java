@@ -2,6 +2,7 @@ package com.example.orose.service;
 
 import com.example.orose.dto.DistributionDTO;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import com.example.orose.model.Bassin;
@@ -51,7 +52,7 @@ public class DistributionService {
 
     @Transactional
     public DistributionNourriture validerDistribution(DistributionDTO dto) {
-        // 1. Récupération du bassin avec vérification de statut
+        // 1. Récupération du bassin
         Bassin bassinCible = bassinRepository.findById(dto.getIdBassin())
                 .filter(b -> "ACTIF".equals(b.getStatutActuel().getCode()))
                 .orElseThrow(() -> new RuntimeException("Bassin introuvable ou non ACTIF"));
@@ -66,29 +67,34 @@ public class DistributionService {
                 .findFirstByAlimentIdOrderByDateReceptionDesc(dto.getIdAliment())
                 .orElseThrow(() -> new RuntimeException("Aucun stock disponible pour cet aliment"));
 
-        // 4. AUTOMATISATION DU CRÉNEAU
+        // CONVERSION : On convertit la quantité du DTO en BigDecimal pour le calcul
+        BigDecimal qteDonnee = dto.getQuantiteDonneeKg();
+        // 4. VÉRIFICATION : Stock suffisant avec BigDecimal
+        if (entreeStock.getQuantiteRestanteKg().compareTo(qteDonnee) < 0) {
+            throw new RuntimeException(
+                    "Stock insuffisant ! Disponible : " + entreeStock.getQuantiteRestanteKg() + " KG");
+        }
 
-        LocalTime heureActuelle = LocalTime.now();
-        
+        // 5. MISE À JOUR DU STOCK (Calcul précis avec BigDecimal)
+        entreeStock.setQuantiteRestanteKg(entreeStock.getQuantiteRestanteKg().subtract(qteDonnee));
+        stockRepository.save(entreeStock);
 
-        String libelle = RegleCreneau.determinerLibelle(heureActuelle);
-        
-        // Récupération de l'entité CreneauHoraire en base
-        CreneauHoraire creneauDetecte = creneauRepository.findByLibelle(libelle)
-                .orElseThrow(() -> new RuntimeException("Configuration créneau manquante pour : " + libelle));
-
-        // 5. Construction de l'entité de distribution
+        // 6. Construction de l'entité de distribution
         DistributionNourriture nouvelleDistribution = new DistributionNourriture();
         nouvelleDistribution.setCycleBassinAssoc(cycleAssoc);
         nouvelleDistribution.setEntreeAliment(entreeStock);
-        nouvelleDistribution.setCreneau(creneauDetecte); 
-        
-        // On utilise LocalDateTime.now() pour avoir la précision temporelle complète
-nouvelleDistribution.setDateDistribution(LocalDateTime.now().toLocalDate());        
+
+        // Automatisation créneau
+        String libelle = RegleCreneau.determinerLibelle(LocalTime.now());
+        CreneauHoraire creneau = creneauRepository.findByLibelle(libelle)
+                .orElseThrow(() -> new RuntimeException("Créneau introuvable"));
+        nouvelleDistribution.setCreneau(creneau);
+
+        nouvelleDistribution.setDateDistribution(LocalDateTime.now().toLocalDate());
         nouvelleDistribution.setQuantiteDonneeKg(dto.getQuantiteDonneeKg());
         nouvelleDistribution.setQuantitePrevueKg(dto.getQuantiteDonneeKg());
 
-        // 6. Responsable
+        // Responsable
         Utilisateur agentResponsable = utilisateurRepository.findById(dto.getIdResponsable())
                 .orElseThrow(() -> new RuntimeException("Responsable non trouvé"));
         nouvelleDistribution.setResponsable(agentResponsable);

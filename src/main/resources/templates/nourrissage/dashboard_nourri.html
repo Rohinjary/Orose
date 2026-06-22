@@ -615,17 +615,18 @@
                             <div class="stat-group" style="justify-content: space-between; align-items: center;">
                                 <div class="stat-item">
                                     <strong>Stock disponible:</strong>
-                                    <div th:text="${#numbers.formatDecimal(stock_dispo, 1, 'POINT', 1, 'COMMA')}">kg</div>
+                                    <div th:text="${#numbers.formatDecimal(stock_dispo, 1, 'POINT', 1, 'COMMA')}">kg
+                                    </div>
                                 </div>
 
 
                                 <div style=" text-align: right;">
-                                        <div class="badge badge-danger" style="margin-bottom: 4px;">À COMMANDER</div>
-                                        <div class="cell-time" style="color: var(--mg-danger); font-weight: 600;">
-                                            Autonomie
-                                            : 5 jours</div>
-                                    </div>
+                                    <div class="badge badge-danger" style="margin-bottom: 4px;">À COMMANDER</div>
+                                    <div class="cell-time" style="color: var(--mg-danger); font-weight: 600;">
+                                        Autonomie
+                                        : 5 jours</div>
                                 </div>
+                            </div>
                         </section>
                     </div>
                 </div>
@@ -633,109 +634,44 @@
                 <section class="card">
                     <div class="card-header">
                         <h3 class="card-title">Planning du Jour</h3>
-                        <button class="btn btn-primary"><i class="bi bi-plus"></i> Nouveau Repas</button>
+                        <a th:href="@{/nourrissage/saisie}" class="btn btn-primary">
+                            <i class="bi bi-plus"></i> Nouveau Repas
+                        </a>
                     </div>
                     <div class="table-container">
                         <table>
                             <thead>
                                 <tr>
                                     <th style="width: 20%;">Bassin</th>
-                                    <th>Matin (06h-10h)</th>
-                                    <th>Midi (11h-14h)</th>
-                                    <th>Soir (17h-20h)</th>
-                                    <th>Nuit (22h-01h)</th>
+                                    <th>Matin</th>
+                                    <th>Midi</th>
+                                    <th>Soir</th>
+                                    <th>Nuit</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
+                                <tr th:each="bassin : ${listeBassins}">
                                     <td style="border-left: 4px solid var(--mg-primary);">
-                                        <span class="pond-id">B-01</span>
-                                        <span class="pond-meta">Crevettes Blue</span>
+                                        <span class="pond-id" th:text="${bassin.code}">B-00</span>
+                                        <span class="pond-meta" th:text="${bassin.nomCycle}">Statut cycle</span>
                                     </td>
-                                    <td><span class="badge badge-success">Nourri</span>
-                                        <div class="cell-time">07:15</div>
-                                        <div class="cell-time" style="font-weight: 600; color: var(--mg-primary);">
-                                            12.5kg / 12.5kg</div>
-                                    </td>
-                                    <td><span class="badge badge-warning">En attente</span>
-                                        <div class="cell-time">Prévu 11:30</div>
-                                        <div class="cell-time"
-                                            style="font-weight: 600; color: var(--mg-primary); margin-bottom: 8px;">0kg
-                                            / 12.5kg</div>
-                                        <button class="btn btn-outline"
+
+                                    <td th:each="c : ${bassin.creneaux}">
+                                        <span class="badge" th:text="${c.statut}"
+                                            th:classappend="${'badge-' + #strings.toLowerCase(c.statut.replace('_', '-'))}">
+                                        </span>
+
+                                        <div class="cell-time" th:text="${c.infoComplementaire}">--</div>
+                                        <div class="cell-time" style="font-weight: 600; color: var(--mg-primary);"
+                                            th:text="${c.quantiteInfo}">0 kg</div>
+
+                                        <a th:if="${c.statut != 'NOURRI'}"
+                                            th:href="@{/nourrissage/saisie(idBassin=${bassin.id}, idCreneau=${c.idCreneau})}"
+                                            class="btn btn-outline"
                                             style="padding: 4px 8px; font-size: 11px; width: 100%;">
                                             <i class="bi bi-check-circle"></i> Valider
-                                        </button>
+                                        </a>
                                     </td>
-                                    <td><span class="badge badge-neutral">Prévu</span></td>
-                                    <td><span class="badge badge-neutral">Prévu</span></td>
-                                </tr>
-                                <tr>
-                                    <td style="border-left: 4px solid var(--mg-danger);">
-                                        <span class="pond-id">B-02</span>
-                                        <span class="pond-meta">Albinos Lot #4</span>
-                                    </td>
-                                    <td><span class="badge badge-danger">Retard</span>
-                                        <div class="cell-time" style="color: var(--mg-danger); font-weight: 600;">Depuis
-                                            45 min</div>
-                                        <div class="cell-time"
-                                            style="font-weight: 600; color: var(--mg-primary); margin-bottom: 8px;">0kg
-                                            / 10.0kg</div>
-                                        <button class="btn btn-primary"
-                                            style="padding: 4px 8px; font-size: 11px; width: 100%; background: var(--mg-danger); border-color: var(--mg-danger);">
-                                            <i class="bi bi-check-circle"></i> Valider
-                                        </button>
-                                    </td>
-                                    <td><span class="badge badge-warning">En attente</span>
-                                        <div class="cell-time"
-                                            style="font-weight: 600; color: var(--mg-primary); margin-bottom: 8px;">0kg
-                                            / 10.0kg</div>
-                                        <button class="btn btn-outline"
-                                            style="padding: 4px 8px; font-size: 11px; width: 100%;">
-                                            <i class="bi bi-check-circle"></i> Valider
-                                        </button>
-                                    </td>
-                                    <td><span class="badge badge-neutral">Prévu</span></td>
-                                    <td><span class="badge badge-neutral">Prévu</span></td>
-                                </tr>
-                                <tr>
-                                    <td style="border-left: 4px solid var(--mg-outline);">
-                                        <span class="pond-id">B-03</span>
-                                        <span class="pond-meta">Maintenance</span>
-                                    </td>
-                                    <td>
-                                        <span class="badge badge-dark">Rupture</span>
-                                        <div class="cell-time">Lot épuisé</div>
-                                    </td>
-                                    <td style="opacity: 0.5;"><span class="badge badge-dark">Annulé</span></td>
-                                    <td style="opacity: 0.5;"><span class="badge badge-dark">Annulé</span></td>
-                                    <td style="opacity: 0.5;"><span class="badge badge-dark">Annulé</span></td>
-                                </tr>
-                                <tr>
-                                    <td style="border-left: 4px solid var(--mg-primary);">
-                                        <span class="pond-id">B-04</span>
-                                        <span class="pond-meta">Reproduction</span>
-                                    </td>
-                                    <td><span class="badge badge-success">Nourri</span>
-                                        <div class="cell-time">08:00</div>
-                                        <div class="cell-time" style="font-weight: 600; color: var(--mg-primary);">8.0kg
-                                            / 8.0kg</div>
-                                    </td>
-                                    <td><span class="badge badge-success">Nourri</span>
-                                        <div class="cell-time">10:50</div>
-                                        <div class="cell-time" style="font-weight: 600; color: var(--mg-primary);">8.0kg
-                                            / 8.0kg</div>
-                                    </td>
-                                    <td><span class="badge badge-warning">En attente</span>
-                                        <div class="cell-time"
-                                            style="font-weight: 600; color: var(--mg-primary); margin-bottom: 8px;">0kg
-                                            / 8.0kg</div>
-                                        <button class="btn btn-outline"
-                                            style="padding: 4px 8px; font-size: 11px; width: 100%;">
-                                            <i class="bi bi-check-circle"></i> Valider
-                                        </button>
-                                    </td>
-                                    <td><span class="badge badge-neutral">Prévu</span></td>
                                 </tr>
                             </tbody>
                         </table>

@@ -504,7 +504,7 @@
     <div class="col-4">
         <section class="card">
             <h3 class="card-title" style="margin-bottom: 20px;">Entrée de Stock</h3>
-            <form th:action="@{/nourrissage/stock/enregistrer}" th:object="${entreeStockDTO}" method="post">
+            <form th:action="@{/nourrissage/valider-planning}" th:object="${DistributionDTO}" method="post">
                 <div class="form-group">
                     <label class="form-label">Type d'Aliment</label>
                     <select th:field="*{idAliment}" class="form-control" required>

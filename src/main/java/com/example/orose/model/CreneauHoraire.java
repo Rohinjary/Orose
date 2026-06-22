@@ -1,6 +1,5 @@
 package com.example.orose.model;
 
-
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -18,4 +17,11 @@ public class CreneauHoraire {
 
     @Column(nullable = false)
     private Integer ordre;
+
+    public Integer getIDCreneau() {
+        return id;
+    }
+    public void setIdCreneau(Integer id){
+        this.id = id;
+    }
 }

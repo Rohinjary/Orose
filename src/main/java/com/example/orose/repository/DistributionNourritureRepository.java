@@ -26,4 +26,17 @@ public interface DistributionNourritureRepository extends JpaRepository<Distribu
     // Validation d'unicité : on utilise cycleBassinAssoc au lieu de cycle
     boolean existsByCycleBassinAssocAndDateDistributionAndCreneau(CycleBassinAssoc cycleBassinAssoc,
             LocalDate dateDistribution, CreneauHoraire creneau);
+
+    List<DistributionNourriture> findByDateDistribution(LocalDate dateDistribution);
+
+    @Query("SELECT d.quantitePrevueKg FROM DistributionNourriture d " +
+            "WHERE d.cycleBassinAssoc.bassin.id = :bassinId " +
+            "AND d.creneau.id = :creneauId " +
+            "ORDER BY d.dateDistribution DESC, d.id DESC LIMIT 1")
+    BigDecimal findDerniereQuantitePrevue(@Param("bassinId") Integer bassinId, @Param("creneauId") Integer creneauId);
+
+    @Query("SELECT d FROM DistributionNourriture d " +
+            "WHERE d.cycleBassinAssoc.bassin.id = :bassinId " +
+            "AND d.dateDistribution = :date")
+    List<DistributionNourriture> findByBassinEtDate(@Param("bassinId") Long bassinId, @Param("date") LocalDate date);
 }
