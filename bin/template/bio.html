@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Suivi Biologique | Move Gasy</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <link href="css/bio.css" rel="stylesheet" />
+    <link rel="stylesheet" href="css/responsive.css">
+</head>
+
+<body>
+    <div class="sidebar-overlay"></div>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <div class="brand-logo"><i class="bi bi-water"></i></div>
+            <div class="brand-name">MOVE GASY</div>
+        </div>
+        <div class="nav-container">
+            <div class="nav-label">Principal</div>
+            <a class="nav-item" href="dashboard.html">
+                <span class="nav-icon"><i class="bi bi-speedometer2"></i></span> Dashboard
+            </a>
+            <div class="nav-label">Terrain</div>
+            <a class="nav-item" href="bassin.html">
+                <span class="nav-icon"><i class="bi bi-droplet-half"></i></span> Bassins
+            </a>
+            <a class="nav-item active" href="bio.html">
+                <span class="nav-icon"><i class="bi bi-activity"></i></span> Suivi biologique
+            </a>
+            <a class="nav-item" href="nourrissage.html">
+                <span class="nav-icon"><i class="bi bi-egg-fill"></i></span> Nourrissage
+            </a>
+            <!--  <a class="nav-item">
+                    <span class="nav-icon"><i class="bi bi-thermometer-half"></i></span> Environnement
+                </a> -->
+            <a class="nav-item" href="sanitaire.html">
+                <span class="nav-icon"><i class="bi bi-plus-circle"></i></span> Sanitaire
+            </a>
+            <div class="nav-label">Logistique</div>
+            <a class="nav-item" href="stock.html">
+                <span class="nav-icon"><i class="bi bi-box-seam"></i></span> Stocks
+            </a>
+            <a class="nav-item" href="commercial.html">
+                <span class="nav-icon"><i class="bi bi-cart3"></i></span> Commercial
+            </a>
+            <a class="nav-item" href="livraisons.html">
+                <span class="nav-icon"><i class="bi bi-truck"></i></span> Livraisons
+            </a>
+            <a class="nav-item" href="finances.html">
+                <span class="nav-icon"><i class="bi bi-cash-stack"></i></span> Finances
+            </a>
+            <div class="nav-label">Système</div>
+ <a class="nav-item" href="login.html">
+          <span class="nav-icon"><i class="bi bi-lock"></i></span> Connexion</a>
+            <a class="nav-item" href="administration.html">
+                <span class="nav-icon"><i class="bi bi-gear"></i></span> Administration</a>
+            <div class="nav-label">Portail client</div>
+            <a class="nav-item" href="front-office.html">
+                <span class="nav-icon"><i class="bi bi-person-lock"></i></span> Front Office
+            </a>
+        </div>
+    </aside>
+
+    <div class="main-wrapper">
+        <!-- Top Bar -->
+        <header class="topbar">
+            <div style="display:flex;align-items:center;gap:12px">
+                <button class="menu-toggle" onclick="toggleSidebar()">
+                    <i class="bi bi-list"></i>
+                </button>
+                <div class="breadcrumb-mg">
+                    <span>Suivi</span>
+                    <span class="breadcrumb-sep">/</span>
+                    <span class="breadcrumb-current">Suivi Biologique</span>
+                </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px">
+                <button class="notification-btn">
+                    <i class="bi bi-bell"></i>
+                    <span class="notification-dot"></span>
+                </button>
+                <div class="user-profile">
+                    <div class="user-info-text">
+                        <p class="user-name">Jean Dupont</p>
+                        <p class="user-role">Admin</p>
+                    </div>
+                    <div class="avatar">JD</div>
+                </div>
+            </div>
+        </header>
+
+        <!-- ═══════════════ LISTE BIO ═══════════════ -->
+        <main class="page-content">
+            <!-- Filter Bar -->
+            <div class="filter-bar">
+                <div style="display:flex;flex-wrap:wrap;align-items:flex-end;gap:16px">
+                    <div class="filter-group" style="min-width:180px">
+                        <label class="filter-label">Statut Biologique</label>
+                        <select class="filter-input">
+                            <option>Tous les statuts</option>
+                            <option>Normal</option>
+                            <option>Retard</option>
+                            <option>Critique</option>
+                        </select>
+                    </div>
+                    <div class="filter-group" style="min-width:180px">
+                        <label class="filter-label">Cycle Actif</label>
+                        <select class="filter-input">
+                            <option>Tous les cycles</option>
+                            <option>2026-01</option>
+                            <option>2025-04</option>
+                        </select>
+                    </div>
+                    <div class="filter-group" style="flex:1;min-width:220px">
+                        <label class="filter-label">Recherche</label>
+                        <div class="search-container">
+                            <i class="bi bi-search search-icon"></i>
+                            <input class="filter-input search-input" placeholder="Rechercher un bassin..."
+                                type="text" />
+                        </div>
+                    </div>
+                    <button class="btn-primary-mg">
+                        <i class="bi bi-plus-lg"></i> NOUVELLE PESÉE
+                    </button>
+                </div>
+            </div>
+
+            <!-- Pond Cards Grid -->
+            <div class="pond-grid">
+                <!-- Pond Card 01 - Normal -->
+                <article class="pond-card">
+                    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">
+                        <h3 style="font-size:15px;font-weight:700;margin:0">Bassin B01</h3>
+                        <span class="badge-mg badge-success-mg">Normal</span>
+                    </div>
+                    <div style="flex:1;margin-bottom:16px">
+                        <div
+                            style="display:flex;justify-content:space-between;font-size:12px;color:var(--mg-secondary);margin-bottom:4px">
+                            <span>Cycle</span><span style="font-weight:600;color:var(--mg-primary)">B01-2026-01</span>
+                        </div>
+                        <div
+                            style="display:flex;justify-content:space-between;font-size:12px;color:var(--mg-secondary);margin-bottom:12px">
+                            <span>Dernière pesée</span><span style="font-weight:600;color:var(--mg-primary)">24 Oct
+                                2023</span>
+                        </div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+                            <div class="stat-box"><span class="stat-label">Survie</span><span
+                                    class="stat-value">88.5%</span></div>
+                            <div class="stat-box"><span class="stat-label">Poids</span><span
+                                    class="stat-value">12.4g</span></div>
+                        </div>
+                    </div>
+                    <button class="btn-outline-mg">Accéder au suivi</button>
+                </article>
+                <!-- Pond Card 02 - Retard -->
+                <article class="pond-card">
+                    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">
+                        <h3 style="font-size:15px;font-weight:700;margin:0">Bassin B02</h3>
+                        <span class="badge-mg badge-warning-mg">Retard</span>
+                    </div>
+                    <div style="flex:1;margin-bottom:16px">
+                        <div
+                            style="display:flex;justify-content:space-between;font-size:12px;color:var(--mg-secondary);margin-bottom:4px">
+                            <span>Cycle</span><span style="font-weight:600;color:var(--mg-primary)">B02-2026-01</span>
+                        </div>
+                        <div
+                            style="display:flex;justify-content:space-between;font-size:12px;color:var(--mg-secondary);margin-bottom:12px">
+                            <span>Dernière pesée</span><span style="font-weight:600;color:var(--mg-primary)">18 Oct
+                                2023</span>
+                        </div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+                            <div class="stat-box"><span class="stat-label">Survie</span><span
+                                    class="stat-value">72.1%</span></div>
+                            <div class="stat-box"><span class="stat-label">Poids</span><span
+                                    class="stat-value">9.8g</span></div>
+                        </div>
+                    </div>
+                    <button class="btn-outline-mg">Accéder au suivi</button>
+                </article>
+                <!-- Pond Card 03 - Critique -->
+                <article class="pond-card">
+                    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">
+                        <h3 style="font-size:15px;font-weight:700;margin:0">Bassin B05</h3>
+                        <span class="badge-mg badge-danger-mg">Critique</span>
+                    </div>
+                    <div style="flex:1;margin-bottom:16px">
+                        <div
+                            style="display:flex;justify-content:space-between;font-size:12px;color:var(--mg-secondary);margin-bottom:4px">
+                            <span>Cycle</span><span style="font-weight:600;color:var(--mg-primary)">B05-2026-01</span>
+                        </div>
+                        <div
+                            style="display:flex;justify-content:space-between;font-size:12px;color:var(--mg-secondary);margin-bottom:12px">
+                            <span>Dernière pesée</span><span style="font-weight:600;color:var(--mg-primary)">25 Oct
+                                2023</span>
+                        </div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+                            <div class="stat-box stat-box-danger"><span
+                                    class="stat-label stat-label-danger">Survie</span><span
+                                    class="stat-value stat-value-danger">42.0%</span></div>
+                            <div class="stat-box"><span class="stat-label">Poids</span><span
+                                    class="stat-value">11.1g</span></div>
+                        </div>
+                    </div>
+                    <button class="btn-outline-mg">Accéder au suivi</button>
+                </article>
+                <!-- Pond Card 04 - Normal -->
+                <article class="pond-card">
+                    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">
+                        <h3 style="font-size:15px;font-weight:700;margin:0">Bassin C03</h3>
+                        <span class="badge-mg badge-success-mg">Normal</span>
+                    </div>
+                    <div style="flex:1;margin-bottom:16px">
+                        <div
+                            style="display:flex;justify-content:space-between;font-size:12px;color:var(--mg-secondary);margin-bottom:4px">
+                            <span>Cycle</span><span style="font-weight:600;color:var(--mg-primary)">C03-2026-01</span>
+                        </div>
+                        <div
+                            style="display:flex;justify-content:space-between;font-size:12px;color:var(--mg-secondary);margin-bottom:12px">
+                            <span>Dernière pesée</span><span style="font-weight:600;color:var(--mg-primary)">22 Oct
+                                2023</span>
+                        </div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+                            <div class="stat-box"><span class="stat-label">Survie</span><span
+                                    class="stat-value">92.4%</span></div>
+                            <div class="stat-box"><span class="stat-label">Poids</span><span
+                                    class="stat-value">14.2g</span></div>
+                        </div>
+                    </div>
+                    <button class="btn-outline-mg">Accéder au suivi</button>
+                </article>
+                <!-- Add New -->
+                <a class="new-entry-card" href="#">
+                    <i class="bi bi-plus-circle new-entry-icon"></i>
+                    <span class="new-entry-text">Nouveau suivi</span>
+                </a>
+            </div>
+        </main>
+
+
+
+        <!-- ═══════════════ DÉTAIL BIO ═══════════════ -->
+        <main>
+            <!-- Header -->
+            <div class="page-header">
+                <div class="page-header-title">
+                    <div class="sub-tagline">
+                        <span class="tag-text">AQUACULTURE / B01</span>
+                        <span class="badge badge-success">ACTIF</span>
+                    </div>
+                    <h2>Détail Biologique — B01</h2>
+                </div>
+                <div class="action-group">
+                    <button class="btn btn-outline">
+                        <i class="bi bi-download"></i> EXPORT RAPPORT
+                    </button>
+                    <button class="btn btn-primary">
+                        <i class="bi bi-plus-lg"></i> NOUVELLE PESÉE
+                    </button>
+                </div>
+            </div>
+
+            <!-- KPI Cards -->
+            <div class="grid-5">
+                <div class="kpi-card">
+                    <span class="kpi-label">Biomasse</span>
+                    <div class="kpi-value">1,425.8 <span
+                            style="font-size:14px;font-weight:400;color:var(--mg-secondary)">kg</span></div>
+                    <div class="kpi-subtext text-danger"><i class="bi bi-graph-up-arrow"></i> +14% vs S-1</div>
+                </div>
+                <div class="kpi-card">
+                    <span class="kpi-label">Survie</span>
+                    <div class="kpi-value">94.2 <span
+                            style="font-size:14px;font-weight:400;color:var(--mg-secondary)">%</span></div>
+                    <div class="progress-container">
+                        <div class="progress-bar" style="width:94.2%"></div>
+                    </div>
+                </div>
+                <div class="kpi-card">
+                    <span class="kpi-label">Mortalité</span>
+                    <div class="kpi-value">5.8 <span
+                            style="font-size:14px;font-weight:400;color:var(--mg-secondary)">%</span></div>
+                    <div class="kpi-subtext text-secondary">8,450 individus</div>
+                </div>
+                <div class="kpi-card">
+                    <span class="kpi-label">Poids Moyen</span>
+                    <div class="kpi-value">12.4 <span
+                            style="font-size:14px;font-weight:400;color:var(--mg-secondary)">g</span></div>
+                    <div class="kpi-subtext text-secondary">Cible: 15g</div>
+                </div>
+                <div class="kpi-card">
+                    <span class="kpi-label">Taille Moyenne</span>
+                    <div class="kpi-value">102 <span
+                            style="font-size:14px;font-weight:400;color:var(--mg-secondary)">mm</span></div>
+                    <div class="kpi-subtext text-secondary">Cible: 110mm</div>
+                </div>
+            </div>
+
+            <!-- Chart + Forecast -->
+            <div class="grid-12">
+                <div class="col-8">
+                    <section class="card" style="height:100%">
+                        <div class="card-header">
+                            <h3 class="card-title">Courbe de Croissance</h3>
+                            <div class="chart-legend">
+                                <div class="legend-item"><span class="line-real"></span> Réel</div>
+                                <div class="legend-item"><span class="line-standard"></span> Standard</div>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <svg preserveAspectRatio="none" style="width:100%;height:100%">
+                                <g stroke="#eceef0" stroke-width="1">
+                                    <line x1="0" x2="100%" y1="20%" y2="20%"></line>
+                                    <line x1="0" x2="100%" y1="40%" y2="40%"></line>
+                                    <line x1="0" x2="100%" y1="60%" y2="60%"></line>
+                                    <line x1="0" x2="100%" y1="80%" y2="80%"></line>
+                                </g>
+                                <path d="M0 240 Q 300 180, 800 40" fill="none" stroke="#d1d5db" stroke-dasharray="4 4"
+                                    stroke-width="2"></path>
+                                <path d="M0 240 L 150 210 L 300 185 L 450 150 L 600 110" fill="none" stroke="#1a1a1a"
+                                    stroke-width="3"></path>
+                                <circle cx="150" cy="210" fill="#1a1a1a" r="4"></circle>
+                                <circle cx="300" cy="185" fill="#1a1a1a" r="4"></circle>
+                                <circle cx="450" cy="150" fill="#1a1a1a" r="4"></circle>
+                                <circle cx="600" cy="110" fill="#1a1a1a" r="4"></circle>
+                            </svg>
+                            <div class="chart-labels">
+                                <span>S01</span><span>S02</span><span>S03</span><span>S04</span><span>S05</span><span>S06</span><span>S07</span><span>S08</span>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+                <div class="col-4">
+                    <section class="card" style="height:100%">
+                        <div class="card-header">
+                            <h3 class="card-title">Prévision Récolte</h3>
+                        </div>
+                        <div class="forecast-content">
+                            <div class="forecast-item">
+                                <span class="forecast-label">Date Estimée</span>
+                                <div class="forecast-val-large">14 Novembre 2024</div>
+                                <span style="font-size:12px;color:var(--mg-secondary)">Jours restants : 18 jours</span>
+                            </div>
+                            <div class="forecast-item">
+                                <span class="forecast-label">Biomasse Récoltable</span>
+                                <div class="forecast-val-xl">1,850 kg <span
+                                        style="font-size:14px;font-weight:400;color:var(--mg-secondary)">+/- 5%</span>
+                                </div>
+                            </div>
+                            <div class="forecast-item">
+                                <span class="forecast-label">Statut Taille Commerciale</span>
+                                <div class="forecast-status-box">
+                                    <span class="font-semibold">15g / 110mm</span>
+                                    <div class="status-badge">
+                                        <i class="bi bi-x-circle-fill"></i> Non Atteint
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+            <!-- Table -->
+            <section class="card table-card">
+                <div class="table-header">
+                    <h3 class="card-title">Historique des Pesées</h3>
+                    <div class="search-wrapper">
+                        <i class="bi bi-search search-icon"></i>
+                        <input class="search-input" placeholder="Rechercher..." type="text" />
+                    </div>
+                </div>
+                <div style="overflow-x:auto">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Poids (g)</th>
+                                <th>Taille (mm)</th>
+                                <th>Vivants</th>
+                                <th>Morts</th>
+                                <th>Survie %</th>
+                                <th>Biomasse (kg)</th>
+                                <th>Technicien</th>
+                                <th class="text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="font-semibold">24/10/2024</td>
+                                <td>12.4</td>
+                                <td>102</td>
+                                <td>115,000</td>
+                                <td>450</td>
+                                <td class="font-bold">94.2%</td>
+                                <td>1,425.8</td>
+                                <td style="color:var(--mg-secondary)">Rakoto. J</td>
+                                <td class="text-right"><button class="edit-btn"><i
+                                            class="bi bi-pencil-square"></i></button></td>
+                            </tr>
+                            <tr>
+                                <td class="font-semibold">17/10/2024</td>
+                                <td>10.8</td>
+                                <td>92</td>
+                                <td>115,450</td>
+                                <td>320</td>
+                                <td class="font-bold">94.6%</td>
+                                <td>1,246.8</td>
+                                <td style="color:var(--mg-secondary)">Rakoto. J</td>
+                                <td class="text-right"><button class="edit-btn"><i
+                                            class="bi bi-pencil-square"></i></button></td>
+                            </tr>
+                            <tr>
+                                <td class="font-semibold">10/10/2024</td>
+                                <td>9.2</td>
+                                <td>84</td>
+                                <td>115,770</td>
+                                <td>280</td>
+                                <td class="font-bold">94.9%</td>
+                                <td>1,065.1</td>
+                                <td style="color:var(--mg-secondary)">Mamy. T</td>
+                                <td class="text-right"><button class="edit-btn"><i
+                                            class="bi bi-pencil-square"></i></button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="pagination">
+                        <span>Affichage de 1-4 sur 128 pages</span>
+                        <div style="display: flex; gap: 8px;">
+                            <button class="btn btn-outline btn-sm" style="padding: 4px 8px;"><i
+                                    class="bi bi-chevron-left"></i></button>
+                            <button class="btn btn-primary btn-sm" style="padding: 4px 12px;">1</button>
+                            <button class="btn btn-outline btn-sm" style="padding: 4px 12px;">2</button>
+                            <button class="btn btn-outline btn-sm" style="padding: 4px 8px;"><i
+                                    class="bi bi-chevron-right"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- CRUD Pesée -->
+        <main>
+            <div class="page-header" style="display: block">
+                <h2 class="page-title">Nouvelle Pesée</h2>
+                <p class="page-subtitle">Saisissez les paramètres de suivi pour la pesée hebdomadaire du cycle actif.
+                </p>
+            </div>
+            <div class="grid-layout">
+                <!-- Form Section -->
+                <div class="card">
+                    <form id="weighingForm">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="pond">Bassin Actif</label>
+                                <select id="pond" name="pond" required="">
+                                    <option disabled="" selected="" value="">Sélectionner...</option>
+                                    <option value="B-01">Bassin B-01 (Actif)</option>
+                                    <option value="B-05">Bassin B-05 (Actif)</option>
+                                    <option value="A-12">Bassin A-12 (Actif)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="date">Date de Pesée</label>
+                                <input id="date" name="date" required="" type="date" />
+                            </div>
+                            <div class="form-group">
+                                <label for="avgWeight">Poids Moyen (g)</label>
+                                <input id="avgWeight" min="0" name="avgWeight" placeholder="0.00" required=""
+                                    step="0.01" type="number" />
+                            </div>
+                            <div class="form-group">
+                                <label for="size">Taille (mm)</label>
+                                <input id="size" min="0" name="size" placeholder="0" required="" step="1"
+                                    type="number" />
+                            </div>
+                            <div class="form-group">
+                                <label for="living">Nombre de Vivants</label>
+                                <input id="living" min="0" name="living" placeholder="Ex: 45000" required="" step="1"
+                                    type="number" />
+                            </div>
+                            <div class="form-group">
+                                <label for="dead">Nombre de Morts (24h)</label>
+                                <input id="dead" min="0" name="dead" placeholder="Ex: 12" required="" step="1"
+                                    type="number" />
+                            </div>
+                            <div class="form-group form-group-full">
+                                <label for="technician">Technicien Responsable</label>
+                                <input id="technician" name="technician" placeholder="Nom complet" required=""
+                                    type="text" />
+                            </div>
+                            <div class="form-group form-group-full">
+                                <label for="notes">Notes d'Observation</label>
+                                <textarea id="notes" name="notes"
+                                    placeholder="Observations environnementales ou spécificités techniques..."></textarea>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button class="btn-secondary" type="button">Annuler</button>
+                            <button class="btn-primary" type="submit">Enregistrer la Pesée</button>
+                        </div>
+                    </form>
+                </div>
+                <!-- Indicators Section -->
+                <div class="side-panels">
+                    <div class="stats-card">
+                        <div class="stats-header">
+                            <h3>Indicateurs de Performance</h3>
+                        </div>
+                        <div class="stats-body">
+                            <div class="stat-item">
+                                <span class="stat-label">BIOMASSE ESTIMÉE</span>
+                                <div class="stat-value-group">
+                                    <span class="stat-value" id="calcBiomass">0,00</span>
+                                    <span class="stat-unit">KG</span>
+                                </div>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">TAUX DE SURVIE</span>
+                                <div class="stat-value-group">
+                                    <span class="stat-value" id="calcSurvival">0.00</span>
+                                    <span class="stat-unit">%</span>
+                                </div>
+                                <div class="progress-container">
+                                    <div class="progress-bar" id="survivalBar"></div>
+                                </div>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">MORTALITÉ</span>
+                                <div class="stat-value-group">
+                                    <span class="stat-value" id="calcMortality" style="font-size: 20px;">0.000</span>
+                                    <span class="stat-unit">%</span>
+                                </div>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">SEMAINE DE CYCLE</span>
+                                <div class="stat-value-group">
+                                    <span class="stat-value" id="calcWeek" style="font-size: 20px;">W135</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="help-card">
+                        <h4 class="help-title">Aide à la Saisie</h4>
+                        <p class="help-text">
+                            Assurez-vous que l'échantillonnage est représentatif (minimum 50 individus par bassin). Les
+                            valeurs aberrantes seront signalées par le système.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+
+        <!-- Alertes bio -->
+        <main>
+            <div class="container">
+                <!-- KPI CARDS -->
+                <div class="kpi-grid">
+                    <div class="kpi-card">
+                        <div class="kpi-label">Alertes Critiques</div>
+                        <div class="kpi-value text-red">03</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-label">Pondération Orange</div>
+                        <div class="kpi-value text-amber">05</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-label">Mortalité Moy. (24h)</div>
+                        <div class="kpi-value">1.2%</div>
+                    </div>
+                </div>
+                <!-- FEED SECTION -->
+                <section>
+                    <div class="section-header">
+                        <h2 class="section-title">Flux d'incidents actifs</h2>
+                        <div class="filter-controls">
+                            <span class="filter-label">Filtrer par</span>
+                            <select class="filter-select">
+                                <option>TOUS LES NIVEAUX</option>
+                                <option>CRITIQUE SEULEMENT</option>
+                            </select>
+                        </div>
+                    </div>
+                    <!-- Alert Card: Critical -->
+                    <article class="alert-card alert-urgent">
+                        <div class="alert-body">
+                            <div>
+                                <div class="alert-header-meta">
+                                    <span class="badge-pill bg-red-pill">Alerte Critique</span>
+                                    <span class="alert-category text-red-cat">Mortalité Anormale</span>
+                                </div>
+                                <h3 class="alert-title">Bassin A-12 — Secteur Nord</h3>
+                                <p class="alert-desc">Augmentation soudaine de la mortalité observée lors de
+                                    l'inspection de
+                                    06:00.</p>
+                            </div>
+                            <div class="alert-stats">
+                                <div>
+                                    <div class="stat-label">Observé</div>
+                                    <div class="stat-value text-red">42 ind./j</div>
+                                </div>
+                                <div>
+                                    <div class="stat-label">Attendu</div>
+                                    <div class="stat-value stat-dim">Max 12 ind./j</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="alert-action-side">
+                            <div>
+                                <label class="action-label">Note de résolution</label>
+                                <textarea class="action-textarea"
+                                    placeholder="Décrire l'action corrective..."></textarea>
+                            </div>
+                            <button class="btn-resolve" onclick="resolveAlert(this)">
+                                <i class="bi bi-check2-circle"></i> Marquer comme résolu
+                            </button>
+                        </div>
+                    </article>
+                    <!-- Alert Card: Warning 1 -->
+                    <article class="alert-card alert-warning">
+                        <div class="alert-body">
+                            <div>
+                                <div class="alert-header-meta">
+                                    <span class="badge-pill bg-amber-pill">Avertissement</span>
+                                    <span class="alert-category text-amber-cat">Survie Critique</span>
+                                </div>
+                                <h3 class="alert-title">Bassin B-04 — Nurserie 2</h3>
+                                <p class="alert-desc">Taux de survie estimé inférieur au seuil de rentabilité du cycle
+                                    en
+                                    cours.</p>
+                            </div>
+                            <div class="alert-stats">
+                                <div>
+                                    <div class="stat-label">Estimé</div>
+                                    <div class="stat-value text-amber">68.5%</div>
+                                </div>
+                                <div>
+                                    <div class="stat-label">Objectif</div>
+                                    <div class="stat-value stat-dim">75.0%</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="alert-action-side">
+                            <div>
+                                <label class="action-label">Note de résolution</label>
+                                <textarea class="action-textarea"
+                                    placeholder="Justification de l'ajustement..."></textarea>
+                            </div>
+                            <button class="btn-resolve" onclick="resolveAlert(this)">
+                                <i class="bi bi-check2-circle"></i> Marquer comme résolu
+                            </button>
+                        </div>
+                    </article>
+                    <!-- Alert Card: Warning 2 -->
+                    <article class="alert-card alert-warning">
+                        <div class="alert-body">
+                            <div>
+                                <div class="alert-header-meta">
+                                    <span class="badge-pill bg-amber-pill">Avertissement</span>
+                                    <span class="alert-category text-amber-cat">Pesée Manquante</span>
+                                </div>
+                                <h3 class="alert-title">Bassin C-01 — Engraissement</h3>
+                                <p class="alert-desc">La pesée hebdomadaire obligatoire n'a pas été enregistrée pour ce
+                                    lot
+                                    (J-45).</p>
+                            </div>
+                            <div class="alert-stats">
+                                <div>
+                                    <div class="stat-label">Dernière pesée</div>
+                                    <div class="stat-value">12 oct. (8.2g)</div>
+                                </div>
+                                <div>
+                                    <div class="stat-label">Statut</div>
+                                    <div class="stat-value text-red">Retard 48h</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="alert-action-side">
+                            <div>
+                                <label class="action-label">Note de résolution</label>
+                                <textarea class="action-textarea"
+                                    placeholder="Raison de l'absence de donnée..."></textarea>
+                            </div>
+                            <button class="btn-resolve" onclick="resolveAlert(this)">
+                                <i class="bi bi-check2-circle"></i> Marquer comme résolu
+                            </button>
+                        </div>
+                    </article>
+                </section>
+            </div>
+        </main>
+    </div>
+    <script>
+        function toggleSidebar() {
+            document.querySelector('.sidebar').classList.toggle('open');
+            document.querySelector('.sidebar-overlay').classList.toggle('open');
+        }
+        document.querySelector('.sidebar-overlay')
+            ?.addEventListener('click', () => {
+                document.querySelector('.sidebar').classList.remove('open');
+                document.querySelector('.sidebar-overlay').classList.remove('open');
+            });
+    </script>
+
+
+
+</body>
+
+<!-- Script CRUD pesée -->
+<script>
+    // Set default date to today
+    document.getElementById('date').valueAsDate = new Date();
+
+    // Constants for logic simulation
+    const STOCK_INITIAL = 50000;
+
+    const form = document.getElementById('weighingForm');
+    const inputIds = ['avgWeight', 'living', 'dead', 'pond', 'date'];
+
+    const updateCalculations = () => {
+        const avgWeight = parseFloat(document.getElementById('avgWeight').value) || 0;
+        const living = parseInt(document.getElementById('living').value) || 0;
+        const dead = parseInt(document.getElementById('dead').value) || 0;
+        const dateInput = document.getElementById('date').value;
+
+        // Biomass: (Living * Avg Weight) / 1000 to get kg
+        const biomass = (living * avgWeight) / 1000;
+        document.getElementById('calcBiomass').textContent = biomass.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+        // Survival %
+        const survival = (living / STOCK_INITIAL) * 100;
+        document.getElementById('calcSurvival').textContent = survival.toFixed(2);
+        document.getElementById('survivalBar').style.width = Math.min(survival, 100) + '%';
+
+        // Mortality % (for this reading)
+        const total = living + dead;
+        const mortality = total > 0 ? (dead / total) * 100 : 0;
+        document.getElementById('calcMortality').textContent = mortality.toFixed(3);
+
+        // Cycle Week (Mock calculation)
+        if (dateInput) {
+            const start = new Date("2023-11-01");
+            const current = new Date(dateInput);
+            const diff = Math.floor((current - start) / (7 * 24 * 60 * 60 * 1000));
+            document.getElementById('calcWeek').textContent = `W${String(Math.max(0, diff)).padStart(2, '0')}`;
+        }
+
+        // Simple Validation UI logic
+        const livingInput = document.getElementById('living');
+        if (living > STOCK_INITIAL) {
+            livingInput.style.borderColor = 'var(--error)';
+        } else {
+            livingInput.style.borderColor = '';
+        }
+    };
+
+    inputIds.forEach(id => {
+        document.getElementById(id).addEventListener('input', updateCalculations);
+    });
+
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const living = parseInt(document.getElementById('living').value);
+        if (living > STOCK_INITIAL) {
+            alert("Erreur: Le nombre de vivants ne peut pas excéder le stock initial (" + STOCK_INITIAL + ")");
+            return;
+        }
+        alert("Données de pesée enregistrées avec succès.");
+    });
+
+    // Initialize display
+    updateCalculations();
+</script>
+
+<!-- Script alertes bio -->
+<script>
+    function resolveAlert(btn) {
+        const article = btn.closest('article');
+        const textarea = article.querySelector('textarea');
+        const note = textarea.value;
+
+        if (!note.trim()) {
+            alert("Veuillez saisir une note de résolution avant de valider.");
+            return;
+        }
+
+        btn.innerHTML = `<i class="bi bi-arrow-repeat animate-spin"></i> TRAITEMENT...`;
+        btn.disabled = true;
+
+        setTimeout(() => {
+            article.style.transition = 'all 0.5s ease-out';
+            article.style.opacity = '0';
+            article.style.transform = 'translateY(10px)';
+
+            setTimeout(() => {
+                article.remove();
+            }, 500);
+        }, 800);
+    }
+</script>
+
+</html>

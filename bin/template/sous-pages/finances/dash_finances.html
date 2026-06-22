@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+
+<html lang="fr">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Move Gasy — Dashboard Financier</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+<style>
+        :root {
+            --mg-primary: #1a1a1a;
+            --mg-secondary: #4a4a4a;
+            --mg-surface: #f7f9fb;
+            --mg-surface-bright: #ffffff;
+            --mg-surface-container: #eceef0;
+            --mg-outline: #d1d5db;
+            --mg-success: #10b981;
+            --mg-warning: #f59e0b;
+            --mg-danger: #ef4444;
+            --radius: 4px;
+            --sidebar-w: 240px;
+            --topbar-h: 64px;
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--mg-surface);
+            color: var(--mg-primary);
+            font-size: 13.5px;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: var(--sidebar-w);
+            background: var(--mg-surface-bright);
+            border-right: 1px solid var(--mg-outline);
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+        }
+
+        .sidebar-brand {
+            height: var(--topbar-h);
+            padding: 0 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid var(--mg-outline);
+        }
+
+        .brand-logo {
+            width: 32px;
+            height: 32px;
+            background: var(--mg-primary);
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: white;
+        }
+
+        .brand-name {
+            font-weight: 700;
+            font-size: 16px;
+            letter-spacing: -0.02em;
+        }
+
+        .nav-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px 12px;
+        }
+
+        .nav-label {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--mg-secondary);
+            margin: 24px 12px 8px;
+            letter-spacing: 0.05em;
+        }
+
+        .nav-label:first-child {
+            margin-top: 0;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            border-radius: var(--radius);
+            color: var(--mg-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+            cursor: pointer;
+            margin-bottom: 2px;
+        }
+
+        .nav-item:hover {
+            background: var(--mg-surface-container);
+            color: var(--mg-primary);
+        }
+
+        .nav-item.active {
+            background: var(--mg-primary);
+            color: white;
+        }
+
+        .nav-icon {
+            font-size: 18px;
+            width: 20px;
+            text-align: center;
+        }
+
+        /* MAIN WRAPPER */
+        .main-wrapper {
+            margin-left: var(--sidebar-w);
+            width: calc(100% - var(--sidebar-w));
+        }
+
+        .topbar {
+            height: var(--topbar-h);
+            background: var(--mg-surface-bright);
+            border-bottom: 1px solid var(--mg-outline);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 32px;
+            position: sticky;
+            top: 0;
+            z-index: 90;
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--mg-secondary);
+        }
+
+        .breadcrumb span.active {
+            color: var(--mg-primary);
+            font-weight: 600;
+        }
+
+        .breadcrumb .sep {
+            color: var(--mg-outline);
+        }
+
+        .topbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .icon-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            width: 36px;
+            height: 36px;
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--mg-secondary);
+            transition: background 0.2s;
+        }
+
+        .icon-btn:hover {
+            background: var(--mg-surface-container);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-left: 16px;
+            border-left: 1px solid var(--mg-outline);
+        }
+
+        .avatar {
+            width: 32px;
+            height: 32px;
+            background: var(--mg-primary);
+            color: white;
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        /* CONTENT */
+        .content {
+            padding: 32px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header-section {
+            margin-bottom: 32px;
+        }
+
+        .header-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--mg-primary);
+        }
+
+        .header-sub {
+            font-size: 14px;
+            color: var(--mg-secondary);
+            margin-top: 4px;
+        }
+
+        /* CARDS & GRID */
+        .card {
+            background: var(--mg-surface-bright);
+            border: 1px solid var(--mg-outline);
+            border-radius: var(--radius);
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--mg-primary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .kpi-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .kpi-card {
+            background: var(--mg-surface-bright);
+            border: 1px solid var(--mg-outline);
+            border-radius: var(--radius);
+            padding: 16px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            border-left: 4px solid var(--mg-primary);
+        }
+
+        .kpi-card.success {
+            border-left-color: var(--mg-success);
+        }
+
+        .kpi-card.warning {
+            border-left-color: var(--mg-warning);
+        }
+
+        .kpi-card.danger {
+            border-left-color: var(--mg-danger);
+        }
+
+        .kpi-label {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--mg-secondary);
+            letter-spacing: 0.05em;
+        }
+
+        .kpi-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--mg-primary);
+            line-height: 1.2;
+        }
+
+        .kpi-sub {
+            font-size: 12px;
+            color: var(--mg-secondary);
+        }
+
+        .data-mono {
+            font-family: 'Inter', monospace;
+            font-weight: 600;
+        }
+
+        .progress-container {
+            height: 6px;
+            background: var(--mg-surface-container);
+            border-radius: 3px;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--mg-success);
+        }
+
+        .grid-charts {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 24px;
+        }
+
+        .col-8 {
+            grid-column: span 8;
+        }
+
+        .col-4 {
+            grid-column: span 4;
+        }
+
+        /* CHART STYLES */
+        .chart-placeholder {
+            height: 200px;
+            display: flex;
+            align-items: flex-end;
+            gap: 8px;
+            padding-top: 20px;
+            border-bottom: 1px solid var(--mg-outline);
+            margin-bottom: 12px;
+        }
+
+        .bar-group {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            height: 100%;
+            position: relative;
+        }
+
+        .bar {
+            width: 100%;
+            background: var(--mg-primary);
+            border-radius: 2px 2px 0 0;
+            transition: height 0.3s;
+        }
+
+        .chart-label {
+            font-size: 10px;
+            color: var(--mg-secondary);
+            text-align: center;
+            margin-top: 4px;
+            font-weight: 600;
+        }
+
+        /* FILTERS */
+        .filter-bar {
+            background: var(--mg-surface-bright);
+            border: 1px solid var(--mg-outline);
+            border-radius: var(--radius);
+            padding: 16px;
+            margin-bottom: 24px;
+            display: flex;
+            gap: 16px;
+            align-items: flex-end;
+        }
+
+        .filter-group {
+            flex: 1;
+        }
+
+        .form-control {
+            padding: 8px 12px;
+            font-size: 12px;
+            width: 100%;
+            border: 1px solid var(--mg-outline);
+            border-radius: var(--radius);
+            background: white;
+            color: var(--mg-primary);
+        }
+
+        .btn-primary {
+            height: 35px;
+            background: var(--mg-primary);
+            color: white;
+            border: none;
+            padding: 0 20px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        /* ALERT */
+        .alert-banner {
+            background: #fff8f1;
+            border: 1px solid var(--mg-warning);
+            color: #92400e;
+            padding: 16px;
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+    </style>
+    <link href="../css/responsive.css" rel="stylesheet" />
+</head>
+
+<body>
+        <div class="sidebar-overlay"></div>
+    <div class="layout">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <div class="brand-logo"><i class="bi bi-water"></i></div>
+                <div class="brand-name">MOVE GASY</div>
+            </div>
+            <div class="nav-container">
+                <div class="nav-label">Principal</div>
+                <a class="nav-item" href="#">
+                    <span class="nav-icon"><i class="bi bi-speedometer2"></i></span> Dashboard
+                </a>
+                <div class="nav-label">Terrain</div>
+                <a class="nav-item" href="#">
+                    <span class="nav-icon"><i class="bi bi-droplet-half"></i></span> Bassins
+                </a>
+                <a class="nav-item" href="#">
+                    <span class="nav-icon"><i class="bi bi-activity"></i></span> Suivi biologique
+                </a>
+                <a class="nav-item" href="#">
+                    <span class="nav-icon"><i class="bi bi-egg-fill"></i></span> Nourrissage
+                </a>
+                <a class="nav-item " href="#">
+                    <span class="nav-icon"><i class="bi bi-plus-circle"></i></span> Sanitaire
+                </a>
+                <div class="nav-label">Logistique</div>
+                <a class="nav-item" href="#">
+                    <span class="nav-icon"><i class="bi bi-box-seam"></i></span> Stocks
+                </a>
+                <a class="nav-item" href="#">
+                    <span class="nav-icon"><i class="bi bi-cart3"></i></span> Commercial
+                </a>
+                <a class="nav-item " href="#">
+                    <span class="nav-icon"><i class="bi bi-truck"></i></span> Livraisons
+                </a>
+                <a class="nav-item active" href="#">
+                    <span class="nav-icon"><i class="bi bi-cash-stack"></i></span> Finances
+                </a>
+                <div class="nav-label">Système</div>
+ <a class="nav-item" href="#">
+          <span class="nav-icon"><i class="bi bi-lock"></i></span> Connexion</a>
+                <a class="nav-item" href="#">
+                    <span class="nav-icon"><i class="bi bi-gear"></i></span> Administration</a>
+                  <div class="nav-label">Portail client</div>
+                 <a class="nav-item">
+                    <span class="nav-icon"><i class="bi bi-person-lock"></i></span> Front Office
+                </a>
+            </div>
+        </aside>
+        <div class="main-wrapper">
+            <!-- TOPBAR -->
+            <header class="topbar">
+                
+                <button class="menu-toggle" onclick="toggleSidebar()">
+                    <i class="bi bi-list"></i>
+                </button>
+<div class="breadcrumb">
+                    <span class="">Finances</span><span class="sep">/</span><span class="active">Dashboard</span>
+                </div>
+                <div class="topbar-actions">
+                    <button class="icon-btn"><i class="bi bi-bell"></i></button>
+                    <button class="icon-btn"><i class="bi bi-gear"></i></button>
+                    <div class="user-profile">
+                        <div class="avatar">AD</div>
+                    </div>
+                </div>
+            </header>
+            <!-- MAIN CONTENT -->
+            <main class="content">
+                <header class="header-section">
+                    <h2 class="header-title">Tableau de Bord Financier</h2>
+                    <p class="header-sub">Suivi global de la performance financière, investissements et rentabilité.</p>
+                </header>
+                <!-- KPI SECTION 1 -->
+                <div class="kpi-row">
+                    <div class="kpi-card">
+                        <span class="kpi-label">CA — Déjà payé (Ar)</span>
+                        <span class="kpi-value data-mono">42.8M Ar</span>
+                        <span class="kpi-sub">Recettes encaissées</span>
+                    </div>
+                    <div class="kpi-card success">
+                        <span class="kpi-label">Bénéfice Actuel (Ar)</span>
+                        <span class="kpi-value data-mono">+12.2M Ar</span>
+                        <span class="kpi-sub">Recettes encaissées - Dépenses totales</span>
+                    </div>
+                    <div class="kpi-card">
+                        <span class="kpi-label">ROI %</span>
+                        <span class="kpi-value data-mono">8.1%</span>
+                        <div class="progress-container">
+                            <div class="progress-bar" style="width: 8.1%; background: var(--mg-primary);"></div>
+                        </div>
+                    </div>
+                </div>
+                <!-- KPI SECTION 2 -->
+                <div class="kpi-row">
+                    <div class="kpi-card">
+                        <span class="kpi-label">Investissement Total vs Récupéré (Ar)</span>
+                        <span class="kpi-value data-mono">50.4M / 150M</span>
+                        <div class="progress-container">
+                            <div class="progress-bar" style="width: 33.6%;"></div>
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <span class="kpi-label">Seuil de Rentabilité (kg/cycle)</span>
+                        <span class="kpi-value">450 kg/cycle</span>
+                        <span class="kpi-sub">Volume minimal pour l'équilibre financier</span>
+                    </div>
+                    <div class="kpi-card warning">
+                        <span class="kpi-label">Délai de Remboursement</span>
+                        <span class="kpi-value">~10 cycles</span>
+                        <span class="kpi-sub">Estimation basée sur flux actuel (~3.4 ans)</span>
+                    </div>
+                </div>
+                <!-- FILTRES D'AFFICHAGE -->
+                <div class="filter-bar">
+                    <div class="filter-group">
+                        <label class="kpi-label">Par Année</label>
+                        <select class="form-control">
+                            <option>2024</option>
+                            <option>2023</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label class="kpi-label">Par Cycle</label>
+                        <select class="form-control">
+                            <option>Tous les cycles</option>
+                            <option>Cycle B01-2024-01</option>
+                            <option>Cycle B02-2024-02</option>
+                        </select>
+                    </div>
+                    <div class="filter-group" style="flex: 1.5;">
+                        <label class="kpi-label">Par Période Libre</label>
+                        <input class="form-control" placeholder="01/01/2024 - 31/12/2024" type="text" />
+                    </div>
+                    <button class="btn-primary">Actualiser</button>
+                </div>
+                <!-- ALERT DÉRIVE -->
+                <div class="alert-banner">
+                    <i class="bi bi-exclamation-triangle-fill" style="font-size: 18px;"></i>
+                    <span><strong>Alerte :</strong> Dérive budgétaire détectée sur le Cycle B01 (+12% par rapport au
+                        prévisionnel). Les dépenses de maintenance sont hors-normes.</span>
+                </div>
+                <!-- GRAPHIQUES -->
+                <div class="grid-charts">
+                    <div class="col-8">
+                        <div class="card">
+                            <h3 class="card-title">Évolution CA mensuel</h3>
+                            <div class="chart-placeholder">
+                                <div class="bar-group">
+                                    <div class="bar" style="height: 40%;"></div><span class="chart-label">JAN</span>
+                                </div>
+                                <div class="bar-group">
+                                    <div class="bar" style="height: 55%;"></div><span class="chart-label">FEV</span>
+                                </div>
+                                <div class="bar-group">
+                                    <div class="bar" style="height: 70%;"></div><span class="chart-label">MAR</span>
+                                </div>
+                                <div class="bar-group">
+                                    <div class="bar" style="height: 60%;"></div><span class="chart-label">AVR</span>
+                                </div>
+                                <div class="bar-group">
+                                    <div class="bar" style="height: 85%;"></div><span class="chart-label">MAI</span>
+                                </div>
+                                <div class="bar-group">
+                                    <div class="bar" style="height: 95%;"></div><span class="chart-label">JUN</span>
+                                </div>
+                                <div class="bar-group">
+                                    <div class="bar" style="height: 75%;"></div><span class="chart-label">JUL</span>
+                                </div>
+                            </div>
+                            <div style="font-size: 11px; font-weight: 600; margin-top: 8px;">
+                                <span><i class="bi bi-square-fill" style="color:var(--mg-primary)"></i> CA Réalisé
+                                    mensuel (Ar)</span>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <h3 class="card-title">Dépenses vs Bénéfices par cycle</h3>
+                            <div class="chart-placeholder">
+                                <div class="bar-group">
+                                    <div
+                                        style="display: flex; gap: 4px; width: 100%; align-items: flex-end; height: 100%;">
+                                        <div class="bar" style="height: 60%; background: var(--mg-outline); flex: 1;">
+                                        </div>
+                                        <div class="bar" style="height: 30%; background: var(--mg-success); flex: 1;">
+                                        </div>
+                                    </div>
+                                    <span class="chart-label">B01-23</span>
+                                </div>
+                                <div class="bar-group">
+                                    <div
+                                        style="display: flex; gap: 4px; width: 100%; align-items: flex-end; height: 100%;">
+                                        <div class="bar" style="height: 55%; background: var(--mg-outline); flex: 1;">
+                                        </div>
+                                        <div class="bar" style="height: 40%; background: var(--mg-success); flex: 1;">
+                                        </div>
+                                    </div>
+                                    <span class="chart-label">B02-23</span>
+                                </div>
+                                <div class="bar-group">
+                                    <div
+                                        style="display: flex; gap: 4px; width: 100%; align-items: flex-end; height: 100%;">
+                                        <div class="bar" style="height: 65%; background: var(--mg-outline); flex: 1;">
+                                        </div>
+                                        <div class="bar" style="height: 25%; background: var(--mg-success); flex: 1;">
+                                        </div>
+                                    </div>
+                                    <span class="chart-label">B01-24</span>
+                                </div>
+                            </div>
+                            <div style="display:flex; gap: 16px; font-size: 11px; font-weight: 600;">
+                                <span><i class="bi bi-square-fill" style="color:var(--mg-outline)"></i> Dépenses</span>
+                                <span><i class="bi bi-square-fill" style="color:var(--mg-success)"></i> Bénéfices</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="card" style="height: 100%;">
+                            <h3 class="card-title">Répartition charges par catégorie</h3>
+                            <div
+                                style="height: 220px; display: flex; align-items: center; justify-content: center; position: relative; margin: 20px 0;">
+                                <div
+                                    style="width: 140px; height: 140px; border-radius: 50%; border: 24px solid var(--mg-primary); border-top-color: var(--mg-secondary); border-right-color: var(--mg-outline);">
+                                </div>
+                                <div style="position: absolute; text-align: center;">
+                                    <span class="data-mono" style="font-size: 18px;">30.6M</span><br />
+                                    <span class="kpi-label">Total Charges</span>
+                                </div>
+                            </div>
+                            <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 24px;">
+                                <div
+                                    style="display:flex; justify-content: space-between; align-items: center; padding-bottom: 8px; border-bottom: 1px solid var(--mg-surface-container);">
+                                    <span style="display: flex; align-items: center; gap: 8px;"><i
+                                            class="bi bi-circle-fill"
+                                            style="color: var(--mg-primary); font-size: 8px;"></i> Aliments</span>
+                                    <strong class="data-mono">74%</strong>
+                                </div>
+                                <div
+                                    style="display:flex; justify-content: space-between; align-items: center; padding-bottom: 8px; border-bottom: 1px solid var(--mg-surface-container);">
+                                    <span style="display: flex; align-items: center; gap: 8px;"><i
+                                            class="bi bi-circle-fill"
+                                            style="color: var(--mg-secondary); font-size: 8px;"></i> Salaires</span>
+                                    <strong class="data-mono">15%</strong>
+                                </div>
+                                <div
+                                    style="display:flex; justify-content: space-between; align-items: center; padding-bottom: 8px; border-bottom: 1px solid var(--mg-surface-container);">
+                                    <span style="display: flex; align-items: center; gap: 8px;"><i
+                                            class="bi bi-circle-fill"
+                                            style="color: var(--mg-outline); font-size: 8px;"></i>
+                                        Énergie/Entretien</span>
+                                    <strong class="data-mono">11%</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        function toggleSidebar() {
+            document.querySelector('.sidebar').classList.toggle('open');
+            document.querySelector('.sidebar-overlay').classList.toggle('open');
+        }
+        document.querySelector('.sidebar-overlay')
+            ?.addEventListener('click', () => {
+                document.querySelector('.sidebar').classList.remove('open');
+                document.querySelector('.sidebar-overlay').classList.remove('open');
+            });
+    </script>
+</body>
+
+</html>

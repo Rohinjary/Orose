@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+
+<html lang="fr">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Move Gasy — Nouveau Bassin</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+    <link href="css/bassin.css" rel="stylesheet" />
+    <link rel="stylesheet" href="css/responsive.css">
+</head>
+
+<body>
+    <div class="sidebar-overlay"></div>
+    <div class="layout">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <div class="brand-logo"><i class="bi bi-water"></i></div>
+                <div class="brand-name">MOVE GASY</div>
+            </div>
+            <div class="nav-container">
+                <div class="nav-label">Principal</div>
+                <a class="nav-item" href="dashboard.html">
+                    <span class="nav-icon"><i class="bi bi-speedometer2"></i></span> Dashboard
+                </a>
+                <div class="nav-label">Terrain</div>
+                <a class="nav-item active" href="#">
+                    <span class="nav-icon"><i class="bi bi-droplet-half"></i></span> Bassins
+                </a>
+                <a class="nav-item" href="bio.html">
+                    <span class="nav-icon"><i class="bi bi-activity"></i></span> Suivi biologique
+                </a>
+                <a class="nav-item" href="nourrissage.html">
+                    <span class="nav-icon"><i class="bi bi-egg-fill"></i></span> Nourrissage
+                </a>
+                <!--  <a class="nav-item">
+                    <span class="nav-icon"><i class="bi bi-thermometer-half"></i></span> Environnement
+                </a> -->
+                <a class="nav-item" href="sanitaire.html">
+                    <span class="nav-icon"><i class="bi bi-plus-circle"></i></span> Sanitaire
+                </a>
+                <div class="nav-label">Logistique</div>
+                <a class="nav-item" href="stock.html">
+                    <span class="nav-icon"><i class="bi bi-box-seam"></i></span> Stocks
+                </a>
+                <a class="nav-item" href="commercial.html">
+                    <span class="nav-icon"><i class="bi bi-cart3"></i></span> Commercial
+                </a>
+                <a class="nav-item" href="livraisons.html">
+                    <span class="nav-icon"><i class="bi bi-truck"></i></span> Livraisons
+                </a>
+                <a class="nav-item" href="finances.html">
+                    <span class="nav-icon"><i class="bi bi-cash-stack"></i></span> Finances
+                </a>
+                <div class="nav-label">Système</div>
+                <a class="nav-item" href="login.html">
+                    <span class="nav-icon"><i class="bi bi-lock"></i></span> Connexion</a>
+                <a class="nav-item" href="administration.html">
+                    <span class="nav-icon"><i class="bi bi-gear"></i></span> Administration</a>
+                <div class="nav-label">Portail client</div>
+                <a class="nav-item" href="front-office.html">
+                    <span class="nav-icon"><i class="bi bi-person-lock"></i></span> Front Office
+                </a>
+            </div>
+        </aside>
+        <!-- MAIN WRAPPER -->
+        <div class="main-wrapper">
+            <!-- TOPBAR -->
+            <header class="topbar">
+                <button class="menu-toggle" onclick="toggleSidebar()">
+                    <i class="bi bi-list"></i>
+                </button>
+                <div class="breadcrumb">
+                    <span>Bassins</span>
+                    <span class="sep">/</span>
+                    <span class="active">Nouveau Bassin</span>
+                </div>
+                <div class="topbar-actions">
+                    <div class="user-profile">
+                        <div class="user-info">
+                            <div class="user-name">Admin</div>
+                            <div class="user-role">Move Gasy Manager</div>
+                        </div>
+                        <div class="avatar">AD</div>
+                    </div>
+                </div>
+            </header>
+
+
+            <!-- Liste bassin -->
+            <main class="page">
+                <!-- FILTERS -->
+                <section class="filters-section">
+                    <div class="filter-group">
+                        <label class="filter-label">État</label>
+                        <select class="filter-input" style="min-width: 160px;">
+                            <option>Tous les états</option>
+                            <option>Actif</option>
+                            <option>Vide</option>
+                            <option>Quarantaine</option>
+                            <option>Maintenance</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Disponibilité</label>
+                        <select class="filter-input" style="min-width: 140px;">
+                            <option>Tous</option>
+                            <option>Libre</option>
+                            <option>Occupé</option>
+                        </select>
+                    </div>
+                    <div class="filter-group" style="flex: 1; max-width: 300px;">
+                        <label class="filter-label">Cycle Actif</label>
+                        <input class="filter-input" placeholder="Rechercher cycle..." style="width: 100%;"
+                            type="text" />
+                    </div>
+                    <button class="btn btn-primary" style="margin-left: auto;">
+                        <i class="bi bi-plus-lg"></i> NOUVEAU BASSIN
+                    </button>
+                </section>
+                <!-- BASSIN GRID -->
+                <div class="bassin-grid" id="bassin-grid">
+                    <!-- Cards will be injected by script to ensure consistency and 9 items -->
+                </div>
+            </main>
+
+
+            <!-- Historique bassin -->
+            <main class="page">
+                <div class="page-header">
+                    <div>
+                        <h2 class="page-title">Historique Chronologique</h2>
+                        <p class="page-sub">Suivi complet des transitions d'états et des interventions opérationnelles
+                            sur l'ensemble des bassins.</p>
+                    </div>
+                    <button class="btn btn-primary">
+                        <i class="bi bi-download"></i> EXPORTER CSV
+                    </button>
+                </div>
+                <!-- Filters -->
+                <div class="card">
+                    <div class="filter-grid">
+                        <div class="filter-group">
+                            <label class="filter-label">Bassin concerné</label>
+                            <select class="filter-select">
+                                <option>Tous les bassins</option>
+                                <option>Bassin A-102</option>
+                                <option>Bassin B-005</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label class="filter-label">Période</label>
+                            <select class="filter-select">
+                                <option>Dernières 24 heures</option>
+                                <option>7 derniers jours</option>
+                                <option>30 derniers jours</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label class="filter-label">Type d'état</label>
+                            <select class="filter-select">
+                                <option>Tous les types</option>
+                                <option>Actif</option>
+                                <option>Quarantaine</option>
+                                <option>Repos</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-secondary" style="height: 40px; justify-content: center;">
+                            APPLIQUER FILTRES
+                        </button>
+                    </div>
+                </div>
+                <!-- Main Table Content -->
+                <div class="card" style="padding: 0;">
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Bassin concerné</th>
+                                    <th>État avant</th>
+                                    <th class="arrow-col"></th>
+                                    <th>État après</th>
+                                    <th>Date et heure</th>
+                                    <th>Utilisateur responsable</th>
+                                    <th>Motif</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Row 1 -->
+                                <tr>
+                                    <td><strong>Bassin A-102</strong></td>
+                                    <td><span class="badge badge-repos">Repos</span></td>
+                                    <td class="arrow-col"><i class="bi bi-arrow-right"></i></td>
+                                    <td><span class="badge badge-actif">Actif</span></td>
+                                    <td class="date-cell">24 Oct 2023 | 08:45</td>
+                                    <td>M. Randria</td>
+                                    <td class="motif-cell">Début du cycle de croissance Q4.</td>
+                                </tr>
+                                <!-- Row 2 -->
+                                <tr>
+                                    <td><strong>Bassin B-005</strong></td>
+                                    <td><span class="badge badge-actif">Actif</span></td>
+                                    <td class="arrow-col"><i class="bi bi-arrow-right"></i></td>
+                                    <td><span class="badge badge-quarantaine">Quarantaine</span></td>
+                                    <td class="date-cell">23 Oct 2023 | 16:20</td>
+                                    <td>S. Rakoto</td>
+                                    <td class="motif-cell">Suspicion de pathogène viral, test PCR requis.</td>
+                                </tr>
+                                <!-- Row 3 -->
+                                <tr>
+                                    <td><strong>Bassin A-105</strong></td>
+                                    <td><span class="badge badge-actif">Actif</span></td>
+                                    <td class="arrow-col"><i class="bi bi-arrow-right"></i></td>
+                                    <td><span class="badge badge-repos">Repos</span></td>
+                                    <td class="date-cell">22 Oct 2023 | 09:12</td>
+                                    <td>Admin Site</td>
+                                    <td class="motif-cell">Récolte terminée, début nettoyage bassin.</td>
+                                </tr>
+                                <!-- Row 4 -->
+                                <tr>
+                                    <td><strong>Bassin C-012</strong></td>
+                                    <td><span class="badge badge-quarantaine">Quarantaine</span></td>
+                                    <td class="arrow-col"><i class="bi bi-arrow-right"></i></td>
+                                    <td><span class="badge badge-actif">Actif</span></td>
+                                    <td class="date-cell">21 Oct 2023 | 14:30</td>
+                                    <td>S. Rakoto</td>
+                                    <td class="motif-cell">Fin de quarantaine, résultats négatifs.</td>
+                                </tr>
+                                <!-- Row 5 -->
+                                <tr>
+                                    <td><strong>Bassin A-201</strong></td>
+                                    <td><span class="badge badge-repos">Repos</span></td>
+                                    <td class="arrow-col"><i class="bi bi-arrow-right"></i></td>
+                                    <td><span class="badge badge-actif">Actif</span></td>
+                                    <td class="date-cell">20 Oct 2023 | 07:00</td>
+                                    <td>M. Randria</td>
+                                    <td class="motif-cell">Nouveau chargement de post-larves.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- Pagination (Inside card container matching table structure) -->
+                    <div style="padding: 24px;">
+                        <div class="pagination">
+                            <div class="pagination-info">Affichage 1-5 sur 128 entrées</div>
+                            <div class="pagination-btns">
+                                <button class="page-btn"><i class="bi bi-chevron-left"></i></button>
+                                <button class="page-btn active">1</button>
+                                <button class="page-btn">2</button>
+                                <button class="page-btn">3</button>
+                                <button class="page-btn"><i class="bi bi-chevron-right"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+
+            <!-- Détail bassin -->
+            <main class="content">
+                <!-- Alerts Block -->
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle-fill"></i>
+                    <div><strong>Notification</strong> — Récolte possible (Poids moyen &gt; 15g). Planifier la
+                        logistique.</div>
+                </div>
+                <div class="grid-detail">
+                    <!-- General Info & Current Cycle -->
+                    <div class="col-8">
+                        <section class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">Informations Générales</h3>
+                                <span class="badge badge-success">Actif</span>
+                            </div>
+                            <div style="margin-bottom: 24px;">
+                                <h2 style="font-size: 32px; font-weight: 700;">Bassin B01</h2>
+                            </div>
+                            <div class="stat-group">
+                                <div class="stat-item">
+                                    <div class="label">Surface</div>
+                                    <div class="value">1000m²</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="label">Profondeur</div>
+                                    <div class="value">1.5m</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="label">Mise en service</div>
+                                    <div class="value" style="font-size: 15px;">12 Jan 2024</div>
+                                </div>
+                            </div>
+                        </section>
+                        <section class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">Cycle en cours</h3>
+                                <button class="btn btn-outline btn-sm"
+                                    style="padding: 4px 12px; font-size: 12px;">Détails cycle</button>
+                            </div>
+                            <div class="meta-info">
+                                <span class="id-label">ID: B01-2026-01</span>
+                                <span style="font-weight: 700; font-size: 18px;">65%</span>
+                            </div>
+                            <div class="progress-container">
+                                <div class="progress-bar" style="width: 65%;"></div>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+                                <span style="font-size: 12px; color: var(--mg-secondary);">Progression temporelle</span>
+                                <span style="font-size: 12px; color: var(--mg-secondary);">Semaine 10 / 15</span>
+                            </div>
+                            <div class="stat-group">
+                                <div class="stat-item">
+                                    <div class="label">Date début</div>
+                                    <div class="value" style="font-size: 14px;"><i class="bi bi-calendar3"
+                                            style="font-size: 12px;"></i> 15 Mars 2026</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="label">Fin estimée</div>
+                                    <div class="value" style="font-size: 14px;"><i class="bi bi-calendar-check"
+                                            style="font-size: 12px;"></i> 20 Juin 2026</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="label">Post-larves</div>
+                                    <div class="value">150 000</div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                    <!-- Actions & Controls -->
+                    <div class="col-4">
+                        <section class="card">
+                            <h3 class="card-title" style="margin-bottom: 16px;">Contrôle du bassin</h3>
+                            <div style="margin-bottom: 20px;">
+                                <p style="font-size: 13px; color: var(--mg-secondary); margin-bottom: 12px;">Changer
+                                    l'état opérationnel</p>
+                                <select>
+                                    <option selected="">ACTIF</option>
+                                    <option>EN RÉCOLTE</option>
+                                    <option>QUARANTAINE</option>
+                                    <option>PRÉPARATION</option>
+                                    <option>VIDE</option>
+                                </select>
+                            </div>
+                            <button class="btn btn-primary btn-full">Mettre à jour l'état</button>
+                        </section>
+                        <section class="card" style="background: var(--mg-primary); color: white; border: none;">
+                            <h3 class="card-title" style="color: rgba(255,255,255,0.7); margin-bottom: 16px;">Gestion
+                                cycle</h3>
+                            <p style="font-size: 13px; opacity: 0.8; margin-bottom: 24px;">Lancer un nouveau cycle de
+                                production pour ce bassin.</p>
+                            <button class="btn btn-full" style="background: white; color: var(--mg-primary);">
+                                <i class="bi bi-plus-circle"></i> Démarrer un cycle
+                            </button>
+                        </section>
+                    </div>
+                    <!-- Status History -->
+                    <div class="col-12">
+                        <section class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">Historique des changements d'état</h3>
+                            </div>
+                            <div class="table-container">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Ancien état</th>
+                                            <th>Nouvel état</th>
+                                            <th>Utilisateur</th>
+                                            <th>Motif</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>15 Mars 2026</td>
+                                            <td>PRÉPARATION</td>
+                                            <td><strong>ACTIF</strong></td>
+                                            <td>Admin</td>
+                                            <td>Mise en charge cycle B01-2026-01</td>
+                                        </tr>
+                                        <tr>
+                                            <td>10 Mars 2026</td>
+                                            <td>VIDE</td>
+                                            <td><strong>PRÉPARATION</strong></td>
+                                            <td>Technicien A</td>
+                                            <td>Nettoyage et désinfection terminés</td>
+                                        </tr>
+                                        <tr>
+                                            <td>01 Mars 2026</td>
+                                            <td>EN RÉCOLTE</td>
+                                            <td><strong>VIDE</strong></td>
+                                            <td>Admin</td>
+                                            <td>Récolte totale terminée</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </main>
+
+
+            <!-- CRUD bassin -->
+            <main class="page-content">
+                <div class="page-header" style="display: block;">
+                    <h1 class="page-title">Configuration du Bassin</h1>
+                    <p class="page-sub">Saisissez les paramètres techniques pour l'enregistrement du nouveau bassin
+                        aquacole.</p>
+                </div>
+                <div class="card">
+                    <form action="#" method="POST">
+                        <div class="form-grid">
+                            <!-- Numéro Bassin -->
+                            <div class="form-group">
+                                <label for="bassin_id">Numéro bassin</label>
+                                <input id="bassin_id" name="bassin_id" placeholder="Ex: B-001" required=""
+                                    type="text" />
+                            </div>
+                            <!-- Date de création -->
+                            <div class="form-group">
+                                <label for="creation_date">Date de création</label>
+                                <input id="creation_date" name="creation_date" required="" type="date" />
+                            </div>
+                            <!-- Surface m2 -->
+                            <div class="form-group">
+                                <label for="surface">Surface m²</label>
+                                <input id="surface" name="surface" placeholder="0.00" required="" step="0.01"
+                                    type="number" />
+                            </div>
+                            <!-- Profondeur m -->
+                            <div class="form-group">
+                                <label for="profondeur">Profondeur m</label>
+                                <input id="profondeur" name="profondeur" placeholder="0.00" required="" step="0.1"
+                                    type="number" />
+                            </div>
+                            <!-- État Initial -->
+                            <div class="form-group full-width">
+                                <label for="etat">État initial</label>
+                                <select id="etat" name="etat">
+                                    <option selected="" value="preparation">Préparation</option>
+                                    <option value="actif">Actif</option>
+                                    <option value="quarantaine">Quarantaine</option>
+                                    <option value="maintenance">Maintenance</option>
+                                </select>
+                            </div>
+                            <!-- Notes -->
+                            <div class="form-group full-width">
+                                <label for="notes">Notes</label>
+                                <textarea id="notes" name="notes"
+                                    placeholder="Observations environnementales ou spécificités techniques..."></textarea>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button class="btn btn-secondary" onclick="history.back()" type="button">Annuler</button>
+                            <button class="btn btn-primary" type="submit">Enregistrer le bassin</button>
+                        </div>
+                    </form>
+                </div>
+            </main>
+
+
+            <!-- Démarrage cycle -->
+            <main class="content">
+                <div class="header-section">
+                    <div>
+                        <h1 class="header-title">Démarrage d'un cycle</h1>
+                        <p class="header-sub">Lancer un nouveau cycle de production sur un bassin disponible</p>
+                    </div>
+                    <span class="badge badge-success"
+                        style="background: var(--mg-surface-container); color: var(--mg-secondary); border: 1px solid var(--mg-outline);">Status:
+                        En Préparation</span>
+                </div>
+                <div class="grid-detail">
+                    <!-- FORM SECTION -->
+                    <div class="col-8">
+                        <section class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">Configuration de la mise en charge</h3>
+                            </div>
+                            <form id="cycle-form">
+                                <div class="form-grid">
+                                    <div>
+                                        <label class="form-label">Numéro cycle</label>
+                                        <input class="form-control" readonly="" type="text" value="B01-2026-01" />
+                                    </div>
+                                    <div>
+                                        <label class="form-label">Date de début</label>
+                                        <input class="form-control" id="start-date" type="date" />
+                                    </div>
+                                </div>
+                                <div class="form-grid">
+                                    <div>
+                                        <label class="form-label">Post-larves ensemencées</label>
+                                        <input class="form-control" id="pl-count" placeholder="Ex: 150000"
+                                            type="number" />
+                                    </div>
+                                    <div>
+                                        <label class="form-label">Densité calculée (m²)</label>
+                                        <input class="form-control" id="density" placeholder="-" readonly=""
+                                            type="text" />
+                                    </div>
+                                </div>
+                                <div class="form-grid">
+                                    <div>
+                                        <label class="form-label">Fin prévue (+4 mois)</label>
+                                        <input class="form-control" id="end-date" placeholder="Automatique" readonly=""
+                                            type="text" />
+                                    </div>
+                                    <div>
+                                        <label class="form-label">Technicien responsable</label>
+                                        <select class="form-control">
+                                            <option value="">Sélectionner un technicien</option>
+                                            <option>Andry Rakoto</option>
+                                            <option>Mamy Randria</option>
+                                            <option>Fanja Soa</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div
+                                    style="display: flex; gap: 12px; margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--mg-outline);">
+                                    <button class="btn btn-primary" style="flex: 2;" type="button">
+                                        <i class="bi bi-play-fill"></i> Démarrer le cycle
+                                    </button>
+                                    <button class="btn btn-outline" style="flex: 1;" type="button">
+                                        Annuler
+                                    </button>
+                                </div>
+                            </form>
+                        </section>
+                    </div>
+                    <!-- SIDEBAR INFO SECTION -->
+                    <div class="col-4">
+                        <section class="card">
+                            <h3 class="card-title" style="margin-bottom: 20px;">Détails du Bassin B01</h3>
+                            <ul class="info-list">
+                                <li class="info-item">
+                                    <span class="label">Référence</span>
+                                    <span class="bassin-tag">B01</span>
+                                </li>
+                                <li class="info-item">
+                                    <span class="label">Surface totale</span>
+                                    <span class="value">1 000 m²</span>
+                                </li>
+                                <li class="info-item">
+                                    <span class="label">Profondeur moyenne</span>
+                                    <span class="value">1.5 m</span>
+                                </li>
+                                <li class="info-item">
+                                    <span class="label">Dernier cycle fini</span>
+                                    <span class="value">22 Déc 2025</span>
+                                </li>
+                                <li class="info-item">
+                                    <span class="label">État actuel</span>
+                                    <span class="value" style="color: var(--mg-warning);">PRÉPARATION</span>
+                                </li>
+                            </ul>
+                        </section>
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle-fill"></i>
+                            <div style="font-size: 13px;">
+                                <strong>Guide de démarrage</strong><br />
+                                Vérifiez que les paramètres physico-chimiques de l'eau ont été validés par le
+                                laboratoire avant l'ensemencement.
+                            </div>
+                        </div>
+                        <div class="image-container">
+                            <img alt="Vue du bassin"
+                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCAkxTCLWWMl5qxah-gcU46iuBhRXA-JtovhWgHkJL4b7x7w7JOUHeh2jaYT9B86gf-PubMfVCFXdUIa5XZCO-KQa9Ud_bJ3Z11SEk21u0iALdqBA0fE5Zws6GsTXgJ_jQsnNLl4nD4PJzlygXCd5qoea6FdoIM33-DFptSVPvLTWO9co5DVIJUdmPJ2QeR7NGOThCTu-vSlx0NfJaoMae54FF4-a2VWIWC5KYt00jv-AaSCJC9fHKJw0wo3-QnyB75-WIdHKEPnlqS" />
+                            <div class="image-caption">Vue actuelle — Bassin B01</div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+        </div>
+    </div>
+    <script>
+        // Set default date to today
+        document.getElementById('creation_date').valueAsDate = new Date();
+
+        // Liste bassin data example
+        const pondData = [
+            { id: 'B01', status: 'Actif', badge: 'badge-success', cycle: 'B01-2026-01', week: 'Semaine 10', progress: 65, weight: '18g', days: 45 },
+            { id: 'B02', status: 'Actif', badge: 'badge-success', cycle: 'B02-2026-01', week: 'Semaine 4', progress: 30, weight: '8g', days: 82 },
+            { id: 'B03', status: 'Quarantaine', badge: 'badge-danger', cycle: 'B03-2025-12', week: 'EMS détecté', progress: 0, weight: '24g', days: 3, blocked: true },
+            { id: 'B04', status: 'Vide', badge: 'badge-neutral', cycle: '-', week: 'Disponible', progress: 0, weight: '-', days: '-', empty: true },
+            { id: 'B05', status: 'Actif', badge: 'badge-success', cycle: 'B05-2026-01', week: 'Semaine 8', progress: 50, weight: '14g', days: 60 },
+            { id: 'B06', status: 'Actif', badge: 'badge-success', cycle: 'B06-2026-01', week: 'Semaine 12', progress: 75, weight: '21g', days: 30 },
+            { id: 'B07', status: 'Vide', badge: 'badge-neutral', cycle: '-', week: 'Disponible', progress: 0, weight: '-', days: '-', empty: true },
+            { id: 'B08', status: 'Maintenance', badge: 'badge-warning', cycle: '-', week: 'En réparation', progress: 0, weight: '-', days: '-', maintenance: true },
+            { id: 'B09', status: 'Actif', badge: 'badge-success', cycle: 'B09-2026-01', week: 'Semaine 7', progress: 42, weight: '11g', days: 68 }
+        ];
+
+        const container = document.getElementById('bassin-grid');
+
+        container.innerHTML = pondData.map(pond => {
+            let statusText = pond.week;
+            let progressHtml = `<div class="progress-container"><div class="progress-bar" style="width:${pond.progress}%"></div></div>`;
+
+            if (pond.blocked) {
+                progressHtml = `<div class="progress-container"><div class="progress-bar" style="width:0%; background: #ef4444"></div></div>`;
+                statusText = `<span style="color:var(--mg-danger)">${pond.week}</span>`;
+            } else if (pond.empty || pond.maintenance) {
+                progressHtml = `<div class="progress-container"><div class="progress-bar" style="width:0%"></div></div>`;
+            }
+
+            const harvestInfo = (pond.id === 'B06') ? `<div class="harvest-alert"><i class="bi bi-lightning-charge-fill"></i> Récolte proche</div>` : '';
+
+            return `
+                <div class="bassin-card">
+                    <div class="bassin-id">
+                        Bassin ${pond.id} 
+                        <span class="badge ${pond.badge}">${pond.status}</span>
+                    </div>
+                    <div class="bassin-stat-row">
+                        <span>${statusText}</span>
+                        <span>${pond.blocked ? 'Bloqué' : (pond.progress > 0 ? pond.progress + '%' : '')}</span>
+                    </div>
+                    ${progressHtml}
+                    <div class="bassin-stat-row" style="margin-bottom: 0;">
+                        ${harvestInfo || `<span class="footer-label">Cycle: ${pond.cycle}</span>`}
+                        ${pond.weight !== '-' ? `<span style="font-weight:700">Poids: ${pond.weight}</span>` : ''}
+                    </div>
+                    
+                    <div class="bassin-footer">
+                        <div class="footer-stat">
+                            <span class="footer-label">Restant</span>
+                            <span class="footer-val">${pond.days} ${pond.days !== '-' ? 'jrs' : ''}</span>
+                        </div>
+                        <button class="btn btn-secondary" style="font-size: 11px; height: 30px;">Détails</button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        // Démarrage cycle
+        const startDateInput = document.getElementById('start-date');
+        const endDateInput = document.getElementById('end-date');
+        const plCountInput = document.getElementById('pl-count');
+        const densityInput = document.getElementById('density');
+        const SURFACE = 1000;
+
+        startDateInput.addEventListener('change', (e) => {
+            if (e.target.value) {
+                const date = new Date(e.target.value);
+                date.setMonth(date.getMonth() + 4);
+                endDateInput.value = date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+            }
+        });
+
+        plCountInput.addEventListener('input', (e) => {
+            const count = parseInt(e.target.value);
+            if (!isNaN(count)) {
+                const density = (count / SURFACE).toFixed(1);
+                densityInput.value = `${density} PL / m²`;
+            } else {
+                densityInput.value = "";
+            }
+        });
+    </script>
+    <script>
+        function toggleSidebar() {
+            document.querySelector('.sidebar').classList.toggle('open');
+            document.querySelector('.sidebar-overlay').classList.toggle('open');
+        }
+        document.querySelector('.sidebar-overlay')
+            ?.addEventListener('click', () => {
+                document.querySelector('.sidebar').classList.remove('open');
+                document.querySelector('.sidebar-overlay').classList.remove('open');
+            });
+    </script>
+
+</body>
+
+</html>

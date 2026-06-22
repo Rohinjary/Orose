@@ -1,3 +1,4 @@
+
 CREATE TABLE role (
     id SERIAL PRIMARY KEY,
     code VARCHAR(20) NOT NULL UNIQUE,  -- ADMIN, TECH, RS, DIR
@@ -58,7 +59,6 @@ CREATE TABLE histo_statut_bassin (
     motif TEXT,
     date_changement TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
-
 -- ------------------------------------------------------------
 -- MODULE 2 : CYCLE & BIOLOGIQUE
 -- ------------------------------------------------------------

@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Move Gasy — Fiche Utilisateur</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/administration.css">
+    <link rel="stylesheet" href="css/responsive.css">
+</head>
+
+<body>
+    <div class="sidebar-overlay"></div>
+    <div class="layout">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <div class="brand-logo"><i class="bi bi-water"></i></div>
+                <div class="brand-name">MOVE GASY</div>
+            </div>
+            <div class="nav-container">
+                <div class="nav-label">Principal</div>
+                <a class="nav-item" href="dashboard.html">
+                    <span class="nav-icon"><i class="bi bi-speedometer2"></i></span> Dashboard
+                </a>
+                <div class="nav-label">Terrain</div>
+                <a class="nav-item " href="bassin.html">
+                    <span class="nav-icon"><i class="bi bi-droplet-half"></i></span> Bassins
+                </a>
+                <a class="nav-item" href="bio.html">
+                    <span class="nav-icon"><i class="bi bi-activity"></i></span> Suivi biologique
+                </a>
+                <a class="nav-item" href="nourrissage.html">
+                    <span class="nav-icon"><i class="bi bi-egg-fill"></i></span> Nourrissage
+                </a>
+                <!--  <a class="nav-item">
+                    <span class="nav-icon"><i class="bi bi-thermometer-half"></i></span> Environnement
+                </a> -->
+                <a class="nav-item" href="sanitaire.html">
+                    <span class="nav-icon"><i class="bi bi-plus-circle"></i></span> Sanitaire
+                </a>
+                <div class="nav-label">Logistique</div>
+                <a class="nav-item" href="stock.html">
+                    <span class="nav-icon"><i class="bi bi-box-seam"></i></span> Stocks
+                </a>
+                <a class="nav-item" href="commercial.html">
+                    <span class="nav-icon"><i class="bi bi-cart3"></i></span> Commercial
+                </a>
+                <a class="nav-item" href="livraisons.html">
+                    <span class="nav-icon"><i class="bi bi-truck"></i></span> Livraisons
+                </a>
+                <a class="nav-item" href="finances.html">
+                    <span class="nav-icon"><i class="bi bi-cash-stack"></i></span> Finances
+                </a>
+                <div class="nav-label">Système</div>
+                <a class="nav-item" href="login.html">
+                    <span class="nav-icon"><i class="bi bi-lock"></i></span> Connexion</a>
+                <a class="nav-item active" href="administration.html">
+                    <span class="nav-icon"><i class="bi bi-gear"></i></span> Administration</a>
+                <div class="nav-label">Portail client</div>
+                <a class="nav-item" href="front-office.html">
+                    <span class="nav-icon"><i class="bi bi-person-lock"></i></span> Front Office
+                </a>
+            </div>
+        </aside>
+
+        <div class="main-wrapper">
+            <!-- TOPBAR -->
+            <header class="topbar">
+
+                <button class="menu-toggle" onclick="toggleSidebar()">
+                    <i class="bi bi-list"></i>
+                </button>
+                <div class="breadcrumb">
+                    <span>Administration</span><span class="sep">/</span><span class="active">CRUD User</span>
+                </div>
+                <div class="topbar-actions">
+                    <button class="icon-btn"><i class="bi bi-bell"></i></button>
+                    <button class="icon-btn"><i class="bi bi-gear"></i></button>
+                    <div class="user-profile">
+                        <div class="avatar">AD</div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- CRUD Utilisateur -->
+            <main class="content">
+                <header class="header-section">
+                    <h2 class="header-title">Configuration de l'Utilisateur</h2>
+                    <p class="header-sub">Saisissez les informations d'identification et les privilèges d'accès.</p>
+                </header>
+
+                <div class="card">
+                    <form>
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <label class="form-label">Nom / Raison Sociale</label>
+                                <input type="text" class="form-control" placeholder="Ex: Dupont" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Prénom</label>
+                                <input type="text" class="form-control" placeholder="Ex: Adrien" required>
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label">Email Professionnel (Identifiant)</label>
+                                <input type="email" class="form-control" placeholder="nom@movegasy.mg" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Rôle Système</label>
+                                <select class="form-select" required>
+                                    <option value="" disabled selected>Sélectionner un rôle</option>
+                                    <option>Admin</option>
+                                    <option>Directeur</option>
+                                    <option>Technicien</option>
+                                    <option>Resp. Stock</option>
+                                    <option>Commercial</option>
+                                    <option>Comptable</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Mot de passe temporaire</label>
+                                <input type="password" class="form-control" placeholder="••••••••" required>
+                                <div class="form-text mt-2" style="font-size: 11px;">Sera chiffré en bcrypt.</div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-check form-switch mt-2">
+                                    <input class="form-check-input" type="checkbox" id="statusSwitch" checked>
+                                    <label class="form-check-label ms-2" for="statusSwitch"
+                                        style="font-size: 13px; font-weight: 600;">Compte Actif</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-3 mt-5 pt-4 border-top">
+                            <button type="button" class="btn btn-outline" onclick="history.back()">ANNULER</button>
+                            <button type="submit" class="btn btn-primary">ENREGISTRER L'UTILISATEUR</button>
+                        </div>
+                    </form>
+                </div>
+            </main>
+
+
+            <!-- Liste user -->
+            <main class="content">
+                <header class="header-section">
+                    <div>
+                        <h2 class="header-title">Utilisateurs du Système</h2>
+                        <p class="header-sub">Gérez les comptes d'accès au back-office et définissez les rôles de
+                            l'équipe.</p>
+                    </div>
+                    <button class="btn btn-primary"
+                        style="padding: 8px 16px; font-size: 13px; font-weight: 600; border-radius: 4px; background-color: var(--mg-primary); color: white; border: medium; display: flex; align-items: center; gap: 8px;"><i
+                            class="bi bi-person-plus"></i> Nouvel Utilisateur</button>
+                </header>
+
+                <div class="card">
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th class="">Nom / Prénom</th>
+                                    <th class="">Email</th>
+                                    <th class="">Rôle</th>
+                                    <th class="">Statut</th>
+                                    <th class="">Date création</th>
+                                    <th class="text-end">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class=""><strong>Adrien Dupont</strong></td>
+                                    <td class="">a.dupont@movegasy.mg</td>
+                                    <td class=""><span class="badge bg-dark">Admin</span></td>
+                                    <td class=""><span class="badge badge-actif">Actif</span></td>
+                                    <td class="data-mono">12/01/2024</td>
+                                    <td class="text-end">
+                                        <button class="btn btn-outline btn-sm me-2">Modifier</button>
+                                        <button
+                                            class="btn btn-outline btn-sm text-danger border-danger">Désactiver</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class=""><strong>Mamy Rakoto</strong></td>
+                                    <td class="">m.rakoto@movegasy.mg</td>
+                                    <td class=""><span class="badge bg-secondary text-white">Technicien</span></td>
+                                    <td class=""><span class="badge badge-actif">Actif</span></td>
+                                    <td class="data-mono">15/01/2024</td>
+                                    <td class="text-end">
+                                        <button class="btn btn-outline btn-sm me-2">Modifier</button>
+                                        <button
+                                            class="btn btn-outline btn-sm text-danger border-danger">Désactiver</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class=""><strong>Fanja Soa</strong></td>
+                                    <td class="">f.soa@movegasy.mg</td>
+                                    <td class=""><span class="badge bg-secondary text-white">Commercial</span></td>
+                                    <td class=""><span class="badge badge-inactif">Inactif</span></td>
+                                    <td class="data-mono">02/02/2024</td>
+                                    <td class="text-end">
+                                        <button class="btn btn-outline btn-sm me-2">Modifier</button>
+                                        <button
+                                            class="btn btn-outline btn-sm text-success border-success">Réactiver</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class=""><strong>Jean-Marc Hery</strong></td>
+                                    <td class="">jm.hery@movegasy.mg</td>
+                                    <td class=""><span class="badge bg-secondary text-white">Comptable</span></td>
+                                    <td class=""><span class="badge badge-actif">Actif</span></td>
+                                    <td class="data-mono">10/03/2024</td>
+                                    <td class="text-end">
+                                        <button class="btn btn-outline btn-sm me-2">Modifier</button>
+                                        <button
+                                            class="btn btn-outline btn-sm text-danger border-danger">Désactiver</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+
+            <!-- Audit -->
+            <main class="content">
+                <header class="header-section" style="display: block;">
+                    <h2 class="header-title">Audit Log & Traçabilité</h2>
+                    <p class="header-sub">Consultez l'historique immuable de toutes les actions effectuées sur le
+                        système.</p>
+                </header>
+
+                <!-- Filters -->
+                <div class="filter-bar">
+                    <div class="filter-group">
+                        <label class="filter-label">Utilisateur</label>
+                        <select class="form-select">
+                            <option>Tous les utilisateurs</option>
+                            <option>Adrien Dupont</option>
+                            <option>Mamy Rakoto</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Module</label>
+                        <select class="form-select">
+                            <option>Tous les modules</option>
+                            <option>Bassins</option>
+                            <option>Stock</option>
+                            <option>Commercial</option>
+                            <option>Administration</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Période</label>
+                        <input type="date" class="form-control">
+                    </div>
+                    <button class="btn btn-dark px-4"
+                        style="height: 38px; font-weight: 600; font-size: 13px;">FILTRER</button>
+                </div>
+
+                <div class="card">
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Date & Heure</th>
+                                    <th>Utilisateur</th>
+                                    <th>Module</th>
+                                    <th>Action</th>
+                                    <th>Entité cible</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="data-mono">12/06/2026 14:22</td>
+                                    <td><strong>Adrien Dupont</strong></td>
+                                    <td><span class="badge-module">Administration</span></td>
+                                    <td>Création utilisateur</td>
+                                    <td>jm.hery@movegasy.mg</td>
+                                </tr>
+                                <tr>
+                                    <td class="data-mono">12/06/2026 11:05</td>
+                                    <td><strong>Mamy Rakoto</strong></td>
+                                    <td><span class="badge-module">Stock</span></td>
+                                    <td>Entrée de stock</td>
+                                    <td>Lot #AL-2026-042</td>
+                                </tr>
+                                <tr>
+                                    <td class="data-mono">11/06/2026 17:45</td>
+                                    <td><strong>Adrien Dupont</strong></td>
+                                    <td><span class="badge-module">Bassins</span></td>
+                                    <td>Changement d'état</td>
+                                    <td>Bassin B03 -> Quarantaine</td>
+                                </tr>
+                                <tr>
+                                    <td class="data-mono">11/06/2026 09:12</td>
+                                    <td><strong>Adrien Dupont</strong></td>
+                                    <td><span class="badge-module">Commercial</span></td>
+                                    <td>Validation client</td>
+                                    <td>Aqualogistics SA</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        function toggleSidebar() {
+            document.querySelector('.sidebar').classList.toggle('open');
+            document.querySelector('.sidebar-overlay').classList.toggle('open');
+        }
+        document.querySelector('.sidebar-overlay')
+            ?.addEventListener('click', () => {
+                document.querySelector('.sidebar').classList.remove('open');
+                document.querySelector('.sidebar-overlay').classList.remove('open');
+            });
+    </script>
+</body>
+
+</html>

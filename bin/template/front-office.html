@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+
+<html lang="fr" style="">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Move Gasy — Accès Client</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="css/front-office.css">
+    <link href="css/responsive.css" rel="stylesheet" />
+</head>
+
+<body>
+        <div class="sidebar-overlay"></div>
+    <div class="layout">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <div class="brand-logo"><i class="bi bi-water"></i></div>
+                <div class="brand-name">MOVE GASY</div>
+            </div>
+            <div class="nav-container">
+                <div class="nav-label">Principal</div>
+                <a class="nav-item" href="dashboard.html">
+                    <span class="nav-icon"><i class="bi bi-speedometer2"></i></span> Dashboard
+                </a>
+                <div class="nav-label">Terrain</div>
+                <a class="nav-item " href="bassin.html">
+                    <span class="nav-icon"><i class="bi bi-droplet-half"></i></span> Bassins
+                </a>
+                <a class="nav-item" href="bio.html">
+                    <span class="nav-icon"><i class="bi bi-activity"></i></span> Suivi biologique
+                </a>
+                <a class="nav-item" href="nourrissage.html">
+                    <span class="nav-icon"><i class="bi bi-egg-fill"></i></span> Nourrissage
+                </a>
+                <!--  <a class="nav-item">
+                    <span class="nav-icon"><i class="bi bi-thermometer-half"></i></span> Environnement
+                </a> -->
+                <a class="nav-item" href="sanitaire.html">
+                    <span class="nav-icon"><i class="bi bi-plus-circle"></i></span> Sanitaire
+                </a>
+                <div class="nav-label">Logistique</div>
+                <a class="nav-item" href="stock.html">
+                    <span class="nav-icon"><i class="bi bi-box-seam"></i></span> Stocks
+                </a>
+                <a class="nav-item" href="commercial.html">
+                    <span class="nav-icon"><i class="bi bi-cart3"></i></span> Commercial
+                </a>
+                <a class="nav-item" href="livraisons.html">
+                    <span class="nav-icon"><i class="bi bi-truck"></i></span> Livraisons
+                </a>
+                <a class="nav-item" href="finances.html">
+                    <span class="nav-icon"><i class="bi bi-cash-stack"></i></span> Finances
+                </a>
+                <div class="nav-label">Système</div>
+ <a class="nav-item" href="login.html">
+          <span class="nav-icon"><i class="bi bi-lock"></i></span> Connexion</a>
+                <a class="nav-item" href="administration.html">
+                    <span class="nav-icon"><i class="bi bi-gear"></i></span> Administration</a>
+                <div class="nav-label">Portail client</div>
+                <a class="nav-item active" href="front-office.html">
+                    <span class="nav-icon"><i class="bi bi-person-lock"></i></span> Front Office
+                </a>
+            </div>
+        </aside>
+        <div class="main-wrapper">
+            <!-- TOPBAR -->
+            <header class="topbar">
+                
+                <button class="menu-toggle" onclick="toggleSidebar()">
+                    <i class="bi bi-list"></i>
+                </button>
+<div class="breadcrumb">
+                    <span class="">Portail Client</span>
+                    <span class="sep">/</span>
+                    <span class="active">Authentification</span>
+                </div>
+                <div class="topbar-actions">
+                    <button class="icon-btn"><i class="bi bi-bell"></i></button>
+                    <button class="icon-btn"><i class="bi bi-gear"></i></button>
+                    <div class="user-profile">
+                        <div class="avatar">?</div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Inscription + connexion client -->
+            <main class="content">
+                <header class="header-section">
+                    <h2 class="header-title">Accès Client</h2>
+                    <p class="header-sub">Connectez-vous à votre espace ou créez un compte pour passer commande.</p>
+                </header>
+                <div style="display: grid; grid-template-columns: repeat(12, 1fr); gap: 24px;">
+                    <!-- FORMULAIRE DE CONNEXION (col-5) -->
+                    <div style="grid-column: span 5;">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">Connexion</h3>
+                            </div>
+                            <form>
+                                <div class="form-group">
+                                    <label class="form-label">Email</label>
+                                    <input class="form-control" placeholder="votre@email.com" type="email" />
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Mot de passe</label>
+                                    <input class="form-control" placeholder="••••••••" type="password" />
+                                </div>
+                                <button class="btn btn-primary" style="width: 100%; margin-top: 8px;" type="submit">
+                                    Se connecter
+                                </button>
+                                <div style="text-align: center; margin-top: 16px;">
+                                    <a href="#"
+                                        style="color: var(--mg-secondary); font-size: 12px; text-decoration: none;">Mot
+                                        de passe oublié ?</a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <!-- FORMULAIRE D'INSCRIPTION (col-7) -->
+                    <div style="grid-column: span 7;">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">Créer un compte</h3>
+                                <span class="badge badge-neutral">Nouveau client</span>
+                            </div>
+                            <form>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                                    <div class="form-group">
+                                        <label class="form-label">Nom / Raison sociale</label>
+                                        <input class="form-control" placeholder="Ex: SARL Pêche Pro" type="text" />
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Type de client</label>
+                                        <select class="form-control">
+                                            <option value="particulier">Particulier</option>
+                                            <option value="restaurant">Restaurant</option>
+                                            <option value="poissonnerie">Poissonnerie</option>
+                                            <option value="supermarche">Supermarché</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Téléphone</label>
+                                        <input class="form-control" placeholder="+261 3x xx xxx xx" type="tel" />
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Email</label>
+                                        <input class="form-control" placeholder="contact@domaine.mg" type="email" />
+                                    </div>
+                                    <div class="form-group" style="grid-column: span 2;">
+                                        <label class="form-label">Adresse / Ville</label>
+                                        <input class="form-control" placeholder="Ex: Rue 4, Mahajanga" type="text" />
+                                    </div>
+                                    <div class="form-group" style="grid-column: span 2;">
+                                        <label class="form-label">Mot de passe</label>
+                                        <input class="form-control" placeholder="Choisir un mot de passe sécurisé"
+                                            type="password" />
+                                    </div>
+                                </div>
+                                <button class="btn btn-primary" style="width: 100%; margin-top: 8px;" type="submit">
+                                    Créer mon compte
+                                </button>
+                            </form>
+                            <div class="info-note">
+                                <i class="bi bi-info-circle-fill" style="color: var(--mg-warning);"></i>
+                                <p>Le compte est créé en attente de validation par le commercial. Vous recevrez une
+                                    notification par email dès que votre accès sera activé.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <!-- Catalogue produits -->
+            <main class="content">
+                <header class="header-section">
+                    <h2 class="header-title">Catalogue de Produits</h2>
+                    <p class="header-sub">Consultez les crevettes disponibles et nos tarifs actuels.</p>
+                </header>
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Produits Disponibles</h3>
+                        <div style="display: flex; gap: 8px;">
+                            <div style="position: relative;">
+                                <input placeholder="Rechercher..."
+                                    style="padding: 6px 12px 6px 32px; border: 1px solid var(--mg-outline); border-radius: var(--radius); font-size: 12px; width: 200px;"
+                                    type="text" />
+                                <i class="bi bi-search"
+                                    style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--mg-secondary); font-size: 12px;"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Produit</th>
+                                    <th>Spécifications</th>
+                                    <th>Disponibilité</th>
+                                    <th>Prix Unitaire</th>
+                                    <th style="text-align: right;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <span class="product-name">Crevettes fraîches</span>
+                                    </td>
+                                    <td>
+                                        <span class="product-meta">Calibre unique ≥ 15g</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge badge-success">En stock</span>
+                                    </td>
+                                    <td>
+                                        <span class="price-tag">45 000 Ar/kg</span>
+                                    </td>
+                                    <td style="text-align: right;">
+                                        <button class="btn btn-primary btn-sm">Commander</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="product-name">Crevettes congelées (IQF)</span>
+                                    </td>
+                                    <td>
+                                        <span class="product-meta">Calibre 20/30</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge badge-warning">Stock limité</span>
+                                    </td>
+                                    <td>
+                                        <span class="price-tag">42 500 Ar/kg</span>
+                                    </td>
+                                    <td style="text-align: right;">
+                                        <button class="btn btn-primary btn-sm">Commander</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="product-name">Crevettes décortiquées</span>
+                                    </td>
+                                    <td>
+                                        <span class="product-meta">Calibre 30/40</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge badge-success">En stock</span>
+                                    </td>
+                                    <td>
+                                        <span class="price-tag">55 000 Ar/kg</span>
+                                    </td>
+                                    <td style="text-align: right;">
+                                        <button class="btn btn-primary btn-sm">Commander</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="product-name">Crevettes Tigrées</span>
+                                    </td>
+                                    <td>
+                                        <span class="product-meta">Calibre Premium &gt; 25g</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge badge-danger">Indisponible</span>
+                                    </td>
+                                    <td>
+                                        <span class="price-tag">65 000 Ar/kg</span>
+                                    </td>
+                                    <td style="text-align: right;">
+                                        <button class="btn btn-outline btn-sm" disabled=""
+                                            style="opacity: 0.5; cursor: not-allowed;">Commander</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 24px;">
+                    <div class="card" style="padding: 20px;">
+                        <div style="display: flex; align-items: flex-start; gap: 16px;">
+                            <div
+                                style="width: 40px; height: 40px; background: var(--mg-surface); border-radius: var(--radius); display: flex; align-items: center; justify-content: center; font-size: 20px; color: var(--mg-primary);">
+                                <i class="bi bi-truck"></i>
+                            </div>
+                            <div>
+                                <h4 style="font-size: 14px; font-weight: 700; margin-bottom: 4px;">Livraison Flexible
+                                </h4>
+                                <p style="font-size: 12px; color: var(--mg-secondary);">Livraison à domicile ou retrait
+                                    en point de vente Move Gasy sous 24h à 48h.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card" style="padding: 20px;">
+                        <div style="display: flex; align-items: flex-start; gap: 16px;">
+                            <div
+                                style="width: 40px; height: 40px; background: var(--mg-surface); border-radius: var(--radius); display: flex; align-items: center; justify-content: center; font-size: 20px; color: var(--mg-primary);">
+                                <i class="bi bi-shield-check"></i>
+                            </div>
+                            <div>
+                                <h4 style="font-size: 14px; font-weight: 700; margin-bottom: 4px;">Qualité Garantie</h4>
+                                <p style="font-size: 12px; color: var(--mg-secondary);">Toutes nos crevettes sont issues
+                                    de nos bassins contrôlés biologiquement.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <!-- Passer une commande -->
+            <main class="content">
+                <header class="header-section">
+                    <h2 class="header-title">Passer une commande</h2>
+                    <p class="header-sub">Renseignez les détails de votre commande de crevettes.</p>
+                </header>
+                <div style="display: grid; grid-template-columns: repeat(12, 1fr); gap: 24px;">
+                    <!-- FORMULAIRE (col-8) -->
+                    <div style="grid-column: span 8;">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">Détails de la commande</h3>
+                            </div>
+                            <form>
+                                <div class="form-group">
+                                    <label class="form-label">Produit</label>
+                                    <input class="form-control" readonly="" type="text" value="Crevettes fraîches" />
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Quantité souhaitée (kg)</label>
+                                    <input class="form-control" min="1" placeholder="Ex: 50" type="number" />
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Date de livraison souhaitée</label>
+                                    <input class="form-control" type="date" />
+                                </div>
+                                <div class="alert-info">
+                                    <i class="bi bi-info-circle"></i>
+                                    <span>La date de livraison doit être au moins 7 jours après la date de
+                                        commande.</span>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Message / Instructions particulières</label>
+                                    <textarea class="form-control"
+                                        placeholder="Précisez ici vos besoins spécifiques (calibrage, conditionnement...)"
+                                        rows="4"></textarea>
+                                </div>
+                                <div
+                                    style="margin-top: 32px; border-top: 1px solid var(--mg-outline); padding-top: 24px; text-align: right;">
+                                    <button class="btn btn-primary" type="button">Valider la commande</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <!-- RECAPITULATIF (col-4) -->
+                    <div style="grid-column: span 4;">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">Récapitulatif</h3>
+                            </div>
+                            <div class="summary-list">
+                                <div class="summary-item">
+                                    <span class="summary-label">Client</span>
+                                    <span class="summary-value">Jean Seafood</span>
+                                </div>
+                                <div class="summary-item">
+                                    <span class="summary-label">Type de produit</span>
+                                    <span class="summary-value">Frais (Bio)</span>
+                                </div>
+                                <div class="summary-item">
+                                    <span class="summary-label">Délai estimé</span>
+                                    <span class="summary-value">7-10 jours</span>
+                                </div>
+                                <div class="summary-item">
+                                    <span class="summary-label">Origine</span>
+                                    <span class="summary-value">Bassins Nord</span>
+                                </div>
+                            </div>
+                            <div
+                                style="margin-top: 24px; padding: 16px; background: var(--mg-surface); border-radius: var(--radius);">
+                                <p
+                                    style="font-size: 11px; font-weight: 700; text-transform: uppercase; margin-bottom: 8px; color: var(--mg-secondary);">
+                                    Assistance</p>
+                                <p style="font-size: 13px; color: var(--mg-primary);">Une question sur votre commande ?
+                                    Contactez notre service logistique.</p>
+                                <a href="#"
+                                    style="display: block; margin-top: 12px; font-size: 13px; font-weight: 600; color: var(--mg-primary); text-decoration: none;">
+                                    <i class="bi bi-telephone" style="margin-right: 8px;"></i> +261 34 00 000 00
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <!-- Suivi commandes -->
+            <main class="content">
+                <header class="header-section">
+                    <h2 class="header-title">Suivi des Commandes</h2>
+                    <p class="header-sub">Consultez l'état de vos commandes passées et en cours.</p>
+                </header>
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Historique des Commandes</h3>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>N° Commande</th>
+                                    <th>Produit</th>
+                                    <th>Quantité</th>
+                                    <th>Date prévue</th>
+                                    <th>Montant</th>
+                                    <th>Statut</th>
+                                    <th style="text-align: right;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="data-mono">#CMD-2024-0012</td>
+                                    <td>Tilapia Frais (Calibré)</td>
+                                    <td>250 kg</td>
+                                    <td>12 Oct. 2024</td>
+                                    <td class="data-mono">11 250 000 Ar</td>
+                                    <td><span class="badge badge-warning">EN_ATTENTE</span></td>
+                                    <td style="text-align: right;">
+                                        <button class="btn btn-sm btn-outline-danger">Annuler</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="data-mono">#CMD-2024-0011</td>
+                                    <td>Filets de Tilapia</td>
+                                    <td>100 kg</td>
+                                    <td>10 Oct. 2024</td>
+                                    <td class="data-mono">5 500 000 Ar</td>
+                                    <td><span class="badge badge-success">CONFIRMÉE</span></td>
+                                    <td style="text-align: right;">-</td>
+                                </tr>
+                                <tr>
+                                    <td class="data-mono">#CMD-2024-0010</td>
+                                    <td>Tilapia Entier</td>
+                                    <td>500 kg</td>
+                                    <td>08 Oct. 2024</td>
+                                    <td class="data-mono">22 500 000 Ar</td>
+                                    <td><span class="badge badge-info">PRÊTE</span></td>
+                                    <td style="text-align: right;">-</td>
+                                </tr>
+                                <tr>
+                                    <td class="data-mono">#CMD-2024-0009</td>
+                                    <td>Tilapia Frais</td>
+                                    <td>150 kg</td>
+                                    <td>05 Oct. 2024</td>
+                                    <td class="data-mono">6 750 000 Ar</td>
+                                    <td><span class="badge badge-neutral">LIVRÉE</span></td>
+                                    <td style="text-align: right;">-</td>
+                                </tr>
+                                <tr>
+                                    <td class="data-mono">#CMD-2024-0008</td>
+                                    <td>Tilapia Entier</td>
+                                    <td>300 kg</td>
+                                    <td>02 Oct. 2024</td>
+                                    <td class="data-mono">13 500 000 Ar</td>
+                                    <td><span class="badge badge-danger">ANNULÉE</span></td>
+                                    <td style="text-align: right;">-</td>
+                                </tr>
+                                <tr>
+                                    <td class="data-mono">#CMD-2024-0007</td>
+                                    <td>Carpe Royale</td>
+                                    <td>80 kg</td>
+                                    <td>28 Sept. 2024</td>
+                                    <td class="data-mono">4 800 000 Ar</td>
+                                    <td><span class="badge badge-dark-danger">RUPTURE_STOCK</span></td>
+                                    <td style="text-align: right;">-</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+
+
+
+            <!-- Profil -->
+            <main class="content">
+                <header class="header-section">
+                    <h2 class="header-title">Mon Profil</h2>
+                    <p class="header-sub">Gérez vos informations personnelles et votre mot de passe.</p>
+                </header>
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Informations Personnelles</h3>
+                    </div>
+                    <form>
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label class="form-label">Nom / Raison sociale</label>
+                                <input class="form-control" type="text" value="Jean Dupont" />
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Type de client</label>
+                                <input class="form-control" disabled="" type="text" value="Grossiste" />
+                            </div>
+                        </div>
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label class="form-label">Téléphone</label>
+                                <input class="form-control" type="tel" value="+261 34 00 000 00" />
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Email</label>
+                                <input class="form-control" type="email" value="jean.dupont@email.mg" />
+                            </div>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label class="form-label">Adresse / Ville</label>
+                            <input class="form-control" type="text" value="Lot IVG 123 Bis, Antananarivo 101" />
+                        </div>
+                    </form>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Sécurité</h3>
+                    </div>
+                    <form>
+                        <div class="form-group">
+                            <label class="form-label">Ancien mot de passe</label>
+                            <input class="form-control" placeholder="••••••••" type="password" />
+                        </div>
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label class="form-label">Nouveau mot de passe</label>
+                                <input class="form-control" placeholder="Entrez le nouveau mot de passe"
+                                    type="password" />
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Confirmer le mot de passe</label>
+                                <input class="form-control" placeholder="Confirmez le nouveau mot de passe"
+                                    type="password" />
+                            </div>
+                        </div>
+                        <div style="display: flex; justify-content: flex-end; margin-top: 8px;">
+                            <button class="btn btn-primary" type="submit">Mettre à jour</button>
+                        </div>
+                    </form>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        function toggleSidebar() {
+            document.querySelector('.sidebar').classList.toggle('open');
+            document.querySelector('.sidebar-overlay').classList.toggle('open');
+        }
+        document.querySelector('.sidebar-overlay')
+            ?.addEventListener('click', () => {
+                document.querySelector('.sidebar').classList.remove('open');
+                document.querySelector('.sidebar-overlay').classList.remove('open');
+            });
+    </script>
+</body>
+
+</html>

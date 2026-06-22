@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+
+<html lang="fr">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Nourrissage — Move Gasy</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+    <style>
+        /* ═══════════════════════════════════════════════
+           DESIGN SYSTEM : MOVE GASY (Match SCREEN_2)
+           Theme: LIGHT | Font: INTER | Roundness: 4px
+        ═══════════════════════════════════════════════ */
+        :root {
+            --mg-surface: #f7f9fb;
+            --mg-surface-dim: #d8dadc;
+            --mg-surface-bright: #ffffff;
+            --mg-surface-container: #eceef0;
+            --mg-primary: #1a1a1a;
+            --mg-secondary: #4a4a4a;
+            --mg-outline: #d1d5db;
+
+            --mg-success: #10b981;
+            --mg-warning: #f59e0b;
+            --mg-danger: #ef4444;
+            --mg-info: #3b82f6;
+            --mg-error-bg: #fef2f2;
+            --mg-error-border: #fecaca;
+            --mg-error-text: #b91c1c;
+
+            --font-main: 'Inter', sans-serif;
+            --radius: 4px;
+            --sidebar-w: 240px;
+            --topbar-h: 64px;
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--mg-surface);
+            color: var(--mg-primary);
+            font-size: 14px;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ═══════════════════════════════════════════════
+           LAYOUT
+        ═══════════════════════════════════════════════ */
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* ═══════════════════════════════════════════════
+           SIDEBAR
+        ═══════════════════════════════════════════════ */
+        .sidebar {
+            width: var(--sidebar-w);
+            background: var(--mg-surface-bright);
+            border-right: 1px solid var(--mg-outline);
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            z-index: 101;
+        }
+
+        .sidebar-brand {
+            height: var(--topbar-h);
+            padding: 0 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid var(--mg-outline);
+        }
+
+        .brand-logo {
+            width: 32px;
+            height: 32px;
+            background: var(--mg-primary);
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: white;
+        }
+
+        .brand-name {
+            font-weight: 700;
+            font-size: 16px;
+            letter-spacing: -0.02em;
+        }
+
+        .nav-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px 12px;
+        }
+
+        .nav-label {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--mg-secondary);
+            margin: 24px 12px 8px;
+            letter-spacing: 0.05em;
+        }
+
+        .nav-label:first-child {
+            margin-top: 0;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            border-radius: var(--radius);
+            color: var(--mg-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+            margin-bottom: 2px;
+        }
+
+        .nav-item:hover {
+            background: var(--mg-surface-container);
+            color: var(--mg-primary);
+        }
+
+        .nav-item.active {
+            background: var(--mg-primary);
+            color: white;
+        }
+
+        .nav-icon {
+            font-size: 18px;
+            width: 20px;
+            text-align: center;
+        }
+
+        /* ═══════════════════════════════════════════════
+           TOPBAR
+        ═══════════════════════════════════════════════ */
+        .topbar {
+            position: fixed;
+            top: 0;
+            left: var(--sidebar-w);
+            right: 0;
+            z-index: 100;
+            height: var(--topbar-h);
+            background: var(--mg-surface-bright);
+            border-bottom: 1px solid var(--mg-outline);
+            display: flex;
+            align-items: center;
+            padding: 0 32px;
+            justify-content: space-between;
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--mg-secondary);
+        }
+
+        .breadcrumb span.active {
+            color: var(--mg-primary);
+            font-weight: 600;
+        }
+
+        .breadcrumb .sep {
+            color: var(--mg-outline);
+        }
+
+        .topbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .icon-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            width: 36px;
+            height: 36px;
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--mg-secondary);
+            transition: background 0.2s;
+        }
+
+        .icon-btn:hover {
+            background: var(--mg-surface-container);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-left: 16px;
+            border-left: 1px solid var(--mg-outline);
+        }
+
+        .avatar {
+            width: 32px;
+            height: 32px;
+            background: var(--mg-primary);
+            color: white;
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        /* ═══════════════════════════════════════════════
+           CONTENT
+        ═══════════════════════════════════════════════ */
+        .main-wrapper {
+            margin-left: var(--sidebar-w);
+            padding-top: var(--topbar-h);
+            width: 100%;
+        }
+
+        .content {
+            padding: 32px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header-section {
+            margin-bottom: 32px;
+        }
+
+        .header-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .header-sub {
+            color: var(--mg-secondary);
+            font-size: 14px;
+        }
+
+        /* ═══════════════════════════════════════════════
+           COMPONENTS
+        ═══════════════════════════════════════════════ */
+        .card {
+            background: var(--mg-surface-bright);
+            border: 1px solid var(--mg-outline);
+            border-radius: var(--radius);
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--mg-primary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .alert {
+            padding: 16px;
+            border-radius: var(--radius);
+            margin-bottom: 24px;
+            display: flex;
+            gap: 12px;
+            font-size: 14px;
+            border: 1px solid transparent;
+            align-items: center;
+        }
+
+        .alert-error {
+            background: var(--mg-error-bg);
+            border-color: var(--mg-error-border);
+            color: var(--mg-error-text);
+        }
+
+        .grid-detail {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 24px;
+        }
+
+        .col-8 {
+            grid-column: span 8;
+        }
+
+        .col-4 {
+            grid-column: span 4;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: var(--radius);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            border: 1px solid transparent;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: var(--font-main);
+            justify-content: center;
+        }
+
+        .btn-primary {
+            background: var(--mg-primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border-color: var(--mg-outline);
+            color: var(--mg-primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--mg-surface);
+        }
+
+        .btn-full {
+            width: 100%;
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--mg-secondary);
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            letter-spacing: 0.05em;
+        }
+
+        .form-control,
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--mg-outline);
+            border-radius: var(--radius);
+            background: white;
+            font-family: var(--font-main);
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+
+        .form-control:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--mg-primary);
+        }
+
+        select {
+            appearance: none;
+            cursor: pointer;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-chevron-down' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+        }
+
+        .input-group {
+            position: relative;
+            display: flex;
+        }
+
+        .input-group .form-control {
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+
+        .input-group-text {
+            background: var(--mg-surface-container);
+            border: 1px solid var(--mg-outline);
+            border-left: none;
+            padding: 0 12px;
+            display: flex;
+            align-items: center;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--mg-secondary);
+            border-top-right-radius: var(--radius);
+            border-bottom-right-radius: var(--radius);
+        }
+
+        /* Sidebar Panels style */
+        .side-panel-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .side-panel-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--mg-primary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .ration-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 16px;
+        }
+
+        .ration-table th {
+            padding: 8px;
+            background: var(--mg-surface);
+            border-bottom: 1px solid var(--mg-outline);
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--mg-secondary);
+            text-transform: uppercase;
+            text-align: left;
+        }
+
+        .ration-table td {
+            padding: 10px 8px;
+            border-bottom: 1px solid var(--mg-outline);
+            font-size: 13px;
+        }
+
+        .ration-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .technical-box {
+            background: rgba(0, 0, 0, 0.05);
+            padding: 12px;
+            border-radius: var(--radius);
+            margin-bottom: 16px;
+        }
+
+        .technical-box p {
+            font-size: 12px;
+            color: var(--mg-secondary);
+            margin: 0;
+        }
+
+        .chart-mockup {
+            display: flex;
+            align-items: flex-end;
+            gap: 4px;
+            height: 80px;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--mg-outline);
+        }
+
+        .chart-bar {
+            flex: 1;
+            background: var(--mg-outline);
+            border-radius: 2px 2px 0 0;
+            min-width: 15px;
+        }
+
+        .chart-bar.active {
+            background: var(--mg-primary);
+        }
+    </style>
+    <link rel="stylesheet" href="../css/responsive.css">
+</head>
+
+<body>
+    <div class="sidebar-overlay"></div>
+    <div class="layout">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <div class="brand-logo"><i class="bi bi-water"></i></div>
+                <div class="brand-name">MOVE GASY</div>
+            </div>
+            <div class="nav-container">
+                <div class="nav-label">Principal</div>
+                <a class="nav-item">
+                    <span class="nav-icon"><i class="bi bi-speedometer2"></i></span> Dashboard
+                </a>
+                <div class="nav-label">Terrain</div>
+                <a class="nav-item ">
+                    <span class="nav-icon"><i class="bi bi-droplet-half"></i></span> Bassins
+                </a>
+                <a class="nav-item">
+                    <span class="nav-icon"><i class="bi bi-activity"></i></span> Suivi biologique
+                </a>
+                <a class="nav-item active">
+                    <span class="nav-icon"><i class="bi bi-egg-fill"></i></span> Nourrissage
+                </a>
+                <!-- <a class="nav-item">
+                    <span class="nav-icon"><i class="bi bi-thermometer-half"></i></span> Environnement
+                </a> -->
+                <a class="nav-item">
+                    <span class="nav-icon"><i class="bi bi-plus-circle"></i></span> Sanitaire
+                </a>
+                <div class="nav-label">Logistique</div>
+                <a class="nav-item">
+                    <span class="nav-icon"><i class="bi bi-box-seam"></i></span> Stocks
+                </a>
+                <a class="nav-item">
+                    <span class="nav-icon"><i class="bi bi-cart3"></i></span> Commercial
+                </a>
+                <a class="nav-item">
+                    <span class="nav-icon"><i class="bi bi-truck"></i></span> Livraisons
+                </a>
+                <a class="nav-item">
+                    <span class="nav-icon"><i class="bi bi-cash-stack"></i></span> Finances
+                </a>
+                <div class="nav-label">Système</div>
+                <a class="nav-item" href="#">
+                    <span class="nav-icon"><i class="bi bi-lock"></i></span> Connexion</a>
+                <a class="nav-item">
+                    <span class="nav-icon"><i class="bi bi-gear"></i></span> Administration</a>
+                <div class="nav-label">Portail client</div>
+                <a class="nav-item">
+                    <span class="nav-icon"><i class="bi bi-person-lock"></i></span> Front Office
+                </a>
+            </div>
+        </aside>
+        <!-- MAIN WRAPPER -->
+        <div class="main-wrapper">
+            <!-- TOPBAR -->
+            <header class="topbar">
+                <button class="menu-toggle" onclick="toggleSidebar()">
+                    <i class="bi bi-list"></i>
+                </button>
+                <div class="breadcrumb">
+                    <span>Terrain</span>
+                    <span class="sep">/</span>
+                    <span class="active">Nourrissage</span>
+                </div>
+                <div class="topbar-actions">
+                    <button class="icon-btn"><i class="bi bi-bell"></i></button>
+                    <button class="icon-btn"><i class="bi bi-gear"></i></button>
+                    <div class="user-profile">
+                        <div class="avatar">AD</div>
+                    </div>
+                </div>
+            </header>
+            <!-- MAIN CONTENT -->
+            <main class="content">
+                <div class="header-section">
+                    <h2 class="header-title">Formulaire de distribution</h2>
+                    <p class="header-sub">Enregistrement quotidien du nourrissage par bassin</p>
+                </div>
+                <div class="grid-detail">
+                    <!-- Main Form Column -->
+                    <div class="col-8">
+                        <section class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">Formulaire de distribution</h3>
+                            </div>
+                            <form id="nourrissageForm" th:action="@{/nourrissage/distribution/enregistrer}"
+                                th:object="${distributionDTO}" method="POST">
+                                <div
+                                    style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
+                                    <div class="form-group">
+                                        <label class="form-label">Bassin Actif</label>
+                                        <select th:field="*{idBassin}" class="form-control" required>
+                                            <option value="" disabled selected>Choisir un bassin</option>
+                                            <option th:each="bassin : ${bassins}" th:value="${bassin.id}"
+                                                th:text="${bassin.code}"> </option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Type d'Aliment</label>
+                                        <select th:field="*{idAliment}" class="form-control" required>
+                                            <option value="" disabled selected>Sélectionner la catégorie</option>
+                                            <option th:each="al : ${aliments}" th:value="${al.id}"
+                                                th:text="${al.libelle}"></option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div
+                                    style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
+                                    <div class="form-group">
+                                        <label class="form-label">Quantité distribuée</label>
+                                        <div class="input-group">
+                                            <input class="form-control" placeholder="0.0" required="" step="0.1"
+                                                type="number" />
+                                            <span class="input-group-text">KG</span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Responsable</label>
+                                        <select th:field="*{idResponsable}" class="form-control" required>
+                                            <option value="" disabled selected>Sélectionner un responsable</option>
+                                            <option th:each="user : ${utilisateurs}" th:value="${user.id}"
+                                                th:text="${user.nom}"></option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div
+                                    style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
+                                    <div class="form-group">
+                                        <label class="form-label">Date</label>
+                                        <input th:field="*{date}" class="form-control" type="date" required />
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Heure / Créneau</label>
+                                        <input th:field="*{heure}" class="form-control" type="time" required />
+                                    </div>
+                                </div>
+                                <div class="form-group" style="margin-bottom: 32px;">
+                                    <label class="form-label">Observations techniques</label>
+                                    <textarea th:field="*{observations}" class="form-control"
+                                        placeholder="Comportement alimentaire..." rows="3"></textarea>
+                                </div>
+                                <div
+                                    style="display: flex; justify-content: flex-end; gap: 12px; padding-top: 24px; border-top: 1px solid var(--mg-outline);">
+                                    <button class="btn btn-outline" type="button">ANNULER</button>
+                                    <button class="btn btn-primary" style="padding-left: 32px; padding-right: 32px;"
+                                        type="submit">ENREGISTRER</button>
+                                </div>
+                            </form>
+                        </section>
+                        <!-- Bottom Alert (Matches SCREEN_2 blue notification style but in RED) -->
+                        <div class="alert alert-error">
+                            <i class="bi bi-exclamation-triangle-fill"></i>
+                            <div><strong>ALERTE EMPÉRATURE</strong> — Bassin 07 : Température &gt; 31°C. Surveiller le
+                                comportement avant nourrissage.</div>
+                        </div>
+                    </div>
+                    <!-- Side Panels Column (Matches SCREEN_2 sidebar blocks) -->
+                    <div class="col-4">
+                        <!-- Aide au Rationnement (Matches CONTRÔLE DU BASSIN style) -->
+                        <section class="card">
+                            <div class="side-panel-header">
+                                <i class="bi bi-lightbulb" style="color: var(--mg-warning);"></i>
+                                <h3 class="side-panel-title">Ration journalière</h3>
+                            </div>
+                            <div style="margin-bottom: 20px;">
+                                <table class="ration-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Stade</th>
+                                            <th style="text-align: right;">Conseil</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><strong>Stade 1</strong><br /><small
+                                                    style="color:var(--mg-secondary)">Poids &lt; 1g</small></td>
+                                            <td style="text-align: right; font-weight: 700;">8-10 repas</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Stade 2</strong><br /><small
+                                                    style="color:var(--mg-secondary)">Poids 1-5g</small></td>
+                                            <td style="text-align: right; font-weight: 700;">5-7 repas</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Stade 3</strong><br /><small
+                                                    style="color:var(--mg-secondary)">Poids &gt; 5g</small></td>
+                                            <td style="text-align: right; font-weight: 700;">3-4 repas</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="technical-box">
+                                <p
+                                    style="font-weight: 600; font-size: 10px; text-transform: uppercase; margin-bottom: 4px;">
+                                    Note technique</p>
+                                <p>Pour les distributions nocturnes, réduire de 15% si l'oxygène dissous est inférieur à
+                                    4.5 mg/L.</p>
+                            </div>
+                        </section>
+                        <!-- Courbe de Croissance (Matches GESTION CYCLE style - Black version) -->
+                        <section class="card" style="background: var(--mg-primary); color: white; border: none;">
+                            <div class="side-panel-header">
+                                <i class="bi bi-graph-up" style="color: rgba(255,255,255,0.7);"></i>
+                                <h3 class="side-panel-title" style="color: rgba(255,255,255,0.7);">Croissance vs Ration
+                                </h3>
+                            </div>
+                            <p style="font-size: 13px; opacity: 0.8; margin-bottom: 20px;">Indicateur de performance du
+                                lot en cours.</p>
+                            <div class="chart-mockup">
+                                <div class="chart-bar" style="height: 30%; background: rgba(255,255,255,0.2);"></div>
+                                <div class="chart-bar" style="height: 45%; background: rgba(255,255,255,0.2);"></div>
+                                <div class="chart-bar active" style="height: 60%; background: white;"></div>
+                                <div class="chart-bar active" style="height: 55%; background: white;"></div>
+                                <div class="chart-bar active" style="height: 80%; background: white;"></div>
+                                <div class="chart-bar active" style="height: 95%; background: white;"></div>
+                                <div class="chart-bar" style="height: 40%; background: rgba(255,255,255,0.4);"></div>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-top: 12px;">
+                                <span style="font-size: 10px; opacity: 0.6;">S-10</span>
+                                <span style="font-size: 10px; opacity: 0.6;">S-11</span>
+                                <span style="font-size: 10px; opacity: 0.6;">Aujourd'hui</span>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    <script>
+        window.onload = () => {
+            const dateInput = document.getElementById('inputDate');
+            const timeInput = document.getElementById('inputTime');
+            const now = new Date();
+            dateInput.value = now.toISOString().split('T')[0];
+            timeInput.value = now.toTimeString().slice(0, 5);
+        };
+
+        document.getElementById('nourrissageForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerText;
+
+            submitBtn.innerText = 'TRAITEMENT...';
+            submitBtn.disabled = true;
+
+            setTimeout(() => {
+                alert('Distribution enregistrée avec succès. Les stocks ont été mis à jour.');
+                submitBtn.innerText = originalText;
+                submitBtn.disabled = false;
+                this.reset();
+                window.onload();
+            }, 800);
+
+        });
+    </script>
+    <script>
+        function toggleSidebar() {
+            document.querySelector('.sidebar').classList.toggle('open');
+            document.querySelector('.sidebar-overlay').classList.toggle('open');
+        }
+        document.querySelector('.sidebar-overlay')
+            ?.addEventListener('click', () => {
+                document.querySelector('.sidebar').classList.remove('open');
+                document.querySelector('.sidebar-overlay').classList.remove('open');
+            });
+    </script>
+
+</body>
+
+</html>
