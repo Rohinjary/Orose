@@ -1,7 +1,9 @@
 package com.example.orose.service;
 
 import com.example.orose.dto.CreneauStatusDTO;
+import com.example.orose.dto.CreerDistributionDTO;
 import com.example.orose.dto.NourrissageDashboardDTO;
+import com.example.orose.dto.ValiderDistributionDTO;
 import com.example.orose.model.*;
 import com.example.orose.repository.*;
 import org.springframework.stereotype.Service;
@@ -252,5 +254,57 @@ public class NourrissageService {
         }
         
         return null;
+    }
+
+    public DistributionNourriture creerDistribution(CreerDistributionDTO dto) {
+        // Get cycle
+        Optional<CycleBassin> cycleOpt = cycleBassinRepository.findById(dto.getIdCycle());
+        if (cycleOpt.isEmpty()) {
+            throw new IllegalArgumentException("Cycle non trouvé");
+        }
+
+        // Get creneau
+        Optional<CreneauHoraire> creneauOpt = creneauHoraireRepository.findByLibelle(dto.getCreneau());
+        if (creneauOpt.isEmpty()) {
+            throw new IllegalArgumentException("Créneau non trouvé");
+        }
+
+        // Create distribution
+        DistributionNourriture distribution = new DistributionNourriture();
+        distribution.setCycle(cycleOpt.get());
+        distribution.setEntreeAliment(entreeStockAlimentRepository.findById(dto.getIdEntreeAliment()).orElse(null));
+        distribution.setCreneau(creneauOpt.get());
+        distribution.setDateDistribution(dto.getDateDistribution());
+        distribution.setQuantitePrevueKg(dto.getQuantitePrevueKg());
+        distribution.setQuantiteDonneeKg(BigDecimal.ZERO);
+        distribution.setStatut("EN_ATTENTE");
+        distribution.setEstValide(false);
+
+        return distributionNourritureRepository.save(distribution);
+    }
+
+    public DistributionNourriture validerDistribution(ValiderDistributionDTO dto) {
+        Optional<DistributionNourriture> distOpt = distributionNourritureRepository.findById(dto.getIdDistribution());
+        if (distOpt.isEmpty()) {
+            throw new IllegalArgumentException("Distribution non trouvée");
+        }
+
+        DistributionNourriture distribution = distOpt.get();
+        distribution.setQuantiteDonneeKg(dto.getQuantiteDonneeKg());
+        distribution.setStatut("NOURRI");
+        distribution.setEstValide(true);
+
+        // Update stock
+        if (distribution.getEntreeAliment() != null) {
+            EntreeStockAliment stock = distribution.getEntreeAliment();
+            BigDecimal nouvelleQuantite = stock.getQuantiteRestanteKg().subtract(dto.getQuantiteDonneeKg());
+            if (nouvelleQuantite.compareTo(BigDecimal.ZERO) < 0) {
+                throw new IllegalArgumentException("Stock insuffisant");
+            }
+            stock.setQuantiteRestanteKg(nouvelleQuantite);
+            entreeStockAlimentRepository.save(stock);
+        }
+
+        return distributionNourritureRepository.save(distribution);
     }
 }
