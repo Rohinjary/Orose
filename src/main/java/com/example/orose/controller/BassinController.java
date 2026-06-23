@@ -98,9 +98,11 @@ public class BassinController {
     public String detail(@PathVariable Long id, Model model) {
         Bassin bassin = bassinService.getBassinById(id);
         List<String> transitions = bassinService.getTransitionsAutorisees(id);
+        List<HistoStatutBassin> historique = bassinService.getHistoriqueStatuts(id, null, null, null); // ← ajouter
 
         model.addAttribute("bassin", bassin);
         model.addAttribute("transitions", transitions);
+        model.addAttribute("historique", historique); // ← ajouter
         return "bassin/detail";
     }
 
@@ -119,20 +121,15 @@ public class BassinController {
         return "redirect:/bassins/" + id;
     }
 
-    @GetMapping("/{id}/historique")
-    public String historique(@PathVariable Long id,
-                            @RequestParam(required = false)
-                            @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm") LocalDateTime debut,
-                            @RequestParam(required = false)
-                            @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm") LocalDateTime fin,
-                            @RequestParam(required = false) String typeEtat,
-                            Model model) {
-
-        Bassin bassin = bassinService.getBassinById(id);
-        List<HistoStatutBassin> historique = bassinService.getHistoriqueStatuts(id, debut, fin, typeEtat);
-
-        model.addAttribute("bassin", bassin);
-        model.addAttribute("historique", historique);
+    @GetMapping("/historique")
+    public String historiqueGlobal(
+            @RequestParam(required = false)
+            @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm") LocalDateTime debut,
+            @RequestParam(required = false)
+            @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm") LocalDateTime fin,
+            @RequestParam(required = false) String typeEtat,
+            Model model) {
+        model.addAttribute("historique", bassinService.getHistoriqueGlobal(debut, fin, typeEtat));
         model.addAttribute("debut", debut);
         model.addAttribute("fin", fin);
         model.addAttribute("typeEtat", typeEtat);

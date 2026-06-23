@@ -1,27 +1,195 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head><title>Formulaire bassin</title></head>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title th:text="${modeEdition} ? 'Move Gasy — Modifier Bassin' : 'Move Gasy — Nouveau Bassin'">Move Gasy — Bassin</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+    <link href="/css/bassin/form.css" rel="stylesheet" />
+</head>
 <body>
-    <h1 th:text="${modeEdition} ? 'Modifier un bassin' : 'Créer un bassin'">Formulaire</h1>
+    <div class="sidebar-overlay"></div>
+    <div class="layout">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <div class="brand-logo"><i class="bi bi-water"></i></div>
+                <div class="brand-name">MOVE GASY</div>
+            </div>
+            <div class="nav-container">
+                <div class="nav-label">Principal</div>
+                <a class="nav-item">
+                    <span class="nav-icon"><i class="bi bi-speedometer2"></i></span> Dashboard
+                </a>
+                <div class="nav-label">Terrain</div>
+                <a class="nav-item active" th:href="@{/bassins}">
+                    <span class="nav-icon"><i class="bi bi-droplet-half"></i></span> Bassins
+                </a>
+                <a class="nav-item">
+                    <span class="nav-icon"><i class="bi bi-activity"></i></span> Suivi biologique
+                </a>
+                <a class="nav-item">
+                    <span class="nav-icon"><i class="bi bi-egg-fill"></i></span> Nourrissage
+                </a>
+                <a class="nav-item">
+                    <span class="nav-icon"><i class="bi bi-plus-circle"></i></span> Sanitaire
+                </a>
+                <div class="nav-label">Logistique</div>
+                <a class="nav-item">
+                    <span class="nav-icon"><i class="bi bi-box-seam"></i></span> Stocks
+                </a>
+                <a class="nav-item">
+                    <span class="nav-icon"><i class="bi bi-cart3"></i></span> Commercial
+                </a>
+                <a class="nav-item">
+                    <span class="nav-icon"><i class="bi bi-truck"></i></span> Livraisons
+                </a>
+                <a class="nav-item">
+                    <span class="nav-icon"><i class="bi bi-cash-stack"></i></span> Finances
+                </a>
+                <div class="nav-label">Système</div>
+                <a class="nav-item" href="#">
+                    <span class="nav-icon"><i class="bi bi-lock"></i></span> Connexion
+                </a>
+                <a class="nav-item">
+                    <span class="nav-icon"><i class="bi bi-gear"></i></span> Administration
+                </a>
+                <div class="nav-label">Portail client</div>
+                <a class="nav-item">
+                    <span class="nav-icon"><i class="bi bi-person-lock"></i></span> Front Office
+                </a>
+            </div>
+        </aside>
 
-    <p th:if="${erreur}" style="color:red" th:text="${erreur}"></p>
+        <!-- MAIN WRAPPER -->
+        <div class="main-wrapper">
+            <!-- TOPBAR -->
+            <header class="topbar">
+                <button class="menu-toggle" onclick="toggleSidebar()">
+                    <i class="bi bi-list"></i>
+                </button>
+                <div class="breadcrumb">
+                    <span>Bassins</span>
+                    <span class="sep">/</span>
+                    <span class="active" th:text="${modeEdition} ? 'Modifier Bassin' : 'Nouveau Bassin'">Formulaire</span>
+                </div>
+                <div class="topbar-actions">
+                    <div class="user-profile">
+                        <div class="user-info">
+                            <div class="user-name">Admin</div>
+                            <div class="user-role">Move Gasy Manager</div>
+                        </div>
+                        <div class="avatar">AD</div>
+                    </div>
+                </div>
+            </header>
 
-    <form th:action="${modeEdition} ? @{/bassins/{id}/modifier(id=${idBassin})} : @{/bassins}" method="post">
-        <label>Code :</label>
-        <input type="text" name="code" th:value="${bassinDTO.code}" /><br/>
+            <main class="page-content">
+                <div class="page-header">
+                    <h1 class="page-title" th:text="${modeEdition} ? 'Modifier le Bassin' : 'Configuration du Bassin'">Bassin</h1>
+                    <p class="page-sub" th:text="${modeEdition} ? 'Modifiez les paramètres techniques du bassin.' : 'Saisissez les paramètres techniques pour l\'enregistrement du nouveau bassin aquacole.'"></p>
+                </div>
 
-        <label>Surface (m²) :</label>
-        <input type="text" name="surface_m2" th:value="${bassinDTO.surface_m2}" /><br/>
+                <!-- Erreur -->
+                <div th:if="${erreur}" class="alert alert-danger" style="
+                    background: #fff0f0;
+                    border: 1px solid #ffcccc;
+                    border-left: 4px solid #e53e3e;
+                    border-radius: 8px;
+                    padding: 12px 16px;
+                    margin-bottom: 20px;
+                    color: #c53030;
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                ">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                    <span th:text="${erreur}"></span>
+                </div>
 
-        <label>Profondeur (m) :</label>
-        <input type="text" name="profondeur_metre" th:value="${bassinDTO.profondeur_metre}" /><br/>
+                <div class="card">
+                    <form th:action="${modeEdition} ? @{/bassins/{id}/modifier(id=${idBassin})} : @{/bassins}" method="post">
+                        <div class="form-grid">
+                            <!-- Code bassin -->
+                            <div class="form-group">
+                                <label for="code">Code bassin</label>
+                                <input id="code" type="text" name="code" placeholder="Ex: B01"
+                                    th:value="${bassinDTO.code}"
+                                    maxlength="3" />
+                                <span id="code-error" style="color: #e53e3e; font-size: 12px; display: none;">
+                                    Format invalide — doit etre B01 a B09
+                                </span>
+                            </div>
 
-        <label>Notes :</label>
-        <textarea name="notes" th:text="${bassinDTO.notes}"></textarea><br/>
+                            <!-- Surface -->
+                            <div class="form-group">
+                                <label for="surface_m2">Surface (m²) (inferieure a 100)</label>
+                                <input id="surface_m2" type="number" max="99" name="surface_m2" step="0.01" placeholder="0.00"
+                                       th:value="${bassinDTO.surface_m2}" />
+                            </div>
 
-        <button type="submit">Enregistrer</button>
-    </form>
+                            <!-- Profondeur -->
+                            <div class="form-group">
+                                <label for="profondeur_metre">Profondeur (m) (inferieure a 100)</label>
+                                <input id="profondeur_metre" type="number" max="99" name="profondeur_metre" step="0.1" placeholder="0.00"
+                                       th:value="${bassinDTO.profondeur_metre}" />
+                            </div>
 
-    <a th:href="@{/bassins}">Retour à la liste</a>
+                            <!-- Date de creation -->
+                            <div class="form-group">
+                                <label for="dateCreation">Date de creation</label>
+                                <input id="dateCreation" type="date" name="dateCreation"
+                                    th:value="${bassinDTO.dateCreation}" />
+                            </div>
+
+                            <!-- Notes -->
+                            <div class="form-group full-width">
+                                <label for="notes">Notes</label>
+                                <textarea id="notes" name="notes"
+                                    placeholder="Observations environnementales ou spécificités techniques..."
+                                    th:text="${bassinDTO.notes}"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <a th:href="@{/bassins}" class="btn btn-secondary">Annuler</a>
+                            <button class="btn btn-primary" type="submit"
+                                    th:text="${modeEdition} ? 'Enregistrer les modifications' : 'Enregistrer le bassin'">
+                                Enregistrer
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        function toggleSidebar() {
+            document.querySelector('.sidebar').classList.toggle('open');
+            document.querySelector('.sidebar-overlay').classList.toggle('open');
+        }
+        document.querySelector('.sidebar-overlay')
+            ?.addEventListener('click', () => {
+                document.querySelector('.sidebar').classList.remove('open');
+                document.querySelector('.sidebar-overlay').classList.remove('open');
+            });
+
+        document.getElementById('code').addEventListener('blur', function() {
+        const val = this.value.trim();
+        const regex = /^B0[1-9]$/;
+        const error = document.getElementById('code-error');
+        if (val && !regex.test(val)) {
+            error.style.display = 'block';
+            this.style.borderColor = '#e53e3e';
+        } else {
+            error.style.display = 'none';
+            this.style.borderColor = '';
+        }
+    });
+    </script>
 </body>
 </html>

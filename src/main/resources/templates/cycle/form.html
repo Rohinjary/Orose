@@ -1,27 +1,431 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head><title>Démarrer un cycle</title></head>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Demarrage de Cycle — Move Gasy</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+    <link href="/css/cycle/form.css" rel="stylesheet" />
+    <style>
+        .bassin-selector {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        .bassin-card-select {
+            border: 2px solid var(--mg-outline);
+            border-radius: var(--radius);
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+            background: white;
+        }
+
+        .bassin-card-select:hover {
+            border-color: var(--mg-primary);
+            background: var(--mg-surface);
+        }
+
+        .bassin-card-select input[type="checkbox"] {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+        .bassin-card-select.selected {
+            border-color: var(--mg-primary);
+            background: var(--mg-surface-container);
+        }
+
+        .bassin-card-select .bassin-code {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--mg-primary);
+            margin-bottom: 8px;
+        }
+
+        .bassin-card-select .bassin-info {
+            font-size: 12px;
+            color: var(--mg-secondary);
+            line-height: 1.8;
+        }
+
+        .counter {
+            font-size: 12px;
+            color: var(--mg-secondary);
+            margin-top: 8px;
+        }
+
+        .counter span {
+            font-weight: 700;
+            color: var(--mg-primary);
+        }
+
+        .form-label {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--mg-secondary);
+            letter-spacing: 0.04em;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--mg-outline);
+            border-radius: var(--radius);
+            font-family: var(--font-main);
+            font-size: 14px;
+            color: var(--mg-primary);
+            background: white;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-control:focus {
+            border-color: var(--mg-primary);
+        }
+
+        .form-control[readonly] {
+            background: var(--mg-surface-container);
+            color: var(--mg-secondary);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .info-list {
+            list-style: none;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--mg-outline);
+            font-size: 13px;
+        }
+
+        .info-item:last-child {
+            border-bottom: none;
+        }
+
+        .info-item .label {
+            color: var(--mg-secondary);
+            font-weight: 500;
+        }
+
+        .info-item .value {
+            font-weight: 600;
+            color: var(--mg-primary);
+        }
+
+        .bassin-tag {
+            background: var(--mg-primary);
+            color: white;
+            padding: 2px 8px;
+            border-radius: var(--radius);
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .no-bassins {
+            text-align: center;
+            padding: 32px;
+            color: var(--mg-secondary);
+            font-size: 14px;
+        }
+
+        .no-bassins i {
+            font-size: 32px;
+            display: block;
+            margin-bottom: 12px;
+            opacity: 0.4;
+        }
+
+        select.form-control {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 36px;
+        }
+    </style>
+</head>
 <body>
-    <h1>Démarrer un cycle — Bassin <span th:text="${bassin.code}"></span></h1>
+    <div class="sidebar-overlay"></div>
+    <div class="layout">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <div class="brand-logo"><i class="bi bi-water"></i></div>
+                <div class="brand-name">MOVE GASY</div>
+            </div>
+            <div class="nav-container">
+                <div class="nav-label">Principal</div>
+                <a class="nav-item"><span class="nav-icon"><i class="bi bi-speedometer2"></i></span> Dashboard</a>
+                <div class="nav-label">Terrain</div>
+                <a class="nav-item active" th:href="@{/bassins}">
+                    <span class="nav-icon"><i class="bi bi-droplet-half"></i></span> Bassins
+                </a>
+                <a class="nav-item"><span class="nav-icon"><i class="bi bi-activity"></i></span> Suivi biologique</a>
+                <a class="nav-item"><span class="nav-icon"><i class="bi bi-egg-fill"></i></span> Nourrissage</a>
+                <a class="nav-item"><span class="nav-icon"><i class="bi bi-plus-circle"></i></span> Sanitaire</a>
+                <div class="nav-label">Logistique</div>
+                <a class="nav-item"><span class="nav-icon"><i class="bi bi-box-seam"></i></span> Stocks</a>
+                <a class="nav-item"><span class="nav-icon"><i class="bi bi-cart3"></i></span> Commercial</a>
+                <a class="nav-item"><span class="nav-icon"><i class="bi bi-truck"></i></span> Livraisons</a>
+                <a class="nav-item"><span class="nav-icon"><i class="bi bi-cash-stack"></i></span> Finances</a>
+                <div class="nav-label">Systeme</div>
+                <a class="nav-item" href="#"><span class="nav-icon"><i class="bi bi-lock"></i></span> Connexion</a>
+                <a class="nav-item"><span class="nav-icon"><i class="bi bi-gear"></i></span> Administration</a>
+                <div class="nav-label">Portail client</div>
+                <a class="nav-item"><span class="nav-icon"><i class="bi bi-person-lock"></i></span> Front Office</a>
+            </div>
+        </aside>
 
-    <p th:if="${erreur}" style="color:red" th:text="${erreur}"></p>
+        <div class="main-wrapper">
+            <header class="topbar">
+                <button class="menu-toggle" onclick="toggleSidebar()"><i class="bi bi-list"></i></button>
+                <div class="breadcrumb">
+                    <span>Bassins</span>
+                    <span class="sep">/</span>
+                    <span class="active">Demarrage de cycle</span>
+                </div>
+                <div class="topbar-actions">
+                    <button class="icon-btn"><i class="bi bi-bell"></i></button>
+                    <button class="icon-btn"><i class="bi bi-gear"></i></button>
+                    <div class="user-profile">
+                        <div class="avatar">AD</div>
+                    </div>
+                </div>
+            </header>
 
-    <form th:action="@{/bassins/{idBassin}/cycles(idBassin=${bassin.id})}" method="post">
-        <label>Espèce :</label>
-        <select name="idEspece">
-            <option th:each="e : ${especes}" th:value="${e.id}"
-                    th:text="${e.nomCourant != null and !#strings.isEmpty(e.nomCourant) ? e.nomCourant : e.nomScientifique}"></option>
-        </select><br/>
+            <main class="content">
+                <div class="header-section">
+                    <div>
+                        <h1 class="header-title">Demarrage d'un cycle</h1>
+                        <p class="header-sub">Selectionnez 3 bassins disponibles et configurez la mise en charge</p>
+                    </div>
+                    <span class="badge" style="background: var(--mg-surface-container); color: var(--mg-secondary); border: 1px solid var(--mg-outline);">
+                        Bassins VIDE disponibles : <span th:text="${#lists.size(bassinsVides)}">0</span>
+                    </span>
+                </div>
 
-        <label>Effectif initial :</label>
-        <input type="number" name="effectifInitial" /><br/>
+                <!-- Erreur -->
+                <div th:if="${erreur}" class="alert alert-warning" style="margin-bottom: 24px;">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                    <div th:text="${erreur}"></div>
+                </div>
 
-        <label>Coût post-larves :</label>
-        <input type="text" name="coutPostLarves" /><br/>
+                <div class="grid-detail">
+                    <!-- FORMULAIRE -->
+                    <div class="col-8">
+                        <form th:action="@{/cycles}" method="post" id="cycle-form"> 
 
-        <button type="submit">Démarrer le cycle</button>
-    </form>
+                            <!-- Selection des 3 bassins -->
+                            <section class="card">
+                                <div class="card-header">
+                                    <h3 class="card-title">Selection des bassins</h3>
+                                    <span class="counter">Selectionnes : <span id="count">0</span> / 3</span>
+                                </div>
 
-    <a th:href="@{/bassins/{id}(id=${bassin.id})}">Retour au bassin</a>
+                                <!-- Pas de bassins disponibles -->
+                                <div th:if="${#lists.isEmpty(bassinsVides)}" class="no-bassins">
+                                    <i class="bi bi-slash-circle"></i>
+                                    Aucun bassin avec le statut VIDE disponible.
+                                </div>
+
+                                <!-- Liste des bassins VIDE -->
+                                <div class="bassin-selector" th:unless="${#lists.isEmpty(bassinsVides)}">
+                                    <label th:each="b : ${bassinsVides}"
+                                           class="bassin-card-select"
+                                           th:attr="for=${'bassin-' + b.id}">
+                                        <input type="checkbox"
+                                               name="idBassins"
+                                               th:id="${'bassin-' + b.id}"
+                                               th:value="${b.id}"
+                                               onchange="updateCount()" />
+                                        <div class="bassin-code" th:text="${b.code}">B01</div>
+                                        <div class="bassin-info">
+                                            <span th:text="${b.surfaceM2} + ' m²'">— m²</span><br/>
+                                            <span th:text="${b.profondeurMetre} + ' m prof.'">— m</span>
+                                        </div>
+                                    </label>
+                                </div>
+                            </section>
+
+                            <!-- Configuration du cycle -->
+                            <section class="card">
+                                <div class="card-header">
+                                    <h3 class="card-title">Configuration de la mise en charge</h3>
+                                </div>
+
+                                <div class="form-grid">
+                                    <div>
+                                        <label class="form-label">Espece</label>
+                                        <select name="idEspece" class="form-control">
+                                            <option value="" disabled selected>-- Choisir une espece --</option>
+                                            <option th:each="e : ${especes}"
+                                                    th:value="${e.id}"
+                                                    th:text="${e.nomCourant != null and !#strings.isEmpty(e.nomCourant) ? e.nomCourant : e.nomScientifique}">
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="form-label">Post-larves ensemencees</label>
+                                        <input class="form-control" type="number" name="effectifInitial"
+                                               id="pl-count" placeholder="Ex: 150000" />
+                                    </div>
+                                </div>
+
+                                <div class="form-grid">
+                                    <div>
+                                        <label class="form-label">Cout post-larves (Ar)</label>
+                                        <input class="form-control" type="number" name="coutPostLarves"
+                                               step="0.01" placeholder="0.00" />
+                                    </div>
+                                    <div>
+                                        <label class="form-label">Densite calculee (PL/m²)</label>
+                                        <input class="form-control" type="text" id="density"
+                                               placeholder="—" readonly />
+                                    </div>
+                                </div>
+
+                                <div class="form-grid">
+                                    <div>
+                                        <label class="form-label">Date de debut</label>
+                                        <input class="form-control" type="date" name="dateDebut"
+                                               id="start-date" />
+                                    </div>
+                                    <div>
+                                        <label class="form-label">Date de fin prevue</label>
+                                        <input class="form-control" type="date" name="dateFinPrevue"
+                                               id="end-date" />
+                                    </div>
+                                </div>
+
+                                <div style="display: flex; gap: 12px; margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--mg-outline);">
+                                    <button class="btn btn-primary" style="flex: 2;" type="submit" id="submit-btn" disabled>
+                                        <i class="bi bi-play-fill"></i> Demarrer le cycle
+                                    </button>
+                                    <a th:href="@{/bassins}" class="btn btn-outline" style="flex: 1;">
+                                        Annuler
+                                    </a>
+                                </div>
+                            </section>
+                        </form>
+                    </div>
+
+                    <!-- SIDEBAR INFO -->
+                    <div class="col-4">
+                        <section class="card">
+                            <h3 class="card-title" style="margin-bottom: 20px;">Bassins selectionnes</h3>
+                            <div id="selected-summary" style="color: var(--mg-secondary); font-size: 13px;">
+                                Aucun bassin selectionne
+                            </div>
+                        </section>
+
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle-fill"></i>
+                            <div style="font-size: 13px;">
+                                <strong>Guide de demarrage</strong><br />
+                                Selectionnez exactement 3 bassins avec le statut VIDE. Au demarrage, ils passeront automatiquement en PREPARATION.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        const SURFACE_PAR_BASSIN = 1000; // a ajuster
+
+        function updateCount() {
+            const checked = document.querySelectorAll('input[name="idBassins"]:checked');
+            const count = checked.length;
+            document.getElementById('count').textContent = count;
+
+            // Update visual state
+            document.querySelectorAll('.bassin-card-select').forEach(card => {
+                const cb = card.querySelector('input[type="checkbox"]');
+                card.classList.toggle('selected', cb.checked);
+            });
+
+            // Disable unchecked if 3 already selected
+            document.querySelectorAll('input[name="idBassins"]:not(:checked)').forEach(cb => {
+                cb.disabled = count >= 3;
+                cb.closest('.bassin-card-select').style.opacity = (count >= 3) ? '0.4' : '1';
+            });
+
+            // Enable submit only when exactly 3
+            document.getElementById('submit-btn').disabled = count !== 3;
+
+            // Update summary
+            const summary = document.getElementById('selected-summary');
+            if (count === 0) {
+                summary.innerHTML = '<span style="color: var(--mg-secondary);">Aucun bassin selectionne</span>';
+            } else {
+                const codes = Array.from(checked).map(cb => {
+                    const card = cb.closest('.bassin-card-select');
+                    return card.querySelector('.bassin-code').textContent;
+                });
+                summary.innerHTML = codes.map(c =>
+                    `<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--mg-outline);">
+                        <span class="bassin-tag" style="background:var(--mg-primary);color:white;padding:2px 8px;border-radius:4px;font-size:12px;font-weight:700;">${c}</span>
+                        <span style="font-size:13px;color:var(--mg-primary);font-weight:500;">Selectionne</span>
+                    </div>`
+                ).join('');
+            }
+        }
+
+        // Calcul densite automatique
+        document.getElementById('pl-count')?.addEventListener('input', (e) => {
+            const count = parseInt(e.target.value);
+            const densityInput = document.getElementById('density');
+            if (!isNaN(count) && count > 0) {
+                densityInput.value = (count / SURFACE_PAR_BASSIN).toFixed(1) + ' PL/m²';
+            } else {
+                densityInput.value = '';
+            }
+        });
+
+        // Date fin auto (+4 mois)
+        document.getElementById('start-date')?.addEventListener('change', (e) => {
+            if (e.target.value) {
+                const date = new Date(e.target.value);
+                date.setMonth(date.getMonth() + 4);
+                const endInput = document.getElementById('end-date');
+                endInput.value = date.toISOString().split('T')[0];
+            }
+        });
+
+        function toggleSidebar() {
+            document.querySelector('.sidebar').classList.toggle('open');
+            document.querySelector('.sidebar-overlay').classList.toggle('open');
+        }
+        document.querySelector('.sidebar-overlay')
+            ?.addEventListener('click', () => {
+                document.querySelector('.sidebar').classList.remove('open');
+                document.querySelector('.sidebar-overlay').classList.remove('open');
+            });
+    </script>
 </body>
 </html>

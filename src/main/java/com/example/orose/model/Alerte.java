@@ -14,17 +14,17 @@ public class Alerte {
     private Integer id;
 
     @Column(name = "type_alerte", nullable = false, length = 50)
-    private String typeAlerte; // MORTALITE_ANORMALE, PESEE_MANQUANTE, STOCK_CRITIQUE...
+    private String typeAlerte;
 
     @Column(nullable = false, length = 10)
-    private String niveau; // ORANGE, ROUGE
+    private String niveau;
 
     @Column(name = "module_source", nullable = false, length = 30)
     private String moduleSource;
 
     @ManyToOne
-    @JoinColumn(name = "id_cycle_bassin")
-    private CycleBassin cycleBassin;
+    @JoinColumn(name = "id_cycle_bassin_assoc")
+    private CycleBassinAssoc cycleBassinAssoc;
 
     @Column(nullable = false, columnDefinition = "TEXT")
     private String message;
@@ -41,4 +41,9 @@ public class Alerte {
     @ManyToOne
     @JoinColumn(name = "id_resolu_par")
     private Utilisateur resoluPar;
+
+    @PrePersist
+    public void prePersist() {
+        this.dateCreation = LocalDateTime.now();
+    }
 }
