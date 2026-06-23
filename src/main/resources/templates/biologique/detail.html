@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title th:text="'Suivi biologique — ' + ${detail.codeBassin}">Suivi biologique</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="/css/biologique/detail.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="sidebar-overlay"></div>
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <div class="brand-logo"><i class="bi bi-water"></i></div>
+                <div class="brand-name">MOVE GASY</div>
+            </div>
+            <div class="nav-container">
+                <div class="nav-label">Terrain</div>
+                <a class="nav-item" th:href="@{/bassins}"><span class="nav-icon"><i class="bi bi-droplet-half"></i></span> Bassins</a>
+                <a class="nav-item active" th:href="@{/biologique}"><span class="nav-icon"><i class="bi bi-activity"></i></span> Suivi biologique</a>
+            </div>
+        </aside>
+
+        <div class="main-wrapper">
+            <header class="topbar">
+                <button class="menu-toggle" onclick="toggleSidebar()"><i class="bi bi-list"></i></button>
+                <div class="breadcrumb">
+                    <a th:href="@{/biologique}" style="color:inherit;text-decoration:none;">Suivi biologique</a>
+                    <span class="sep">/</span>
+                    <span class="active" th:text="${detail.codeBassin}">B01</span>
+                </div>
+            </header>
+
+            <main class="content">
+                <div th:if="${erreur}" class="alert alert-danger" th:text="${erreur}"></div>
+                <div th:if="${succes}" class="alert alert-success" th:text="${succes}"></div>
+
+                <div class="detail-header">
+                    <h1>🔬 Suivi biologique — Bassin <span th:text="${detail.codeBassin}">B01</span> · <span th:text="${detail.codeUniqueCycle}">C01</span></h1>
+                    <p class="page-subtitle">
+                        Espèce : <strong th:text="${detail.nomEspece}">—</strong> |
+                        Semaine <strong th:text="'S' + ${detail.semaineActuelle}">S0</strong><br/>
+                        Démarré le <span th:text="${#temporals.format(detail.dateDebut, 'dd/MM/yyyy')}">—</span> ·
+                        Fin prévue <span th:text="${#temporals.format(detail.dateFinPrevue, 'dd/MM/yyyy')}">—</span>
+                    </p>
+                </div>
+
+                <div th:if="${!#lists.isEmpty(detail.alertesActives)}" class="alertes-ligne">
+                    <div th:each="a : ${detail.alertesActives}"
+                         th:classappend="${a.niveau == 'ROUGE'} ? 'alert alert-danger' :
+                                         (${a.niveau == 'ORANGE'} ? 'alert alert-warning' : 'alert alert-success')">
+                        <strong th:text="${a.typeAlerte}">ALERTE</strong> — <span th:text="${a.message}"></span>
+                    </div>
+                </div>
+
+                <div class="kpi-grid">
+                    <div class="kpi-card">
+                        <div class="kpi-icon"><i class="bi bi-speedometer2"></i></div>
+                        <div class="kpi-label">Biomasse</div>
+                        <div class="kpi-value" th:text="${detail.biomassActuelleKg != null} ? ${detail.biomassActuelleKg} + ' kg' : '—'">—</div>
+                    </div>
+                    <div class="kpi-card kpi-survie"
+                         th:classappend="${detail.tauxSurvie != null and detail.tauxSurvie.doubleValue() < 40} ? 'kpi-danger' :
+                                         (${detail.tauxSurvie != null and detail.tauxSurvie.doubleValue() < 70} ? 'kpi-warning' : 'kpi-success')">
+                        <div class="kpi-icon"><i class="bi bi-heart-pulse"></i></div>
+                        <div class="kpi-label">Taux survie</div>
+                        <div class="kpi-value" th:text="${detail.tauxSurvie != null} ? ${detail.tauxSurvie} + ' %' : '—'">—</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-icon"><i class="bi bi-graph-up"></i></div>
+                        <div class="kpi-label">Poids moyen</div>
+                        <div class="kpi-value" th:text="${detail.poidsMoyen != null} ? ${detail.poidsMoyen} + ' g' : '—'">—</div>
+                    </div>
+                    <div class="kpi-card"
+                         th:classappend="${detail.tailleMoyenne != null and detail.tailleMoyenne.doubleValue() >= 110} ? 'kpi-success' : ''">
+                        <div class="kpi-icon"><i class="bi bi-rulers"></i></div>
+                        <div class="kpi-label">Taille moyenne</div>
+                        <div class="kpi-value" th:text="${detail.tailleMoyenne != null} ? ${detail.tailleMoyenne} + ' mm' : '—'">—</div>
+                    </div>
+                </div>
+
+                <section class="recolte-card">
+                    <div th:if="${detail.calibreAtteint}">
+                        <span class="badge bg-success fs-6">✅ Calibre de récolte atteint !</span>
+                    </div>
+                    <div th:unless="${detail.calibreAtteint}">
+                        <p th:if="${detail.dateEstimeeRecolte != null}">
+                            <strong>Date estimée :</strong>
+                            <span th:text="${#temporals.format(detail.dateEstimeeRecolte, 'dd/MM/yyyy')}">—</span>
+                        </p>
+                        <p th:if="${detail.dateEstimeeRecolte == null}">
+                            <strong>Date estimée :</strong> Non calculable
+                        </p>
+                        <p th:if="${detail.biomasseRecoltableEstimee != null}">
+                            <strong>Biomasse récoltable estimée :</strong>
+                            <span th:text="${detail.biomasseRecoltableEstimee} + ' kg'">—</span>
+                        </p>
+                    </div>
+                </section>
+
+                <section class="card" style="padding: 24px; margin-bottom: 24px;">
+                    <h3 class="card-title mb-3">Courbe de croissance</h3>
+                    <div class="chart-container">
+                        <canvas id="chartCroissance"></canvas>
+                    </div>
+                </section>
+
+                <section class="card" style="padding: 24px;">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h3 class="card-title mb-0">Historique des pesées</h3>
+                        <a th:href="@{/biologique/{id}/pesee/nouvelle(id=${detail.idCycleBassinAssoc})}" class="btn btn-primary btn-sm">
+                            <i class="bi bi-plus"></i> Nouvelle pesée
+                        </a>
+                    </div>
+
+                    <div th:if="${#lists.isEmpty(detail.pesees)}" class="alert alert-info">Aucune pesée enregistrée.</div>
+
+                    <div th:unless="${#lists.isEmpty(detail.pesees)}" class="table-responsive">
+                        <table class="table-pesees">
+                            <thead>
+                                <tr>
+                                    <th>Semaine</th>
+                                    <th>Date</th>
+                                    <th>Poids (g)</th>
+                                    <th>Taille (mm)</th>
+                                    <th>Vivants</th>
+                                    <th>Morts</th>
+                                    <th>Biomasse (kg)</th>
+                                    <th>Technicien</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="p : ${detail.pesees}">
+                                    <td th:text="'S' + ${p.semaineActuelle}">S1</td>
+                                    <td th:text="${#temporals.format(p.dateSuivi, 'dd/MM/yyyy')}">—</td>
+                                    <td th:text="${p.poidsMoyenGramme}">—</td>
+                                    <td th:text="${p.tailleMoyenneMm}">—</td>
+                                    <td th:text="${p.nbVivants}">—</td>
+                                    <td th:text="${p.nbMorts}">—</td>
+                                    <td th:text="${p.biomasseCalculeeKg != null} ? ${p.biomasseCalculeeKg} : '—'">—</td>
+                                    <td th:text="${p.technicien.nom + ' ' + (p.technicien.prenom != null ? p.technicien.prenom : '')}">—</td>
+                                    <td class="d-flex gap-1">
+                                        <a th:href="@{/biologique/pesee/{id}/modifier(id=${p.id})}" class="btn btn-outline-primary btn-sm">Modifier</a>
+                                        <form th:action="@{/biologique/pesee/{id}/archiver(id=${p.id})}" method="post" style="display:inline;">
+                                            <button type="submit" class="btn btn-outline-danger btn-sm"
+                                                    onclick="return confirm('Archiver cette pesée ?');">Archiver</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script th:inline="javascript">
+        function toggleSidebar() {
+            document.querySelector('.sidebar').classList.toggle('open');
+            document.querySelector('.sidebar-overlay').classList.toggle('open');
+        }
+
+        const courbeReelle = /*[[${detail.courbeReelle}]]*/ [];
+        const courbeStandard = /*[[${detail.courbeStandard}]]*/ [];
+
+        const semainesReelles = courbeReelle.map(p => 'S' + p.semaine);
+        const poidsReels = courbeReelle.map(p => p.poidsMoyenG);
+        const semainesStd = courbeStandard.map(p => 'S' + p.semaine);
+        const poidsStd = courbeStandard.map(p => p.poidsMoyenG);
+
+        const allLabels = [...new Set([...semainesReelles, ...semainesStd])].sort((a, b) =>
+            parseInt(a.substring(1)) - parseInt(b.substring(1)));
+
+        function mapData(labels, sourceLabels, sourceData) {
+            return labels.map(l => {
+                const idx = sourceLabels.indexOf(l);
+                return idx >= 0 ? sourceData[idx] : null;
+            });
+        }
+
+        const ctx = document.getElementById('chartCroissance');
+        if (ctx) {
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: allLabels,
+                    datasets: [
+                        {
+                            label: 'Croissance réelle',
+                            data: mapData(allLabels, semainesReelles, poidsReels),
+                            borderColor: '#3b82f6',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            tension: 0.3,
+                            fill: false
+                        },
+                        {
+                            label: 'Courbe standard espèce',
+                            data: mapData(allLabels, semainesStd, poidsStd),
+                            borderColor: '#9ca3af',
+                            borderDash: [5, 5],
+                            tension: 0.3,
+                            fill: false
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        annotation: {},
+                        legend: { position: 'top' }
+                    },
+                    scales: {
+                        y: {
+                            title: { display: true, text: 'Poids (g)' },
+                            suggestedMin: 0
+                        }
+                    }
+                },
+                plugins: [{
+                    id: 'seuilRecolte',
+                    afterDraw(chart) {
+                        const yScale = chart.scales.y;
+                        const y = yScale.getPixelForValue(15);
+                        const ctx2 = chart.ctx;
+                        ctx2.save();
+                        ctx2.strokeStyle = '#ef4444';
+                        ctx2.setLineDash([6, 4]);
+                        ctx2.beginPath();
+                        ctx2.moveTo(chart.chartArea.left, y);
+                        ctx2.lineTo(chart.chartArea.right, y);
+                        ctx2.stroke();
+                        ctx2.restore();
+                    }
+                }]
+            });
+        }
+    </script>
+</body>
+</html>

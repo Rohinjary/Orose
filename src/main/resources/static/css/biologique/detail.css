@@ -1,0 +1,111 @@
+/* Module biologique — dashboard détail */
+@import url('/css/bassin/detail.css');
+
+.kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+@media (max-width: 992px) {
+    .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 576px) {
+    .kpi-grid { grid-template-columns: 1fr; }
+}
+
+.kpi-card {
+    background: var(--mg-surface-bright);
+    border: 1px solid var(--mg-outline);
+    border-radius: var(--radius);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.kpi-card .kpi-icon {
+    font-size: 24px;
+    color: var(--mg-info);
+}
+
+.kpi-card .kpi-label {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--mg-secondary);
+    letter-spacing: 0.03em;
+}
+
+.kpi-card .kpi-value {
+    font-size: 28px;
+    font-weight: 700;
+}
+
+.kpi-card.kpi-survie .kpi-icon { color: var(--mg-success); }
+.kpi-card.kpi-danger .kpi-value { color: var(--mg-danger); }
+.kpi-card.kpi-warning .kpi-value { color: var(--mg-warning); }
+.kpi-card.kpi-success .kpi-value { color: var(--mg-success); }
+
+.chart-container {
+    position: relative;
+    height: 300px;
+    width: 100%;
+    margin: 16px 0;
+}
+
+.alertes-ligne {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.table-pesees tbody tr:hover {
+    background: rgba(59, 130, 246, 0.06);
+}
+
+.table-pesees {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table-pesees th,
+.table-pesees td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--mg-outline);
+    font-size: 14px;
+}
+
+.table-pesees th {
+    background: var(--mg-surface-container);
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    color: var(--mg-secondary);
+}
+
+.recolte-card {
+    background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+    border: 1px solid #a7f3d0;
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 24px;
+}
+
+.page-subtitle {
+    color: var(--mg-secondary);
+    font-size: 14px;
+    margin-top: 4px;
+}
+
+.detail-header {
+    margin-bottom: 24px;
+}
+
+.detail-header h1 {
+    font-size: 24px;
+    font-weight: 700;
+}

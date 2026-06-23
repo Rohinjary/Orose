@@ -1,9 +1,17 @@
+-- ============================================================
+-- db_v3.sql — Schéma final consolidé OROSE
+-- Intègre : db_v2 + db_modif + biologique1 + biologique2
+-- ============================================================
+
+-- ------------------------------------------------------------
+-- MODULE 0 : UTILISATEURS & RÔLES
+-- ------------------------------------------------------------
+
 CREATE TABLE role (
     id SERIAL PRIMARY KEY,
     code VARCHAR(20) NOT NULL UNIQUE,  -- ADMIN, TECH, RS, DIR
     libelle VARCHAR(50) NOT NULL
 );
-
 
 CREATE TABLE utilisateur (
     id SERIAL PRIMARY KEY,
@@ -11,7 +19,7 @@ CREATE TABLE utilisateur (
     prenom VARCHAR(100),
     email VARCHAR(255) NOT NULL UNIQUE,
     mot_de_passe VARCHAR(255) NOT NULL,
-    statut VARCHAR(20) NOT NULL DEFAULT 'ACTIF' -- ACTIF, INACTIF
+    statut VARCHAR(20) NOT NULL DEFAULT 'ACTIF'  -- ACTIF, INACTIF
 );
 
 CREATE TABLE utilisateur_role (
@@ -36,7 +44,7 @@ CREATE TABLE journal_action (
 
 CREATE TABLE statut_bassin (
     id SERIAL PRIMARY KEY,
-    code VARCHAR(30) NOT NULL UNIQUE,  -- PREPARATION, ACTIF, EN_TRAITEMENT, RECOLTE, QUARANTAINE
+    code VARCHAR(30) NOT NULL UNIQUE,  -- VIDE, PREPARATION, ACTIF, EN_TRAITEMENT, RECOLTE, QUARANTAINE
     libelle VARCHAR(50) NOT NULL
 );
 
@@ -60,7 +68,7 @@ CREATE TABLE histo_statut_bassin (
 );
 
 -- ------------------------------------------------------------
--- MODULE 2 : CYCLE & BIOLOGIQUE
+-- MODULE 2 : ESPÈCES
 -- ------------------------------------------------------------
 
 CREATE TABLE espece_crevette (
@@ -78,30 +86,51 @@ CREATE TABLE evolution_hebdo_espece (
     UNIQUE(id_espece, semaine)
 );
 
-CREATE TABLE cycle_bassin (
+-- ------------------------------------------------------------
+-- MODULE 3 : CYCLE & ASSOCIATIONS BASSINS
+-- ------------------------------------------------------------
+-- Un cycle regroupe plusieurs bassins (N bassins par cycle).
+-- La table "cycle" contient les infos globales du cycle.
+-- La table "cycle_bassin_assoc" est le pivot N-N :
+--   1 ligne = 1 bassin participant au cycle, avec ses propres
+--   effectif / densité / coût / poids.
+
+CREATE TABLE cycle (
     id SERIAL PRIMARY KEY,
-    code_unique_cycle VARCHAR(50) NOT NULL UNIQUE,  -- B01-C01-2026
-    id_bassin INTEGER NOT NULL REFERENCES bassin(id),
+    code_unique_cycle VARCHAR(50) NOT NULL UNIQUE,  -- ex: C01
     id_espece INTEGER NOT NULL REFERENCES espece_crevette(id),
-    effectif_initial INTEGER NOT NULL,
-    cout_post_larves DECIMAL(15,2) NOT NULL,
-    densite_m2 DECIMAL(10,2),
     id_technicien INTEGER REFERENCES utilisateur(id),
     date_debut DATE NOT NULL,
     date_fin_prevue DATE NOT NULL,
-    date_fin_reelle DATE,
-    poids_moyen_actuel DECIMAL(10,2) DEFAULT 0,
-    semaine_actuelle INTEGER DEFAULT 0,
     est_cloture BOOLEAN NOT NULL DEFAULT FALSE,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
--- Un bassin actif = un seul cycle non clôturé
-CREATE UNIQUE INDEX idx_cycle_unique_actif ON cycle_bassin(id_bassin) WHERE est_cloture = FALSE;
+CREATE TABLE cycle_bassin_assoc (
+    id SERIAL PRIMARY KEY,
+    id_cycle INTEGER NOT NULL REFERENCES cycle(id) ON DELETE CASCADE,
+    id_bassin INTEGER NOT NULL REFERENCES bassin(id),
+    effectif_initial INTEGER NOT NULL,
+    densite_m2 DECIMAL(10,2),
+    cout_post_larves DECIMAL(15,2) NOT NULL,
+    poids_moyen_actuel DECIMAL(10,2) DEFAULT 0,
+    semaine_actuelle INTEGER DEFAULT 0,
+    date_fin_reelle DATE,
+    est_cloture BOOLEAN NOT NULL DEFAULT FALSE,
+    UNIQUE(id_cycle, id_bassin)
+);
+
+-- Un bassin ne peut appartenir qu'à UN SEUL cycle actif à la fois
+CREATE UNIQUE INDEX idx_bassin_unique_cycle_actif
+    ON cycle_bassin_assoc(id_bassin) WHERE est_cloture = FALSE;
+
+-- ------------------------------------------------------------
+-- MODULE 4 : SUIVI HEBDOMADAIRE
+-- ------------------------------------------------------------
 
 CREATE TABLE suivi_hebdo_bassin (
     id SERIAL PRIMARY KEY,
-    id_cycle INTEGER NOT NULL REFERENCES cycle_bassin(id) ON DELETE CASCADE,
+    id_cycle_bassin_assoc INTEGER NOT NULL REFERENCES cycle_bassin_assoc(id) ON DELETE CASCADE,
     date_suivi DATE NOT NULL DEFAULT CURRENT_DATE,
     semaine_actuelle INTEGER NOT NULL,
     poids_moyen_gramme DECIMAL(6,2) NOT NULL,
@@ -114,17 +143,19 @@ CREATE TABLE suivi_hebdo_bassin (
     notes TEXT
 );
 
--- Vue avec calculs additionnels : taux survie, taux mortalité, semaine calculée
+-- Vue avec calculs de taux survie/mortalité par rapport à l'effectif initial du bassin
 CREATE VIEW v_suivi_hebdo_bassin AS
 SELECT
     s.*,
-    ROUND((s.nb_vivants::DECIMAL / c.effectif_initial * 100), 2) AS taux_survie_calcule,
-    ROUND((s.nb_morts::DECIMAL / c.effectif_initial * 100), 2)   AS taux_mortalite_calcule
+    cba.id_bassin,
+    cba.id_cycle,
+    ROUND((s.nb_vivants::DECIMAL / cba.effectif_initial * 100), 2) AS taux_survie_calcule,
+    ROUND((s.nb_morts::DECIMAL  / cba.effectif_initial * 100), 2) AS taux_mortalite_calcule
 FROM suivi_hebdo_bassin s
-JOIN cycle_bassin c ON c.id = s.id_cycle;
+JOIN cycle_bassin_assoc cba ON cba.id = s.id_cycle_bassin_assoc;
 
 -- ------------------------------------------------------------
--- MODULE 3 : NOURRISSAGE
+-- MODULE 5 : NOURRISSAGE
 -- ------------------------------------------------------------
 
 CREATE TABLE creneau_horaire (
@@ -153,7 +184,7 @@ CREATE TABLE entree_stock_aliment (
 
 CREATE TABLE distribution_nourriture (
     id SERIAL PRIMARY KEY,
-    id_cycle INTEGER NOT NULL REFERENCES cycle_bassin(id) ON DELETE CASCADE,
+    id_cycle_bassin_assoc INTEGER NOT NULL REFERENCES cycle_bassin_assoc(id) ON DELETE CASCADE,
     id_entree_aliment INTEGER NOT NULL REFERENCES entree_stock_aliment(id),
     id_creneau INTEGER NOT NULL REFERENCES creneau_horaire(id),
     date_distribution DATE NOT NULL DEFAULT CURRENT_DATE,
@@ -162,7 +193,7 @@ CREATE TABLE distribution_nourriture (
     id_responsable INTEGER NOT NULL REFERENCES utilisateur(id),
     statut VARCHAR(20) NOT NULL DEFAULT 'EN_ATTENTE',  -- EN_ATTENTE, NOURRI, RETARD, RUPTURE
     est_valide BOOLEAN NOT NULL DEFAULT FALSE,
-    UNIQUE(id_cycle, date_distribution, id_creneau)
+    UNIQUE(id_cycle_bassin_assoc, date_distribution, id_creneau)
 );
 
 CREATE TABLE mouvement_stock_aliment (
@@ -176,7 +207,7 @@ CREATE TABLE mouvement_stock_aliment (
 );
 
 -- ------------------------------------------------------------
--- MODULE 4 : SANITAIRE
+-- MODULE 6 : SANITAIRE
 -- ------------------------------------------------------------
 
 CREATE TABLE medicament (
@@ -199,7 +230,7 @@ CREATE TABLE entree_stock_medicament (
 
 CREATE TABLE incident_sanitaire (
     id SERIAL PRIMARY KEY,
-    id_cycle INTEGER NOT NULL REFERENCES cycle_bassin(id) ON DELETE CASCADE,
+    id_cycle_bassin_assoc INTEGER NOT NULL REFERENCES cycle_bassin_assoc(id) ON DELETE CASCADE,
     date_detection DATE NOT NULL DEFAULT CURRENT_DATE,
     type_incident VARCHAR(30) NOT NULL,  -- MALADIE, ANOMALIE_EAU, MORTALITE_ANORMALE, AUTRE
     description TEXT NOT NULL,
@@ -232,13 +263,13 @@ CREATE TABLE mouvement_stock_medicament (
 );
 
 -- ------------------------------------------------------------
--- MODULE 5 : STOCK CREVETTES (RECOLTE) + INVENTAIRE
+-- MODULE 7 : STOCK CREVETTES (RÉCOLTE) & INVENTAIRE
 -- ------------------------------------------------------------
 
 CREATE TABLE lot_crevette (
     id SERIAL PRIMARY KEY,
-    numero_lot_unique VARCHAR(50) NOT NULL UNIQUE,  -- LOT-B01-2026
-    id_cycle INTEGER NOT NULL REFERENCES cycle_bassin(id),
+    numero_lot_unique VARCHAR(50) NOT NULL UNIQUE,  -- ex: LOT-B01-2026
+    id_cycle_bassin_assoc INTEGER NOT NULL REFERENCES cycle_bassin_assoc(id),
     biomasse_totale_kg DECIMAL(10,2) NOT NULL,
     biomasse_actuelle_kg DECIMAL(10,2) NOT NULL,
     poids_moyen_final_g DECIMAL(10,2) NOT NULL,
@@ -276,7 +307,7 @@ CREATE TABLE inventaire (
 );
 
 -- ------------------------------------------------------------
--- ALERTES CONSOLIDEES
+-- MODULE 8 : ALERTES CONSOLIDÉES
 -- ------------------------------------------------------------
 
 CREATE TABLE alerte (
@@ -284,7 +315,7 @@ CREATE TABLE alerte (
     type_alerte VARCHAR(50) NOT NULL,  -- MORTALITE_ANORMALE, PESEE_MANQUANTE, STOCK_CRITIQUE, etc.
     niveau VARCHAR(10) NOT NULL,  -- ORANGE, ROUGE
     module_source VARCHAR(30) NOT NULL,
-    id_cycle_bassin INTEGER REFERENCES cycle_bassin(id),
+    id_cycle_bassin_assoc INTEGER REFERENCES cycle_bassin_assoc(id),
     message TEXT NOT NULL,
     est_resolue BOOLEAN NOT NULL DEFAULT FALSE,
     date_creation TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -293,7 +324,7 @@ CREATE TABLE alerte (
 );
 
 -- ------------------------------------------------------------
--- TRIGGERS DE SECURITE
+-- TRIGGERS
 -- ------------------------------------------------------------
 
 -- Décrémente le stock aliment après une distribution validée
@@ -361,6 +392,7 @@ CREATE TRIGGER trg_decrement_stock_crevette
     EXECUTE FUNCTION fn_decrement_stock_crevette();
 
 -- Mise en quarantaine automatique si incident CRITIQUE
+-- Passe par cycle_bassin_assoc pour retrouver le bassin concerné
 CREATE OR REPLACE FUNCTION fn_quarantaine_auto()
 RETURNS TRIGGER AS $$
 DECLARE
@@ -369,7 +401,8 @@ DECLARE
 BEGIN
     IF NEW.niveau_gravite = 'CRITIQUE' THEN
         SELECT id INTO id_statut_quarantaine FROM statut_bassin WHERE code = 'QUARANTAINE';
-        SELECT id_bassin INTO id_bassin_concerne FROM cycle_bassin WHERE id = NEW.id_cycle;
+        SELECT id_bassin INTO id_bassin_concerne
+            FROM cycle_bassin_assoc WHERE id = NEW.id_cycle_bassin_assoc;
 
         UPDATE bassin
         SET id_statut_actuel = id_statut_quarantaine
@@ -389,16 +422,16 @@ CREATE TRIGGER trg_quarantaine_auto
     EXECUTE FUNCTION fn_quarantaine_auto();
 
 -- ------------------------------------------------------------
--- DONNEES DE REFERENCE
+-- DONNÉES DE RÉFÉRENCE
 -- ------------------------------------------------------------
 
 INSERT INTO statut_bassin (code, libelle) VALUES
-('VIDE', 'Vide'),
-('PREPARATION', 'Préparation'),
-('ACTIF', 'Actif'),
-('EN_TRAITEMENT', 'En traitement'),
-('RECOLTE', 'Récolté'),
-('QUARANTAINE', 'Quarantaine');
+('VIDE',         'Vide'),
+('PREPARATION',  'Préparation'),
+('ACTIF',        'Actif'),
+('EN_TRAITEMENT','En traitement'),
+('RECOLTE',      'Récolté'),
+('QUARANTAINE',  'Quarantaine');
 
 INSERT INTO creneau_horaire (libelle, ordre) VALUES
 ('MATIN', 1), ('MIDI', 2), ('SOIR', 3), ('NUIT', 4);
@@ -406,11 +439,41 @@ INSERT INTO creneau_horaire (libelle, ordre) VALUES
 INSERT INTO espece_crevette (nom_scientifique, nom_courant) VALUES
 ('Fenneropenaeus indicus', 'Crevette blanche');
 
--- Compte admin par défaut (mot de passe à hasher en bcrypt côté appli)
+-- Courbe de croissance standard pour Crevette blanche (16 semaines)
+INSERT INTO evolution_hebdo_espece (id_espece, semaine, poids_cible_g, taille_cible_mm)
+SELECT e.id, v.semaine, v.poids, v.taille
+FROM espece_crevette e
+CROSS JOIN (VALUES
+    ( 1,  0.50,   8.00),
+    ( 2,  1.00,  12.00),
+    ( 3,  1.80,  18.00),
+    ( 4,  2.80,  25.00),
+    ( 5,  4.00,  32.00),
+    ( 6,  5.50,  40.00),
+    ( 7,  7.00,  48.00),
+    ( 8,  8.50,  55.00),
+    ( 9, 10.00,  62.00),
+    (10, 11.50,  70.00),
+    (11, 13.00,  78.00),
+    (12, 14.50,  85.00),
+    (13, 16.00,  95.00),
+    (14, 17.50, 105.00),
+    (15, 19.00, 112.00),
+    (16, 20.00, 120.00)
+) AS v(semaine, poids, taille)
+WHERE e.nom_courant = 'Crevette blanche';
+
+-- Compte admin par défaut (mot de passe à remplacer par hash bcrypt côté appli)
 INSERT INTO utilisateur (nom, prenom, email, mot_de_passe, statut) VALUES
 ('Admin', 'OROSE', 'admin@baovola.mg', 'a_remplacer_par_hash_bcrypt', 'ACTIF');
 
 -- ============================================================
--- FIN
+-- RÉSUMÉ DE LA STRUCTURE
 -- ============================================================
-
+-- cycle              : cycle global (dates, espèce) — non lié à un seul bassin
+-- cycle_bassin_assoc : 1 ligne = 1 bassin dans un cycle (N bassins par cycle)
+--                      contient effectif / densité / coût / poids propres au bassin
+-- suivi_hebdo_bassin : pointe vers cycle_bassin_assoc → un bassin précis dans un cycle
+-- distribution_nourriture, incident_sanitaire, lot_crevette, alerte :
+--                      pointent tous vers cycle_bassin_assoc
+-- ============================================================
