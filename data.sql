@@ -19,7 +19,7 @@ INSERT INTO utilisateur_role (id_utilisateur, id_role) VALUES
 
 -- 3. Ajout de quelques Bassins
 INSERT INTO bassin (code, surface_m2, profondeur_metre, notes, id_statut_actuel) VALUES 
-('Tay', 120.00, 1.50, 'Production principal', 1);
+('Bassin-05', 120.00, 1.50, 'Production principal', 2);
 
 
 -- 4. Ajout d'aliments et entrées en stock
