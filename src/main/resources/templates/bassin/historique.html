@@ -1,246 +1,102 @@
 <!DOCTYPE html>
-<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/default}">
 <head>
-    <meta charset="utf-8" />
-    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>Historique Global — Move Gasy</title>
-    <link href="https://fonts.googleapis.com" rel="preconnect" />
-    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
-    <link href="/css/bassin/historique.css" rel="stylesheet" />
-    <style>
-        .badge-vide        { background: #f1f5f9; color: #475569; }
-        .badge-preparation { background: #fef9c3; color: #854d0e; }
-        .badge-actif       { background: #dcfce7; color: #166534; }
-        .badge-quarantaine { background: #fee2e2; color: #991b1b; }
-        .badge-traitement  { background: #e0f2fe; color: #075985; }
-        .badge-recolte     { background: #f3e8ff; color: #6b21a8; }
-
-        .arrow-col { width: 32px; text-align: center; color: var(--mg-secondary); }
-        .date-cell { font-size: 13px; color: var(--mg-secondary); white-space: nowrap; }
-        .motif-cell { max-width: 240px; font-size: 13px; color: var(--mg-secondary); }
-
-        .filter-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr auto;
-            gap: 16px;
-            align-items: end;
-        }
-
-        .filter-group { display: flex; flex-direction: column; gap: 6px; }
-
-        .filter-label {
-            font-size: 12px;
-            font-weight: 600;
-            text-transform: uppercase;
-            color: var(--mg-secondary);
-            letter-spacing: 0.04em;
-        }
-
-        .filter-select, .filter-input {
-            width: 100%;
-            padding: 9px 12px;
-            border: 1px solid var(--mg-outline);
-            border-radius: var(--radius);
-            font-family: var(--font-main);
-            font-size: 14px;
-            background: white;
-            outline: none;
-            color: var(--mg-primary);
-        }
-
-        .filter-select {
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 12px center;
-            padding-right: 36px;
-            cursor: pointer;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 48px 32px;
-            color: var(--mg-secondary);
-        }
-
-        .empty-state i {
-            font-size: 36px;
-            display: block;
-            margin-bottom: 12px;
-            opacity: 0.3;
-        }
-
-        .bassin-tag {
-            background: var(--mg-primary);
-            color: white;
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: 700;
-        }
-    </style>
+    <title layout:fragment="page-title">Historique Global — Move Gasy</title>
+    <th:block layout:fragment="page-styles">
+        <link href="/css/bassin/historique.css" rel="stylesheet" />
+        <style>
+            .badge-vide        { background: #f1f5f9; color: #475569; }
+            .badge-preparation { background: #fef9c3; color: #854d0e; }
+            .badge-actif       { background: #dcfce7; color: #166534; }
+            .badge-quarantaine { background: #fee2e2; color: #991b1b; }
+            .badge-traitement  { background: #e0f2fe; color: #075985; }
+            .badge-recolte     { background: #f3e8ff; color: #6b21a8; }
+            .arrow-col { width: 32px; text-align: center; color: var(--mg-secondary); }
+            .date-cell { font-size: 13px; color: var(--mg-secondary); white-space: nowrap; }
+            .motif-cell { max-width: 240px; font-size: 13px; color: var(--mg-secondary); }
+            .filter-grid { display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 16px; align-items: end; }
+            .filter-group { display: flex; flex-direction: column; gap: 6px; }
+            .filter-label { font-size: 12px; font-weight: 600; text-transform: uppercase; color: var(--mg-secondary); letter-spacing: 0.04em; }
+            .filter-select, .filter-input { width: 100%; padding: 9px 12px; border: 1px solid var(--mg-outline); border-radius: var(--radius); font-family: var(--font-main); font-size: 14px; background: white; outline: none; color: var(--mg-primary); }
+            .filter-select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 36px; cursor: pointer; }
+            .empty-state { text-align: center; padding: 48px 32px; color: var(--mg-secondary); }
+            .empty-state i { font-size: 36px; display: block; margin-bottom: 12px; opacity: 0.3; }
+            .bassin-tag { background: var(--mg-primary); color: white; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: 700; }
+        </style>
+    </th:block>
 </head>
 <body>
-    <div class="sidebar-overlay"></div>
-    <div class="layout">
-        <aside class="sidebar">
-            <div class="sidebar-brand">
-                <div class="brand-logo"><i class="bi bi-water"></i></div>
-                <div class="brand-name">MOVE GASY</div>
+    <div layout:fragment="content">
+        <div class="page-header">
+            <div>
+                <h2 class="page-title">Historique Chronologique</h2>
+                <p class="page-sub">Suivi complet des transitions d'etats sur l'ensemble des bassins.</p>
             </div>
-            <div class="nav-container">
-                <div class="nav-label">Principal</div>
-                <a class="nav-item"><span class="nav-icon"><i class="bi bi-speedometer2"></i></span> Dashboard</a>
-                <div class="nav-label">Terrain</div>
-                <a class="nav-item active" th:href="@{/bassins}">
-                    <span class="nav-icon"><i class="bi bi-droplet-half"></i></span> Bassins
-                </a>
-                <a class="nav-item" th:href="@{/biologique}">
-                    <span class="nav-icon"><i class="bi bi-activity"></i></span> Suivi biologique
-                </a>
-                <a class="nav-item"><span class="nav-icon"><i class="bi bi-egg-fill"></i></span> Nourrissage</a>
-                <a class="nav-item"><span class="nav-icon"><i class="bi bi-plus-circle"></i></span> Sanitaire</a>
-                <div class="nav-label">Logistique</div>
-                <a class="nav-item"><span class="nav-icon"><i class="bi bi-box-seam"></i></span> Stocks</a>
-                <a class="nav-item"><span class="nav-icon"><i class="bi bi-cart3"></i></span> Commercial</a>
-                <a class="nav-item"><span class="nav-icon"><i class="bi bi-truck"></i></span> Livraisons</a>
-                <a class="nav-item"><span class="nav-icon"><i class="bi bi-cash-stack"></i></span> Finances</a>
-                <div class="nav-label">Systeme</div>
-                <a class="nav-item" href="#"><span class="nav-icon"><i class="bi bi-lock"></i></span> Connexion</a>
-                <a class="nav-item"><span class="nav-icon"><i class="bi bi-gear"></i></span> Administration</a>
-                <div class="nav-label">Portail client</div>
-                <a class="nav-item"><span class="nav-icon"><i class="bi bi-person-lock"></i></span> Front Office</a>
+        </div>
+
+        <div class="card">
+            <form th:action="@{/bassins/historique}" method="get">
+                <div class="filter-grid">
+                    <div class="filter-group">
+                        <label class="filter-label">Du</label>
+                        <input class="filter-input" type="datetime-local" name="debut" th:value="${debut}" />
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Au</label>
+                        <input class="filter-input" type="datetime-local" name="fin" th:value="${fin}" />
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Type d'etat</label>
+                        <select class="filter-select" name="typeEtat">
+                            <option value="" th:selected="${typeEtat == null or typeEtat == ''}">-- Tous --</option>
+                            <option value="VIDE" th:selected="${typeEtat == 'VIDE'}">VIDE</option>
+                            <option value="PREPARATION" th:selected="${typeEtat == 'PREPARATION'}">PREPARATION</option>
+                            <option value="ACTIF" th:selected="${typeEtat == 'ACTIF'}">ACTIF</option>
+                            <option value="EN_TRAITEMENT" th:selected="${typeEtat == 'EN_TRAITEMENT'}">EN TRAITEMENT</option>
+                            <option value="RECOLTE" th:selected="${typeEtat == 'RECOLTE'}">RECOLTE</option>
+                            <option value="QUARANTAINE" th:selected="${typeEtat == 'QUARANTAINE'}">QUARANTAINE</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" type="submit" style="height: 40px;"><i class="bi bi-funnel"></i> Filtrer</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="card" style="padding: 0;">
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Bassin</th>
+                            <th>Etat</th>
+                            <th>Date et heure</th>
+                            <th>Utilisateur</th>
+                            <th>Motif</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:if="${#lists.isEmpty(historique)}">
+                            <td colspan="5">
+                                <div class="empty-state">
+                                    <i class="bi bi-clock-history"></i>
+                                    <p>Aucun historique trouve.</p>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr th:each="h : ${historique}">
+                            <td><span class="bassin-tag" th:text="${h.bassin.code}">—</span></td>
+                            <td><span class="badge" th:classappend="${h.statutBassin.code == 'ACTIF'} ? 'badge-actif' : (${h.statutBassin.code == 'PREPARATION'} ? 'badge-preparation' : (${h.statutBassin.code == 'QUARANTAINE'} ? 'badge-quarantaine' : (${h.statutBassin.code == 'EN_TRAITEMENT'} ? 'badge-traitement' : (${h.statutBassin.code == 'RECOLTE'} ? 'badge-recolte' : 'badge-vide'))))" th:text="${h.statutBassin.libelle}">—</span></td>
+                            <td class="date-cell" th:text="${#temporals.format(h.dateChangement, 'dd MMM yyyy | HH:mm')}">—</td>
+                            <td th:text="${h.utilisateur.nom + ' ' + (h.utilisateur.prenom != null ? h.utilisateur.prenom : '')}">—</td>
+                            <td class="motif-cell" th:text="${h.motif != null ? h.motif : '—'}">—</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
-        </aside>
-
-        <div class="main-wrapper">
-            <header class="topbar">
-                <button class="menu-toggle" onclick="toggleSidebar()"><i class="bi bi-list"></i></button>
-                <div class="breadcrumb">
-                    <span>Bassins</span>
-                    <span class="sep">/</span>
-                    <span class="active">Historique Global</span>
-                </div>
-                <div class="topbar-actions">
-                    <button class="icon-btn"><i class="bi bi-bell"></i></button>
-                    <div class="user-profile">
-                        <div class="user-info">
-                            <div class="user-name">Admin</div>
-                            <div class="user-role">Move Gasy Manager</div>
-                        </div>
-                        <div class="avatar">AD</div>
-                    </div>
-                </div>
-            </header>
-
-            <main class="page">
-                <div class="page-header">
-                    <div>
-                        <h2 class="page-title">Historique Chronologique</h2>
-                        <p class="page-sub">Suivi complet des transitions d'etats sur l'ensemble des bassins.</p>
-                    </div>
-                    <a th:href="@{/bassins}" class="btn btn-outline">
-                        <i class="bi bi-arrow-left"></i> Retour
-                    </a>
-                </div>
-
-                <!-- Filtres -->
-                <div class="card">
-                    <form th:action="@{/bassins/historique}" method="get">
-                        <div class="filter-grid">
-                            <div class="filter-group">
-                                <label class="filter-label">Du</label>
-                                <input class="filter-input" type="datetime-local" name="debut"
-                                       th:value="${debut}" />
-                            </div>
-                            <div class="filter-group">
-                                <label class="filter-label">Au</label>
-                                <input class="filter-input" type="datetime-local" name="fin"
-                                       th:value="${fin}" />
-                            </div>
-                            <div class="filter-group">
-                                <label class="filter-label">Type d'etat</label>
-                                <select class="filter-select" name="typeEtat">
-                                    <option value="" th:selected="${typeEtat == null or typeEtat == ''}">-- Tous --</option>
-                                    <option value="VIDE"          th:selected="${typeEtat == 'VIDE'}">VIDE</option>
-                                    <option value="PREPARATION"   th:selected="${typeEtat == 'PREPARATION'}">PREPARATION</option>
-                                    <option value="ACTIF"         th:selected="${typeEtat == 'ACTIF'}">ACTIF</option>
-                                    <option value="EN_TRAITEMENT" th:selected="${typeEtat == 'EN_TRAITEMENT'}">EN TRAITEMENT</option>
-                                    <option value="RECOLTE"       th:selected="${typeEtat == 'RECOLTE'}">RECOLTE</option>
-                                    <option value="QUARANTAINE"   th:selected="${typeEtat == 'QUARANTAINE'}">QUARANTAINE</option>
-                                </select>
-                            </div>
-                            <button class="btn btn-primary" type="submit" style="height: 40px;">
-                                <i class="bi bi-funnel"></i> Filtrer
-                            </button>
-                        </div>
-                    </form>
-                </div>
-
-                <!-- Tableau -->
-                <div class="card" style="padding: 0;">
-                    <div class="table-container">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Bassin</th>
-                                    <th>Etat</th>
-                                    <th>Date et heure</th>
-                                    <th>Utilisateur</th>
-                                    <th>Motif</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr th:if="${#lists.isEmpty(historique)}">
-                                    <td colspan="5">
-                                        <div class="empty-state">
-                                            <i class="bi bi-clock-history"></i>
-                                            <p>Aucun historique trouve.</p>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr th:each="h : ${historique}">
-                                    <td>
-                                        <span class="bassin-tag" th:text="${h.bassin.code}">—</span>
-                                    </td>
-                                    <td>
-                                        <span class="badge"
-                                              th:classappend="${h.statutBassin.code == 'ACTIF'} ? 'badge-actif' :
-                                                              (${h.statutBassin.code == 'PREPARATION'} ? 'badge-preparation' :
-                                                              (${h.statutBassin.code == 'QUARANTAINE'} ? 'badge-quarantaine' :
-                                                              (${h.statutBassin.code == 'EN_TRAITEMENT'} ? 'badge-traitement' :
-                                                              (${h.statutBassin.code == 'RECOLTE'} ? 'badge-recolte' : 'badge-vide'))))"
-                                              th:text="${h.statutBassin.libelle}">—</span>
-                                    </td>
-                                    <td class="date-cell"
-                                        th:text="${#temporals.format(h.dateChangement, 'dd MMM yyyy | HH:mm')}">—</td>
-                                    <td th:text="${h.utilisateur.nom + ' ' + (h.utilisateur.prenom != null ? h.utilisateur.prenom : '')}">—</td>
-                                    <td class="motif-cell" th:text="${h.motif != null ? h.motif : '—'}">—</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div style="padding: 16px 24px; border-top: 1px solid var(--mg-outline);">
-                        <span style="font-size: 13px; color: var(--mg-secondary);"
-                              th:text="${#lists.size(historique)} + ' entree(s) trouvee(s)'"></span>
-                    </div>
-                </div>
-            </main>
+            <div style="padding: 16px 24px; border-top: 1px solid var(--mg-outline);">
+                <span style="font-size: 13px; color: var(--mg-secondary);" th:text="${#lists.size(historique)} + ' entree(s) trouvee(s)'"></span>
+            </div>
         </div>
     </div>
-
-    <script>
-        function toggleSidebar() {
-            document.querySelector('.sidebar').classList.toggle('open');
-            document.querySelector('.sidebar-overlay').classList.toggle('open');
-        }
-        document.querySelector('.sidebar-overlay')
-            ?.addEventListener('click', () => {
-                document.querySelector('.sidebar').classList.remove('open');
-                document.querySelector('.sidebar-overlay').classList.remove('open');
-            });
-    </script>
 </body>
 </html>

@@ -98,4 +98,13 @@ public class CycleService {
     public List<Cycle> getCyclesActif() {
         return cycleRepository.findByEstClotureFalse();
     }
+
+    public Cycle getCycleById(Long id) {
+        return cycleRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Cycle introuvable : " + id));
+    }
+
+    public List<CycleBassinAssoc> getAssociationsByCycleId(Long cycleId) {
+        return cycleBassinAssocRepository.findByCycleId(cycleId);
+    }
 }

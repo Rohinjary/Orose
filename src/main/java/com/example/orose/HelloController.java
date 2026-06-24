@@ -1,14 +1,14 @@
 package com.example.orose;
 
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Controller;
 
-@RestController
+@Controller
 public class HelloController {
 
-	@GetMapping("/hello")
+	@GetMapping("/")
 	public String hello() {
-		return "Hello, World!";
+		return "layouts/default";
 	}
 }
 //Sss
