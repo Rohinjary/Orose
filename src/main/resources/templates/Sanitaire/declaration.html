@@ -624,15 +624,21 @@
                             <div class="col-4">
                                 <div class="form-group">
                                     <label class="form-label">Bassin</label>
-                                    <select class="form-control" th:field="*{idCycleBassinAssoc}" required>
-                                        <option value="">Sélectionner un bassin</option>
-                                        <option th:if="${cycleBassinAssocs.isEmpty()}" disabled>
-                                            Aucun bassin actif en cycle — créez un cycle d'abord
-                                        </option>
-                                        <option th:each="assoc : ${cycleBassinAssocs}" th:value="${assoc.id}"
-                                            th:text="${assoc.bassin.code} + ' — Cycle ' + ${assoc.cycle.codeUniqueCycle}">
-                                        </option>
-                                    </select>
+                                    
+    <select class="form-control" th:field="*{idCycleBassinAssoc}" required>
+
+    <option value="">Sélectionner un bassin</option>
+
+    <option th:if="${#lists.isEmpty(cycleBassinAssocs)}" value="" disabled>
+        Aucun bassin actif en cycle — créez un cycle d'abord
+    </option>
+
+    <option th:each="assoc : ${cycleBassinAssocs}"
+            th:value="${assoc.id}"
+            th:text="${assoc.bassin.code + ' — Cycle ' + assoc.cycle.codeUniqueCycle}">
+    </option>
+
+</select>
                                 </div>
                             </div>
                             <div class="col-4">
