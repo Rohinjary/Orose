@@ -573,14 +573,14 @@
                     <p class="header-sub">Suivi en temps réel des distributions d'aliments par bassin.</p>
                 </header>
                 <!-- KPI Cards - Same style as General Info blocks in SCREEN_2 -->
-                <div class="grid-detail" style="margin-bottom: 32px;" id="kpi-cards">
+                <div class="grid-detail" style="margin-bottom: 32px;">
                     <div class="col-4">
                         <section class="card" style="height: 100%; margin-bottom: 0;">
                             <h3 class="card-title">Prochain Repas</h3>
                             <div class="stat-group">
                                 <div class="stat-item">
-                                    <div class="value" id="prochain-repas-heure">--:--</div>
-                                    <div class="label" style="margin-top: 4px;" id="prochain-repas-bassin">Chargement...</div>
+                                    <div class="value" id="kpi-prochain-heure">—</div>
+                                    <div class="label" id="kpi-prochain-bassin" style="margin-top: 4px;">Chargement…</div>
                                 </div>
                             </div>
                         </section>
@@ -590,8 +590,9 @@
                             <h3 class="card-title">Statut Global</h3>
                             <div class="stat-group">
                                 <div class="stat-item">
-                                    <div class="value" id="statut-global-count">0</div>
-                                    <span class="badge badge-warning" id="statut-global-badge" style="vertical-align: middle; margin-left: 8px;">Chargement...</span>
+                                    <div class="value" id="kpi-statut-count">—</div>
+                                    <span class="badge badge-warning" id="kpi-statut-badge"
+                                        style="vertical-align: middle; margin-left: 8px;">—</span>
                                 </div>
                             </div>
                         </section>
@@ -600,12 +601,12 @@
                         <section class="card" style="height: 100%; margin-bottom: 0;">
                             <div class="card-header" style="margin-bottom: 12px;">
                                 <h3 class="card-title">Repas Distribués</h3>
-                                <span style="font-weight: 700;" id="repas-pourcentage">0%</span>
+                                <span id="kpi-repas-pct" style="font-weight: 700;">—</span>
                             </div>
                             <div class="progress-container" style="margin: 0 0 16px 0;">
-                                <div class="progress-bar" id="repas-progress" style="width: 0%;"></div>
+                                <div class="progress-bar" id="kpi-repas-bar" style="width: 0%;"></div>
                             </div>
-                            <div style="font-size: 24px; font-weight: 700;" id="repas-count">0 / 0</div>
+                            <div id="kpi-repas-count" style="font-size: 24px; font-weight: 700;">—</div>
                         </section>
                     </div>
                     <div class="col-12">
@@ -613,12 +614,12 @@
                             <h3 class="card-title">Stock Aliment</h3>
                             <div class="stat-group" style="justify-content: space-between; align-items: center;">
                                 <div class="stat-item">
-                                    <div class="value" id="stock-disponible">0 kg</div>
+                                    <div class="value" id="kpi-stock-value">—</div>
                                     <div class="label" style="margin-top: 4px;">Stock disponible</div>
                                 </div>
                                 <div style="text-align: right;">
-                                    <div class="badge badge-neutral" style="margin-bottom: 4px;" id="stock-alerte">OK</div>
-                                    <div class="cell-time" style="color: var(--mg-secondary); font-weight: 600;" id="autonomie-jours">Autonomie : 0 jours</div>
+                                    <div class="badge badge-danger" id="kpi-stock-alert" style="margin-bottom: 4px;">—</div>
+                                    <div class="cell-time" id="kpi-stock-autonomie" style="font-weight: 600;">Autonomie : —</div>
                                 </div>
                             </div>
                         </section>
@@ -641,8 +642,12 @@
                                     <th>Nuit (22h-01h)</th>
                                 </tr>
                             </thead>
-                            <tbody id="bassins-table-body">
-                                <!-- Dynamic content will be loaded here -->
+                            <tbody id="planning-body">
+                                <tr>
+                                    <td colspan="5" style="text-align:center; color: var(--mg-secondary); padding: 32px;">
+                                        Chargement du planning…
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -650,6 +655,7 @@
             </main>
         </div>
     </div>
+<script src="/js/nourrissage-dashboard.js"></script>
 <script>
     function toggleSidebar() {
         document.querySelector('.sidebar').classList.toggle('open');
@@ -660,192 +666,6 @@
             document.querySelector('.sidebar').classList.remove('open');
             document.querySelector('.sidebar-overlay').classList.remove('open');
         });
-
-    // Load dashboard data
-    async function loadDashboardData() {
-        try {
-            const response = await fetch('/nourrissage/dash_nourri');
-            if (!response.ok) {
-                throw new Error('Failed to fetch dashboard data');
-            }
-            const data = await response.json();
-            console.log('Dashboard data received:', data);
-            updateKPIs(data);
-            updateTable(data);
-        } catch (error) {
-            console.error('Error loading dashboard:', error);
-            document.getElementById('prochain-repas-bassin').textContent = 'Erreur de chargement';
-        }
-    }
-
-    function updateKPIs(data) {
-        console.log('updateKPIs called with data:', data);
-        
-        // Prochain repas
-        const prochainHeureEl = document.getElementById('prochain-repas-heure');
-        const prochainBassinEl = document.getElementById('prochain-repas-bassin');
-        console.log('prochain-repas-heure element:', prochainHeureEl);
-        console.log('prochain-repas-bassin element:', prochainBassinEl);
-        
-        if (data.prochainRepasHeure && prochainHeureEl) {
-            prochainHeureEl.textContent = data.prochainRepasHeure;
-        }
-        if (data.prochainRepasBassin && prochainBassinEl) {
-            prochainBassinEl.textContent = 'Bassin ' + data.prochainRepasBassin;
-        }
-
-        // Statut global
-        const enAttenteCount = data.repasEnAttente || 0;
-        const retardCount = data.repasRetard || 0;
-        const totalPending = enAttenteCount + retardCount;
-        
-        const statutCountEl = document.getElementById('statut-global-count');
-        const statutBadgeEl = document.getElementById('statut-global-badge');
-        console.log('statut-global-count element:', statutCountEl);
-        console.log('statut-global-badge element:', statutBadgeEl);
-        
-        if (statutCountEl) statutCountEl.textContent = totalPending;
-        
-        if (statutBadgeEl) {
-            if (retardCount > 0) {
-                statutBadgeEl.textContent = 'Retard';
-                statutBadgeEl.className = 'badge badge-danger';
-            } else if (enAttenteCount > 0) {
-                statutBadgeEl.textContent = 'En attente';
-                statutBadgeEl.className = 'badge badge-warning';
-            } else {
-                statutBadgeEl.textContent = 'À jour';
-                statutBadgeEl.className = 'badge badge-success';
-            }
-        }
-
-        // Repas distribués
-        const totalRepas = data.repasDistribues + totalPending;
-        const percentage = totalRepas > 0 ? Math.round((data.repasDistribues / totalRepas) * 100) : 0;
-        
-        const repasPourcentageEl = document.getElementById('repas-pourcentage');
-        const repasProgressEl = document.getElementById('repas-progress');
-        const repasCountEl = document.getElementById('repas-count');
-        
-        console.log('repas-pourcentage element:', repasPourcentageEl);
-        console.log('repas-progress element:', repasProgressEl);
-        console.log('repas-count element:', repasCountEl);
-        
-        if (repasPourcentageEl) repasPourcentageEl.textContent = percentage + '%';
-        if (repasProgressEl) repasProgressEl.style.width = percentage + '%';
-        if (repasCountEl) repasCountEl.textContent = data.repasDistribues + ' / ' + totalRepas;
-
-        // Stock aliment
-        const stockDisponibleEl = document.getElementById('stock-disponible');
-        const stockAlerteEl = document.getElementById('stock-alerte');
-        const autonomieJoursEl = document.getElementById('autonomie-jours');
-        
-        console.log('stock-disponible element:', stockDisponibleEl);
-        console.log('stock-alerte element:', stockAlerteEl);
-        console.log('autonomie-jours element:', autonomieJoursEl);
-        
-        if (stockDisponibleEl) stockDisponibleEl.textContent = (data.stockDisponibleKg || 0) + ' kg';
-        if (autonomieJoursEl) autonomieJoursEl.textContent = 'Autonomie : ' + (data.autonomieJours || 0) + ' jours';
-        
-        if (stockAlerteEl) {
-            if (data.alerteStock) {
-                stockAlerteEl.textContent = 'À COMMANDER';
-                stockAlerteEl.className = 'badge badge-danger';
-                if (autonomieJoursEl) autonomieJoursEl.style.color = 'var(--mg-danger)';
-            } else {
-                stockAlerteEl.textContent = 'OK';
-                stockAlerteEl.className = 'badge badge-success';
-                if (autonomieJoursEl) autonomieJoursEl.style.color = 'var(--mg-secondary)';
-            }
-        }
-    }
-
-    function updateTable(data) {
-        const tbody = document.getElementById('bassins-table-body');
-        tbody.innerHTML = '';
-
-        if (!data.bassins || data.bassins.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 32px;">Aucun bassin actif</td></tr>';
-            return;
-        }
-
-        data.bassins.forEach(bassin => {
-            const row = document.createElement('tr');
-            
-            // Determine border color based on global status
-            let borderColor = 'var(--mg-outline)';
-            if (bassin.statutGlobal === 'RETARD') borderColor = 'var(--mg-danger)';
-            else if (bassin.statutGlobal === 'NOURRI') borderColor = 'var(--mg-primary)';
-            else if (bassin.statutGlobal === 'RUPTURE') borderColor = 'var(--mg-outline)';
-
-            row.innerHTML = `
-                <td style="border-left: 4px solid ${borderColor};">
-                    <span class="pond-id">${bassin.code}</span>
-                    <span class="pond-meta">${bassin.espece || 'Non défini'}</span>
-                </td>
-                ${renderCreneauCell(bassin.matin)}
-                ${renderCreneauCell(bassin.midi)}
-                ${renderCreneauCell(bassin.soir)}
-                ${renderCreneauCell(bassin.nuit)}
-            `;
-            tbody.appendChild(row);
-        });
-    }
-
-    function renderCreneauCell(creneau) {
-        if (!creneau) {
-            return '<td><span class="badge badge-neutral">PRÉVU</span></td>';
-        }
-
-        const badgeClass = getBadgeClass(creneau.statut);
-        const quantitePrevue = creneau.quantitePrevueKg || 0;
-        const quantiteDonnee = creneau.quantiteDonneeKg || 0;
-
-        let content = `<span class="badge ${badgeClass}">${formatStatut(creneau.statut)}</span>`;
-        
-        if (creneau.heurePrevue) {
-            content += `<div class="cell-time">Prévu ${creneau.heurePrevue}</div>`;
-        }
-
-        if (creneau.statut === 'NOURRI' || creneau.statut === 'EN_ATTENTE' || creneau.statut === 'RETARD') {
-            content += `<div class="cell-time" style="font-weight: 600; color: var(--mg-primary);">${quantiteDonnee}kg / ${quantitePrevue}kg</div>`;
-        }
-
-        if (creneau.statut === 'EN_ATTENTE' || creneau.statut === 'RETARD') {
-            const btnClass = creneau.statut === 'RETARD' ? 'btn-primary' : 'btn-outline';
-            const btnStyle = creneau.statut === 'RETARD' ? 'background: var(--mg-danger); border-color: var(--mg-danger);' : '';
-            content += `<button class="btn ${btnClass}" style="padding: 4px 8px; font-size: 11px; width: 100%; margin-top: 8px; ${btnStyle}">
-                <i class="bi bi-check-circle"></i> Valider
-            </button>`;
-        }
-
-        return `<td>${content}</td>`;
-    }
-
-    function getBadgeClass(statut) {
-        switch (statut) {
-            case 'NOURRI': return 'badge-success';
-            case 'EN_ATTENTE': return 'badge-warning';
-            case 'RETARD': return 'badge-danger';
-            case 'RUPTURE': return 'badge-dark';
-            case 'PRÉVU': return 'badge-neutral';
-            default: return 'badge-neutral';
-        }
-    }
-
-    function formatStatut(statut) {
-        switch (statut) {
-            case 'NOURRI': return 'Nourri';
-            case 'EN_ATTENTE': return 'En attente';
-            case 'RETARD': return 'Retard';
-            case 'RUPTURE': return 'Rupture';
-            case 'PRÉVU': return 'Prévu';
-            default: return statut;
-        }
-    }
-
-    // Load data on page load
-    document.addEventListener('DOMContentLoaded', loadDashboardData);
 </script>
 
 </body>
