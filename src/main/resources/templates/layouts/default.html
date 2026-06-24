@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="fr" 
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head th:replace="~{fragments/header :: head}">
+    <title>Move Gasy</title>
+</head>
+<body>
+    <div class="sidebar-overlay"></div>
+    
+    <!-- Remplacement Sidebar -->
+    <aside th:replace="~{fragments/sidebar :: sidebar}"></aside>
+
+    <main>
+        <!-- Topbar insérée dynamiquement avec les paramètres de la page courante -->
+        <header th:replace="~{fragments/topbar :: topbar(${breadcrumbParent}, ${breadcrumbCurrent})}"></header>
+
+        <!-- Conteneur central de l'application -->
+        <div class="container" layout:fragment="content"></div>
+    </main>
+
+    <!-- Scripts JavaScript Globaux -->
+    <script>
+        function toggleSidebar() {
+            document.querySelector('.sidebar').classList.toggle('open');
+            document.querySelector('.sidebar-overlay').classList.toggle('open');
+        }
+
+        document.querySelector('.sidebar-overlay').addEventListener('click', () => {
+            document.querySelector('.sidebar').classList.remove('open');
+            document.querySelector('.sidebar-overlay').classList.remove('open');
+        });
+
+        function toggleDropdown(element) {
+            const dropdown = element.closest('.nav-dropdown');
+            dropdown.classList.toggle('open');
+        }
+    </script>
+    
+    <!-- Zone d'injection pour les scripts JS spécifiques à chaque page -->
+    <th:block layout:fragment="page-scripts"></th:block>
+</body>
+</html>

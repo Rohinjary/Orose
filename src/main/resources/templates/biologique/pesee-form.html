@@ -1,123 +1,169 @@
 <!DOCTYPE html>
-<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/default}">
 <head>
-    <meta charset="utf-8" />
-    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title th:text="${modeEdition} ? 'Modifier pesée' : 'Nouvelle pesée'">Pesée — Move Gasy</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-    <link href="/css/biologique/detail.css" rel="stylesheet" />
+    <title layout:fragment="page-title" th:text="${modeEdition} ? 'Modifier pesée' : 'Nouvelle pesée'">Pesée — Move Gasy</title>
+    <th:block layout:fragment="page-styles">
+        <style>
+            /* Styles harmonisés avec la charte graphique Move Gasy */
+            .page-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 24px;
+            }
+            .page-title { margin: 0; font-size: 24px; font-weight: 700; color: var(--mg-primary); }
+            .page-sub { margin: 4px 0 0; color: var(--mg-secondary); font-size: 14px; }
+            .bassin-tag { background: var(--mg-primary); color: white; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: 700; }
+            
+            /* Structure de la carte de formulaire */
+            .card {
+                background: white;
+                border: 1px solid var(--mg-outline);
+                border-radius: var(--radius);
+                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+                padding: 24px;
+                margin-bottom: 24px;
+            }
+
+            /* Grille de saisie */
+            .form-grid {
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 20px;
+            }
+            .col-full { grid-column: span 2; }
+
+            /* Éléments de formulaire */
+            .form-group { display: flex; flex-direction: column; gap: 6px; }
+            .form-label { font-size: 12px; font-weight: 600; text-transform: uppercase; color: var(--mg-secondary); letter-spacing: 0.04em; }
+            .form-input, .form-select, .form-textarea { width: 100%; padding: 9px 12px; border: 1px solid var(--mg-outline); border-radius: var(--radius); font-family: var(--font-main); font-size: 14px; background: white; outline: none; color: var(--mg-primary); transition: border-color 0.2s; }
+            .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--mg-primary); }
+            
+            /* Select personnalisé */
+            .form-select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 36px; cursor: pointer; }
+            
+            /* Notifications et Messages */
+            .mg-alert { padding: 12px 16px; border-radius: var(--radius); font-size: 14px; font-weight: 500; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+            .mg-alert-danger { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+            .mg-alert-success { background: #dcfce7; color: #166534; border: 1px solid #86efac; }
+            .mg-alert-info { background: #e0f2fe; color: #075985; border: 1px solid #7dd3fc; }
+
+            /* Groupe de boutons d'action */
+            .button-group { display: flex; gap: 12px; align-items: center; margin-top: 24px; }
+            .btn-mg { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; border-radius: var(--radius); font-size: 13px; font-weight: 600; text-decoration: none; cursor: pointer; transition: all 0.2s; border: 1px solid transparent; }
+            .btn-mg-primary { background: var(--mg-primary); color: white; }
+            .btn-mg-primary:hover { opacity: 0.9; }
+            .btn-mg-secondary { background: white; color: var(--mg-secondary); border-color: var(--mg-outline); }
+            .btn-mg-secondary:hover { background: #f8fafc; color: var(--mg-primary); }
+
+            /* Responsive */
+            @media (max-width: 768px) {
+                .form-grid { grid-template-columns: 1fr; }
+                .col-full { grid-column: span 1; }
+            }
+        </style>
+    </th:block>
 </head>
 <body>
-    <div class="sidebar-overlay"></div>
-    <div class="layout">
-        <aside class="sidebar">
-            <div class="sidebar-brand">
-                <div class="brand-logo"><i class="bi bi-water"></i></div>
-                <div class="brand-name">MOVE GASY</div>
-            </div>
-            <div class="nav-container">
-                <div class="nav-label">Terrain</div>
-                <a class="nav-item" th:href="@{/bassins}"><span class="nav-icon"><i class="bi bi-droplet-half"></i></span> Bassins</a>
-                <a class="nav-item active" th:href="@{/biologique}"><span class="nav-icon"><i class="bi bi-activity"></i></span> Suivi biologique</a>
-            </div>
-        </aside>
-
-        <div class="main-wrapper">
-            <header class="topbar">
-                <button class="menu-toggle" onclick="toggleSidebar()"><i class="bi bi-list"></i></button>
-                <div class="breadcrumb">
-                    <span>Suivi biologique</span>
-                    <span class="sep">/</span>
-                    <span class="active" th:text="${modeEdition} ? 'Modifier pesée' : 'Nouvelle pesée'">Pesée</span>
-                </div>
-            </header>
-
-            <main class="content">
-                <div th:if="${erreur}" class="alert alert-danger" th:text="${erreur}"></div>
-                <div th:if="${succes}" class="alert alert-success" th:text="${succes}"></div>
-
-                <div class="detail-header">
-                    <h1 th:text="${modeEdition} ? 'Modifier pesée' : 'Nouvelle pesée'">Nouvelle pesée</h1>
-                    <p class="page-subtitle">
-                        Bassin <strong th:text="${assoc.bassin.code}">B01</strong> ·
-                        Cycle <strong th:text="${assoc.cycle.codeUniqueCycle}">C01</strong>
-                    </p>
-                    <p class="page-subtitle">Effectif initial : <strong th:text="${assoc.effectifInitial}">0</strong> post-larves</p>
-                </div>
-
-                <section class="card" style="padding: 24px;">
-                    <form th:action="${modeEdition} ? @{/biologique/pesee/{id}/modifier(id=${idPesee})} : @{/biologique/{id}/pesee/nouvelle(id=${idCycleBassinAssoc})}"
-                          th:object="${peseeDTO}" method="post">
-
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <label class="form-label">Date du suivi</label>
-                                <input type="date" class="form-control" th:field="*{dateSuivi}" required />
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Technicien</label>
-                                <select class="form-select" th:field="*{idTechnicien}" required>
-                                    <option value="">— Sélectionner —</option>
-                                    <option th:each="t : ${techniciens}" th:value="${t.id}"
-                                            th:text="${t.nom + ' ' + (t.prenom != null ? t.prenom : '')}"></option>
-                                </select>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Poids moyen (g)</label>
-                                <input type="number" step="0.01" min="0.01" class="form-control" id="poidsMoyen"
-                                       th:field="*{poidsMoyenGramme}" required />
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Taille moyenne (mm)</label>
-                                <input type="number" step="0.01" min="0.01" class="form-control" id="tailleMoyenne"
-                                       th:field="*{tailleMoyenneMm}" required />
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Nombre vivants</label>
-                                <input type="number" min="0" class="form-control" th:field="*{nbVivants}" required />
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Nombre morts</label>
-                                <input type="number" min="0" class="form-control" th:field="*{nbMorts}" value="0" />
-                            </div>
-                            <div class="col-12">
-                                <label class="form-label">Notes</label>
-                                <textarea class="form-control" rows="3" th:field="*{notes}"></textarea>
-                            </div>
-                        </div>
-
-                        <div id="seuilRecolte" class="alert alert-success mt-3" style="display:none;">
-                            ⚠️ Seuil de récolte atteint !
-                        </div>
-
-                        <div class="mt-4 d-flex gap-2">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="bi bi-check-lg"></i> Enregistrer
-                            </button>
-                            <a th:href="@{/biologique/{id}/detail(id=${idCycleBassinAssoc})}" class="btn btn-outline-secondary">Annuler</a>
-                        </div>
-                    </form>
-                </section>
-            </main>
+    <div layout:fragment="content">
+        
+        <!-- Bannières de notification style moderne -->
+        <div th:if="${erreur}" class="mg-alert mg-alert-danger">
+            <i class="bi bi-exclamation-triangle"></i> <span th:text="${erreur}"></span>
         </div>
+        <div th:if="${succes}" class="mg-alert mg-alert-success">
+            <i class="bi bi-check-circle"></i> <span th:text="${succes}"></span>
+        </div>
+
+        <!-- En-tête de page moderne -->
+        <div class="page-header">
+            <div>
+                <h2 class="page-title" th:text="${modeEdition} ? 'Modifier la pesée' : 'Nouvelle pesée'">Nouvelle pesée</h2>
+                <p class="page-sub">
+                    Bassin <span class="bassin-tag" th:text="${assoc.bassin.code}">B01</span> · 
+                    Cycle <strong style="color: var(--mg-primary);" th:text="${assoc.cycle.codeUniqueCycle}">C01</strong> · 
+                    Effectif initial : <span th:text="${#numbers.formatInteger(assoc.effectifInitial, 0, 'WHITESPACE')}">0</span> PL
+                </p>
+            </div>
+        </div>
+
+        <!-- Conteneur global du Formulaire -->
+        <section class="card">
+            <form th:action="${modeEdition} ? @{/biologique/pesee/{id}/modifier(id=${idPesee})} : @{/biologique/{id}/pesee/nouvelle(id=${idCycleBassinAssoc})}"
+                  th:object="${peseeDTO}" method="post">
+
+                <div class="form-grid">
+                    
+                    <div class="form-group">
+                        <label class="form-label">Date du suivi</label>
+                        <input type="date" class="form-input" th:field="*{dateSuivi}" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Technicien</label>
+                        <select class="form-select" th:field="*{idTechnicien}" required>
+                            <option value="">— Sélectionner —</option>
+                            <option th:each="t : ${techniciens}" th:value="${t.id}"
+                                    th:text="${t.nom + ' ' + (t.prenom != null ? t.prenom : '')}"></option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Poids moyen (g)</label>
+                        <input type="number" step="0.01" min="0.01" class="form-input" id="poidsMoyen" th:field="*{poidsMoyenGramme}" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Taille moyenne (mm)</label>
+                        <input type="number" step="0.01" min="0.01" class="form-input" id="tailleMoyenne" th:field="*{tailleMoyenneMm}" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Nombre de vivants</label>
+                        <input type="number" min="0" class="form-input" th:field="*{nbVivants}" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Nombre de morts</label>
+                        <input type="number" min="0" class="form-input" th:field="*{nbMorts}" />
+                    </div>
+
+                    <div class="form-group col-full">
+                        <label class="form-label">Notes / Remarques</label>
+                        <textarea class="form-textarea" rows="3" th:field="*{notes}" placeholder="Observations éventuelles..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Alerte de seuil dynamique harmonisée -->
+                <div id="seuilRecolte" class="mg-alert mg-alert-info" style="display:none; margin-top: 20px;">
+                    <i class="bi bi-exclamation-circle-fill"></i> Seuil de récolte atteint ! Les critères optimaux de production sont remplis.
+                </div>
+
+                <!-- Actions de validation -->
+                <div class="button-group">
+                    <button type="submit" class="btn-mg btn-mg-primary">
+                        <i class="bi bi-check-lg"></i> Enregistrer
+                    </button>
+                    <a th:href="@{/biologique/{id}/detail(id=${idCycleBassinAssoc})}" class="btn-mg btn-mg-secondary">Annuler</a>
+                </div>
+            </form>
+        </section>
     </div>
 
-    <script>
-        function toggleSidebar() {
-            document.querySelector('.sidebar').classList.toggle('open');
-            document.querySelector('.sidebar-overlay').classList.toggle('open');
-        }
-        function checkSeuilRecolte() {
-            const poids = parseFloat(document.getElementById('poidsMoyen').value) || 0;
-            const taille = parseFloat(document.getElementById('tailleMoyenne').value) || 0;
-            document.getElementById('seuilRecolte').style.display =
-                (poids >= 15 && taille >= 110) ? 'block' : 'none';
-        }
-        document.getElementById('poidsMoyen').addEventListener('input', checkSeuilRecolte);
-        document.getElementById('tailleMoyenne').addEventListener('input', checkSeuilRecolte);
-        checkSeuilRecolte();
-    </script>
+    <th:block layout:fragment="page-scripts">
+        <script>
+            function checkSeuilRecolte() {
+                const poids = parseFloat(document.getElementById('poidsMoyen')?.value) || 0;
+                const taille = parseFloat(document.getElementById('tailleMoyenne')?.value) || 0;
+                const seuil = document.getElementById('seuilRecolte');
+                if (seuil) {
+                    seuil.style.display = (poids >= 15 && taille >= 110) ? 'flex' : 'none';
+                }
+            }
+            document.getElementById('poidsMoyen')?.addEventListener('input', checkSeuilRecolte);
+            document.getElementById('tailleMoyenne')?.addEventListener('input', checkSeuilRecolte);
+            checkSeuilRecolte();
+        </script>
+    </th:block>
 </body>
 </html>

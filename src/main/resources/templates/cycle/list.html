@@ -3,10 +3,10 @@
     layout:decorate="~{layouts/default}">
 
 <head>
-    <title layout:fragment="page-title">Move Gasy — Liste des Bassins</title>
+    <title layout:fragment="page-title">Move Gasy — Cycles Actifs</title>
     <th:block layout:fragment="page-styles">
         <style>
-            /* Styles spécifiques à la page des bassins */
+            /* Styles spécifiques à la page des cycles (harmonisés avec les bassins) */
             .page-header {
                 display: flex;
                 align-items: center;
@@ -42,29 +42,6 @@
 
             .btn-mg-primary:hover {
                 opacity: 0.9;
-            }
-
-            .btn-mg-secondary {
-                background: var(--mg-surface-bright);
-                color: var(--mg-secondary);
-                border-color: var(--mg-outline);
-            }
-
-            .btn-mg-secondary:hover {
-                background: var(--mg-surface-container);
-                color: var(--mg-primary);
-            }
-
-            .btn-mg-danger {
-                background: transparent;
-                color: var(--mg-danger);
-                border-color: transparent;
-                padding: 6px 12px;
-            }
-
-            .btn-mg-danger:hover {
-                background: #fee2e2;
-                border-radius: var(--radius);
             }
 
             /* Tableaux modernes style Move Gasy */
@@ -109,7 +86,7 @@
                 background: #fcfdfe;
             }
 
-            /* Badge Statut dynamique */
+            /* Badge Statut dynamique style Bassins */
             .status-badge {
                 display: inline-flex;
                 padding: 4px 8px;
@@ -119,18 +96,12 @@
                 text-transform: uppercase;
             }
 
-            /* Classes utilitaires de fallback pour les statuts */
             .status-active {
                 background: #d1fae5;
                 color: #065f46;
             }
 
-            .status-maintenance {
-                background: #fef3c7;
-                color: #92400e;
-            }
-
-            .status-empty {
+            .status-closed {
                 background: #e2e8f0;
                 color: #475569;
             }
@@ -155,19 +126,17 @@
             }
         </style>
     </th:block>
-
 </head>
 
 <body>
-
     <div layout:fragment="content">
-
+        
         <div class="page-header">
-            <h1 class="section-title" style="font-size: 22px;">Bassins de Production</h1>
+            <h1 class="section-title" style="font-size: 22px;">Cycles Actifs</h1>
 
             <div class="action-group">
-                <a th:href="@{/bassins/nouveau}" class="btn-mg btn-mg-primary">
-                    <i class="bi bi-plus-lg"></i> Nouveau bassin
+                <a th:href="@{/cycles/nouveau}" class="btn-mg btn-mg-primary">
+                    <i class="bi bi-plus-lg"></i> Nouveau cycle
                 </a>
             </div>
         </div>
@@ -176,44 +145,40 @@
             <table class="mg-table">
                 <thead>
                     <tr>
-                        <th>Code Bassin</th>
-                        <th>Surface</th>
-                        <th>Profondeur</th>
-                        <th>Statut actuel</th>
+                        <th>Cycle</th>
+                        <th>Espèce</th>
+                        <th>Début</th>
+                        <th>Fin prévue</th>
+                        <th>Statut</th>
                         <th style="text-align: right;">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr th:each="bassin : ${bassins}">
-                        <td style="font-weight: 700; color: var(--mg-primary);" th:text="${bassin.code}">B-01</td>
-                        <td th:text="${bassin.surfaceM2 + ' m²'}">3,500 m²</td>
-                        <td th:text="${bassin.profondeurMetre + ' m'}">1.2 m</td>
+                    <tr th:each="cycle : ${cycles}">
+                        <td style="font-weight: 700; color: var(--mg-primary);" th:text="${cycle.codeUniqueCycle}">C01</td>
+                        <td th:text="${cycle.espece.nomCourant != null ? cycle.espece.nomCourant : cycle.espece.nomScientifique}">Crevette</td>
+                        <td th:text="${#temporals.format(cycle.dateDebut, 'dd/MM/yyyy')}">01/01/2024</td>
+                        <td th:text="${#temporals.format(cycle.dateFinPrevue, 'dd/MM/yyyy')}">31/05/2024</td>
                         <td>
-                            <span class="status-badge status-active" th:text="${bassin.statutActuel.libelle}">En
-                                Production</span>
+                            <!-- Application dynamique de la couleur du badge selon le statut du cycle -->
+                            <span class="status-badge" 
+                                  th:classappend="${cycle.estCloture} ? 'status-closed' : 'status-active'"
+                                  th:text="${cycle.estCloture} ? 'Clôturé' : 'Actif'">
+                                Actif
+                            </span>
                         </td>
                         <td>
                             <div class="row-actions" style="justify-content: flex-end;">
-                                <a th:href="@{/bassins/{id}(id=${bassin.id})}" class="row-link">
+                                <a th:href="@{/cycles/{id}(id=${cycle.id})}" class="row-link">
                                     <i class="bi bi-eye"></i> Voir
                                 </a>
-                                <a th:href="@{/bassins/{id}/modifier(id=${bassin.id})}" class="row-link">
-                                    <i class="bi bi-pencil"></i> Modifier
-                                </a>
-                                <form th:action="@{/bassins/{id}/supprimer(id=${bassin.id})}" method="post"
-                                    style="display:inline"
-                                    onsubmit="return confirm('Voulez-vous vraiment supprimer ce bassin ?');">
-                                    <button type="submit" class="btn-mg btn-mg-danger">
-                                        <i class="bi bi-trash"></i> Supprimer
-                                    </button>
-                                </form>
                             </div>
                         </td>
                     </tr>
 
-                    <tr th:if="${#lists.isEmpty(bassins)}">
-                        <td colspan="5" style="text-align: center; color: var(--mg-text-muted); padding: 40px;">
-                            Aucun bassin enregistré pour le moment.
+                    <tr th:if="${#lists.isEmpty(cycles)}">
+                        <td colspan="6" style="text-align: center; color: var(--mg-text-muted); padding: 40px;">
+                            Aucun cycle enregistré pour le moment.
                         </td>
                     </tr>
                 </tbody>
@@ -221,12 +186,6 @@
         </div>
 
     </div>
-
-    <th:block layout:fragment="page-scripts">
-        <script>
-            // Logique optionnelle liée à la table
-        </script>
-    </th:block>
 </body>
 
 </html>

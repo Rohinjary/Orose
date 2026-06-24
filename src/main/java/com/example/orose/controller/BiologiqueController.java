@@ -40,14 +40,25 @@ public class BiologiqueController {
         this.utilisateurRepository = utilisateurRepository;
     }
 
+  
+
+    private void preparerLayoutBiologique(Model model, String breadcrumbCurrent, String currentPage) {
+        model.addAttribute("currentPage", currentPage);
+        model.addAttribute("currentGroup", "biologique");
+        model.addAttribute("breadcrumbParent", "Suivi biologique");
+        model.addAttribute("breadcrumbCurrent", breadcrumbCurrent);
+    }
+
     @GetMapping
     public String liste(Model model) {
+        preparerLayoutBiologique(model, "Tableau de bord", "tableau-de-bord");
         model.addAttribute("bassinsEnSuivi", biologiqueService.getBassinsSuivi());
         return "biologique/liste";
     }
 
     @GetMapping("/alertes")
     public String alertes(Model model) {
+        preparerLayoutBiologique(model, "Alertes biologiques", "alertes-biologiques");
         model.addAttribute("alertes", alerteService.getAlertesBiologiques());
         return "biologique/alertes";
     }
@@ -79,6 +90,7 @@ public class BiologiqueController {
         dto.setIdTechnicien(pesee.getTechnicien().getId().longValue());
         dto.setNotes(pesee.getNotes());
 
+        preparerLayoutBiologique(model, "Modifier pesée", "modifier-pesee");
         model.addAttribute("peseeDTO", dto);
         model.addAttribute("idPesee", idPesee);
         model.addAttribute("idCycleBassinAssoc", assoc.getId());
@@ -110,6 +122,7 @@ public class BiologiqueController {
         CycleBassinAssoc assoc = cycleBassinAssocRepository.findById(id.longValue())
                 .orElseThrow(() -> new EntityNotFoundException("Association cycle-bassin introuvable"));
 
+        preparerLayoutBiologique(model, "Nouvelle pesée", "nouvelle-pesee");
         model.addAttribute("peseeDTO", new PeseeDTO());
         model.addAttribute("idCycleBassinAssoc", id);
         model.addAttribute("assoc", assoc);
@@ -149,6 +162,7 @@ public class BiologiqueController {
 
     @GetMapping("/{id}/detail")
     public String detail(@PathVariable("id") Integer id, Model model) {
+        preparerLayoutBiologique(model, "Détail du bassin", "detail-bassin");
         model.addAttribute("detail", biologiqueService.getDetailBiologique(id));
         return "biologique/detail";
     }
