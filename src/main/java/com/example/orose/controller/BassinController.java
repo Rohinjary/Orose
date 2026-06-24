@@ -88,7 +88,7 @@ public class BassinController {
     public String modifier(@PathVariable Long id, @ModelAttribute BassinDTO bassinDTO, Model model) {
         try {
             bassinService.modifierBassin(id, bassinDTO);
-            return "redirect:/bassins";
+            return "redirect:/bassins/liste";
         } catch (IllegalArgumentException e) {
             preparerLayoutBassins(model, "Modifier le bassin", "modifier");
             model.addAttribute("erreur", e.getMessage());
@@ -103,7 +103,7 @@ public class BassinController {
     @PostMapping("/{id}/supprimer")
     public String supprimer(@PathVariable Long id) {
         bassinService.supprimerBassin(id);
-        return "redirect:/bassins";
+        return "redirect:/bassins/liste";
     }
 
     @GetMapping("/{id}")
