@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalTime; // Ajout de l'import
 import java.util.List;
 
 @Entity
@@ -29,6 +30,10 @@ public class DistributionNourriture {
 
     @Column(name = "date_distribution", nullable = false)
     private LocalDate dateDistribution;
+
+    // NOUVEAU CHAMP : Heure effective ou planifiée du nourrissage
+    @Column(name = "heure_nourrissage")
+    private LocalTime heureNourrissage;
 
     @Column(name = "quantite_prevue_kg", nullable = false, precision = 10, scale = 2)
     private BigDecimal quantitePrevueKg;
