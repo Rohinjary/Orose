@@ -38,6 +38,7 @@
             .form-label { font-size: 12px; font-weight: 600; text-transform: uppercase; color: var(--mg-secondary); letter-spacing: 0.04em; }
             .form-input, .form-select, .form-textarea { width: 100%; padding: 9px 12px; border: 1px solid var(--mg-outline); border-radius: var(--radius); font-family: var(--font-main); font-size: 14px; background: white; outline: none; color: var(--mg-primary); transition: border-color 0.2s; }
             .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--mg-primary); }
+            .form-input.input-error { border-color: #f87171; background: #fff5f5; }
             
             /* Select personnalisé */
             .form-select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 36px; cursor: pointer; }
@@ -47,6 +48,23 @@
             .mg-alert-danger { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
             .mg-alert-success { background: #dcfce7; color: #166534; border: 1px solid #86efac; }
             .mg-alert-info { background: #e0f2fe; color: #075985; border: 1px solid #7dd3fc; }
+
+            /* Récapitulatif effectif */
+            .recap-effectif {
+                background: #f0fdf4;
+                border: 1px solid #86efac;
+                border-radius: var(--radius);
+                padding: 10px 16px;
+                font-size: 13px;
+                display: flex;
+                flex-wrap: wrap;
+                gap: 20px;
+                align-items: center;
+            }
+            .recap-effectif .recap-item { display: flex; align-items: center; gap: 6px; }
+            .recap-effectif .recap-item.warn { color: #92400e; }
+            .field-hint { font-size: 11px; color: var(--mg-secondary); margin-top: 2px; }
+            .field-error { font-size: 11px; color: #991b1b; margin-top: 2px; display: none; }
 
             /* Groupe de boutons d'action */
             .button-group { display: flex; gap: 12px; align-items: center; margin-top: 24px; }
@@ -92,11 +110,17 @@
             <form th:action="${modeEdition} ? @{/biologique/pesee/{id}/modifier(id=${idPesee})} : @{/biologique/{id}/pesee/nouvelle(id=${idCycleBassinAssoc})}"
                   th:object="${peseeDTO}" method="post">
 
+                <!-- Effectif initial transmis en JS via data-attribute -->
+                <input type="hidden" id="effectifInitial" th:value="${assoc.effectifInitial}" />
+
                 <div class="form-grid">
                     
                     <div class="form-group">
                         <label class="form-label">Date du suivi</label>
-                        <input type="date" class="form-input" th:field="*{dateSuivi}" required />
+                        <input type="date" class="form-input" th:field="*{dateSuivi}"
+                               th:max="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}"
+                               required />
+                        <span class="field-hint">La date ne peut pas être dans le futur</span>
                     </div>
 
                     <div class="form-group">
@@ -118,14 +142,42 @@
                         <input type="number" step="0.01" min="0.01" class="form-input" id="tailleMoyenne" th:field="*{tailleMoyenneMm}" required />
                     </div>
 
+                    <!-- ===== VIVANTS ===== -->
                     <div class="form-group">
                         <label class="form-label">Nombre de vivants</label>
-                        <input type="number" min="0" class="form-input" th:field="*{nbVivants}" required />
+                        <input type="number" min="0" class="form-input" id="nbVivants"
+                               th:field="*{nbVivants}" required />
+                        <span class="field-error" id="errVivants"></span>
                     </div>
 
+                    <!-- ===== MORTS (calculé automatiquement) ===== -->
                     <div class="form-group">
                         <label class="form-label">Nombre de morts</label>
-                        <input type="number" min="0" class="form-input" th:field="*{nbMorts}" />
+                        <input type="number" min="0" class="form-input" id="nbMorts"
+                               th:field="*{nbMorts}" />
+                        <span class="field-error" id="errMorts"></span>
+                    </div>
+
+                    <!-- ===== RECAP EFFECTIF ===== -->
+                    <div class="col-full" id="recapBlock" style="display:none;">
+                        <div class="recap-effectif">
+                            <div class="recap-item">
+                                <i class="bi bi-people"></i>
+                                Effectif initial : <strong id="recapInitial">—</strong>
+                            </div>
+                            <div class="recap-item" style="color:#166534;">
+                                <i class="bi bi-check-circle"></i>
+                                Vivants : <strong id="recapVivants">—</strong>
+                            </div>
+                            <div class="recap-item" style="color:#991b1b;">
+                                <i class="bi bi-x-circle"></i>
+                                Morts : <strong id="recapMorts">—</strong>
+                            </div>
+                            <div class="recap-item" id="recapEcartWrap" style="display:none; color:#92400e;">
+                                <i class="bi bi-exclamation-triangle"></i>
+                                Écart non expliqué : <strong id="recapEcart">—</strong>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="form-group col-full">
@@ -152,6 +204,105 @@
 
     <th:block layout:fragment="page-scripts">
         <script>
+            // ── Récupération de l'effectif initial depuis le champ caché ─────────
+            const EFFECTIF = parseInt(document.getElementById('effectifInitial')?.value, 10) || 0;
+
+            const inputVivants  = document.getElementById('nbVivants');
+            const inputMorts    = document.getElementById('nbMorts');
+            const recapBlock    = document.getElementById('recapBlock');
+            const recapInitial  = document.getElementById('recapInitial');
+            const recapVivants  = document.getElementById('recapVivants');
+            const recapMorts    = document.getElementById('recapMorts');
+            const recapEcartWrap = document.getElementById('recapEcartWrap');
+            const recapEcart    = document.getElementById('recapEcart');
+            const errVivants    = document.getElementById('errVivants');
+            const errMorts      = document.getElementById('errMorts');
+
+            // ── Calcule automatiquement les morts quand on saisit les vivants ────
+            inputVivants?.addEventListener('input', function () {
+                const vivants = parseInt(this.value, 10);
+                clearErrors();
+
+                if (!isNaN(vivants) && EFFECTIF > 0) {
+                    if (vivants > EFFECTIF) {
+                        showError(errVivants, inputVivants,
+                            `Ne peut pas dépasser l'effectif initial (${EFFECTIF})`);
+                        return;
+                    }
+                    // Calcul automatique des morts
+                    const morts = EFFECTIF - vivants;
+                    inputMorts.value = morts;
+                    majRecap(vivants, morts);
+                } else if (!isNaN(vivants) && EFFECTIF === 0) {
+                    // Pas d'effectif connu : pas de calcul auto, juste le récap
+                    const morts = parseInt(inputMorts.value, 10) || 0;
+                    majRecap(vivants, morts);
+                } else {
+                    recapBlock.style.display = 'none';
+                }
+            });
+
+            // ── Si l'utilisateur ajuste les morts manuellement ──────────────────
+            inputMorts?.addEventListener('input', function () {
+                const morts   = parseInt(this.value, 10);
+                const vivants = parseInt(inputVivants.value, 10);
+                clearErrors();
+
+                if (!isNaN(morts) && EFFECTIF > 0) {
+                    if (morts > EFFECTIF) {
+                        showError(errMorts, inputMorts,
+                            `Ne peut pas dépasser l'effectif initial (${EFFECTIF})`);
+                        return;
+                    }
+                }
+
+                if (!isNaN(morts) && !isNaN(vivants)) {
+                    majRecap(vivants, morts);
+                }
+            });
+
+            // ── Met à jour le récapitulatif ──────────────────────────────────────
+            function majRecap(vivants, morts) {
+                recapBlock.style.display = 'block';
+                recapInitial.textContent = EFFECTIF > 0 ? EFFECTIF.toLocaleString('fr') : '—';
+                recapVivants.textContent = vivants.toLocaleString('fr');
+                recapMorts.textContent   = morts.toLocaleString('fr');
+
+                // Affiche un écart si vivants + morts ≠ effectif (saisie manuelle)
+                if (EFFECTIF > 0) {
+                    const ecart = EFFECTIF - vivants - morts;
+                    if (ecart !== 0) {
+                        recapEcartWrap.style.display = 'flex';
+                        recapEcart.textContent = (ecart > 0 ? '+' : '') + ecart;
+                    } else {
+                        recapEcartWrap.style.display = 'none';
+                    }
+                } else {
+                    recapEcartWrap.style.display = 'none';
+                }
+            }
+
+            // ── Helpers affichage erreurs ────────────────────────────────────────
+            function showError(span, input, msg) {
+                span.textContent = msg;
+                span.style.display = 'block';
+                input.classList.add('input-error');
+            }
+            function clearErrors() {
+                [errVivants, errMorts].forEach(e => { e.textContent = ''; e.style.display = 'none'; });
+                [inputVivants, inputMorts].forEach(i => i.classList.remove('input-error'));
+            }
+
+            // ── Initialisation : si valeurs déjà présentes (mode édition) ────────
+            (function init() {
+                const v = parseInt(inputVivants?.value, 10);
+                const m = parseInt(inputMorts?.value, 10);
+                if (!isNaN(v) && !isNaN(m)) {
+                    majRecap(v, m);
+                }
+            })();
+
+            // ── Seuil de récolte ─────────────────────────────────────────────────
             function checkSeuilRecolte() {
                 const poids = parseFloat(document.getElementById('poidsMoyen')?.value) || 0;
                 const taille = parseFloat(document.getElementById('tailleMoyenne')?.value) || 0;
