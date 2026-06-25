@@ -44,7 +44,7 @@ public class TraitementService {
 
         Traitement traitement = new Traitement();
         traitement.setIncident(incident);
-        traitement.setEntreeMedicament(entree);
+        traitement.setMedicament(entree.getMedicament());
         traitement.setDosage(dto.getDosage());
         traitement.setDureeJours(dto.getDureeJours());
         traitement.setDateDebut(dto.getDateDebut());

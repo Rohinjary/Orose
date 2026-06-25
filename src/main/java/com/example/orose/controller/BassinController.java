@@ -111,19 +111,11 @@ public class BassinController {
         preparerLayoutBassins(model, "Détail du bassin", "detail");
         Bassin bassin = bassinService.getBassinById(id);
         List<String> transitions = bassinService.getTransitionsAutorisees(id);
-<<<<<<< HEAD
-        List<HistoStatutBassin> historique = bassinService.getHistoriqueStatuts(id, null, null, null); // ← ajouter
-
-        model.addAttribute("bassin", bassin);
-        model.addAttribute("transitions", transitions);
-        model.addAttribute("historique", historique); // ← ajouter
-=======
         List<HistoStatutBassin> historique = bassinService.getHistoriqueStatuts(id, null, null, null);
 
         model.addAttribute("bassin", bassin);
         model.addAttribute("transitions", transitions);
         model.addAttribute("historique", historique);
->>>>>>> origin/dev
         return "bassin/detail";
     }
 
@@ -150,10 +142,7 @@ public class BassinController {
             @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm") LocalDateTime fin,
             @RequestParam(required = false) String typeEtat,
             Model model) {
-<<<<<<< HEAD
-=======
         preparerLayoutBassins(model, "Historique global", "historique");
->>>>>>> origin/dev
         model.addAttribute("historique", bassinService.getHistoriqueGlobal(debut, fin, typeEtat));
         model.addAttribute("debut", debut);
         model.addAttribute("fin", fin);

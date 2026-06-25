@@ -98,8 +98,6 @@ public class CycleService {
     public List<Cycle> getCyclesActif() {
         return cycleRepository.findByEstClotureFalse();
     }
-<<<<<<< HEAD
-=======
 
     public Cycle getCycleById(Long id) {
         return cycleRepository.findById(id)
@@ -109,5 +107,4 @@ public class CycleService {
     public List<CycleBassinAssoc> getAssociationsByCycleId(Long cycleId) {
         return cycleBassinAssocRepository.findByCycleId(cycleId);
     }
->>>>>>> origin/dev
 }

@@ -8,12 +8,7 @@ import java.time.LocalTime; // Ajout de l'import
 import java.util.List;
 
 @Entity
-<<<<<<< HEAD
-@Table(name = "distribution_nourriture",
-       uniqueConstraints = @UniqueConstraint(columnNames = {"id_cycle_bassin_assoc", "date_distribution", "id_creneau"}))
-=======
 @Table(name = "distribution_nourriture")
->>>>>>> origin/dev
 @Data
 public class DistributionNourriture {
 
