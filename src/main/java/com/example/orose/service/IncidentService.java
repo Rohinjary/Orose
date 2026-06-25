@@ -31,6 +31,14 @@ public class IncidentService {
         Utilisateur responsable = utilisateurRepository.findById(dto.getIdResponsable())
                 .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
 
+        if (assoc.getBassin() == null || assoc.getBassin().getStatutActuel() == null) {
+            throw new IllegalStateException("Le bassin sélectionné n'a pas de statut valide.");
+        }
+        String statut = assoc.getBassin().getStatutActuel().getCode();
+        if (!"ACTIF".equalsIgnoreCase(statut) && !"EN_TRAITEMENT".equalsIgnoreCase(statut)) {
+            throw new IllegalStateException("Le bassin sélectionné doit être ACTIF ou EN_TRAITEMENT.");
+        }
+
         IncidentSanitaire incident = new IncidentSanitaire();
         incident.setCycleBassinAssoc(assoc);
         incident.setDateDetection(dto.getDateDetection());
