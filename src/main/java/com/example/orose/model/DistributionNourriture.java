@@ -4,10 +4,11 @@ import jakarta.persistence.*;
 import lombok.Data;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalTime; // Ajout de l'import
+import java.util.List;
 
 @Entity
-@Table(name = "distribution_nourriture",
-       uniqueConstraints = @UniqueConstraint(columnNames = {"id_cycle_bassin_assoc", "date_distribution", "id_creneau"}))
+@Table(name = "distribution_nourriture")
 @Data
 public class DistributionNourriture {
 
@@ -20,8 +21,8 @@ public class DistributionNourriture {
     private CycleBassinAssoc cycleBassinAssoc;
 
     @ManyToOne
-    @JoinColumn(name = "id_entree_aliment", nullable = false)
-    private EntreeStockAliment entreeAliment;
+    @JoinColumn(name = "id_aliment", nullable = false)
+    private Aliment aliment;
 
     @ManyToOne
     @JoinColumn(name = "id_creneau", nullable = false)
@@ -29,6 +30,10 @@ public class DistributionNourriture {
 
     @Column(name = "date_distribution", nullable = false)
     private LocalDate dateDistribution;
+
+    // NOUVEAU CHAMP : Heure effective ou planifiée du nourrissage
+    @Column(name = "heure_nourrissage")
+    private LocalTime heureNourrissage;
 
     @Column(name = "quantite_prevue_kg", nullable = false, precision = 10, scale = 2)
     private BigDecimal quantitePrevueKg;
@@ -45,4 +50,7 @@ public class DistributionNourriture {
 
     @Column(name = "est_valide", nullable = false)
     private Boolean estValide;
+
+    @OneToMany(mappedBy = "distribution", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<DistributionNourritureLot> lotsUtilises;
 }

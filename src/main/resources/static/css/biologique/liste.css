@@ -1,0 +1,82 @@
+/* Module biologique — liste des bassins en suivi */
+@import url('/css/bassin/detail.css');
+
+.table-bio tbody tr.statut-critique {
+    background-color: rgba(239, 68, 68, 0.08);
+}
+
+.table-bio tbody tr.statut-retard {
+    background-color: rgba(245, 158, 11, 0.08);
+}
+
+.badge-statut-critique {
+    animation: pulse-critique 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-critique {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.65; }
+}
+
+.taux-survie-rouge { color: var(--mg-danger); font-weight: 600; }
+.taux-survie-orange { color: var(--mg-warning); font-weight: 600; }
+.taux-survie-vert { color: var(--mg-success); font-weight: 600; }
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.page-header h1 {
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.table-bio {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--mg-surface-bright);
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--mg-outline);
+}
+
+.table-bio th,
+.table-bio td {
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--mg-outline);
+    font-size: 14px;
+}
+
+.table-bio th {
+    background: var(--mg-surface-container);
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--mg-secondary);
+}
+
+.table-bio tbody tr:hover {
+    background: var(--mg-surface-container);
+}
+
+.badge-bassin {
+    background: var(--mg-primary);
+    color: white;
+    padding: 4px 10px;
+    border-radius: var(--radius);
+    font-weight: 600;
+    font-size: 13px;
+}
+
+.actions-cell {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}

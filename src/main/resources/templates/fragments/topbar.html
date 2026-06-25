@@ -1,0 +1,26 @@
+<header th:fragment="topbar(parentLabel, currentLabel)" class="topbar" xmlns:th="http://www.thymeleaf.org">
+    <button class="menu-toggle" onclick="toggleSidebar()">
+        <i class="bi bi-list"></i>
+    </button>
+    
+    <div class="breadcrumb">
+        <span th:text="${parentLabel}">Suivi biologique</span>
+        <span class="breadcrumb-separator">/</span>
+        <span class="breadcrumb-current" th:text="${currentLabel}">Alertes Biologiques</span>
+    </div>
+    
+    <div class="topbar-actions">
+        <button class="notification-btn">
+            <i class="bi bi-bell"></i>
+            <span class="notification-dot"></span>
+        </button>
+        <div class="user-profile">
+            <div class="user-info">
+                <!-- Ces données pourront provenir de Spring Security ultérieurement -->
+                <div class="user-name">Jean Dupont</div>
+                <div class="user-role">Superviseur Site</div>
+            </div>
+            <div class="user-avatar">JD</div>
+        </div>
+    </div>
+</header>

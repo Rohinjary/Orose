@@ -1,725 +1,277 @@
 <!DOCTYPE html>
-
-<html lang="fr" xmlns:th="http://www.thymeleaf.org">
-
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/default}">
 <head>
-    <meta charset="utf-8" />
-    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>Move Gasy — Dashboard Sanitaire</title>
-    <link href="https://fonts.googleapis.com" rel="preconnect" />
-    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap"
-        rel="stylesheet" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
-<style>
-        :root {
-            --mg-surface: #f7f9fb;
-            --mg-surface-dim: #d8dadc;
-            --mg-surface-bright: #ffffff;
-            --mg-surface-container: #eceef0;
-            --mg-primary: #1a1a1a;
-            --mg-secondary: #4a4a4a;
-            --mg-outline: #d1d5db;
-            --mg-success: #10b981;
-            --mg-warning: #f59e0b;
-            --mg-danger: #ef4444;
-            --font-main: 'Inter', sans-serif;
-            --radius: 4px;
-            --sidebar-w: 240px;
-            --topbar-h: 64px;
-        }
+    <title layout:fragment="page-title">Move Gasy — Déclaration incident sanitaire</title>
+    <th:block layout:fragment="page-styles">
+        <style>
+            .header-section {
+                margin-bottom: 32px;
+                padding-bottom: 16px;
+                border-bottom: 1px solid #e2e8f0;
+            }
+
+            .header-title {
+                font-size: 26px;
+                font-weight: 700;
+                margin-bottom: 8px;
+                color: var(--mg-primary);
+            }
+
+            .header-sub {
+                font-size: 14px;
+                color: var(--mg-text-muted);
+                line-height: 1.5;
+            }
+
+            .card {
+                background: var(--mg-surface-bright);
+                border: 1px solid var(--mg-outline);
+                border-radius: var(--radius);
+                padding: 24px;
+                margin-bottom: 24px;
+            }
+
+            .form-group {
+                margin-bottom: 16px;
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .form-label {
+                font-size: 11px;
+                font-weight: 700;
+                text-transform: uppercase;
+                color: var(--mg-secondary);
+                letter-spacing: 0.05em;
+            }
+
+            .form-control {
+                font-family: var(--font-main);
+                font-size: 14px;
+                padding: 10px 12px;
+                border: 1px solid var(--mg-outline);
+                border-radius: var(--radius);
+                background: white;
+                color: var(--mg-primary);
+                outline: none;
+                transition: 0.2s;
+            }
+
+            .form-control:focus {
+                border-color: var(--mg-primary);
+            }
+
+            .grid-detail {
+                display: grid;
+                grid-template-columns: repeat(12, 1fr);
+                gap: 24px;
+            }
+
+            .col-4 { grid-column: span 4; }
+            .col-6 { grid-column: span 6; }
+            .col-8 { grid-column: span 8; }
+            .col-12 { grid-column: span 12; }
 
-        *,
-        *::before,
-        *::after {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: var(--font-main);
-            background-color: var(--mg-surface);
-            color: var(--mg-primary);
-            font-size: 13.5px;
-            line-height: 1.5;
-            -webkit-font-smoothing: antialiased;
-        }
-
-        .layout {
-            display: flex;
-            min-height: 100vh;
-        }
-
-        .sidebar {
-            width: var(--sidebar-w);
-            background: var(--mg-surface-bright);
-            border-right: 1px solid var(--mg-outline);
-            position: fixed;
-            top: 0;
-            left: 0;
-            bottom: 0;
-            display: flex;
-            flex-direction: column;
-            z-index: 100;
-        }
-
-        .sidebar-brand {
-            height: var(--topbar-h);
-            padding: 0 24px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            border-bottom: 1px solid var(--mg-outline);
-        }
-
-        .brand-logo {
-            width: 32px;
-            height: 32px;
-            background: var(--mg-primary);
-            border-radius: var(--radius);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            color: white;
-        }
-
-        .brand-name {
-            font-weight: 700;
-            font-size: 16px;
-            letter-spacing: -0.02em;
-        }
-
-        .nav-container {
-            flex: 1;
-            overflow-y: auto;
-            padding: 24px 12px;
-        }
-
-        .nav-label {
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            color: var(--mg-secondary);
-            margin: 24px 12px 8px;
-            letter-spacing: 0.05em;
-        }
-
-        .nav-label:first-child {
-            margin-top: 0;
-        }
-
-        .nav-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 10px 12px;
-            border-radius: var(--radius);
-            color: var(--mg-secondary);
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: 500;
-            transition: all 0.2s;
-            cursor: pointer;
-            margin-bottom: 2px;
-        }
-
-        .nav-item:hover {
-            background: var(--mg-surface-container);
-            color: var(--mg-primary);
-        }
-
-        .nav-item.active {
-            background: var(--mg-primary);
-            color: white;
-        }
-
-        .nav-icon {
-            font-size: 18px;
-            width: 20px;
-            text-align: center;
-        }
-
-        .main-wrapper {
-            margin-left: var(--sidebar-w);
-            width: calc(100% - var(--sidebar-w));
-        }
-
-        .topbar {
-            height: var(--topbar-h);
-            background: var(--mg-surface-bright);
-            border-bottom: 1px solid var(--mg-outline);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 32px;
-            position: sticky;
-            top: 0;
-            z-index: 90;
-        }
-
-        .breadcrumb {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 13px;
-            color: var(--mg-secondary);
-        }
-
-        .breadcrumb span.active {
-            color: var(--mg-primary);
-            font-weight: 600;
-        }
-
-        .breadcrumb .sep {
-            color: var(--mg-outline);
-        }
-
-        .topbar-actions {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-
-        .icon-btn {
-            background: transparent;
-            border: none;
-            cursor: pointer;
-            width: 36px;
-            height: 36px;
-            border-radius: var(--radius);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--mg-secondary);
-            transition: background 0.2s;
-        }
-
-        .icon-btn:hover {
-            background: var(--mg-surface-container);
-        }
-
-        .user-profile {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding-left: 16px;
-            border-left: 1px solid var(--mg-outline);
-        }
-
-        .avatar {
-            width: 32px;
-            height: 32px;
-            background: var(--mg-primary);
-            color: white;
-            border-radius: var(--radius);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            font-size: 12px;
-        }
-
-        .content {
-            padding: 32px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .header-section {
-            margin-bottom: 32px;
-        }
-
-        .header-title {
-            font-size: 24px;
-            font-weight: 700;
-            color: var(--mg-primary);
-        }
-
-        .header-sub {
-            font-size: 14px;
-            color: var(--mg-secondary);
-            margin-top: 4px;
-        }
-
-        /* KPI STYLES */
-        .kpi-row {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-
-        .kpi-card {
-            background: var(--mg-surface-bright);
-            border: 1px solid var(--mg-outline);
-            border-radius: var(--radius);
-            padding: 16px 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .kpi-label {
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            color: var(--mg-secondary);
-            letter-spacing: 0.05em;
-        }
-
-        .kpi-value {
-            font-size: 24px;
-            font-weight: 700;
-            color: var(--mg-primary);
-            line-height: 1.2;
-        }
-
-        .kpi-sub {
-            font-size: 12px;
-            color: var(--mg-secondary);
-        }
-
-        /* KPI Color bars */
-        .kpi-card.sains {
-            border-left: 4px solid var(--mg-success);
-        }
-
-        .kpi-card.traitement {
-            border-left: 4px solid var(--mg-warning);
-        }
-
-        .kpi-card.quarantaine {
-            border-left: 4px solid var(--mg-danger);
-        }
-
-        .kpi-card.incidents {
-            border-left: 4px solid var(--mg-primary);
-        }
-
-        /* GRID & CARDS */
-        .grid-detail {
-            display: grid;
-            grid-template-columns: repeat(12, 1fr);
-            gap: 24px;
-        }
-
-        .col-4 {
-            grid-column: span 4;
-        }
-
-        .col-8 {
-            grid-column: span 8;
-        }
-
-        .col-12 {
-            grid-column: span 12;
-        }
-
-        .card {
-            background: var(--mg-surface-bright);
-            border: 1px solid var(--mg-outline);
-            border-radius: var(--radius);
-            padding: 24px;
-            margin-bottom: 24px;
-        }
-
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .card-title {
-            font-size: 12px;
-            font-weight: 700;
-            color: var(--mg-primary);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        /* POND GRID SPECIFIC */
-        .pond-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-        }
-
-        .pond-item {
-            border: 1px solid var(--mg-outline);
-            border-radius: var(--radius);
-            padding: 12px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .pond-item:hover {
-            border-color: var(--mg-primary);
-            background: var(--mg-surface);
-        }
-
-        .pond-id {
-            font-weight: 700;
-            font-size: 12px;
-            color: var(--mg-secondary);
-        }
-
-        .pond-status-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            margin: 0 auto;
-        }
-
-        .pond-status-dot.sain {
-            background: var(--mg-success);
-        }
-
-        .pond-status-dot.traitement {
-            background: var(--mg-warning);
-        }
-
-        .pond-status-dot.quarantaine {
-            background: var(--mg-danger);
-        }
-
-        /* BUTTONS */
-        .btn {
-            padding: 10px 20px;
-            border-radius: var(--radius);
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.2s;
-            border: 1px solid transparent;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            font-family: var(--font-main);
-            text-decoration: none;
-            justify-content: center;
-        }
-
-        .btn-primary {
-            background: var(--mg-primary);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            opacity: 0.9;
-        }
-
-        .btn-outline {
-            background: transparent;
-            border-color: var(--mg-outline);
-            color: var(--mg-primary);
-        }
-
-        .btn-outline:hover {
-            background: var(--mg-surface);
-        }
-
-        .btn-sm {
-            padding: 6px 12px;
-            font-size: 11px;
-        }
-
-        .btn-full {
-            width: 100%;
-        }
-
-        /* BADGES */
-        .badge {
-            padding: 2px 8px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 700;
-            display: inline-block;
-            text-transform: uppercase;
-        }
-
-        .badge-success {
-            background: #dcfce7;
-            color: #166534;
-        }
-
-        .badge-warning {
-            background: #fef3c7;
-            color: #92400e;
-        }
-
-        .badge-danger {
-            background: #fee2e2;
-            color: #991b1b;
-        }
-
-        .badge-neutral {
-            background: #f3f4f6;
-            color: #4b5563;
-        }
-
-        /* TABLE */
-        .table-container {
-            width: 100%;
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-        }
-
-        thead th {
-            background: var(--mg-surface);
-            padding: 12px 16px;
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            color: var(--mg-secondary);
-            border-bottom: 1px solid var(--mg-outline);
-            letter-spacing: 0.05em;
-        }
-
-        tbody td {
-            padding: 14px 16px;
-            border-bottom: 1px solid var(--mg-outline);
-            font-size: 13px;
-        }
-
-        tbody tr:hover td {
-            background: var(--mg-surface);
-        }
-
-        /* FORM */
-        .form-group {
-            margin-bottom: 16px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .form-label {
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            color: var(--mg-secondary);
-            letter-spacing: 0.05em;
-        }
-
-        .form-control {
-            font-family: var(--font-main);
-            font-size: 14px;
-            padding: 10px 12px;
-            border: 1px solid var(--mg-outline);
-            border-radius: var(--radius);
-            background: white;
-            color: var(--mg-primary);
-            outline: none;
-            transition: 0.2s;
-        }
-
-        .form-control:focus {
-            border-color: var(--mg-primary);
-        }
-
-        @media (max-width: 992px) {
             .kpi-row {
-                grid-template-columns: repeat(2, 1fr);
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 16px;
+                margin-top: 16px;
             }
 
-            .col-8,
-            .col-4 {
-                grid-column: span 12;
+            .kpi-card {
+                background: var(--mg-surface-bright);
+                border: 1px solid var(--mg-outline);
+                border-radius: var(--radius);
+                padding: 16px 20px;
+                display: flex;
+                flex-direction: column;
+                gap: 4px;
+                border-left: 4px solid transparent;
+                cursor: pointer;
+                transition: all 0.2s ease;
             }
-        }
-    </style>
-    <link rel="stylesheet" href="../css/responsive.css">
+
+            .kpi-card:hover {
+                background: #f7f9fb;
+            }
+
+            .kpi-label {
+                font-size: 11px;
+                font-weight: 700;
+                text-transform: uppercase;
+                color: var(--mg-secondary);
+                letter-spacing: 0.05em;
+            }
+
+            .kpi-sub {
+                font-size: 12px;
+                color: var(--mg-text-muted);
+            }
+
+            .kpi-card.sains { border-left-color: #10b981; }
+            .kpi-card.traitement { border-left-color: #f59e0b; }
+            .kpi-card.quarantaine { border-left-color: #ef4444; }
+
+            textarea.form-control {
+                resize: vertical;
+                font-family: var(--font-main);
+            }
+
+            .btn {
+                padding: 10px 20px;
+                border-radius: var(--radius);
+                font-size: 13px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: 0.2s;
+                border: 1px solid transparent;
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                text-decoration: none;
+                justify-content: center;
+            }
+
+            .btn-primary {
+                background: var(--mg-primary);
+                color: white;
+            }
+
+            .btn-primary:hover {
+                opacity: 0.9;
+            }
+
+            .btn-outline {
+                background: transparent;
+                border-color: var(--mg-outline);
+                color: var(--mg-primary);
+            }
+
+            .btn-outline:hover {
+                background: var(--mg-surface);
+            }
+
+            .alert {
+                padding: 16px;
+                border-radius: var(--radius);
+                margin-bottom: 16px;
+                font-size: 14px;
+            }
+
+            .alert-danger {
+                background: #fee2e2;
+                color: #991b1b;
+                border: 1px solid #fca5a5;
+            }
+
+            @media (max-width: 992px) {
+                .kpi-row { grid-template-columns: 1fr; }
+                .col-8, .col-4 { grid-column: span 12; }
+            }
+        </style>
+    </th:block>
 </head>
-
 <body>
-    <div class="sidebar-overlay"></div>
-    <div class="layout">
-        <!-- SIDEBAR -->
-        <aside class="sidebar">
-            <div class="sidebar-brand">
-                <div class="brand-logo"><i class="bi bi-water"></i></div>
-                <div class="brand-name">MOVE GASY</div>
-            </div>
-            <div class="nav-container">
-                <div class="nav-label">Principal</div>
-                <a class="nav-item" href="#">
-                    <span class="nav-icon"><i class="bi bi-speedometer2"></i></span> Dashboard
-                </a>
-                <div class="nav-label">Terrain</div>
-                <a class="nav-item" href="#">
-                    <span class="nav-icon"><i class="bi bi-droplet-half"></i></span> Bassins
-                </a>
-                <a class="nav-item" href="#">
-                    <span class="nav-icon"><i class="bi bi-activity"></i></span> Suivi biologique
-                </a>
-                <a class="nav-item" href="#">
-                    <span class="nav-icon"><i class="bi bi-egg-fill"></i></span> Nourrissage
-                </a>
-                <a class="nav-item active" href="#">
-                    <span class="nav-icon"><i class="bi bi-plus-circle"></i></span> Sanitaire
-                </a>
-                <div class="nav-label">Logistique</div>
-                <a class="nav-item" href="#">
-                    <span class="nav-icon"><i class="bi bi-box-seam"></i></span> Stocks
-                </a>
-                <a class="nav-item" href="#">
-                    <span class="nav-icon"><i class="bi bi-cart3"></i></span> Commercial
-                </a>
-                <a class="nav-item" href="#">
-                    <span class="nav-icon"><i class="bi bi-truck"></i></span> Livraisons
-                </a>
-                <a class="nav-item" href="#">
-                    <span class="nav-icon"><i class="bi bi-cash-stack"></i></span> Finances
-                </a>
-                <div class="nav-label">Système</div>
- <a class="nav-item" href="#">
-          <span class="nav-icon"><i class="bi bi-lock"></i></span> Connexion</a>
-                <a class="nav-item" href="#">
-                    <span class="nav-icon"><i class="bi bi-gear"></i></span> Administration</a>
-                  <div class="nav-label">Portail client</div>
-                 <a class="nav-item">
-                    <span class="nav-icon"><i class="bi bi-person-lock"></i></span> Front Office
-                </a>
-            </div>
-        </aside>
-        <!-- MAIN WRAPPER -->
-        <div class="main-wrapper">
-            <!-- TOPBAR -->
-            <header class="topbar">
-                <button class="menu-toggle" onclick="toggleSidebar()">
-                    <i class="bi bi-list"></i>
-                </button>
-                <div class="breadcrumb">
-                    <span>Dashboard</span><span class="sep">/</span><span class="active">Sanitaire</span>
-                </div>
-                <div class="topbar-actions">
-                    <button class="icon-btn"><i class="bi bi-bell"></i></button>
-                    <button class="icon-btn"><i class="bi bi-gear"></i></button>
-                    <div class="user-profile">
-                        <div class="avatar">AD</div>
+    <div layout:fragment="content">
+        <header class="header-section">
+            <h2 class="header-title">Déclaration d'incident sanitaire</h2>
+            <p class="header-sub">Enregistrez une anomalie détectée pour déclencher le protocole approprié.</p>
+        </header>
+
+        <div class="card">
+            <form th:action="@{/sanitaire/declaration}" th:object="${incidentDTO}" method="POST">
+                <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+
+                <div class="grid-detail" style="margin-bottom: 24px; gap: 24px;">
+                    <div class="col-4">
+                        <div class="form-group">
+                            <label class="form-label">Bassin</label>
+                            <select class="form-control" th:field="*{idCycleBassinAssoc}" required>
+                                <option value="">Sélectionner un bassin</option>
+                                <option th:if="${#lists.isEmpty(cycleBassinAssocs)}" value="" disabled>
+                                    Aucun bassin ACTIF ou EN_TRAITEMENT disponible en cycle — vérifiez le statut des bassins
+                                </option>
+                                <option th:each="assoc : ${cycleBassinAssocs}"
+                                        th:value="${assoc.id}"
+                                        th:text="${assoc.bassin.code + ' — Cycle ' + assoc.cycle.codeUniqueCycle}">
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="form-group">
+                            <label class="form-label">Date du constat</label>
+                            <input class="form-control" type="date" th:field="*{dateDetection}" required />
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="form-group">
+                            <label class="form-label">Type d'incident</label>
+                            <select class="form-control" th:field="*{typeIncident}" required>
+                                <option value="">Sélectionner un type</option>
+                                <option value="MALADIE">Maladie suspectée</option>
+                                <option value="ANOMALIE_EAU">Anomalie paramètres eau</option>
+                                <option value="MORTALITE_ANORMALE">Mortalité inhabituelle</option>
+                                <option value="AUTRE">Autre</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="form-group">
+                            <label class="form-label">Responsable</label>
+                            <select class="form-control" th:field="*{idResponsable}" required>
+                                <option value="">Sélectionner un responsable</option>
+                                <option th:each="user : ${utilisateurs}" th:value="${user.id}" th:text="${user.nom} + ' - ' + ${user.prenom}"></option>
+                            </select>
+                        </div>
                     </div>
                 </div>
-            </header>
-            <!-- CONTENT -->
-            <main class="content">
-                <header class="header-section">
-                    <h2 class="header-title">Déclaration d'incident sanitaire</h2>
-                    <p class="header-sub">Enregistrez une anomalie détectée pour déclencher le protocole approprié.</p>
-                </header>
-                <div class="card">
-                    <form th:action="@{/sanitaire/declaration}" th:object="${incidentDTO}" method="POST">
-                        <div class="grid-detail" style="margin-bottom: 24px;">
-                            <div class="col-4">
-                                <div class="form-group">
-                                    <label class="form-label">Bassin</label>
-                                    <select class="form-control" th:field="*{idCycleBassinAssoc}" required>
-                                        <option value="">Sélectionner un bassin</option>
-                                        <option th:if="${cycleBassinAssocs.isEmpty()}" disabled>
-                                            Aucun bassin actif en cycle — créez un cycle d'abord
-                                        </option>
-                                        <option th:each="assoc : ${cycleBassinAssocs}" th:value="${assoc.id}"
-                                            th:text="${assoc.bassin.code} + ' — Cycle ' + ${assoc.cycle.codeUniqueCycle}">
-                                        </option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-4">
-                                <div class="form-group">
-                                    <label class="form-label">Date du constat</label>
-                                    <input class="form-control" type="date" th:field="*{dateDetection}" required />
-                                </div>
-                            </div>
-                            <div class="col-4">
-                                <div class="form-group">
-                                    <label class="form-label">Type d'incident</label>
-                                    <select class="form-control" th:field="*{typeIncident}" required>
-                                        <option value="">Sélectionner un type</option>
-                                        <option value="MALADIE">Maladie suspectée</option>
-                                        <option value="ANOMALIE_EAU">Anomalie paramètres eau</option>
-                                        <option value="MORTALITE_ANORMALE">Mortalité inhabituelle</option>
-                                        <option value="AUTRE">Autre</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-4">
-                                <div class="form-group">
-                                    <label class="form-label">Responsable</label>
-                                    <select class="form-control" th:field="*{idResponsable}" required>
-                                        <option value="">Sélectionner un responsable</option>
-                                        <option th:each="user : ${utilisateurs}" th:value="${user.id}" th:text="${user.nom} + ' - ' + ${user.prenom}"></option>
-                                    </select>
-                                </div>
-                            </div>
+
+                <div class="form-group" style="margin-bottom: 24px;">
+                    <label class="form-label">Niveau de gravité</label>
+                    <div class="kpi-row">
+                        <div class="kpi-card sains" onclick="document.getElementById('gravite-faible').checked=true; updateGraviteSelection(this)">
+                            <input type="radio" id="gravite-faible" th:field="*{niveauGravite}" value="FAIBLE" style="display:none;" />
+                            <span class="kpi-label">FAIBLE</span>
+                            <span class="kpi-sub">Surveillance simple</span>
                         </div>
-                        <div class="form-group" style="margin-bottom: 24px;">
-                            <label class="form-label">Niveau de gravité</label>
-                            <div class="kpi-row" style="margin-top: 8px;">
-                                <div class="kpi-card sains" style="cursor: pointer; border-width: 1px 1px 1px 4px;" onclick="document.getElementById('gravite-faible').checked=true; updateGraviteSelection(this)">
-                                    <input type="radio" id="gravite-faible" th:field="*{niveauGravite}" value="FAIBLE" style="display:none;" />
-                                    <span class="kpi-label">FAIBLE</span>
-                                    <span class="kpi-sub">Surveillance simple</span>
-                                </div>
-                                <div class="kpi-card traitement" style="cursor: pointer; border-width: 1px 1px 1px 4px;" onclick="document.getElementById('gravite-modere').checked=true; updateGraviteSelection(this)">
-                                    <input type="radio" id="gravite-modere" th:field="*{niveauGravite}" value="MODERE" style="display:none;" />
-                                    <span class="kpi-label">MODÉRÉ</span>
-                                    <span class="kpi-sub">Traitement requis</span>
-                                </div>
-                                <div class="kpi-card quarantaine" style="cursor: pointer; border-width: 1px 1px 1px 4px;" onclick="document.getElementById('gravite-critique').checked=true; updateGraviteSelection(this)">
-                                    <input type="radio" id="gravite-critique" th:field="*{niveauGravite}" value="CRITIQUE" style="display:none;" />
-                                    <span class="kpi-label">CRITIQUE</span>
-                                    <span class="kpi-sub">Isolement immédiat</span>
-                                </div>
-                            </div>
+                        <div class="kpi-card traitement" onclick="document.getElementById('gravite-modere').checked=true; updateGraviteSelection(this)">
+                            <input type="radio" id="gravite-modere" th:field="*{niveauGravite}" value="MODERE" style="display:none;" />
+                            <span class="kpi-label">MODÉRÉ</span>
+                            <span class="kpi-sub">Traitement requis</span>
                         </div>
-                        <div class="form-group" style="margin-bottom: 32px;">
-                            <label class="form-label">Description / Symptômes</label>
-                            <textarea class="form-control" th:field="*{description}"
-                                placeholder="Décrivez les signes cliniques ou les anomalies observées..."
-                                rows="5" required></textarea>
+                        <div class="kpi-card quarantaine" onclick="document.getElementById('gravite-critique').checked=true; updateGraviteSelection(this)">
+                            <input type="radio" id="gravite-critique" th:field="*{niveauGravite}" value="CRITIQUE" style="display:none;" />
+                            <span class="kpi-label">CRITIQUE</span>
+                            <span class="kpi-sub">Isolement immédiat</span>
                         </div>
-                        <div
-                            style="display: flex; justify-content: flex-end; gap: 12px; border-top: 1px solid var(--mg-outline); padding-top: 24px;">
-                            <button class="btn btn-outline" type="button" onclick="window.location.href='/sanitaire/index'">Annuler</button>
-                            <button class="btn btn-primary" type="submit">Enregistrer l'incident</button>
-                        </div>
-                    </form>
+                    </div>
                 </div>
-            </main>
+
+                <div class="form-group" style="margin-bottom: 32px;">
+                    <label class="form-label">Description / Symptômes</label>
+                    <textarea class="form-control" th:field="*{description}" placeholder="Décrivez les signes cliniques ou les anomalies observées..." rows="5" required></textarea>
+                </div>
+
+                <div style="display: flex; justify-content: flex-end; gap: 12px; border-top: 1px solid var(--mg-outline); padding-top: 24px;">
+                    <button class="btn btn-outline" type="button" onclick="window.location.href='/sanitaire/index'">Annuler</button>
+                    <button class="btn btn-primary" type="submit">Enregistrer l'incident</button>
+                </div>
+            </form>
         </div>
     </div>
-<script>
-    function toggleSidebar() {
-        document.querySelector('.sidebar').classList.toggle('open');
-        document.querySelector('.sidebar-overlay').classList.toggle('open');
-    }
-    document.querySelector('.sidebar-overlay')
-        ?.addEventListener('click', () => {
-            document.querySelector('.sidebar').classList.remove('open');
-            document.querySelector('.sidebar-overlay').classList.remove('open');
-        });
-    
-    function updateGraviteSelection(element) {
-        document.querySelectorAll('.kpi-row .kpi-card').forEach(card => {
-            card.style.opacity = '0.6';
-            card.style.borderLeftWidth = '1px';
-        });
-        element.style.opacity = '1';
-        element.style.borderLeftWidth = '4px';
-    }
-</script>
 
+    <th:block layout:fragment="page-scripts">
+        <script>
+            function updateGraviteSelection(element) {
+                document.querySelectorAll('.kpi-row .kpi-card').forEach(card => {
+                    card.style.opacity = '0.6';
+                });
+                element.style.opacity = '1';
+            }
+        </script>
+    </th:block>
 </body>
-
 </html>

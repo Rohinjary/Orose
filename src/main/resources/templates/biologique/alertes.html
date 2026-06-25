@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/default}">
+<head>
+    <title layout:fragment="page-title">Alertes biologiques — Move Gasy</title>
+    <th:block layout:fragment="page-styles">
+        <link href="/css/biologique/alertes.css" rel="stylesheet" />
+    </th:block>
+</head>
+<body>
+    <div layout:fragment="content">
+        <div th:if="${succes}" class="alert alert-success" th:text="${succes}"></div>
+        <div th:if="${erreur}" class="alert alert-danger" th:text="${erreur}"></div>
+
+        <div class="page-header">
+            <h1>🚨 Alertes biologiques actives (<span th:text="${#lists.size(alertes)}">0</span>)</h1>
+            <a th:href="@{/biologique}" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-arrow-left"></i> Retour suivi biologique
+            </a>
+        </div>
+
+        <div th:if="${#lists.isEmpty(alertes)}" class="alert-empty">
+            <i class="bi bi-check-circle fs-1 d-block mb-2"></i>
+            Aucune alerte biologique active. Tout est normal.
+        </div>
+
+        <div th:each="alerte : ${alertes}"
+             th:class="'alerte-card niveau-' + ${alerte.niveau}">
+            <div th:class="'alerte-header ' +
+                            (${alerte.niveau == 'ROUGE'} ? 'bg-danger text-white' :
+                            (${alerte.niveau == 'ORANGE'} ? 'bg-warning text-dark' : 'bg-success text-white'))">
+                <span th:text="${alerte.typeAlerte}">TYPE</span>
+                <span class="float-end" th:text="${alerte.niveau}">NIVEAU</span>
+            </div>
+            <div class="alerte-body">
+                <p th:text="${alerte.message}">Message</p>
+                <div class="alerte-meta" th:if="${alerte.cycleBassinAssoc != null}">
+                    Bassin / Cycle :
+                    <strong th:text="${alerte.cycleBassinAssoc.bassin.code} + ' · ' + ${alerte.cycleBassinAssoc.cycle.codeUniqueCycle}">—</strong>
+                </div>
+                <div class="alerte-meta">
+                    Date : <span th:text="${#temporals.format(alerte.dateCreation, 'dd/MM/yyyy HH:mm')}">—</span>
+                </div>
+            </div>
+            <div class="alerte-footer">
+                <form th:action="@{/biologique/alertes/{id}/resoudre(id=${alerte.id})}" method="post" style="display:inline;">
+                    <button type="submit" class="btn btn-sm btn-outline-dark">
+                        <i class="bi bi-check-lg"></i> Marquer comme résolue
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

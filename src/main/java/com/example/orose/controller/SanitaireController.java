@@ -48,22 +48,41 @@ public class SanitaireController {
         model.addAttribute("incidents",
                 sanitaireService.getHistoriqueSanitaire(null, null, null, null, null, PageRequest.of(0, 100))
                         .getContent());
+        model.addAttribute("currentGroup", "sanitaire");
+        model.addAttribute("currentPage", "index");
+        model.addAttribute("breadcrumbParent", "Module Sanitaire");
+        model.addAttribute("breadcrumbCurrent", "Registre des Incidents");
         return "Sanitaire/index";
     }
 
     @GetMapping("/declaration")
     public String afficherFormulaireDeclaration(Model model) {
         model.addAttribute("incidentDTO", new IncidentDTO());
-        model.addAttribute("cycleBassinAssocs", cycleBassinAssocRepository.findByEstClotureFalse());
+        model.addAttribute("cycleBassinAssocs", cycleBassinAssocRepository.findByEstClotureFalse().stream()
+                .filter(assoc -> assoc.getBassin() != null && assoc.getBassin().getStatutActuel() != null)
+                .filter(assoc -> {
+                    String code = assoc.getBassin().getStatutActuel().getCode();
+                    return "ACTIF".equalsIgnoreCase(code) || "EN_TRAITEMENT".equalsIgnoreCase(code);
+                })
+                .toList());
         model.addAttribute("utilisateurs", utilisateurRepository.findAll());
+        model.addAttribute("currentGroup", "sanitaire");
+        model.addAttribute("currentPage", "declaration");
+        model.addAttribute("breadcrumbParent", "Module Sanitaire");
+        model.addAttribute("breadcrumbCurrent", "Déclaration d'incident");
         return "Sanitaire/declaration";
     }
 
     @PostMapping("/declaration")
     public String declarerIncident(@ModelAttribute IncidentDTO dto, RedirectAttributes redirectAttributes) {
-        incidentService.declarerIncident(dto);
-        redirectAttributes.addFlashAttribute("message", "Incident déclaré avec succès.");
-        return "redirect:/sanitaire/index";
+        try {
+            incidentService.declarerIncident(dto);
+            redirectAttributes.addFlashAttribute("message", "Incident déclaré avec succès.");
+            return "redirect:/sanitaire/index";
+        } catch (IllegalStateException ex) {
+            redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
+            return "redirect:/sanitaire/declaration";
+        }
     }
 
     @GetMapping("/traitement")
@@ -74,6 +93,10 @@ public class SanitaireController {
         model.addAttribute("medicaments",
                 entreeStockMedicamentRepository.findByQuantiteRestanteGreaterThan(BigDecimal.ZERO));
         model.addAttribute("utilisateurs", utilisateurRepository.findAll());
+        model.addAttribute("currentGroup", "sanitaire");
+        model.addAttribute("currentPage", "traitement");
+        model.addAttribute("breadcrumbParent", "Module Sanitaire");
+        model.addAttribute("breadcrumbCurrent", "Saisie de Traitement");
         return "Sanitaire/traitement";
     }
 
@@ -87,6 +110,10 @@ public class SanitaireController {
     @GetMapping("/dashboard")
     public String dashboard(Model model) {
         model.addAttribute("dashboard", sanitaireService.getDashboardSanitaire());
+        model.addAttribute("currentGroup", "sanitaire");
+        model.addAttribute("currentPage", "dashboard");
+        model.addAttribute("breadcrumbParent", "Module Sanitaire");
+        model.addAttribute("breadcrumbCurrent", "Tableau de bord");
         return "Sanitaire/dashboard";
     }
 
@@ -122,6 +149,10 @@ public class SanitaireController {
         model.addAttribute("filtreDebut", debut);
         model.addAttribute("filtreFin", fin);
         model.addAttribute("filtreStatut", statut);
+        model.addAttribute("currentGroup", "sanitaire");
+        model.addAttribute("currentPage", "historique");
+        model.addAttribute("breadcrumbParent", "Module Sanitaire");
+        model.addAttribute("breadcrumbCurrent", "Historique");
         return "Sanitaire/historique";
     }
 
