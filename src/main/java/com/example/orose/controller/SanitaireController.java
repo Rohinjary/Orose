@@ -9,6 +9,7 @@ import com.example.orose.repository.CycleBassinAssocRepository;
 import com.example.orose.repository.BassinRepository;
 import com.example.orose.repository.UtilisateurRepository;
 import com.example.orose.repository.EntreeStockMedicamentRepository;
+import com.example.orose.service.BassinService;
 import com.example.orose.repository.TraitementRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -33,6 +34,8 @@ public class SanitaireController {
     private SanitaireService sanitaireService;
     @Autowired
     private TraitementRepository traitementRepository;
+    @Autowired
+    private BassinService bassinService;
 
     @Autowired
     private CycleBassinAssocRepository cycleBassinAssocRepository;
@@ -77,6 +80,7 @@ public class SanitaireController {
     public String declarerIncident(@ModelAttribute IncidentDTO dto, RedirectAttributes redirectAttributes) {
         try {
             incidentService.declarerIncident(dto);
+            bassinService.changerStatutBassin(dto.getIdCycleBassinAssoc().longValue(), "QUARANTAINE", "Incident déclaré", dto.getIdResponsable());
             redirectAttributes.addFlashAttribute("message", "Incident déclaré avec succès.");
             return "redirect:/sanitaire/index";
         } catch (IllegalStateException ex) {
@@ -159,6 +163,7 @@ public class SanitaireController {
     @PostMapping("/resoudre/{id}")
     public String resoudreIncident(@PathVariable Integer id) {
         incidentService.resoudreIncident(id);
+        bassinService.changerStatutBassin(id.longValue(), "ACTIF", "Incident résolu", 1L);
         return "redirect:/sanitaire/historique";
     }
 }

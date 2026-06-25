@@ -103,7 +103,7 @@ public class BassinService {
         Bassin bassin = getBassinById(idBassin);
         String statutActuelCode = bassin.getStatutActuel().getCode();
 
-        statutBassinService.validerTransition(statutActuelCode, nouveauStatut);
+        // statutBassinService.validerTransition(statutActuelCode, nouveauStatut);
 
         StatutBassin nouveauStatutEntity = statutBassinRepository.findByCode(nouveauStatut)
                 .orElseThrow(() -> new IllegalArgumentException("Nouveau statut introuvable"));

@@ -5,6 +5,7 @@ import com.example.orose.model.EntreeStockMedicament;
 import com.example.orose.model.IncidentSanitaire;
 import com.example.orose.model.Traitement;
 import com.example.orose.model.Utilisateur;
+import com.example.orose.repository.BassinRepository;
 import com.example.orose.repository.EntreeStockMedicamentRepository;
 import com.example.orose.repository.IncidentSanitaireRepository;
 import com.example.orose.repository.TraitementRepository;
@@ -28,6 +29,10 @@ public class TraitementService {
     private EntreeStockMedicamentRepository entreeStockRepository;
     @Autowired
     private UtilisateurRepository utilisateurRepository;
+    @Autowired
+    private BassinRepository bassinRepository;
+    @Autowired
+    private BassinService bassinService;
 
     @Transactional
     public Traitement enregistrerTraitement(TraitementDTO dto) {
@@ -52,7 +57,28 @@ public class TraitementService {
         traitement.setResponsable(responsable);
         traitement.setCreatedAt(LocalDateTime.now());
 
-        return traitementRepository.save(traitement);
+        Traitement traitementSauve = traitementRepository.save(traitement);
+
+        Integer idBassin = incident.getCycleBassinAssoc().getBassin().getId();
+        String statutActuel = bassinRepository.findById(idBassin)
+                .map(bassin -> bassin.getStatutActuel().getCode())
+                .orElseThrow(() -> new RuntimeException("Bassin non trouvé"));
+
+        if (!"EN_TRAITEMENT".equals(statutActuel)) {
+            try {
+                bassinService.changerStatutBassin(
+                    idBassin.longValue(),
+                    "EN_TRAITEMENT",
+                    "Traitement #" + traitementSauve.getId() + " initié pour l'incident #" + incident.getId(),
+                    responsable.getId().longValue()
+                );
+            } catch (IllegalStateException e) {
+                throw new RuntimeException(
+                    "Impossible de passer le bassin en EN_TRAITEMENT : " + e.getMessage());
+            }
+        }
+
+        return traitementSauve;
     }
 
     public List<Traitement> getTraitementsByIncident(Integer idIncident) {
