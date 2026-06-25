@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<<<<<<< HEAD
 <html lang="fr" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8" />
@@ -174,10 +175,118 @@
         }
         document.querySelector('.sidebar-overlay')
             ?.addEventListener('click', () => {
+=======
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layouts/default}">
+
+<head>
+    <title layout:fragment="page-title"
+        th:text="${modeEdition} ? 'Move Gasy — Modifier Bassin' : 'Move Gasy — Nouveau Bassin'">Move Gasy — Bassin
+    </title>
+    <th:block layout:fragment="page-styles">
+        <link href="/css/bassin/form.css" rel="stylesheet" />
+    </th:block>
+</head>
+
+<body>
+    <div layout:fragment="content">
+
+        <div class="page-header">
+            <h1 class="page-title" th:text="${modeEdition} ? 'Modifier le Bassin' : 'Configuration du Bassin'">Bassin
+            </h1>
+            <p class="page-sub"
+                th:text="${modeEdition} ? 'Modifiez les paramètres techniques du bassin.' : 'Saisissez les paramètres techniques pour l\'enregistrement du nouveau bassin aquacole.'">
+            </p>
+        </div>
+
+        <!-- Erreur -->
+        <div th:if="${erreur}" class="alert alert-danger" style="
+                    background: #fff0f0;
+                    border: 1px solid #ffcccc;
+                    border-left: 4px solid #e53e3e;
+                    border-radius: 8px;
+                    padding: 12px 16px;
+                    margin-bottom: 20px;
+                    color: #c53030;
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                ">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            <span th:text="${erreur}"></span>
+        </div>
+
+        <div class="card">
+            <form th:action="${modeEdition} ? @{/bassins/{id}/modifier(id=${idBassin})} : @{/bassins}" method="post">
+                <div class="form-grid">
+                    <!-- Code bassin -->
+                    <div class="form-group">
+                        <label for="code">Code bassin</label>
+                        <input id="code" type="text" name="code" placeholder="Ex: B01" th:value="${bassinDTO.code}"
+                            maxlength="3" />
+                        <span id="code-error" style="color: #e53e3e; font-size: 12px; display: none;">
+                            Format invalide — doit etre B01 a B09
+                        </span>
+                    </div>
+
+                    <!-- Surface -->
+                    <div class="form-group">
+                        <label for="surface_m2">Surface (m²) (inferieure a 100)</label>
+                        <input id="surface_m2" type="number" max="99" name="surface_m2" step="0.01" placeholder="0.00"
+                            th:value="${bassinDTO.surface_m2}" />
+                    </div>
+
+                    <!-- Profondeur -->
+                    <div class="form-group">
+                        <label for="profondeur_metre">Profondeur (m) (inferieure a 100)</label>
+                        <input id="profondeur_metre" type="number" max="99" name="profondeur_metre" step="0.1"
+                            placeholder="0.00" th:value="${bassinDTO.profondeur_metre}" />
+                    </div>
+
+                    <!-- Date de creation -->
+                    <div class="form-group">
+                        <label for="dateCreation">Date de creation</label>
+                        <input id="dateCreation" type="date" name="dateCreation" th:value="${bassinDTO.dateCreation}" />
+                    </div>
+
+                    <!-- Notes -->
+                    <div class="form-group full-width">
+                        <label for="notes">Notes</label>
+                        <textarea id="notes" name="notes"
+                            placeholder="Observations environnementales ou spécificités techniques..."
+                            th:text="${bassinDTO.notes}"></textarea>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <a th:href="@{/bassins}" class="btn btn-secondary">Annuler</a>
+                    <button class="btn btn-primary" type="submit"
+                        th:text="${modeEdition} ? 'Enregistrer les modifications' : 'Enregistrer le bassin'">
+                        Enregistrer
+                    </button>
+                </div>
+            </form>
+        </div>
+
+    </div>
+
+
+
+
+
+    <th:block layout:fragment="page-scripts">
+        <script>
+            function toggleSidebar() {
+                document.querySelector('.sidebar').classList.toggle('open');
+                document.querySelector('.sidebar-overlay').classList.toggle('open');
+            }
+            document.querySelector('.sidebar-overlay')?.addEventListener('click', () => {
+>>>>>>> origin/dev
                 document.querySelector('.sidebar').classList.remove('open');
                 document.querySelector('.sidebar-overlay').classList.remove('open');
             });
 
+<<<<<<< HEAD
         document.getElementById('code').addEventListener('blur', function() {
         const val = this.value.trim();
         const regex = /^B0[1-9]$/;
@@ -191,5 +300,22 @@
         }
     });
     </script>
+=======
+            document.getElementById('code')?.addEventListener('blur', function () {
+                const val = this.value.trim();
+                const regex = /^B0[1-9]$/;
+                const error = document.getElementById('code-error');
+                if (val && !regex.test(val)) {
+                    error.style.display = 'block';
+                    this.style.borderColor = '#e53e3e';
+                } else {
+                    if (error) error.style.display = 'none';
+                    this.style.borderColor = '';
+                }
+            });
+        </script>
+    </th:block>
+>>>>>>> origin/dev
 </body>
+
 </html>

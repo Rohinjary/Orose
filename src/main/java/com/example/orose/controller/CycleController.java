@@ -1,10 +1,13 @@
 package com.example.orose.controller;
 
 import com.example.orose.dto.CycleDemarrageDTO;
-import com.example.orose.model.Bassin;
 import com.example.orose.repository.EspeceCrevetteRepository;
 import com.example.orose.service.BassinService;
 import com.example.orose.service.CycleService;
+<<<<<<< HEAD
+=======
+import jakarta.persistence.EntityNotFoundException;
+>>>>>>> origin/dev
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -32,12 +35,43 @@ public class CycleController {
         this.bassinService = bassinService;
     }
 
+<<<<<<< HEAD
     @GetMapping
     public String formulaireDemarrage(Model model) {
         // Plus de bassin specifique — on passe tous les bassins VIDE
+=======
+   
+    private void preparerLayoutCycles(Model model, String breadcrumbCurrent, String currentPage) {
+        model.addAttribute("currentPage", currentPage);
+        model.addAttribute("currentGroup", "cycles");
+        model.addAttribute("breadcrumbParent", "Cycles");
+        model.addAttribute("breadcrumbCurrent", breadcrumbCurrent);
+    }
+
+    
+
+    @GetMapping("/liste")
+    public String liste(Model model) {
+        preparerLayoutCycles(model, "Cycles actifs", "liste");
+        model.addAttribute("cycles", cycleService.getCyclesActif());
+        return "cycle/list";
+    }
+
+    @GetMapping("/nouveau")
+    public String formulaireDemarrage(Model model) {
+        preparerLayoutCycles(model, "Nouveau cycle", "nouveau");
+>>>>>>> origin/dev
         model.addAttribute("bassinsVides", bassinService.getBassinsParStatut("VIDE"));
         model.addAttribute("especes", especeCrevetteRepository.findAll());
         return "cycle/form";
+    }
+
+    @GetMapping("/{id}")
+    public String detail(@PathVariable Long id, Model model) {
+        preparerLayoutCycles(model, "Détail du cycle", "detail");
+        model.addAttribute("cycle", cycleService.getCycleById(id));
+        model.addAttribute("associations", cycleService.getAssociationsByCycleId(id));
+        return "cycle/detail";
     }
 
     @PostMapping
@@ -50,6 +84,10 @@ public class CycleController {
             redirectAttributes.addFlashAttribute("erreur", e.getMessage());
             return "redirect:/cycles/nouveau";
         }
+<<<<<<< HEAD
         return "redirect:/bassins";
+=======
+        return "redirect:/bassins/liste";
+>>>>>>> origin/dev
     }
 }

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/default}">
+<head>
+    <title layout:fragment="page-title">Suivi biologique — Move Gasy</title>
+    <th:block layout:fragment="page-styles">
+        <link href="/css/biologique/liste.css" rel="stylesheet" />
+    </th:block>
+</head>
+<body>
+    <div layout:fragment="content">
+        <div class="page-header">
+            <div>
+                <h1>🔬 Suivi biologique — Bassins actifs (<span th:text="${#lists.size(bassinsEnSuivi)}">0</span>)</h1>
+            </div>
+            <div style="display:flex;gap:12px;flex-wrap:wrap;">
+                <a th:href="@{/biologique/alertes}" class="btn btn-warning btn-sm">
+                    <i class="bi bi-exclamation-triangle"></i> Voir les alertes biologiques
+                </a>
+            </div>
+        </div>
+
+        <div th:if="${#lists.isEmpty(bassinsEnSuivi)}" class="alert alert-info">
+            Aucun bassin en suivi actif pour le moment.
+        </div>
+
+        <div th:unless="${#lists.isEmpty(bassinsEnSuivi)}" class="table-responsive">
+            <table class="table-bio">
+                <thead>
+                    <tr>
+                        <th>Bassin</th>
+                        <th>Cycle</th>
+                        <th>Semaine</th>
+                        <th>Dernier pesage</th>
+                        <th>Poids moyen</th>
+                        <th>Taux survie</th>
+                        <th>Statut croissance</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="b : ${bassinsEnSuivi}"
+                        th:classappend="${b.statutCroissance == 'CRITIQUE'} ? 'statut-critique' :
+                                        (${b.statutCroissance == 'RETARD'} ? 'statut-retard' : '')">
+                        <td><span class="badge-bassin" th:text="${b.codeBassin}">B01</span></td>
+                        <td th:text="${b.codeUniqueCycle}">C01</td>
+                        <td th:text="'S' + ${b.semaine}">S1</td>
+                        <td th:text="${b.dateDernierePesee != null} ? ${#temporals.format(b.dateDernierePesee, 'dd/MM/yyyy')} : '—'">—</td>
+                        <td th:text="${b.poidsMoyenActuel != null and b.poidsMoyenActuel.doubleValue() > 0} ? ${b.poidsMoyenActuel} + 'g' : '—'">—</td>
+                        <td>
+                            <span th:if="${b.tauxSurvie != null}"
+                                  th:classappend="${b.tauxSurvie.doubleValue() < 40} ? 'taux-survie-rouge' :
+                                                  (${b.tauxSurvie.doubleValue() < 70} ? 'taux-survie-orange' : 'taux-survie-vert')"
+                                  th:text="${b.tauxSurvie} + '%'">—</span>
+                            <span th:if="${b.tauxSurvie == null}">—</span>
+                        </td>
+                        <td>
+                            <span th:if="${b.statutCroissance == 'CRITIQUE'}" class="badge bg-danger badge-statut-critique">CRITIQUE</span>
+                            <span th:if="${b.statutCroissance == 'RETARD'}" class="badge bg-warning text-dark">RETARD</span>
+                            <span th:if="${b.statutCroissance == 'NORMAL'}" class="badge bg-success">NORMAL</span>
+                        </td>
+                        <td class="actions-cell">
+                            <a th:href="@{/biologique/{id}/detail(id=${b.idCycleBassinAssoc})}" class="btn btn-outline-primary btn-sm">
+                                <i class="bi bi-eye"></i> Détail
+                            </a>
+                            <a th:href="@{/biologique/{id}/pesee/nouvelle(id=${b.idCycleBassinAssoc})}" class="btn btn-primary btn-sm">
+                                <i class="bi bi-plus"></i> Nouvelle pesée
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

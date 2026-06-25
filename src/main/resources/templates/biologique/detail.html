@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/default}">
+<head>
+    <title layout:fragment="page-title" th:text="'Suivi biologique — ' + ${detail.codeBassin}">Suivi biologique</title>
+    <th:block layout:fragment="page-styles">
+        <style>
+            /* --- EN-TÊTE ET UTILITIES --- */
+            .page-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 24px;
+            }
+            .page-title { margin: 0; font-size: 24px; font-weight: 700; color: var(--mg-primary); }
+            .page-sub { margin: 4px 0 0; color: var(--mg-secondary); font-size: 14px; line-height: 1.5; }
+            .bassin-tag { background: var(--mg-primary); color: white; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: 700; }
+            .cycle-highlight { color: var(--mg-primary); font-weight: 700; }
+
+            /* --- CARTES & CONTENEURS STANDARDISÉS --- */
+            .card {
+                background: white;
+                border: 1px solid var(--mg-outline);
+                border-radius: var(--radius);
+                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+                padding: 24px;
+                margin-bottom: 24px;
+            }
+            .card-header-custom {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 16px;
+            }
+            .card-title-custom { margin: 0; font-size: 16px; font-weight: 700; color: var(--mg-primary); }
+
+            /* --- BANNIÈRES & ALERTES HARMONISÉES --- */
+            .mg-alert { padding: 12px 16px; border-radius: var(--radius); font-size: 14px; font-weight: 500; margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+            .mg-alert-danger { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+            .mg-alert-warning { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+            .mg-alert-success { background: #dcfce7; color: #166534; border: 1px solid #86efac; }
+            .mg-alert-info { background: #e0f2fe; color: #075985; border: 1px solid #7dd3fc; }
+            .alertes-ligne { display: flex; flex-direction: column; gap: 8px; margin-bottom: 24px; }
+
+            /* --- DASHBOARD GRILLE KPI --- */
+            .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+            .kpi-card { background: var(--mg-surface-bright); border: 1px solid var(--mg-outline); border-radius: var(--radius); padding: 20px; display: flex; flex-direction: column; gap: 8px; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05); }
+            .kpi-card .kpi-icon { font-size: 24px; color: #0ea5e9; }
+            .kpi-card .kpi-label { font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--mg-secondary); letter-spacing: 0.05em; }
+            .kpi-card .kpi-value { font-size: 26px; font-weight: 700; color: var(--mg-primary); }
+            
+            /* Contextes dynamiques KPI */
+            .kpi-success .kpi-value { color: #166534; }
+            .kpi-warning .kpi-value { color: #92400e; }
+            .kpi-danger .kpi-value { color: #991b1b; }
+
+            /* --- ESTIMATION DE RÉCOLTE --- */
+            .recolte-card { background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border: 1px solid #bbf7d0; border-radius: var(--radius); padding: 18px 20px; margin-bottom: 24px; color: #14532d; font-size: 14px; }
+            .recolte-card p { margin: 4px 0; }
+
+            /* --- GRAPHIQUE --- */
+            .chart-container { position: relative; height: 320px; width: 100%; margin-top: 16px; }
+
+            /* --- STRUCTURE DU TABLEAU HISTORIQUE --- */
+            .table-container { border: 1px solid var(--mg-outline); border-radius: var(--radius); overflow: hidden; background: white; }
+            .table-container table { width: 100%; border-collapse: collapse; text-align: left; font-size: 13px; }
+            .table-container th { background: #f8fafc; color: var(--mg-secondary); font-weight: 700; text-transform: uppercase; font-size: 11px; letter-spacing: 0.05em; padding: 14px 20px; border-bottom: 1px solid var(--mg-outline); }
+            .table-container td { padding: 14px 20px; border-bottom: 1px solid #f1f5f9; color: var(--mg-secondary); vertical-align: middle; }
+            .table-container tr:last-child td { border-bottom: none; }
+            .table-container tr:hover td { background: #fcfdfe; }
+
+            /* --- BOUTONS & ACTIONS --- */
+            .action-group { display: flex; gap: 8px; align-items: center; }
+            .btn-mg { display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: var(--radius); font-size: 13px; font-weight: 600; text-decoration: none; cursor: pointer; transition: all 0.2s; border: 1px solid transparent; }
+            .btn-mg-primary { background: var(--mg-primary); color: white; }
+            .btn-mg-primary:hover { opacity: 0.9; }
+            .btn-mg-secondary { background: white; color: var(--mg-secondary); border-color: var(--mg-outline); }
+            .btn-mg-secondary:hover { background: #f8fafc; color: var(--mg-primary); }
+            .btn-mg-danger-outline { background: white; color: #dc2626; border-color: #fca5a5; }
+            .btn-mg-danger-outline:hover { background: #fee2e2; }
+            
+            .empty-state { text-align: center; padding: 48px 32px; color: var(--mg-secondary); }
+            .empty-state i { font-size: 36px; display: block; margin-bottom: 12px; opacity: 0.3; }
+
+            /* RESPONSIVE DESIGN */
+            @media (max-width: 992px) { .kpi-grid { grid-template-columns: repeat(2, 1fr); } }
+            @media (max-width: 576px) { .kpi-grid { grid-template-columns: 1fr; } .page-header { flex-direction: column; align-items: flex-start; gap: 16px; } }
+        </style>
+    </th:block>
+</head>
+<body>
+    <div layout:fragment="content">
+        
+        <!-- Notifications système -->
+        <div th:if="${erreur}" class="mg-alert mg-alert-danger">
+            <i class="bi bi-exclamation-triangle"></i> <span th:text="${erreur}"></span>
+        </div>
+        <div th:if="${succes}" class="mg-alert mg-alert-success">
+            <i class="bi bi-check-circle"></i> <span th:text="${succes}"></span>
+        </div>
+
+        <!-- En-tête de page unifié -->
+        <div class="page-header">
+            <div>
+                <h2 class="page-title">Suivi Biologique</h2>
+                <p class="page-sub">
+                    Bassin <span class="bassin-tag" th:text="${detail.codeBassin}">B01</span> · 
+                    Cycle <span class="cycle-highlight" th:text="${detail.codeUniqueCycle}">C01</span> · 
+                    Espèce : <strong style="color: var(--mg-primary);" th:text="${detail.nomEspece}">—</strong> · 
+                    <strong style="font-weight:700;">Semaine S<span th:text="${detail.semaineActuelle}">0</span></strong><br/>
+                    Démarré le <span th:text="${#temporals.format(detail.dateDebut, 'dd/MM/yyyy')}">—</span> · 
+                    Fin prévue <span th:text="${#temporals.format(detail.dateFinPrevue, 'dd/MM/yyyy')}">—</span>
+                </p>
+            </div>
+        </div>
+
+        <!-- Section Alertes de Seuil / Biologiques -->
+        <div th:if="${!#lists.isEmpty(detail.alertesActives)}" class="alertes-ligne">
+            <div th:each="a : ${detail.alertesActives}"
+                 class="mg-alert"
+                 th:classappend="${a.niveau == 'ROUGE'} ? 'mg-alert-danger' : (${a.niveau == 'ORANGE'} ? 'mg-alert-warning' : 'mg-alert-success')">
+                <i class="bi bi-exclamation-octagon-fill"></i>
+                <div>
+                    <strong th:text="${a.typeAlerte}">ALERTE</strong> — <span th:text="${a.message}"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Grille d'indicateurs clés (KPIs) -->
+        <div class="kpi-grid">
+            <div class="kpi-card">
+                <div class="kpi-icon"><i class="bi bi-speedometer2"></i></div>
+                <div class="kpi-label">Biomasse actuelle</div>
+                <div class="kpi-value" th:text="${detail.biomassActuelleKg != null} ? ${detail.biomassActuelleKg} + ' kg' : '—'">—</div>
+            </div>
+            
+            <div class="kpi-card"
+                 th:classappend="${detail.tauxSurvie != null and detail.tauxSurvie.doubleValue() < 40} ? 'kpi-danger' : (${detail.tauxSurvie != null and detail.tauxSurvie.doubleValue() < 70} ? 'kpi-warning' : 'kpi-success')">
+                <div class="kpi-icon"><i class="bi bi-heart-pulse"></i></div>
+                <div class="kpi-label">Taux de survie</div>
+                <div class="kpi-value" th:text="${detail.tauxSurvie != null} ? ${detail.tauxSurvie} + ' %' : '—'">—</div>
+            </div>
+            
+            <div class="kpi-card">
+                <div class="kpi-icon"><i class="bi bi-graph-up"></i></div>
+                <div class="kpi-label">Poids moyen</div>
+                <div class="kpi-value" th:text="${detail.poidsMoyen != null} ? ${detail.poidsMoyen} + ' g' : '—'">—</div>
+            </div>
+            
+            <div class="kpi-card" th:classappend="${detail.tailleMoyenne != null and detail.tailleMoyenne.doubleValue() >= 110} ? 'kpi-success' : ''">
+                <div class="kpi-icon"><i class="bi bi-rulers"></i></div>
+                <div class="kpi-label">Taille moyenne</div>
+                <div class="kpi-value" th:text="${detail.tailleMoyenne != null} ? ${detail.tailleMoyenne} + ' mm' : '—'">—</div>
+            </div>
+        </div>
+
+        <!-- Estimation et prévisions de récolte -->
+        <section class="recolte-card">
+            <div th:if="${detail.calibreAtteint}" style="display: flex; align-items: center; gap: 8px; font-weight: 700;">
+                <i class="bi bi-check-circle-fill" style="font-size: 16px;"></i> Calibre de récolte atteint ! Les critères de production optimaux sont validés.
+            </div>
+            <div th:unless="${detail.calibreAtteint}">
+                <p>
+                    <i class="bi bi-calendar-event"></i> <strong>Date estimée de récolte :</strong>
+                    <span th:text="${detail.dateEstimeeRecolte != null ? #temporals.format(detail.dateEstimeeRecolte, 'dd/MM/yyyy') : 'Non calculable'}">—</span>
+                </p>
+                <p th:if="${detail.biomasseRecoltableEstimee != null}">
+                    <i class="bi bi-box-seam"></i> <strong>Biomasse récoltable estimée :</strong>
+                    <span th:text="${detail.biomasseRecoltableEstimee} + ' kg'">—</span>
+                </p>
+            </div>
+        </section>
+
+        <!-- Courbe de Croissance graphique -->
+        <section class="card">
+            <h3 class="card-title-custom">Courbe de croissance</h3>
+            <div class="chart-container">
+                <canvas id="chartCroissance"></canvas>
+            </div>
+        </section>
+
+        <!-- Liste historique des pesées -->
+        <section class="card" style="padding: 24px 0 0 0;">
+            <div class="card-header-custom" style="padding: 0 24px 16px 24px; border-bottom: 1px solid var(--mg-outline); margin-bottom: 0;">
+                <h3 class="card-title-custom">Historique des pesées</h3>
+                <a th:href="@{/biologique/{id}/pesee/nouvelle(id=${detail.idCycleBassinAssoc})}" class="btn-mg btn-mg-primary" style="padding: 6px 12px; font-size: 12px;">
+                    <i class="bi bi-plus-lg"></i> Nouvelle pesée
+                </a>
+            </div>
+
+            <!-- Empty state si aucune ligne -->
+            <div th:if="${#lists.isEmpty(detail.pesees)}" class="empty-state">
+                <i class="bi bi-clipboard-x"></i>
+                <p>Aucune donnée de pesée enregistrée pour le moment.</p>
+            </div>
+
+            <!-- Tableau historique -->
+            <div th:unless="${#lists.isEmpty(detail.pesees)}" class="table-container" style="border: none; border-radius: 0;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Semaine</th>
+                            <th>Date</th>
+                            <th>Poids (g)</th>
+                            <th>Taille (mm)</th>
+                            <th>Vivants</th>
+                            <th>Morts</th>
+                            <th>Biomasse</th>
+                            <th>Technicien</th>
+                            <th style="text-align: right;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="p : ${detail.pesees}">
+                            <td style="font-weight: 700; color: var(--mg-primary);" th:text="'S' + ${p.semaineActuelle}">S1</td>
+                            <td th:text="${#temporals.format(p.dateSuivi, 'dd/MM/yyyy')}">—</td>
+                            <td th:text="${p.poidsMoyenGramme} + ' g'">—</td>
+                            <td th:text="${p.tailleMoyenneMm} + ' mm'">—</td>
+                            <td th:text="${#numbers.formatInteger(p.nbVivants, 0, 'WHITESPACE')}">—</td>
+                            <td th:text="${#numbers.formatInteger(p.nbMorts, 0, 'WHITESPACE')}">—</td>
+                            <td style="font-weight: 600;" th:text="${p.biomasseCalculeeKg != null} ? ${p.biomasseCalculeeKg} + ' kg' : '—'">—</td>
+                            <td th:text="${p.technicien.nom + ' ' + (p.technicien.prenom != null ? p.technicien.prenom : '')}">—</td>
+                            <td>
+                                <div class="action-group" style="justify-content: flex-end;">
+                                    <a th:href="@{/biologique/pesee/{id}/modifier(id=${p.id})}" class="btn-mg btn-mg-secondary" style="padding: 4px 10px; font-size: 12px;">Modifier</a>
+                                    <form th:action="@{/biologique/pesee/{id}/archiver(id=${p.id})}" method="post" style="display:inline;">
+                                        <button type="submit" class="btn-mg btn-mg-danger-outline" style="padding: 4px 10px; font-size: 12px;"
+                                                onclick="return confirm('Archiver cette pesée ?');">Archiver</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+
+    <th:block layout:fragment="page-scripts">
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script th:inline="javascript">
+            const courbeReelle = /*[[${detail.courbeReelle}]]*/ [];
+            const courbeStandard = /*[[${detail.courbeStandard}]]*/ [];
+
+            const semainesReelles = courbeReelle.map(p => 'S' + p.semaine);
+            const poidsReels = courbeReelle.map(p => p.poidsMoyenG);
+            const semainesStd = courbeStandard.map(p => 'S' + p.semaine);
+            const poidsStd = courbeStandard.map(p => p.poidsMoyenG);
+
+            const allLabels = [...new Set([...semainesReelles, ...semainesStd])].sort((a, b) =>
+                parseInt(a.substring(1)) - parseInt(b.substring(1)));
+
+            function mapData(labels, sourceLabels, sourceData) {
+                return labels.map(l => {
+                    const idx = sourceLabels.indexOf(l);
+                    return idx >= 0 ? sourceData[idx] : null;
+                });
+            }
+
+            const ctx = document.getElementById('chartCroissance');
+            if (ctx) {
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: allLabels,
+                        datasets: [
+                            {
+                                label: 'Croissance réelle',
+                                data: mapData(allLabels, semainesReelles, poidsReels),
+                                borderColor: '#3b82f6',
+                                backgroundColor: 'rgba(59, 130, 246, 0.05)',
+                                tension: 0.2,
+                                fill: true
+                            },
+                            {
+                                label: 'Courbe standard espèce',
+                                data: mapData(allLabels, semainesStd, poidsStd),
+                                borderColor: '#9ca3af',
+                                borderDash: [6, 4],
+                                tension: 0.2,
+                                fill: false
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { 
+                                position: 'top',
+                                labels: { font: { family: 'Inter, sans-serif', size: 12 } }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                title: { display: true, text: 'Poids (g)', font: { weight: 'bold' } },
+                                suggestedMin: 0,
+                                grid: { color: '#f1f5f9' }
+                            },
+                            x: { grid: { display: false } }
+                        }
+                    },
+                    plugins: [{
+                        id: 'seuilRecolte',
+                        afterDraw(chart) {
+                            const yScale = chart.scales.y;
+                            const y = yScale.getPixelForValue(15);
+                            const ctx2 = chart.ctx;
+                            ctx2.save();
+                            ctx2.strokeStyle = '#ef4444';
+                            ctx2.setLineDash([5, 5]);
+                            ctx2.lineWidth = 1.5;
+                            ctx2.beginPath();
+                            ctx2.moveTo(chart.chartArea.left, y);
+                            ctx2.lineTo(chart.chartArea.right, y);
+                            ctx2.stroke();
+                            ctx2.restore();
+                        }
+                    }]
+                });
+            }
+        </script>
+    </th:block>
+</body>
+</html>
