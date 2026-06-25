@@ -1,5 +1,15 @@
 package com.example.orose.service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Service;
+
 import com.example.orose.dto.BassinSuiviDTO;
 import com.example.orose.dto.CourbeCroissanceDTO;
 import com.example.orose.dto.SuiviBiologiqueDetailDTO;
@@ -11,21 +21,13 @@ import com.example.orose.repository.AlerteRepository;
 import com.example.orose.repository.CycleBassinAssocRepository;
 import com.example.orose.repository.EvolutionHebdoEspeceRepository;
 import com.example.orose.repository.SuiviHebdoBassinRepository;
-import jakarta.persistence.EntityNotFoundException;
-import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class BiologiqueService {
 
-    private static final BigDecimal SEUIL_POIDS_RECOLTE = new BigDecimal("15");
+    private static final BigDecimal SEUIL_POIDS_RECOLTE = new BigDecimal("20");
     private static final BigDecimal SEUIL_TAILLE_RECOLTE = new BigDecimal("110");
     private static final BigDecimal SEUIL_SURVIE_CRITIQUE = new BigDecimal("40");
     private static final BigDecimal FACTEUR_RETARD = new BigDecimal("0.9");
