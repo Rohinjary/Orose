@@ -118,9 +118,20 @@
                     <div class="form-group">
                         <label class="form-label">Date du suivi</label>
                         <input type="date" class="form-input" th:field="*{dateSuivi}"
+                               th:min="${dateDernierePesee != null}
+                                   ? ${#temporals.format(dateDernierePesee.plusDays(1), 'yyyy-MM-dd')}
+                                   : ${#temporals.format(assoc.cycle.dateDebut, 'yyyy-MM-dd')}"
                                th:max="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}"
                                required />
-                        <span class="field-hint">La date ne peut pas être dans le futur</span>
+                        <span class="field-hint" th:if="${dateDernierePesee != null}">
+                            Doit être après le
+                            <strong th:text="${#temporals.format(dateDernierePesee, 'dd/MM/yyyy')}">—</strong>
+                            (dernière pesée)
+                        </span>
+                        <span class="field-hint" th:if="${dateDernierePesee == null}">
+                            Entre le <strong th:text="${#temporals.format(assoc.cycle.dateDebut, 'dd/MM/yyyy')}">—</strong>
+                            (début du cycle) et aujourd'hui
+                        </span>
                     </div>
 
                     <div class="form-group">
@@ -147,6 +158,7 @@
                         <label class="form-label">Nombre de vivants</label>
                         <input type="number" min="0" class="form-input" id="nbVivants"
                                th:field="*{nbVivants}" required />
+                        <span class="field-hint" id="hintVivants">Saisir → les morts se calculent automatiquement</span>
                         <span class="field-error" id="errVivants"></span>
                     </div>
 
@@ -155,6 +167,7 @@
                         <label class="form-label">Nombre de morts</label>
                         <input type="number" min="0" class="form-input" id="nbMorts"
                                th:field="*{nbMorts}" />
+                        <span class="field-hint" id="hintMorts">Calculé automatiquement · modifiable si besoin</span>
                         <span class="field-error" id="errMorts"></span>
                     </div>
 

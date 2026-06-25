@@ -1,6 +1,8 @@
 package com.example.orose.service;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
@@ -52,14 +54,15 @@ public class PeseeService {
                 .orElseThrow(() -> new EntityNotFoundException("Association cycle-bassin introuvable"));
 
         validerEtatAssoc(assoc);
-        validerDonneesPesee(dto, assoc);
 
-        // ── Pesée précédente (pour contrôle biomasse) ──────────────────────
+        // ── Pesée précédente (pour validation date ET contrôle biomasse) ───
         Optional<SuiviHebdoBassin> peseePrecedenteOpt =
                 suiviHebdoBassinRepository.findTopByCycleBassinAssocIdOrderByDateSuiviDesc(assoc.getId());
 
+        validerDonneesPesee(dto, assoc, peseePrecedenteOpt);
+
         Cycle cycle = assoc.getCycle();
-        int semaineActuelle = (int) ChronoUnit.WEEKS.between(cycle.getDateDebut(), dto.getDateSuivi()) + 1;
+        int semaineActuelle = calculerSemaine(cycle.getDateDebut(), dto.getDateSuivi());
 
         Utilisateur technicien = utilisateurRepository.findById(dto.getIdTechnicien())
                 .orElseThrow(() -> new EntityNotFoundException("Technicien introuvable"));
@@ -103,9 +106,7 @@ public class PeseeService {
         if (Boolean.TRUE.equals(assoc.getEstCloture())) {
             throw new IllegalStateException("Le cycle-bassin est clôturé, impossible de modifier la pesée");
         }
-        validerDonneesPesee(dto, assoc);
-
-        // ── Pesée précédente = celle qui précède immédiatement dans le temps ─
+        // ── Pesée précédente = la plus récente hors pesée courante ──────────
         Optional<SuiviHebdoBassin> peseePrecedenteOpt =
                 suiviHebdoBassinRepository.findByCycleBassinAssocIdOrderByDateSuiviAsc(assoc.getId())
                         .stream()
@@ -113,8 +114,10 @@ public class PeseeService {
                                 && !p.getDateSuivi().isAfter(dto.getDateSuivi()))
                         .reduce((a, b) -> b); // dernière avant la date modifiée
 
+        validerDonneesPesee(dto, assoc, peseePrecedenteOpt);
+
         Cycle cycle = assoc.getCycle();
-        int semaineActuelle = (int) ChronoUnit.WEEKS.between(cycle.getDateDebut(), dto.getDateSuivi()) + 1;
+        int semaineActuelle = calculerSemaine(cycle.getDateDebut(), dto.getDateSuivi());
 
         Utilisateur technicien = utilisateurRepository.findById(dto.getIdTechnicien())
                 .orElseThrow(() -> new EntityNotFoundException("Technicien introuvable"));
@@ -178,6 +181,22 @@ public class PeseeService {
     // MÉTHODES PRIVÉES
     // ─────────────────────────────────────────────────────────────────────────
 
+    /**
+     * Calcule le numéro de semaine du cycle à partir de la date de début.
+     * Jour J0 (dateDebut) = S1. Jamais inférieur à 1.
+     * Formule : floor(jours écoulés / 7) + 1, borné à 1 minimum.
+     *
+     * Exemples :
+     *   dateDebut=23/06, dateSuivi=23/06 → 0 jours → S1
+     *   dateDebut=23/06, dateSuivi=25/06 → 2 jours → S1
+     *   dateDebut=23/06, dateSuivi=30/06 → 7 jours → S2
+     */
+    private int calculerSemaine(LocalDate dateDebut, LocalDate dateSuivi) {
+        long joursEcoules = ChronoUnit.DAYS.between(dateDebut, dateSuivi);
+        int semaine = (int) (joursEcoules / 7) + 1;
+        return Math.max(semaine, 1);
+    }
+
     private void validerEtatAssoc(CycleBassinAssoc assoc) {
         if (Boolean.TRUE.equals(assoc.getEstCloture())) {
             throw new IllegalStateException("Le cycle-bassin est clôturé, impossible d'enregistrer une pesée");
@@ -188,7 +207,33 @@ public class PeseeService {
         }
     }
 
-    private void validerDonneesPesee(PeseeDTO dto, CycleBassinAssoc assoc) {
+    private void validerDonneesPesee(PeseeDTO dto, CycleBassinAssoc assoc,
+                                     Optional<SuiviHebdoBassin> dernierePesee) {
+        // ── Validation de la date ──────────────────────────────────────────
+        if (dto.getDateSuivi() == null) {
+            throw new IllegalArgumentException("La date de suivi est obligatoire");
+        }
+        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        LocalDate dateDebut = assoc.getCycle().getDateDebut();
+        if (dto.getDateSuivi().isBefore(dateDebut)) {
+            throw new IllegalArgumentException(
+                    "La date de suivi (" + dto.getDateSuivi().format(fmt)
+                    + ") ne peut pas être antérieure au début du cycle ("
+                    + dateDebut.format(fmt) + ")");
+        }
+        if (dto.getDateSuivi().isAfter(LocalDate.now())) {
+            throw new IllegalArgumentException("La date de suivi ne peut pas être dans le futur");
+        }
+        if (dernierePesee.isPresent()) {
+            LocalDate dateDerniere = dernierePesee.get().getDateSuivi();
+            if (!dto.getDateSuivi().isAfter(dateDerniere)) {
+                throw new IllegalArgumentException(
+                        "La date de suivi doit être postérieure à la dernière pesée enregistrée ("
+                        + dateDerniere.format(fmt) + ")");
+            }
+        }
+
+        // ── Validation des mesures ─────────────────────────────────────────
         if (dto.getPoidsMoyenGramme() == null || dto.getPoidsMoyenGramme().compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("Le poids moyen doit être supérieur à 0");
         }
