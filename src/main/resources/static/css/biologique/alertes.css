@@ -1,0 +1,72 @@
+/* Module biologique — alertes */
+@import url('/css/bassin/detail.css');
+
+.alerte-card {
+    border-radius: var(--radius);
+    margin-bottom: 16px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    animation: fadeIn 0.4s ease-out;
+}
+
+.alerte-card.niveau-ROUGE {
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
+}
+
+.alerte-card.niveau-ORANGE {
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.25);
+}
+
+.alerte-card.niveau-VERT {
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.alerte-header {
+    padding: 12px 20px;
+    font-weight: 600;
+}
+
+.alerte-body {
+    padding: 16px 20px;
+    background: var(--mg-surface-bright);
+}
+
+.alerte-footer {
+    padding: 12px 20px;
+    background: var(--mg-surface-container);
+    border-top: 1px solid var(--mg-outline);
+}
+
+.alerte-meta {
+    font-size: 13px;
+    color: var(--mg-secondary);
+    margin-top: 8px;
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.page-header h1 {
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.alert-empty {
+    padding: 32px;
+    text-align: center;
+    background: #ecfdf5;
+    border: 1px solid #a7f3d0;
+    border-radius: var(--radius);
+    color: #065f46;
+}

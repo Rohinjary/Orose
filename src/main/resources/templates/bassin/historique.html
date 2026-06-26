@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/default}">
+<head>
+    <title layout:fragment="page-title">Historique Global — Move Gasy</title>
+    <th:block layout:fragment="page-styles">
+        <link href="/css/bassin/historique.css" rel="stylesheet" />
+        <style>
+            .badge-vide        { background: #f1f5f9; color: #475569; }
+            .badge-preparation { background: #fef9c3; color: #854d0e; }
+            .badge-actif       { background: #dcfce7; color: #166534; }
+            .badge-quarantaine { background: #fee2e2; color: #991b1b; }
+            .badge-traitement  { background: #e0f2fe; color: #075985; }
+            .badge-recolte     { background: #f3e8ff; color: #6b21a8; }
+            .arrow-col { width: 32px; text-align: center; color: var(--mg-secondary); }
+            .date-cell { font-size: 13px; color: var(--mg-secondary); white-space: nowrap; }
+            .motif-cell { max-width: 240px; font-size: 13px; color: var(--mg-secondary); }
+            .filter-grid { display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 16px; align-items: end; }
+            .filter-group { display: flex; flex-direction: column; gap: 6px; }
+            .filter-label { font-size: 12px; font-weight: 600; text-transform: uppercase; color: var(--mg-secondary); letter-spacing: 0.04em; }
+            .filter-select, .filter-input { width: 100%; padding: 9px 12px; border: 1px solid var(--mg-outline); border-radius: var(--radius); font-family: var(--font-main); font-size: 14px; background: white; outline: none; color: var(--mg-primary); }
+            .filter-select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 36px; cursor: pointer; }
+            .empty-state { text-align: center; padding: 48px 32px; color: var(--mg-secondary); }
+            .empty-state i { font-size: 36px; display: block; margin-bottom: 12px; opacity: 0.3; }
+            .bassin-tag { background: var(--mg-primary); color: white; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: 700; }
+        </style>
+    </th:block>
+</head>
+<body>
+    <div layout:fragment="content">
+        <div class="page-header">
+            <div>
+                <h2 class="page-title">Historique Chronologique</h2>
+                <p class="page-sub">Suivi complet des transitions d'etats sur l'ensemble des bassins.</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <form th:action="@{/bassins/historique}" method="get">
+                <div class="filter-grid">
+                    <div class="filter-group">
+                        <label class="filter-label">Du</label>
+                        <input class="filter-input" type="datetime-local" name="debut" th:value="${debut}" />
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Au</label>
+                        <input class="filter-input" type="datetime-local" name="fin" th:value="${fin}" />
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Type d'etat</label>
+                        <select class="filter-select" name="typeEtat">
+                            <option value="" th:selected="${typeEtat == null or typeEtat == ''}">-- Tous --</option>
+                            <option value="VIDE" th:selected="${typeEtat == 'VIDE'}">VIDE</option>
+                            <option value="PREPARATION" th:selected="${typeEtat == 'PREPARATION'}">PREPARATION</option>
+                            <option value="ACTIF" th:selected="${typeEtat == 'ACTIF'}">ACTIF</option>
+                            <option value="EN_TRAITEMENT" th:selected="${typeEtat == 'EN_TRAITEMENT'}">EN TRAITEMENT</option>
+                            <option value="RECOLTE" th:selected="${typeEtat == 'RECOLTE'}">RECOLTE</option>
+                            <option value="QUARANTAINE" th:selected="${typeEtat == 'QUARANTAINE'}">QUARANTAINE</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" type="submit" style="height: 40px;"><i class="bi bi-funnel"></i> Filtrer</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="card" style="padding: 0;">
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Bassin</th>
+                            <th>Etat</th>
+                            <th>Date et heure</th>
+                            <th>Utilisateur</th>
+                            <th>Motif</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:if="${#lists.isEmpty(historique)}">
+                            <td colspan="5">
+                                <div class="empty-state">
+                                    <i class="bi bi-clock-history"></i>
+                                    <p>Aucun historique trouve.</p>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr th:each="h : ${historique}">
+                            <td><span class="bassin-tag" th:text="${h.bassin.code}">—</span></td>
+                            <td><span class="badge" th:classappend="${h.statutBassin.code == 'ACTIF'} ? 'badge-actif' : (${h.statutBassin.code == 'PREPARATION'} ? 'badge-preparation' : (${h.statutBassin.code == 'QUARANTAINE'} ? 'badge-quarantaine' : (${h.statutBassin.code == 'EN_TRAITEMENT'} ? 'badge-traitement' : (${h.statutBassin.code == 'RECOLTE'} ? 'badge-recolte' : 'badge-vide'))))" th:text="${h.statutBassin.libelle}">—</span></td>
+                            <td class="date-cell" th:text="${#temporals.format(h.dateChangement, 'dd MMM yyyy | HH:mm')}">—</td>
+                            <td th:text="${h.utilisateur.nom + ' ' + (h.utilisateur.prenom != null ? h.utilisateur.prenom : '')}">—</td>
+                            <td class="motif-cell" th:text="${h.motif != null ? h.motif : '—'}">—</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div style="padding: 16px 24px; border-top: 1px solid var(--mg-outline);">
+                <span style="font-size: 13px; color: var(--mg-secondary);" th:text="${#lists.size(historique)} + ' entree(s) trouvee(s)'"></span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

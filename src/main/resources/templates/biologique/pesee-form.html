@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/default}">
+<head>
+    <title layout:fragment="page-title" th:text="${modeEdition} ? 'Modifier pesée' : 'Nouvelle pesée'">Pesée — Move Gasy</title>
+    <th:block layout:fragment="page-styles">
+        <style>
+            /* Styles harmonisés avec la charte graphique Move Gasy */
+            .page-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 24px;
+            }
+            .page-title { margin: 0; font-size: 24px; font-weight: 700; color: var(--mg-primary); }
+            .page-sub { margin: 4px 0 0; color: var(--mg-secondary); font-size: 14px; }
+            .bassin-tag { background: var(--mg-primary); color: white; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: 700; }
+            
+            /* Structure de la carte de formulaire */
+            .card {
+                background: white;
+                border: 1px solid var(--mg-outline);
+                border-radius: var(--radius);
+                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+                padding: 24px;
+                margin-bottom: 24px;
+            }
+
+            /* Grille de saisie */
+            .form-grid {
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 20px;
+            }
+            .col-full { grid-column: span 2; }
+
+            /* Éléments de formulaire */
+            .form-group { display: flex; flex-direction: column; gap: 6px; }
+            .form-label { font-size: 12px; font-weight: 600; text-transform: uppercase; color: var(--mg-secondary); letter-spacing: 0.04em; }
+            .form-input, .form-select, .form-textarea { width: 100%; padding: 9px 12px; border: 1px solid var(--mg-outline); border-radius: var(--radius); font-family: var(--font-main); font-size: 14px; background: white; outline: none; color: var(--mg-primary); transition: border-color 0.2s; }
+            .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--mg-primary); }
+            .form-input.input-error { border-color: #f87171; background: #fff5f5; }
+            
+            /* Select personnalisé */
+            .form-select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 36px; cursor: pointer; }
+            
+            /* Notifications et Messages */
+            .mg-alert { padding: 12px 16px; border-radius: var(--radius); font-size: 14px; font-weight: 500; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+            .mg-alert-danger { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+            .mg-alert-success { background: #dcfce7; color: #166534; border: 1px solid #86efac; }
+            .mg-alert-info { background: #e0f2fe; color: #075985; border: 1px solid #7dd3fc; }
+
+            /* Récapitulatif effectif */
+            .recap-effectif {
+                background: #f0fdf4;
+                border: 1px solid #86efac;
+                border-radius: var(--radius);
+                padding: 10px 16px;
+                font-size: 13px;
+                display: flex;
+                flex-wrap: wrap;
+                gap: 20px;
+                align-items: center;
+            }
+            .recap-effectif .recap-item { display: flex; align-items: center; gap: 6px; }
+            .recap-effectif .recap-item.warn { color: #92400e; }
+            .field-hint { font-size: 11px; color: var(--mg-secondary); margin-top: 2px; }
+            .field-error { font-size: 11px; color: #991b1b; margin-top: 2px; display: none; }
+
+            /* Groupe de boutons d'action */
+            .button-group { display: flex; gap: 12px; align-items: center; margin-top: 24px; }
+            .btn-mg { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; border-radius: var(--radius); font-size: 13px; font-weight: 600; text-decoration: none; cursor: pointer; transition: all 0.2s; border: 1px solid transparent; }
+            .btn-mg-primary { background: var(--mg-primary); color: white; }
+            .btn-mg-primary:hover { opacity: 0.9; }
+            .btn-mg-secondary { background: white; color: var(--mg-secondary); border-color: var(--mg-outline); }
+            .btn-mg-secondary:hover { background: #f8fafc; color: var(--mg-primary); }
+
+            /* Responsive */
+            @media (max-width: 768px) {
+                .form-grid { grid-template-columns: 1fr; }
+                .col-full { grid-column: span 1; }
+            }
+        </style>
+    </th:block>
+</head>
+<body>
+    <div layout:fragment="content">
+        
+        <!-- Bannières de notification style moderne -->
+        <div th:if="${erreur}" class="mg-alert mg-alert-danger">
+            <i class="bi bi-exclamation-triangle"></i> <span th:text="${erreur}"></span>
+        </div>
+        <div th:if="${succes}" class="mg-alert mg-alert-success">
+            <i class="bi bi-check-circle"></i> <span th:text="${succes}"></span>
+        </div>
+
+        <!-- En-tête de page moderne -->
+        <div class="page-header">
+            <div>
+                <h2 class="page-title" th:text="${modeEdition} ? 'Modifier la pesée' : 'Nouvelle pesée'">Nouvelle pesée</h2>
+                <p class="page-sub">
+                    Bassin <span class="bassin-tag" th:text="${assoc.bassin.code}">B01</span> · 
+                    Cycle <strong style="color: var(--mg-primary);" th:text="${assoc.cycle.codeUniqueCycle}">C01</strong> · 
+                    Effectif initial : <span th:text="${#numbers.formatInteger(assoc.effectifInitial, 0, 'WHITESPACE')}">0</span> PL
+                </p>
+            </div>
+        </div>
+
+        <!-- Conteneur global du Formulaire -->
+        <section class="card">
+            <form th:action="${modeEdition} ? @{/biologique/pesee/{id}/modifier(id=${idPesee})} : @{/biologique/{id}/pesee/nouvelle(id=${idCycleBassinAssoc})}"
+                  th:object="${peseeDTO}" method="post">
+
+                <!-- Effectif initial transmis en JS via data-attribute -->
+                <input type="hidden" id="effectifInitial" th:value="${assoc.effectifInitial}" />
+
+                <div class="form-grid">
+                    
+                    <div class="form-group">
+                        <label class="form-label">Date du suivi</label>
+                        <input type="date" class="form-input" th:field="*{dateSuivi}"
+                               th:min="${dateDernierePesee != null}
+                                   ? ${#temporals.format(dateDernierePesee.plusDays(1), 'yyyy-MM-dd')}
+                                   : ${#temporals.format(assoc.cycle.dateDebut, 'yyyy-MM-dd')}"
+                               th:max="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}"
+                               required />
+                        <span class="field-hint" th:if="${dateDernierePesee != null}">
+                            Doit être après le
+                            <strong th:text="${#temporals.format(dateDernierePesee, 'dd/MM/yyyy')}">—</strong>
+                            (dernière pesée)
+                        </span>
+                        <span class="field-hint" th:if="${dateDernierePesee == null}">
+                            Entre le <strong th:text="${#temporals.format(assoc.cycle.dateDebut, 'dd/MM/yyyy')}">—</strong>
+                            (début du cycle) et aujourd'hui
+                        </span>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Technicien</label>
+                        <select class="form-select" th:field="*{idTechnicien}" required>
+                            <option value="">— Sélectionner —</option>
+                            <option th:each="t : ${techniciens}" th:value="${t.id}"
+                                    th:text="${t.nom + ' ' + (t.prenom != null ? t.prenom : '')}"></option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Poids moyen (g)</label>
+                        <input type="number" step="0.01" min="0.01" class="form-input" id="poidsMoyen" th:field="*{poidsMoyenGramme}" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Taille moyenne (mm)</label>
+                        <input type="number" step="0.01" min="0.01" class="form-input" id="tailleMoyenne" th:field="*{tailleMoyenneMm}" required />
+                    </div>
+
+                    <!-- ===== VIVANTS ===== -->
+                    <div class="form-group">
+                        <label class="form-label">Nombre de vivants</label>
+                        <input type="number" min="0" class="form-input" id="nbVivants"
+                               th:field="*{nbVivants}" required />
+                        <span class="field-hint" id="hintVivants">Saisir → les morts se calculent automatiquement</span>
+                        <span class="field-error" id="errVivants"></span>
+                    </div>
+
+                    <!-- ===== MORTS (calculé automatiquement) ===== -->
+                    <div class="form-group">
+                        <label class="form-label">Nombre de morts</label>
+                        <input type="number" min="0" class="form-input" id="nbMorts"
+                               th:field="*{nbMorts}" />
+                        <span class="field-hint" id="hintMorts">Calculé automatiquement · modifiable si besoin</span>
+                        <span class="field-error" id="errMorts"></span>
+                    </div>
+
+                    <!-- ===== RECAP EFFECTIF ===== -->
+                    <div class="col-full" id="recapBlock" style="display:none;">
+                        <div class="recap-effectif">
+                            <div class="recap-item">
+                                <i class="bi bi-people"></i>
+                                Effectif initial : <strong id="recapInitial">—</strong>
+                            </div>
+                            <div class="recap-item" style="color:#166534;">
+                                <i class="bi bi-check-circle"></i>
+                                Vivants : <strong id="recapVivants">—</strong>
+                            </div>
+                            <div class="recap-item" style="color:#991b1b;">
+                                <i class="bi bi-x-circle"></i>
+                                Morts : <strong id="recapMorts">—</strong>
+                            </div>
+                            <div class="recap-item" id="recapEcartWrap" style="display:none; color:#92400e;">
+                                <i class="bi bi-exclamation-triangle"></i>
+                                Écart non expliqué : <strong id="recapEcart">—</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group col-full">
+                        <label class="form-label">Notes / Remarques</label>
+                        <textarea class="form-textarea" rows="3" th:field="*{notes}" placeholder="Observations éventuelles..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Alerte de seuil dynamique harmonisée -->
+                <div id="seuilRecolte" class="mg-alert mg-alert-info" style="display:none; margin-top: 20px;">
+                    <i class="bi bi-exclamation-circle-fill"></i> Seuil de récolte atteint ! Les critères optimaux de production sont remplis.
+                </div>
+
+                <!-- Actions de validation -->
+                <div class="button-group">
+                    <button type="submit" class="btn-mg btn-mg-primary">
+                        <i class="bi bi-check-lg"></i> Enregistrer
+                    </button>
+                    <a th:href="@{/biologique/{id}/detail(id=${idCycleBassinAssoc})}" class="btn-mg btn-mg-secondary">Annuler</a>
+                </div>
+            </form>
+        </section>
+    </div>
+
+    <th:block layout:fragment="page-scripts">
+        <script>
+            // ── Récupération de l'effectif initial depuis le champ caché ─────────
+            const EFFECTIF = parseInt(document.getElementById('effectifInitial')?.value, 10) || 0;
+
+            const inputVivants  = document.getElementById('nbVivants');
+            const inputMorts    = document.getElementById('nbMorts');
+            const recapBlock    = document.getElementById('recapBlock');
+            const recapInitial  = document.getElementById('recapInitial');
+            const recapVivants  = document.getElementById('recapVivants');
+            const recapMorts    = document.getElementById('recapMorts');
+            const recapEcartWrap = document.getElementById('recapEcartWrap');
+            const recapEcart    = document.getElementById('recapEcart');
+            const errVivants    = document.getElementById('errVivants');
+            const errMorts      = document.getElementById('errMorts');
+
+            // ── Calcule automatiquement les morts quand on saisit les vivants ────
+            inputVivants?.addEventListener('input', function () {
+                const vivants = parseInt(this.value, 10);
+                clearErrors();
+
+                if (!isNaN(vivants) && EFFECTIF > 0) {
+                    if (vivants > EFFECTIF) {
+                        showError(errVivants, inputVivants,
+                            `Ne peut pas dépasser l'effectif initial (${EFFECTIF})`);
+                        return;
+                    }
+                    // Calcul automatique des morts
+                    const morts = EFFECTIF - vivants;
+                    inputMorts.value = morts;
+                    majRecap(vivants, morts);
+                } else if (!isNaN(vivants) && EFFECTIF === 0) {
+                    // Pas d'effectif connu : pas de calcul auto, juste le récap
+                    const morts = parseInt(inputMorts.value, 10) || 0;
+                    majRecap(vivants, morts);
+                } else {
+                    recapBlock.style.display = 'none';
+                }
+            });
+
+            // ── Si l'utilisateur ajuste les morts manuellement ──────────────────
+            inputMorts?.addEventListener('input', function () {
+                const morts   = parseInt(this.value, 10);
+                const vivants = parseInt(inputVivants.value, 10);
+                clearErrors();
+
+                if (!isNaN(morts) && EFFECTIF > 0) {
+                    if (morts > EFFECTIF) {
+                        showError(errMorts, inputMorts,
+                            `Ne peut pas dépasser l'effectif initial (${EFFECTIF})`);
+                        return;
+                    }
+                }
+
+                if (!isNaN(morts) && !isNaN(vivants)) {
+                    majRecap(vivants, morts);
+                }
+            });
+
+            // ── Met à jour le récapitulatif ──────────────────────────────────────
+            function majRecap(vivants, morts) {
+                recapBlock.style.display = 'block';
+                recapInitial.textContent = EFFECTIF > 0 ? EFFECTIF.toLocaleString('fr') : '—';
+                recapVivants.textContent = vivants.toLocaleString('fr');
+                recapMorts.textContent   = morts.toLocaleString('fr');
+
+                // Affiche un écart si vivants + morts ≠ effectif (saisie manuelle)
+                if (EFFECTIF > 0) {
+                    const ecart = EFFECTIF - vivants - morts;
+                    if (ecart !== 0) {
+                        recapEcartWrap.style.display = 'flex';
+                        recapEcart.textContent = (ecart > 0 ? '+' : '') + ecart;
+                    } else {
+                        recapEcartWrap.style.display = 'none';
+                    }
+                } else {
+                    recapEcartWrap.style.display = 'none';
+                }
+            }
+
+            // ── Helpers affichage erreurs ────────────────────────────────────────
+            function showError(span, input, msg) {
+                span.textContent = msg;
+                span.style.display = 'block';
+                input.classList.add('input-error');
+            }
+            function clearErrors() {
+                [errVivants, errMorts].forEach(e => { e.textContent = ''; e.style.display = 'none'; });
+                [inputVivants, inputMorts].forEach(i => i.classList.remove('input-error'));
+            }
+
+            // ── Initialisation : si valeurs déjà présentes (mode édition) ────────
+            (function init() {
+                const v = parseInt(inputVivants?.value, 10);
+                const m = parseInt(inputMorts?.value, 10);
+                if (!isNaN(v) && !isNaN(m)) {
+                    majRecap(v, m);
+                }
+            })();
+
+            // ── Seuil de récolte ─────────────────────────────────────────────────
+            function checkSeuilRecolte() {
+                const poids = parseFloat(document.getElementById('poidsMoyen')?.value) || 0;
+                const taille = parseFloat(document.getElementById('tailleMoyenne')?.value) || 0;
+                const seuil = document.getElementById('seuilRecolte');
+                if (seuil) {
+                    seuil.style.display = (poids >= 15 && taille >= 110) ? 'flex' : 'none';
+                }
+            }
+            document.getElementById('poidsMoyen')?.addEventListener('input', checkSeuilRecolte);
+            document.getElementById('tailleMoyenne')?.addEventListener('input', checkSeuilRecolte);
+            checkSeuilRecolte();
+        </script>
+    </th:block>
+</body>
+</html>

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/default}">
+<head>
+    <title layout:fragment="page-title" th:text="'Bassin ' + ${bassin.code} + ' — Move Gasy'">Bassin — Move Gasy</title>
+    <th:block layout:fragment="page-styles">
+        <link href="/css/bassin/detail.css" rel="stylesheet" />
+    </th:block>
+</head>
+<body>
+    <div layout:fragment="content">
+        <div th:if="${erreur}" class="alert alert-warning">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            <div th:text="${erreur}"></div>
+        </div>
+
+        <div class="grid-detail">
+            <div class="col-12">
+                <section class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Informations Generales</h3>
+                        <span class="badge" th:classappend="${bassin.statutActuel.code == 'ACTIF'} ? 'badge-actif' : (${bassin.statutActuel.code == 'PREPARATION'} ? 'badge-preparation' : (${bassin.statutActuel.code == 'QUARANTAINE'} ? 'badge-quarantaine' : (${bassin.statutActuel.code == 'EN_TRAITEMENT'} ? 'badge-traitement' : 'badge-recolte')))" th:text="${bassin.statutActuel.libelle}"></span>
+                    </div>
+
+                    <h2 style="font-size: 28px; font-weight: 700; margin-bottom: 4px;" th:text="'Bassin ' + ${bassin.code}">Bassin</h2>
+
+                    <div class="stat-group">
+                        <div class="stat-item">
+                            <div class="label">Surface</div>
+                            <div class="value" th:text="${bassin.surfaceM2} + ' m²'">—</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="label">Profondeur</div>
+                            <div class="value" th:text="${bassin.profondeurMetre} + ' m'">—</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="label">Notes</div>
+                            <div class="value" style="font-size: 14px; font-weight: 400;" th:text="${bassin.notes != null and !#strings.isEmpty(bassin.notes)} ? ${bassin.notes} : '—'">—</div>
+                        </div>
+                    </div>
+
+                    <div class="action-bar">
+                        <a th:href="@{/bassins/{id}/modifier(id=${bassin.id})}" class="btn btn-outline btn-sm"><i class="bi bi-pencil"></i> Modifier</a>
+                        <a th:href="@{/bassins/liste}" class="btn btn-outline btn-sm"><i class="bi bi-arrow-left"></i> Retour</a>
+                    </div>
+                </section>
+
+                <section class="card" th:unless="${#lists.isEmpty(transitions)}">
+                    <div class="card-header">
+                        <h3 class="card-title">Changer l'etat operationnel</h3>
+                        <span style="font-size: 12px; color: var(--mg-secondary);" th:text="${bassin.statutActuel.code == 'VIDE'} ? '0 transition(s) disponible(s)' : ${#lists.size(transitions)} + ' transition(s) disponible(s)'"></span>
+                    </div>
+                    <form th:action="@{/bassins/{id}/statut(id=${bassin.id})}" method="post">
+                        <div class="statut-form">
+                            <div class="form-field">
+                                <label for="nouveauStatut">Nouveau statut</label>
+                                <select id="nouveauStatut" name="nouveauStatut">
+                                    <option value="" disabled selected>-- Choisir --</option>
+                                    <option th:unless="${bassin.statutActuel.code == 'VIDE'}" th:each="t : ${transitions}" th:value="${t}" th:text="${t}"></option>
+                                </select>
+                            </div>
+                            <div class="form-field">
+                                <label for="motif">Motif</label>
+                                <input type="text" id="motif" name="motif" placeholder="Raison du changement..." required />
+                            </div>
+                            <button class="btn btn-primary" type="submit" th:disabled="${bassin.statutActuel.code == 'VIDE'}"><i class="bi bi-check2"></i> Valider</button>
+                        </div>
+                    </form>
+                </section>
+
+                <section class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Historique des changements d'etat</h3>
+                        <span style="font-size: 12px; color: var(--mg-secondary);" th:text="${#lists.size(historique)} + ' entree(s)'"></span>
+                    </div>
+
+                    <div th:if="${#lists.isEmpty(historique)}" style="text-align: center; padding: 32px; color: var(--mg-secondary); font-size: 14px;">
+                        <i class="bi bi-clock-history" style="font-size: 28px; display: block; margin-bottom: 8px; opacity: 0.3;"></i>
+                        Aucun historique pour ce bassin.
+                    </div>
+
+                    <div class="table-container" th:unless="${#lists.isEmpty(historique)}">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Statut</th>
+                                    <th>Utilisateur</th>
+                                    <th>Motif</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="h : ${historique}">
+                                    <td class="date-cell" th:text="${#temporals.format(h.dateChangement, 'dd MMM yyyy | HH:mm')}">—</td>
+                                    <td>
+                                        <span class="badge" th:classappend="${h.statutBassin.code == 'ACTIF'} ? 'badge-actif' : (${h.statutBassin.code == 'PREPARATION'} ? 'badge-preparation' : (${h.statutBassin.code == 'QUARANTAINE'} ? 'badge-quarantaine' : (${h.statutBassin.code == 'EN_TRAITEMENT'} ? 'badge-traitement' : (${h.statutBassin.code == 'RECOLTE'} ? 'badge-recolte' : 'badge-vide'))))" th:text="${h.statutBassin.libelle}">—</span>
+                                    </td>
+                                    <td th:text="${h.utilisateur.nom + ' ' + (h.utilisateur.prenom != null ? h.utilisateur.prenom : '')}">—</td>
+                                    <td class="motif-cell" th:text="${h.motif != null ? h.motif : '—'}">—</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section class="card" th:if="${#lists.isEmpty(transitions)}">
+                    <div style="display: flex; align-items: center; gap: 12px; color: var(--mg-secondary);">
+                        <i class="bi bi-lock" style="font-size: 20px;"></i>
+                        <div>
+                            <div style="font-weight: 600; color: var(--mg-primary); margin-bottom: 2px;">Aucune transition possible</div>
+                            <div style="font-size: 13px;">Le statut actuel ne permet pas de changement d'etat.</div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

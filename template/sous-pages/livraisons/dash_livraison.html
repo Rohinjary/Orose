@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+
+<html lang="fr">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Move Gasy - Tableau de Bord Livraisons</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+<style>
+        :root {
+            --mg-surface: #f7f9fb;
+            --mg-surface-dim: #d8dadc;
+            --mg-surface-bright: #ffffff;
+            --mg-surface-container: #eceef0;
+            --mg-primary: #1a1a1a;
+            --mg-secondary: #4a4a4a;
+            --mg-outline: #d1d5db;
+            --mg-success: #10b981;
+            --mg-warning: #f59e0b;
+            --mg-danger: #ef4444;
+            --font-main: 'Inter', sans-serif;
+            --radius: 4px;
+            --sidebar-w: 240px;
+            --topbar-h: 64px;
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--mg-surface);
+            color: var(--mg-primary);
+            font-size: 13.5px;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: var(--sidebar-w);
+            background: var(--mg-surface-bright);
+            border-right: 1px solid var(--mg-outline);
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+        }
+
+        .sidebar-brand {
+            height: var(--topbar-h);
+            padding: 0 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid var(--mg-outline);
+        }
+
+        .brand-logo {
+            width: 32px;
+            height: 32px;
+            background: var(--mg-primary);
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: white;
+        }
+
+        .brand-name {
+            font-weight: 700;
+            font-size: 16px;
+            letter-spacing: -0.02em;
+        }
+
+        .nav-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px 12px;
+        }
+
+        .nav-label {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--mg-secondary);
+            margin: 24px 12px 8px;
+            letter-spacing: 0.05em;
+        }
+
+        .nav-label:first-child {
+            margin-top: 0;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            border-radius: var(--radius);
+            color: var(--mg-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+            cursor: pointer;
+            margin-bottom: 2px;
+        }
+
+        .nav-item:hover {
+            background: var(--mg-surface-container);
+            color: var(--mg-primary);
+        }
+
+        .nav-item.active {
+            background: var(--mg-primary);
+            color: white;
+        }
+
+        .nav-icon {
+            font-size: 18px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .main-wrapper {
+            margin-left: var(--sidebar-w);
+            width: calc(100% - var(--sidebar-w));
+        }
+
+        .topbar {
+            height: var(--topbar-h);
+            background: var(--mg-surface-bright);
+            border-bottom: 1px solid var(--mg-outline);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 32px;
+            position: sticky;
+            top: 0;
+            z-index: 90;
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--mg-secondary);
+        }
+
+        .breadcrumb span.active {
+            color: var(--mg-primary);
+            font-weight: 600;
+        }
+
+        .breadcrumb .sep {
+            color: var(--mg-outline);
+        }
+
+        .topbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .icon-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            width: 36px;
+            height: 36px;
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--mg-secondary);
+            transition: background 0.2s;
+        }
+
+        .icon-btn:hover {
+            background: var(--mg-surface-container);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-left: 16px;
+            border-left: 1px solid var(--mg-outline);
+        }
+
+        .avatar {
+            width: 32px;
+            height: 32px;
+            background: var(--mg-primary);
+            color: white;
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        .content {
+            padding: 32px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header-section {
+            margin-bottom: 32px;
+        }
+
+        .header-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--mg-primary);
+        }
+
+        .header-sub {
+            font-size: 14px;
+            color: var(--mg-secondary);
+            margin-top: 4px;
+        }
+
+        /* Main Content Wrapper */
+        .main-wrapper {
+            margin-left: 260px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .topbar {
+            height: 64px;
+            background-color: var(--mg-surface-bright);
+            border-bottom: 1px solid var(--mg-outline);
+            padding: 0 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 90;
+        }
+
+        .breadcrumb {
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--mg-secondary);
+        }
+
+        .breadcrumb .sep {
+            opacity: 0.4;
+        }
+
+        .breadcrumb .active {
+            color: var(--mg-primary);
+            font-weight: 600;
+        }
+
+        .topbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .icon-btn {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            color: var(--mg-secondary);
+            cursor: pointer;
+            padding: 4px;
+            display: flex;
+            align-items: center;
+            transition: color 0.2s;
+        }
+
+        .icon-btn:hover {
+            color: var(--mg-primary);
+        }
+
+        .user-profile .avatar {
+            width: 32px;
+            height: 32px;
+            background: var(--mg-surface-container);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--mg-primary);
+            border: 1px solid var(--mg-outline);
+        }
+
+        /* Content Area */
+        .content {
+            padding: 32px;
+            max-width: 1400px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .header-section {
+            margin-bottom: 32px;
+        }
+
+        .header-title {
+            font-size: 24px;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            margin-bottom: 4px;
+        }
+
+        .header-sub {
+            color: var(--mg-secondary);
+            font-size: 14px;
+        }
+
+        /* KPIs */
+        .kpi-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .kpi-card {
+            background: var(--mg-surface-bright);
+            padding: 24px;
+            border-radius: var(--radius);
+            border: 1px solid var(--mg-outline);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .kpi-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            font-weight: 700;
+            color: var(--mg-secondary);
+            letter-spacing: 0.05em;
+        }
+
+        .kpi-value {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .kpi-meta {
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .status-pill {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        /* Grid Layouts */
+        .grid-detail {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 24px;
+        }
+
+        .col-8 {
+            grid-column: span 8;
+        }
+
+        .col-4 {
+            grid-column: span 4;
+        }
+
+        .col-12 {
+            grid-column: span 12;
+        }
+
+        .panel {
+            background: var(--mg-surface-bright);
+            border: 1px solid var(--mg-outline);
+            border-radius: var(--radius);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel-header {
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--mg-surface-container);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .panel-title {
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* Tables */
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th {
+            padding: 12px 24px;
+            font-size: 11px;
+            text-transform: uppercase;
+            color: var(--mg-secondary);
+            font-weight: 700;
+            background: var(--mg-surface);
+            border-bottom: 1px solid var(--mg-outline);
+        }
+
+        td {
+            padding: 16px 24px;
+            font-size: 13px;
+            border-bottom: 1px solid var(--mg-surface-container);
+            vertical-align: middle;
+        }
+
+        .order-id {
+            font-family: monospace;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .weight-data {
+            font-weight: 600;
+        }
+
+        .btn-action {
+            background: var(--mg-primary);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: var(--radius);
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .btn-action:hover {
+            opacity: 0.8;
+        }
+
+        /* Alert Panel */
+        .alert-item {
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--mg-surface-container);
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+        }
+
+        .alert-icon {
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .alert-content h4 {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .alert-content p {
+            font-size: 12px;
+            color: var(--mg-secondary);
+        }
+
+        .alert-danger {
+            color: var(--mg-danger);
+        }
+
+        .alert-warning {
+            color: var(--mg-warning);
+        }
+
+        /* Status Colors */
+        .bg-prete {
+            background: #e0f2f1;
+            color: #00695c;
+        }
+
+        .bg-cours {
+            background: #fff3e0;
+            color: #e65100;
+        }
+
+        .bg-livre {
+            background: #e8f5e9;
+            color: #1b5e20;
+        }
+
+        .bg-rupture {
+            background: #ffebee;
+            color: #b71c1c;
+        }
+
+        @media (max-width: 1024px) {
+            .kpi-row {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .col-8,
+            .col-4 {
+                grid-column: span 12;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="../css/responsive.css">
+</head>
+
+<body>
+        <div class="sidebar-overlay"></div>
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <div class="brand-logo"><i class="bi bi-water"></i></div>
+                <div class="brand-name">MOVE GASY</div>
+            </div>
+            <div class="nav-container">
+                <div class="nav-label">Principal</div>
+                <a class="nav-item" href="#">
+                    <span class="nav-icon"><i class="bi bi-speedometer2"></i></span> Dashboard
+                </a>
+                <div class="nav-label">Terrain</div>
+                <a class="nav-item" href="#">
+                    <span class="nav-icon"><i class="bi bi-droplet-half"></i></span> Bassins
+                </a>
+                <a class="nav-item" href="#">
+                    <span class="nav-icon"><i class="bi bi-activity"></i></span> Suivi biologique
+                </a>
+                <a class="nav-item" href="#">
+                    <span class="nav-icon"><i class="bi bi-egg-fill"></i></span> Nourrissage
+                </a>
+                <a class="nav-item " href="#">
+                    <span class="nav-icon"><i class="bi bi-plus-circle"></i></span> Sanitaire
+                </a>
+                <div class="nav-label">Logistique</div>
+                <a class="nav-item" href="#">
+                    <span class="nav-icon"><i class="bi bi-box-seam"></i></span> Stocks
+                </a>
+                <a class="nav-item" href="#">
+                    <span class="nav-icon"><i class="bi bi-cart3"></i></span> Commercial
+                </a>
+                <a class="nav-item active" href="#">
+                    <span class="nav-icon"><i class="bi bi-truck"></i></span> Livraisons
+                </a>
+                <a class="nav-item" href="#">
+                    <span class="nav-icon"><i class="bi bi-cash-stack"></i></span> Finances
+                </a>
+                <div class="nav-label">Système</div>
+ <a class="nav-item" href="#">
+          <span class="nav-icon"><i class="bi bi-lock"></i></span> Connexion</a>
+                <a class="nav-item" href="#">
+                    <span class="nav-icon"><i class="bi bi-gear"></i></span> Administration</a>
+                  <div class="nav-label">Portail client</div>
+                 <a class="nav-item">
+                    <span class="nav-icon"><i class="bi bi-person-lock"></i></span> Front Office
+                </a>
+            </div>
+        </aside>
+        <div class="main-wrapper">
+            <header class="topbar">
+                
+                <button class="menu-toggle" onclick="toggleSidebar()">
+                    <i class="bi bi-list"></i>
+                </button>
+<div class="breadcrumb">
+                    <span>Logistique</span><span class="sep">/</span><span class="active">Livraisons</span>
+                </div>
+                <div class="topbar-actions">
+                    <button class="icon-btn"><i class="bi bi-bell"></i></button>
+                    <button class="icon-btn"><i class="bi bi-gear"></i></button>
+                    <div class="user-profile">
+                        <div class="avatar">AD</div>
+                    </div>
+                </div>
+            </header>
+            <main class="content">
+                <header class="header-section">
+                    <h2 class="header-title">Tableau de bord Livraisons</h2>
+                    <p class="header-sub">Suivi temps réel des expéditions et alertes logistiques.</p>
+                </header>
+                <div class="kpi-row">
+                    <div class="kpi-card">
+                        <span class="kpi-label">À FAIRE</span>
+                        <span class="kpi-value">14</span>
+                        <div class="kpi-meta">
+                            <span class="status-pill bg-prete">Commandes Prêtes</span>
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <span class="kpi-label">EN COURS</span>
+                        <span class="kpi-value">08</span>
+                        <div class="kpi-meta" style="color: var(--mg-warning)">
+                            <i class="bi bi-arrow-up-short"></i> +2 depuis hier
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <span class="kpi-label">LIVRÉES CE MOIS</span>
+                        <span class="kpi-value">342</span>
+                        <div class="kpi-meta" style="color: var(--mg-success)">
+                            <i class="bi bi-check-circle"></i> Objectif 85% atteint
+                        </div>
+                    </div>
+                    <div class="kpi-card" style="border-left: 4px solid var(--mg-danger);">
+                        <span class="kpi-label">RUPTURE STOCK</span>
+                        <span class="kpi-value">03</span>
+                        <div class="kpi-meta" style="color: var(--mg-danger)">
+                            <i class="bi bi-exclamation-triangle"></i> Action requise
+                        </div>
+                    </div>
+                </div>
+                <div class="grid-detail">
+                    <div class="col-8">
+                        <div class="panel">
+                            <div class="panel-header">
+                                <h3 class="panel-title">Livraisons du jour</h3>
+                                <div class="panel-actions">
+                                    <button class="icon-btn"><i class="bi bi-filter"></i></button>
+                                </div>
+                            </div>
+                            <div class="table-container">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>N° Commande</th>
+                                            <th>Client</th>
+                                            <th>Destination</th>
+                                            <th>Qté (kg)</th>
+                                            <th>Statut</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><span class="order-id">#CMD-9401</span></td>
+                                            <td>Gasy Seafood Co.</td>
+                                            <td>Antananarivo (IVATO)</td>
+                                            <td class="weight-data">450.0</td>
+                                            <td><span class="status-pill bg-cours">En cours</span></td>
+                                            <td><button class="btn-action">Changer statut</button></td>
+                                        </tr>
+                                        <tr>
+                                            <td><span class="order-id">#CMD-9405</span></td>
+                                            <td>Resto Mahajanga</td>
+                                            <td>Toamasina (Port)</td>
+                                            <td class="weight-data">125.0</td>
+                                            <td><span class="status-pill bg-prete">Prête</span></td>
+                                            <td><button class="btn-action">Changer statut</button></td>
+                                        </tr>
+                                        <tr>
+                                            <td><span class="order-id">#CMD-9408</span></td>
+                                            <td>Export Sud SARL</td>
+                                            <td>Toliara</td>
+                                            <td class="weight-data">1,200.0</td>
+                                            <td><span class="status-pill bg-prete">Prête</span></td>
+                                            <td><button class="btn-action">Changer statut</button></td>
+                                        </tr>
+                                        <tr>
+                                            <td><span class="order-id">#CMD-9412</span></td>
+                                            <td>Hôtel de la Ville</td>
+                                            <td>Antsirabe</td>
+                                            <td class="weight-data">75.0</td>
+                                            <td><span class="status-pill bg-livre">Livrée</span></td>
+                                            <td><button class="btn-action">Changer statut</button></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="panel">
+                            <div class="panel-header">
+                                <h3 class="panel-title">Alertes Critiques</h3>
+                            </div>
+                            <div class="alert-list">
+                                <div class="alert-item">
+                                    <div class="alert-icon alert-danger"><i class="bi bi-x-octagon-fill"></i></div>
+                                    <div class="alert-content">
+                                        <h4>Rupture : Crevette Black Tiger (L)</h4>
+                                        <p>3 commandes en attente pour un total de 850kg. Réapprovisionnement requis
+                                            pond #B12.</p>
+                                    </div>
+                                </div>
+                                <div class="alert-item">
+                                    <div class="alert-icon alert-warning"><i class="bi bi-clock-history"></i></div>
+                                    <div class="alert-content">
+                                        <h4>Livraison Urgente &lt; 24h</h4>
+                                        <p>Commande #CMD-9420 (Gasy Seafood) doit être expédiée avant demain 08:00.</p>
+                                    </div>
+                                </div>
+                                <div class="alert-item">
+                                    <div class="alert-icon alert-warning"><i class="bi bi-clock-history"></i></div>
+                                    <div class="alert-content">
+                                        <h4>Livraison Urgente &lt; 24h</h4>
+                                        <p>Commande #CMD-9422 (Export Sud) chargement prévu ce soir 22:00.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12" style="margin-top: 24px;">
+                        <div class="panel">
+                            <div class="panel-header">
+                                <h3 class="panel-title">Prévisions Livraisons (Semaine)</h3>
+                            </div>
+                            <div class="table-container">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Date prévue</th>
+                                            <th>N° Commande</th>
+                                            <th>Client</th>
+                                            <th>Type Produit</th>
+                                            <th>Quantité Estimée</th>
+                                            <th>Priorité</th>
+                                            <th>Statut Stock</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>14 Oct. 2023</td>
+                                            <td><span class="order-id">#CMD-9450</span></td>
+                                            <td>Global Crustaceans</td>
+                                            <td>Shrimp Grade A (M)</td>
+                                            <td class="weight-data">2,500 kg</td>
+                                            <td><span class="status-pill bg-livre"
+                                                    style="background:#e0f7fa; color:#006064;">Haute</span></td>
+                                            <td><span class="status-pill bg-livre">Disponible</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>15 Oct. 2023</td>
+                                            <td><span class="order-id">#CMD-9451</span></td>
+                                            <td>Pêcheries du Nord</td>
+                                            <td>Shrimp Grade B (S)</td>
+                                            <td class="weight-data">500 kg</td>
+                                            <td><span class="status-pill"
+                                                    style="background:#f5f5f5; color:#616161;">Normale</span></td>
+                                            <td><span class="status-pill bg-livre">Disponible</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>16 Oct. 2023</td>
+                                            <td><span class="order-id">#CMD-9455</span></td>
+                                            <td>Eco-Marée</td>
+                                            <td>Shrimp Grade A (XL)</td>
+                                            <td class="weight-data">1,200 kg</td>
+                                            <td><span class="status-pill bg-prete"
+                                                    style="background:#fff9c4; color:#fbc02d;">Urgente</span></td>
+                                            <td><span class="status-pill bg-rupture">Insuffisant</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>18 Oct. 2023</td>
+                                            <td><span class="order-id">#CMD-9460</span></td>
+                                            <td>Distri-Gasy</td>
+                                            <td>Shrimp Mixed Bags</td>
+                                            <td class="weight-data">450 kg</td>
+                                            <td><span class="status-pill"
+                                                    style="background:#f5f5f5; color:#616161;">Normale</span></td>
+                                            <td><span class="status-pill bg-livre">Disponible</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        function toggleSidebar() {
+            document.querySelector('.sidebar').classList.toggle('open');
+            document.querySelector('.sidebar-overlay').classList.toggle('open');
+        }
+        document.querySelector('.sidebar-overlay')
+            ?.addEventListener('click', () => {
+                document.querySelector('.sidebar').classList.remove('open');
+                document.querySelector('.sidebar-overlay').classList.remove('open');
+            });
+    </script>
+</body>
+
+</html>

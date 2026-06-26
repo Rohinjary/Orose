@@ -1,0 +1,2047 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>À FAIRE - Projet BAOVOLA</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f4f8;
+            padding: 20px;
+            color: #1a202c;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            color: #1a365d;
+            margin-bottom: 10px;
+            border-bottom: 4px solid #2b6cb0;
+            padding-bottom: 15px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #4a5568;
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+        .module {
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .module-header {
+            background: #2b6cb0;
+            color: white;
+            padding: 18px 25px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .module-header .badge {
+            background: rgba(255,255,255,0.2);
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: normal;
+        }
+        .module-body {
+            padding: 20px 25px;
+        }
+        .fonctionnalite {
+            background: #f7fafc;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            padding: 20px;
+            border-left: 5px solid #2b6cb0;
+            transition: all 0.2s;
+        }
+        .fonctionnalite:hover {
+            box-shadow: 0 2px 8px rgba(43,108,176,0.15);
+        }
+        .fonctionnalite .titre {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #2b6cb0;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .fonctionnalite .titre .wow {
+            background: #ecc94b;
+            color: #744210;
+            font-size: 0.65rem;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .fonctionnalite .section {
+            margin-top: 10px;
+        }
+        .fonctionnalite .section-title {
+            font-weight: 600;
+            color: #2d3748;
+            font-size: 0.9rem;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .fonctionnalite .section-title .icon {
+            font-size: 1rem;
+        }
+        .fonctionnalite .content {
+            background: white;
+            border-radius: 8px;
+            padding: 12px 15px;
+            margin: 4px 0 10px 0;
+            border: 1px solid #e2e8f0;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+        .fonctionnalite .content code {
+            background: #edf2f7;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: 'Consolas', monospace;
+            font-size: 0.85rem;
+            color: #2d3748;
+        }
+        .fonctionnalite .content .java {
+            background: #1a202c;
+            color: #e2e8f0;
+            padding: 12px 15px;
+            border-radius: 6px;
+            font-family: 'Consolas', monospace;
+            font-size: 0.85rem;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-break: break-word;
+            margin: 6px 0;
+        }
+        .fonctionnalite .content .java .comment {
+            color: #68d391;
+        }
+        .fonctionnalite .content .java .keyword {
+            color: #f6ad55;
+        }
+        .fonctionnalite .content .java .string {
+            color: #fc8181;
+        }
+        .fonctionnalite .content .java .annotation {
+            color: #b794f4;
+        }
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 6px;
+        }
+        .tag {
+            background: #edf2f7;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            color: #2d3748;
+        }
+        .tag-table {
+            background: #bee3f8;
+            color: #2a69ac;
+        }
+        .tag-file {
+            background: #c6f6d5;
+            color: #276749;
+        }
+        .tag-page {
+            background: #fefcbf;
+            color: #975a16;
+        }
+        .tag-rule {
+            background: #fed7d7;
+            color: #9b2c2c;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        @media (max-width: 768px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+            h1 {
+                font-size: 1.8rem;
+            }
+            .module-header {
+                font-size: 1.2rem;
+                padding: 14px 18px;
+            }
+            .fonctionnalite {
+                padding: 14px;
+            }
+        }
+        .recap {
+            background: #1a365d;
+            color: white;
+            border-radius: 12px;
+            padding: 20px 25px;
+            margin-top: 20px;
+        }
+        .recap table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        .recap th {
+            text-align: left;
+            padding: 8px 10px;
+            border-bottom: 2px solid rgba(255,255,255,0.2);
+        }
+        .recap td {
+            padding: 6px 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .recap .number {
+            font-weight: bold;
+            color: #fbd38d;
+        }
+        .progress-bar {
+            height: 6px;
+            background: #2d3748;
+            border-radius: 3px;
+            margin-top: 4px;
+        }
+        .progress-bar .fill {
+            height: 100%;
+            background: #48bb78;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <h1>📋 À FAIRE - PROJET BAOVOLA</h1>
+    <p class="subtitle">Modules Terrain (1 à 5) + Sécurité (10) · Spring Boot + PostgreSQL</p>
+
+    <!-- ============================================================ -->
+    <!-- MODULE 10 -->
+    <!-- ============================================================ -->
+    <div class="module">
+        <div class="module-header">
+            🔐 MODULE 10 : ADMINISTRATION &amp; SÉCURITÉ
+            <span class="badge">6 fonctionnalités</span>
+        </div>
+        <div class="module-body">
+
+            <!-- F10.1 -->
+            <div class="fonctionnalite">
+                <div class="titre">🔹 Fonctionnalité 10.1 : Connexion utilisateur (Back-office)</div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">⚙️</span> Fonction, paramètres, retour</div>
+                    <div class="content">
+                        <div class="java">
+                            <span class="keyword">public</span> Utilisateur <span class="keyword">login</span>(String email, String motDePasse)
+                            <span class="comment">// RÈGLE : Vérifier l'email, comparer le mot de passe (bcrypt)</span>
+                            <span class="comment">// Si email inexistant ou mot de passe incorrect → throw AuthenticationException</span>
+                            <span class="comment">// Si statut = 'INACTIF' → throw InactiveUserException</span>
+                            <span class="comment">// Retour : Utilisateur avec ses rôles</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">📊</span> Tables utilisées</div>
+                    <div class="tags">
+                        <span class="tag tag-table">utilisateur</span>
+                        <span class="tag tag-table">utilisateur_role</span>
+                        <span class="tag tag-table">role</span>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">📁</span> Fichiers utilisés / à créer</div>
+                    <div class="tags">
+                        <span class="tag tag-file">AuthController.java</span>
+                        <span class="tag tag-file">UtilisateurService.java</span>
+                        <span class="tag tag-file">UtilisateurRepository.java</span>
+                        <span class="tag tag-file">UtilisateurRoleRepository.java</span>
+                        <span class="tag tag-file">JwtUtil.java</span>
+                        <span class="tag tag-file">SecurityConfig.java</span>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">🖥️</span> Pages concernées</div>
+                    <div class="tags">
+                        <span class="tag tag-page">auth/login.html</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- F10.2 -->
+            <div class="fonctionnalite">
+                <div class="titre">🔹 Fonctionnalité 10.2 : CRUD Utilisateur (Admin uniquement)</div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">⚙️</span> Fonction, paramètres, retour</div>
+                    <div class="content">
+                        <div class="java">
+                            <span class="keyword">public</span> Utilisateur <span class="keyword">creerUtilisateur</span>(UtilisateurDTO dto)
+                            <span class="comment">// RÈGLE : Email unique, mot de passe hashé avec bcrypt, statut par défaut 'ACTIF'</span>
+
+                            <span class="keyword">public</span> Utilisateur <span class="keyword">modifierUtilisateur</span>(Long id, UtilisateurDTO dto)
+                            <span class="comment">// RÈGLE : Vérifier que l'utilisateur existe, email unique (sauf si c'est le même)</span>
+
+                            <span class="keyword">public</span> <span class="keyword">void</span> <span class="keyword">desactiverUtilisateur</span>(Long id)
+                            <span class="comment">// RÈGLE : Passer statut à 'INACTIF' - suppression interdite</span>
+
+                            <span class="keyword">public</span> List&lt;Utilisateur&gt; <span class="keyword">listerUtilisateurs</span>()
+                            <span class="comment">// RÈGLE : Retourner tous les utilisateurs avec leurs rôles</span>
+
+                            <span class="keyword">public</span> Utilisateur <span class="keyword">getUtilisateurById</span>(Long id)
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">📊</span> Tables utilisées</div>
+                    <div class="tags">
+                        <span class="tag tag-table">utilisateur</span>
+                        <span class="tag tag-table">utilisateur_role</span>
+                        <span class="tag tag-table">role</span>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">📁</span> Fichiers utilisés / à créer</div>
+                    <div class="tags">
+                        <span class="tag tag-file">AdminController.java</span>
+                        <span class="tag tag-file">UtilisateurService.java</span>
+                        <span class="tag tag-file">UtilisateurRepository.java</span>
+                        <span class="tag tag-file">RoleRepository.java</span>
+                        <span class="tag tag-file">UtilisateurDTO.java</span>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">🖥️</span> Pages concernées</div>
+                    <div class="tags">
+                        <span class="tag tag-page">admin/utilisateurs.html</span>
+                        <span class="tag tag-page">admin/utilisateur-form.html</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- F10.3 -->
+            <div class="fonctionnalite">
+                <div class="titre">🔹 Fonctionnalité 10.3 : Gestion des rôles</div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">⚙️</span> Fonction, paramètres, retour</div>
+                    <div class="content">
+                        <div class="java">
+                            <span class="keyword">public</span> List&lt;Role&gt; <span class="keyword">listerRoles</span>()
+                            <span class="comment">// RÈGLE : Retourner tous les rôles disponibles</span>
+
+                            <span class="keyword">public</span> <span class="keyword">void</span> <span class="keyword">assignerRole</span>(Long idUtilisateur, Long idRole)
+                            <span class="comment">// RÈGLE : Ajouter un rôle à un utilisateur (vérifier doublon)</span>
+
+                            <span class="keyword">public</span> <span class="keyword">void</span> <span class="keyword">retirerRole</span>(Long idUtilisateur, Long idRole)
+                            <span class="comment">// RÈGLE : Retirer un rôle d'un utilisateur</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">📊</span> Tables utilisées</div>
+                    <div class="tags">
+                        <span class="tag tag-table">role</span>
+                        <span class="tag tag-table">utilisateur_role</span>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">📁</span> Fichiers utilisés / à créer</div>
+                    <div class="tags">
+                        <span class="tag tag-file">RoleController.java</span>
+                        <span class="tag tag-file">RoleService.java</span>
+                        <span class="tag tag-file">RoleRepository.java</span>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">🖥️</span> Pages concernées</div>
+                    <div class="tags">
+                        <span class="tag tag-page">admin/utilisateur-form.html</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- F10.4 -->
+            <div class="fonctionnalite">
+                <div class="titre">🔹 Fonctionnalité 10.4 : Journal des actions</div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">⚙️</span> Fonction, paramètres, retour</div>
+                    <div class="content">
+                        <div class="java">
+                            <span class="keyword">public</span> <span class="keyword">void</span> <span class="keyword">journaliserAction</span>(Long idUtilisateur, String module, String action, String entiteCible, String description)
+                            <span class="comment">// RÈGLE : Enregistrer toute action critique dans le journal</span>
+
+                            <span class="keyword">public</span> Page&lt;JournalAction&gt; <span class="keyword">consulterJournal</span>(Pageable pageable, String module, String utilisateur, LocalDateTime debut, LocalDateTime fin)
+                            <span class="comment">// RÈGLE : Filtrer par module, utilisateur, période</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">📊</span> Tables utilisées</div>
+                    <div class="tags">
+                        <span class="tag tag-table">journal_action</span>
+                        <span class="tag tag-table">utilisateur</span>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">📁</span> Fichiers utilisés / à créer</div>
+                    <div class="tags">
+                        <span class="tag tag-file">JournalAspect.java</span>
+                        <span class="tag tag-file">JournalController.java</span>
+                        <span class="tag tag-file">JournalActionService.java</span>
+                        <span class="tag tag-file">JournalActionRepository.java</span>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">🖥️</span> Pages concernées</div>
+                    <div class="tags">
+                        <span class="tag tag-page">admin/journal.html</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- MODULE 1 -->
+    <!-- ============================================================ -->
+    <div class="module">
+        <div class="module-header">
+            🏊 MODULE 1 : GESTION DES BASSINS
+            <span class="badge">6 fonctionnalités</span>
+        </div>
+        <div class="module-body">
+
+            <!-- F1.1 -->
+            <div class="fonctionnalite">
+                <div class="titre">🔹 Fonctionnalité 1.1 : CRUD Bassin</div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">⚙️</span> Fonction, paramètres, retour</div>
+                    <div class="content">
+                        <div class="java">
+                            <span class="keyword">public</span> Bassin <span class="keyword">creerBassin</span>(BassinDTO dto)
+                            <span class="comment">// RÈGLE : Code unique (B01-B09), statut initial = 'PREPARATION'</span>
+                            <span class="comment">// Paramètres : code, surface_m2, profondeur_m, notes</span>
+                            <span class="comment">// Retour : Bassin créé</span>
+
+                            <span class="keyword">public</span> Bassin <span class="keyword">modifierBassin</span>(Long id, BassinDTO dto)
+                            <span class="comment">// RÈGLE : Vérifier que le bassin existe, code unique</span>
+                            <span class="comment">// Paramètres : id, code, surface_m2, profondeur_m, notes</span>
+                            <span class="comment">// Retour : Bassin modifié</span>
+
+                            <span class="keyword">public</span> <span class="keyword">void</span> <span class="keyword">supprimerBassin</span>(Long id)
+                            <span class="comment">// RÈGLE : Vérifier qu'aucun cycle n'est associé (historique de cycles)</span>
+                            <span class="comment">// Paramètres : id</span>
+                            <span class="comment">// Retour : void</span>
+
+                            <span class="keyword">public</span> List&lt;Bassin&gt; <span class="keyword">listerBassins</span>()
+                            <span class="comment">// RÈGLE : Retourner tous les bassins avec leur statut actuel</span>
+                            <span class="comment">// Paramètres : aucun</span>
+                            <span class="comment">// Retour : List&lt;Bassin&gt;</span>
+
+                            <span class="keyword">public</span> Bassin <span class="keyword">getBassinById</span>(Long id)
+                            <span class="comment">// RÈGLE : Retourner un bassin avec son statut actuel</span>
+                            <span class="comment">// Paramètres : id</span>
+                            <span class="comment">// Retour : Bassin</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">📊</span> Tables utilisées</div>
+                    <div class="tags">
+                        <span class="tag tag-table">bassin</span>
+                        <span class="tag tag-table">statut_bassin</span>
+                        <span class="tag tag-table">cycle_bassin</span>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">📁</span> Fichiers utilisés / à créer</div>
+                    <div class="tags">
+                        <span class="tag tag-file">BassinController.java</span>
+                        <span class="tag tag-file">BassinService.java</span>
+                        <span class="tag tag-file">BassinRepository.java</span>
+                        <span class="tag tag-file">StatutBassinRepository.java</span>
+                        <span class="tag tag-file">BassinDTO.java</span>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">🖥️</span> Pages concernées</div>
+                    <div class="tags">
+                        <span class="tag tag-page">bassin/liste.html</span>
+                        <span class="tag tag-page">bassin/formulaire.html</span>
+                        <span class="tag tag-page">bassin/detail.html</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- F1.2 -->
+            <div class="fonctionnalite">
+                <div class="titre">🔹 Fonctionnalité 1.2 : Vue grille des 9 bassins <span class="wow">★ WOW</span></div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">⚙️</span> Fonction, paramètres, retour</div>
+                    <div class="content">
+                        <div class="java">
+                            <span class="keyword">public</span> List&lt;BassinGrilleDTO&gt; <span class="keyword">getGrilleBassins</span>()
+                            <span class="comment">// RÈGLE : Retourner pour chaque bassin : code, statut (couleur), semaine cycle, avancement %, poids moyen</span>
+                            <span class="comment">// Code couleur : Vert=ACTIF, Bleu=PREPARATION, Orange=EN_TRAITEMENT, Rouge=QUARANTAINE, Gris=RECOLTE</span>
+                            <span class="comment">// Paramètres : aucun</span>
+                            <span class="comment">// Retour : List&lt;BassinGrilleDTO&gt;</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">📊</span> Tables utilisées</div>
+                    <div class="tags">
+                        <span class="tag tag-table">bassin</span>
+                        <span class="tag tag-table">statut_bassin</span>
+                        <span class="tag tag-table">cycle_bassin</span>
+                        <span class="tag tag-table">suivi_hebdo_bassin</span>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">📁</span> Fichiers utilisés / à créer</div>
+                    <div class="tags">
+                        <span class="tag tag-file">BassinController.java</span>
+                        <span class="tag tag-file">BassinService.java</span>
+                        <span class="tag tag-file">BassinGrilleDTO.java</span>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">🖥️</span> Pages concernées</div>
+                    <div class="tags">
+                        <span class="tag tag-page">bassin/liste.html</span>
+                        <span class="tag tag-page">dashboard/index.html</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- F1.3 -->
+            <div class="fonctionnalite">
+                <div class="titre">🔹 Fonctionnalité 1.3 : Changement d'état du bassin</div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">⚙️</span> Fonction, paramètres, retour</div>
+                    <div class="content">
+                        <div class="java">
+                            <span class="keyword">public</span> <span class="keyword">void</span> <span class="keyword">changerStatutBassin</span>(Long idBassin, String nouveauStatut, String motif, Long idUtilisateur)
+                            <span class="comment">// RÈGLE : Vérifier la transition autorisée</span>
+                            <span class="comment">// Transitions : PREPARATION→ACTIF, ACTIF→EN_TRAITEMENT, EN_TRAITEMENT→ACTIF,</span>
+                            <span class="comment">//               ACTIF→RECOLTE, ACTIF→QUARANTAINE, QUARANTAINE→PREPARATION</span>
+                            <span class="comment">// Si RECOLTE : déclencher automatiquement la récolte</span>
+                            <span class="comment">// Si QUARANTAINE : bloquer récolte/vente/réaffectation</span>
+                            <span class="comment">// Enregistrer dans histo_statut_bassin (qui, quand, motif)</span>
+                            <span class="comment">// Paramètres : idBassin, nouveauStatut, motif, idUtilisateur</span>
+                            <span class="comment">// Retour : void</span>
+
+                            <span class="keyword">public</span> List&lt;String&gt; <span class="keyword">getTransitionsAutorisees</span>(Long idBassin)
+                            <span class="comment">// RÈGLE : Retourner les statuts possibles à partir du statut actuel</span>
+                            <span class="comment">// Paramètres : idBassin</span>
+                            <span class="comment">// Retour : List&lt;String&gt;</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">📊</span> Tables utilisées</div>
+                    <div class="tags">
+                        <span class="tag tag-table">bassin</span>
+                        <span class="tag tag-table">statut_bassin</span>
+                        <span class="tag tag-table">histo_statut_bassin</span>
+                        <span class="tag tag-table">cycle_bassin</span>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">📁</span> Fichiers utilisés / à créer</div>
+                    <div class="tags">
+                        <span class="tag tag-file">BassinController.java</span>
+                        <span class="tag tag-file">BassinService.java</span>
+                        <span class="tag tag-file">StatutBassinService.java</span>
+                        <span class="tag tag-file">HistoStatutBassinRepository.java</span>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">🖥️</span> Pages concernées</div>
+                    <div class="tags">
+                        <span class="tag tag-page">bassin/detail.html</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- F1.4 -->
+            <div class="fonctionnalite">
+                <div class="titre">🔹 Fonctionnalité 1.4 : Historique des changements d'état</div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">⚙️</span> Fonction, paramètres, retour</div>
+                    <div class="content">
+                        <div class="java">
+                            <span class="keyword">public</span> List&lt;HistoStatutBassin&gt; <span class="keyword">getHistoriqueStatuts</span>(Long idBassin, LocalDateTime debut, LocalDateTime fin, String typeEtat)
+                            <span class="comment">// RÈGLE : Filtrer par bassin, période, type d'état</span>
+                            <span class="comment">// Paramètres : idBassin, debut, fin, typeEtat</span>
+                            <span class="comment">// Retour : List&lt;HistoStatutBassin&gt;</span>
+
+                            <span class="keyword">public</span> HistoStatutBassin <span class="keyword">getDernierStatut</span>(Long idBassin)
+                            <span class="comment">// RÈGLE : Retourner le dernier changement d'état</span>
+                            <span class="comment">// Paramètres : idBassin</span>
+                            <span class="comment">// Retour : HistoStatutBassin</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">📊</span> Tables utilisées</div>
+                    <div class="tags">
+                        <span class="tag tag-table">histo_statut_bassin</span>
+                        <span class="tag tag-table">bassin</span>
+                        <span class="tag tag-table">statut_bassin</span>
+                        <span class="tag tag-table">utilisateur</span>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">📁</span> Fichiers utilisés / à créer</div>
+                    <div class="tags">
+                        <span class="tag tag-file">BassinController.java</span>
+                        <span class="tag tag-file">BassinService.java</span>
+                        <span class="tag tag-file">HistoStatutBassinRepository.java</span>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">🖥️</span> Pages concernées</div>
+                    <div class="tags">
+                        <span class="tag tag-page">bassin/historique.html</span>
+                        <span class="tag tag-page">bassin/detail.html</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- F1.5 -->
+            <div class="fonctionnalite">
+                <div class="titre">🔹 Fonctionnalité 1.5 : Démarrage d'un cycle</div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">⚙️</span> Fonction, paramètres, retour</div>
+                    <div class="content">
+                        <div class="java">
+                            <span class="keyword">public</span> CycleBassin <span class="keyword">demarrerCycle</span>(Long idBassin, CycleDemarrageDTO dto)
+                            <span class="comment">// RÈGLE : Bassin doit être en PREPARATION</span>
+                            <span class="comment">// Vérifier qu'aucun cycle actif n'existe</span>
+                            <span class="comment">// Générer numero_cycle (B01-2026-01)</span>
+                            <span class="comment">// Passer bassin en ACTIF automatiquement</span>
+                            <span class="comment">// Enregistrer date_debut, date_fin_prevue (auto +4 mois)</span>
+                            <span class="comment">// Paramètres : idBassin, dto (cout_post_larves, effectif_initial, id_espece)</span>
+                            <span class="comment">// Retour : CycleBassin créé</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">📊</span> Tables utilisées</div>
+                    <div class="tags">
+                        <span class="tag tag-table">cycle_bassin</span>
+                        <span class="tag tag-table">bassin</span>
+                        <span class="tag tag-table">statut_bassin</span>
+                        <span class="tag tag-table">histo_statut_bassin</span>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">📁</span> Fichiers utilisés / à créer</div>
+                    <div class="tags">
+                        <span class="tag tag-file">CycleController.java</span>
+                        <span class="tag tag-file">CycleService.java</span>
+                        <span class="tag tag-file">CycleRepository.java</span>
+                        <span class="tag tag-file">CycleDemarrageDTO.java</span>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">🖥️</span> Pages concernées</div>
+                    <div class="tags">
+                        <span class="tag tag-page">bassin/detail.html</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- F1.6 -->
+            <div class="fonctionnalite">
+                <div class="titre">🔹 Fonctionnalité 1.6 : Détail d'un bassin</div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">⚙️</span> Fonction, paramètres, retour</div>
+                    <div class="content">
+                        <div class="java">
+                            <span class="keyword">public</span> BassinDetailDTO <span class="keyword">getDetailBassin</span>(Long idBassin)
+                            <span class="comment">// RÈGLE : Retourner : infos bassin, statut actuel, cycle en cours, historique, alertes</span>
+                            <span class="comment">// Alertes : récolte possible (poids >= 15g), quarantaine active</span>
+                            <span class="comment">// Paramètres : idBassin</span>
+                            <span class="comment">// Retour : BassinDetailDTO</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">📊</span> Tables utilisées</div>
+                    <div class="tags">
+                        <span class="tag tag-table">bassin</span>
+                        <span class="tag tag-table">statut_bassin</span>
+                        <span class="tag tag-table">cycle_bassin</span>
+                        <span class="tag tag-table">histo_statut_bassin</span>
+                        <span class="tag tag-table">suivi_hebdo_bassin</span>
+                        <span class="tag tag-table">alerte</span>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">📁</span> Fichiers utilisés / à créer</div>
+                    <div class="tags">
+                        <span class="tag tag-file">BassinController.java</span>
+                        <span class="tag tag-file">BassinService.java</span>
+                        <span class="tag tag-file">BassinDetailDTO.java</span>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">🖥️</span> Pages concernées</div>
+                    <div class="tags">
+                        <span class="tag tag-page">bassin/detail.html</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- MODULE 2 -->
+    <!-- ============================================================ -->
+    <div class="module">
+        <div class="module-header">
+            🔬 MODULE 2 : GESTION BIOLOGIQUE
+            <span class="badge">5 fonctionnalités</span>
+        </div>
+        <div class="module-body">
+
+            <!-- F2.1 -->
+            <div class="fonctionnalite">
+                <div class="titre">🔹 Fonctionnalité 2.1 : Liste des bassins en suivi</div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">⚙️</span> Fonction, paramètres, retour</div>
+                    <div class="content">
+                        <div class="java">
+                            <span class="keyword">public</span> List&lt;BassinSuiviDTO&gt; <span class="keyword">getBassinsSuivi</span>()
+                            <span class="comment">// RÈGLE : Retourner les bassins ACTIFS avec : cycle actif, date dernière pesée, taux survie %, statut croissance</span>
+                            <span class="comment">// Statut croissance : Normal (poids >= poids_cible*0.9), Retard (poids &lt; poids_cible*0.9), Critique (taux survie &lt; 40%)</span>
+                            <span class="comment">// Paramètres : aucun</span>
+                            <span class="comment">// Retour : List&lt;BassinSuiviDTO&gt;</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">📊</span> Tables utilisées</div>
+                    <div class="tags">
+                        <span class="tag tag-table">bassin</span>
+                        <span class="tag tag-table">cycle_bassin</span>
+                        <span class="tag tag-table">suivi_hebdo_bassin</span>
+                        <span class="tag tag-table">evolution_hebdo_espece</span>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">📁</span> Fichiers utilisés / à créer</div>
+                    <div class="tags">
+                        <span class="tag tag-file">BiologiqueController.java</span>
+                        <span class="tag tag-file">BiologiqueService.java</span>
+                        <span class="tag tag-file">BassinSuiviDTO.java</span>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">🖥️</span> Pages concernées</div>
+                    <div class="tags">
+                        <span class="tag tag-page">biologique/liste.html</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- F2.2 -->
+            <div class="fonctionnalite">
+                <div class="titre">🔹 Fonctionnalité 2.2 : CRUD Pesée</div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">⚙️</span> Fonction, paramètres, retour</div>
+                    <div class="content">
+                        <div class="java">
+                            <span class="keyword">public</span> SuiviHebdoBassin <span class="keyword">enregistrerPesee</span>(PeseeDTO dto)
+                            <span class="comment">// RÈGLE : Bassin doit être ACTIF</span>
+                            <span class="comment">// Vérifier : poids > 0, taille > 0, nb_vivants &lt;= effectif_initial</span>
+                            <span class="comment">// Calculer automatiquement : biomasse (nb_vivants * poids / 1000), taux_survie (nb_vivants / effectif_initial * 100)</span>
+                            <span class="comment">// Vérifier seuil récolte (poids >= 15g ET taille >= 110mm) → déclencher alerte si atteint</span>
+                            <span class="comment">// Mettre à jour poids_moyen_actuel dans cycle_bassin</span>
+                            <span class="comment">// Paramètres : dto (id_cycle, date_suivi, poids_moyen_g, taille_moyenne_mm, nb_vivants, nb_morts, id_technicien, notes)</span>
+                            <span class="comment">// Retour : SuiviHebdoBassin créé</span>
+
+                            <span class="keyword">public</span> SuiviHebdoBassin <span class="keyword">modifierPesee</span>(Long id, PeseeDTO dto)
+                            <span class="comment">// RÈGLE : Vérifier que le cycle n'est pas clôturé</span>
+                            <span class="comment">// Paramètres : id, dto</span>
+                            <span class="comment">// Retour : SuiviHebdoBassin modifié</span>
+
+                            <span class="keyword">public</span> List&lt;SuiviHebdoBassin&gt; <span class="keyword">getPeseesByCycle</span>(Long idCycle)
+                            <span class="comment">// RÈGLE : Retourner toutes les pesées d'un cycle triées par date</span>
+                            <span class="comment">// Paramètres : idCycle</span>
+                            <span class="comment">// Retour : List&lt;SuiviHebdoBassin&gt;</span>
+
+                            <span class="keyword">public</span> SuiviHebdoBassin <span class="keyword">getDernierePesee</span>(Long idCycle)
+                            <span class="comment">// RÈGLE : Retourner la dernière pesée du cycle</span>
+                            <span class="comment">// Paramètres : idCycle</span>
+                            <span class="comment">// Retour : SuiviHebdoBassin</span>
+
+                            <span class="keyword">public</span> <span class="keyword">void</span> <span class="keyword">archiverPesee</span>(Long id)
+                            <span class="comment">// RÈGLE : Suppression physique interdite → archivage</span>
+                            <span class="comment">// Paramètres : id</span>
+                            <span class="comment">// Retour : void</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">📊</span> Tables utilisées</div>
+                    <div class="tags">
+                        <span class="tag tag-table">suivi_hebdo_bassin</span>
+                        <span class="tag tag-table">cycle_bassin</span>
+                        <span class="tag tag-table">bassin</span>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">📁</span> Fichiers utilisés / à créer</div>
+                    <div class="tags">
+                        <span class="tag tag-file">BiologiqueController.java</span>
+                        <span class="tag tag-file">PeseeService.java</span>
+                        <span class="tag tag-file">SuiviHebdoBassinRepository.java</span>
+                        <span class="tag tag-file">PeseeDTO.java</span>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">🖥️</span> Pages concernées</div>
+                    <div class="tags">
+                        <span class="tag tag-page">biologique/pesee-form.html</span>
+                        <span class="tag tag-page">biologique/detail.html</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- F2.3 -->
+            <div class="fonctionnalite">
+                <div class="titre">🔹 Fonctionnalité 2.3 : Détail suivi biologique <span class="wow">★ WOW</span></div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">⚙️</span> Fonction, paramètres, retour</div>
+                    <div class="content">
+                        <div class="java">
+                            <span class="keyword">public</span> SuiviBiologiqueDetailDTO <span class="keyword">getDetailBiologique</span>(Long idCycle)
+                            <span class="comment">// RÈGLE : Retourner : biomasse actuelle, taux survie %, poids moyen, taille moyenne, indicateur calibre atteint</span>
+                            <span class="comment">// Courbe de croissance : points réels vs courbe standard (evolution_hebdo_espece)</span>
+                            <span class="comment">// Prévision récolte : date estimée (poids cible atteint), biomasse récoltable estimée (nb_vivants * poids_cible / 1000)</span>
+                            <span class="comment">// Tableau des pesées avec actions (modifier, archiver)</span>
+                            <span class="comment">// Paramètres : idCycle</span>
+                            <span class="comment">// Retour : SuiviBiologiqueDetailDTO</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">📊</span> Tables utilisées</div>
+                    <div class="tags">
+                        <span class="tag tag-table">cycle_bassin</span>
+                        <span class="tag tag-table">suivi_hebdo_bassin</span>
+                        <span class="tag tag-table">evolution_hebdo_espece</span>
+                        <span class="tag tag-table">espece_crevette</span>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">📁</span> Fichiers utilisés / à créer</div>
+                    <div class="tags">
+                        <span class="tag tag-file">BiologiqueController.java</span>
+                        <span class="tag tag-file">BiologiqueService.java</span>
+                        <span class="tag tag-file">SuiviBiologiqueDetailDTO.java</span>
+                        <span class="tag tag-file">CourbeCroissanceDTO.java</span>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">🖥️</span> Pages concernées</div>
+                    <div class="tags">
+                        <span class="tag tag-page">biologique/detail.html</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- F2.4 -->
+            <div class="fonctionnalite">
+                <div class="titre">🔹 Fonctionnalité 2.4 : Alertes biologiques</div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">⚙️</span> Fonction, paramètres, retour</div>
+                    <div class="content">
+                        <div class="java">
+                            <span class="keyword">public</span> List&lt;Alerte&gt; <span class="keyword">getAlertesBiologiques</span>()
+                            <span class="comment">// RÈGLE : Retourner les alertes actives</span>
+                            <span class="comment">// Types : MORTALITE_ANORMALE, PESEE_MANQUANTE, SURVIE_CRITIQUE</span>
+                            <span class="comment">// Niveau : ORANGE (mortalité >1% après S8), ROUGE (mortalité >2%)</span>
+                            <span class="comment">// Paramètres : aucun</span>
+                            <span class="comment">// Retour : List&lt;Alerte&gt;</span>
+
+                            <span class="keyword">public</span> <span class="keyword">void</span> <span class="keyword">resoudreAlerte</span>(Long idAlerte, Long idUtilisateur)
+                            <span class="comment">// RÈGLE : Marquer l'alerte comme résolue (est_resolue = true, date_resolution, id_resolu_par)</span>
+                            <span class="comment">// Paramètres : idAlerte, idUtilisateur</span>
+                            <span class="comment">// Retour : void</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">📊</span> Tables utilisées</div>
+                    <div class="tags">
+                        <span class="tag tag-table">alerte</span>
+                        <span class="tag tag-table">suivi_hebdo_bassin</span>
+                        <span class="tag tag-table">cycle_bassin</span>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">📁</span> Fichiers utilisés / à créer</div>
+                    <div class="tags">
+                        <span class="tag tag-file">AlerteController.java</span>
+                        <span class="tag tag-file">AlerteService.java</span>
+                        <span class="tag tag-file">AlerteRepository.java</span>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">🖥️</span> Pages concernées</div>
+                    <div class="tags">
+                        <span class="tag tag-page">biologique/alertes.html</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- F2.5 -->
+            <div class="fonctionnalite">
+                <div class="titre">🔹 Fonctionnalité 2.5 : Calcul automatique des alertes (Scheduler)</div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">⚙️</span> Fonction, paramètres, retour</div>
+                    <div class="content">
+                        <div class="java">
+                            <span class="annotation">@Scheduled</span>(cron = <span class="string">"0 0 8 * * *"</span>)
+                            <span class="keyword">public</span> <span class="keyword">void</span> <span class="keyword">verifierAlertesBiologiques</span>()
+                            <span class="comment">// RÈGLE : Parcourir tous les cycles actifs</span>
+                            <span class="comment">// Si aucune pesée depuis > 7 jours → alerte PESEE_MANQUANTE (ORANGE)</span>
+                            <span class="comment">// Si mortalité hebdo > 1% après S8 → ORANGE, > 2% → ROUGE</span>
+                            <span class="comment">// Si taux survie < 40% → ROUGE (SURVIE_CRITIQUE)</span>
+                            <span class="comment">// Si poids >= 15g ET taille >= 110mm → alerte RECOLTE_POSSIBLE</span>
+                            <span class="comment">// Eviter les doublons : vérifier si alerte déjà active</span>
+                            <span class="comment">// Paramètres : aucun</span>
+                            <span class="comment">// Retour : void</span>
+
+                            <span class="keyword">public</span> BigDecimal <span class="keyword">calculerMortaliteHebdo</span>(Long idCycle, <span class="keyword">int</span> semaine)
+                            <span class="comment">// RÈGLE : (nb_morts_semaine / nb_vivants_semaine_precedente) * 100</span>
+                            <span class="comment">// Paramètres : idCycle, semaine</span>
+                            <span class="comment">// Retour : BigDecimal</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">📊</span> Tables utilisées</div>
+                    <div class="tags">
+                        <span class="tag tag-table">cycle_bassin</span>
+                        <span class="tag tag-table">suivi_hebdo_bassin</span>
+                        <span class="tag tag-table">alerte</span>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">📁</span> Fichiers utilisés / à créer</div>
+                    <div class="tags">
+                        <span class="tag tag-file">AlerteBiologiqueScheduler.java</span>
+                        <span class="tag tag-file">AlerteService.java</span>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">🖥️</span> Pages concernées</div>
+                    <div class="tags">
+                        <span class="tag tag-page">Aucune (tâche automatisée)</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- MODULE 3 -->
+    <!-- ============================================================ -->
+    <div class="module">
+        <div class="module-header">
+            🍽️ MODULE 3 : GESTION DU NOURRISSAGE
+            <span class="badge">6 fonctionnalités</span>
+        </div>
+        <div class="module-body">
+
+            <!-- F3.1 -->
+            <div class="fonctionnalite">
+                <div class="titre">🔹 Fonctionnalité 3.1 : Tableau de bord du jour <span class="wow">★ WOW</span></div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">⚙️</span> Fonction, paramètres, retour</div>
+                    <div class="content">
+                        <div class="java">
+                            <span class="keyword">public</span> NourrissageDashboardDTO <span class="keyword">getDashboardNourrissage</span>()
+                            <span class="comment">// RÈGLE : Retourner les bassins ACTIFS avec leurs créneaux (MATIN, MIDI, SOIR, NUIT)</span>
+                            <span class="comment">// Statut par créneau : EN_ATTENTE, NOURRI, RETARD, RUPTURE</span>
+                            <span class="comment">// Quantité prévue vs quantité donnée</span>
+                            <span class="comment">// Stock aliment disponible (kg restants + alerte seuil 7 jours)</span>
+                            <span class="comment">// Paramètres : aucun</span>
+                            <span class="comment">// Retour : NourrissageDashboardDTO</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">📊</span> Tables utilisées</div>
+                    <div class="tags">
+                        <span class="tag tag-table">bassin</span>
+                        <span class="tag tag-table">cycle_bassin</span>
+                        <span class="tag tag-table">distribution_nourriture</span>
+                        <span class="tag tag-table">creneau_horaire</span>
+                        <span class="tag tag-table">entree_stock_aliment</span>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">📁</span> Fichiers utilisés / à créer</div>
+                    <div class="tags">
+                        <span class="tag tag-file">NourrissageController.java</span>
+                        <span class="tag tag-file">NourrissageService.java</span>
+                        <span class="tag tag-file">NourrissageDashboardDTO.java</span>
+                        <span class="tag tag-file">CreneauStatusDTO.java</span>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">🖥️</span> Pages concernées</div>
+                    <div class="tags">
+                        <span class="tag tag-page">nourrissage/index.html</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- F3.2 -->
+            <div class="fonctionnalite">
+                <div class="titre">🔹 Fonctionnalité 3.2 : CRUD Distribution</div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">⚙️</span> Fonction, paramètres, retour</div>
+                    <div class="content">
+                        <div class="java">
+                            <span class="keyword">public</span> DistributionNourriture <span class="keyword">validerDistribution</span>(DistributionDTO dto)
+                            <span class="comment">// RÈGLE : Bassin ACTIF, aliment catégorie ALIMENT</span>
+                            <span class="comment">// Vérifier : quantité > 0 et <= stock disponible</span>
+                            <span class="comment">// Décrémenter automatiquement le stock (FIFO)</span>
+                            <span class="comment">// Si stock insuffisant → statut = RUPTURE</span>
+                            <span class="comment">// Paramètres : dto (id_cycle, id_entree_aliment, id_creneau, quantite_prevue_kg, quantite_donnee_kg, id_responsable)</span>
+                            <span class="comment">// Retour : DistributionNourriture créée</span>
+
+                            <span class="keyword">public</span> List&lt;DistributionNourriture&gt; <span class="keyword">getDistributionsByCycle</span>(Long idCycle)
+                            <span class="comment">// RÈGLE : Retourner toutes les distributions d'un cycle</span>
+                            <span class="comment">// Paramètres : idCycle</span>
+                            <span class="comment">// Retour : List&lt;DistributionNourriture&gt;</span>
+
+                            <span class="keyword">public</span> DistributionNourriture <span class="keyword">getDistributionById</span>(Long id)
+                            <span class="comment">// RÈGLE : Retourner une distribution par son id</span>
+                            <span class="comment">// Paramètres : id</span>
+                            <span class="comment">// Retour : DistributionNourriture</span>
+
+                            <span class="keyword">public</span> <span class="keyword">void</span> <span class="keyword">annulerDistribution</span>(Long id)
+                            <span class="comment">// RÈGLE : Annuler une distribution (restituer le stock)</span>
+                            <span class="comment">// Paramètres : id</span>
+                            <span class="comment">// Retour : void</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">📊</span> Tables utilisées</div>
+                    <div class="tags">
+                        <span class="tag tag-table">distribution_nourriture</span>
+                        <span class="tag tag-table">cycle_bassin</span>
+                        <span class="tag tag-table">entree_stock_aliment</span>
+                        <span class="tag tag-table">creneau_horaire</span>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">📁</span> Fichiers utilisés / à créer</div>
+                    <div class="tags">
+                        <span class="tag tag-file">NourrissageController.java</span>
+                        <span class="tag tag-file">DistributionService.java</span>
+                        <span class="tag tag-file">DistributionNourritureRepository.java</span>
+                        <span class="tag tag-file">DistributionDTO.java</span>
+                        <span class="tag tag-file">StockAlimentService.java</span>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">🖥️</span> Pages concernées</div>
+                    <div class="tags">
+                        <span class="tag tag-page">nourrissage/index.html</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- F3.3 -->
+            <div class="fonctionnalite">
+                <div class="titre">🔹 Fonctionnalité 3.3 : Entrée stock aliment</div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">⚙️</span> Fonction, paramètres, retour</div>
+                    <div class="content">
+                        <div class="java">
+                            <span class="keyword">public</span> EntreeStockAliment <span class="keyword">enregistrerEntreeAliment</span>(EntreeStockAlimentDTO dto)
+                            <span class="comment">// RÈGLE : Enregistrer l'achat avec son prix</span>
+                            <span class="comment">// Créer l'entrée de stock (quantite_restante = quantite_initiale)</span>
+                            <span class="comment">// Déclencher alerte si expiration proche (&lt; 7 jours)</span>
+                            <span class="comment">// Paramètres : dto (id_aliment, quantite_kg, prix_total_ar, date_expiration, id_responsable)</span>
+                            <span class="comment">// Retour : EntreeStockAliment créée</span>
+
+                            <span class="keyword">public</span> List&lt;EntreeStockAliment&gt; <span class="keyword">getEntreesStockAliment</span>()
+                            <span class="comment">// RÈGLE : Retourner toutes les entrées de stock aliment</span>
+                            <span class="comment">// Paramètres : aucun</span>
+                            <span class="comment">// Retour : List&lt;EntreeStockAliment&gt;</span>
+
+                            <span class="keyword">public</span> EntreeStockAliment <span class="keyword">getEntreeStockAlimentById</span>(Long id)
+                            <span class="comment">// RÈGLE : Retourner une entrée par son id</span>
+                            <span class="comment">// Paramètres : id</span>
+                            <span class="comment">// Retour : EntreeStockAliment</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">📊</span> Tables utilisées</div>
+                    <div class="tags">
+                        <span class="tag tag-table">entree_stock_aliment</span>
+                        <span class="tag tag-table">aliment</span>
+                        <span class="tag tag-table">utilisateur</span>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">📁</span> Fichiers utilisés / à créer</div>
+                    <div class="tags">
+                        <span class="tag tag-file">StockAlimentController.java</span>
+                        <span class="tag tag-file">StockAlimentService.java</span>
+                        <span class="tag tag-file">EntreeStockAlimentRepository.java</span>
+                        <span class="tag tag-file">EntreeStockAlimentDTO.java</span>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">🖥️</span> Pages concernées</div>
+                    <div class="tags">
+                        <span class="tag tag-page">nourrissage/stock.html</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- F3.4 -->
+            <div class="fonctionnalite">
+                <div class="titre">🔹 Fonctionnalité 3.4 : Historique des distributions</div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">⚙️</span> Fonction, paramètres, retour</div>
+                    <div class="content">
+                        <div class="java">
+                            <span class="keyword">public</span> Page&lt;DistributionNourriture&gt; <span class="keyword">getHistoriqueDistributions</span>(Long idCycle, Long idBassin, LocalDateTime debut, LocalDateTime fin, Pageable pageable)
+                            <span class="comment">// RÈGLE : Filtrer par cycle, bassin, période</span>
+                            <span class="comment">// Paramètres : idCycle, idBassin, debut, fin, pageable</span>
+                            <span class="comment">// Retour : Page&lt;DistributionNourriture&gt;</span>
+
+                            <span class="keyword">public</span> StatistiquesConsommationDTO <span class="keyword">getStatistiquesConsommation</span>(Long idCycle)
+                            <span class="comment">// RÈGLE : Consommation totale par bassin, par cycle, sur période</span>
+                            <span class="comment">// Paramètres : idCycle</span>
+                            <span class="comment">// Retour : StatistiquesConsommationDTO</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">📊</span> Tables utilisées</div>
+                    <div class="tags">
+                        <span class="tag tag-table">distribution_nourriture</span>
+                        <span class="tag tag-table">cycle_bassin</span>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">📁</span> Fichiers utilisés / à créer</div>
+                    <div class="tags">
+                        <span class="tag tag-file">NourrissageController.java</span>
+                        <span class="tag tag-file">DistributionService.java</span>
+                        <span class="tag tag-file">StatistiquesConsommationDTO.java</span>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">🖥️</span> Pages concernées</div>
+                    <div class="tags">
+                        <span class="tag tag-page">nourrissage/historique.html</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- F3.5 -->
+            <div class="fonctionnalite">
+                <div class="titre">🔹 Fonctionnalité 3.5 : Calcul automatique FCR <span class="wow">★ WOW</span></div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">⚙️</span> Fonction, paramètres, retour</div>
+                    <div class="content">
+                        <div class="java">
+                            <span class="keyword">public</span> FCRDTO <span class="keyword">calculerFCR</span>(Long idCycle)
+                            <span class="comment">// RÈGLE : FCR = total_aliments_distribués(kg) / biomasse_produite(kg)</span>
+                            <span class="comment">// Objectif FCR : 1.2 à 1.5</span>
+                            <span class="comment">// Indicateur : Bon (&lt;1.4), Acceptable (1.4-1.6), Mauvais (>1.6)</span>
+                            <span class="comment">// Paramètres : idCycle</span>
+                            <span class="comment">// Retour : FCRDTO</span>
+
+                            <span class="keyword">public</span> BigDecimal <span class="keyword">getTotalAlimentsDistribues</span>(Long idCycle)
+                            <span class="comment">// RÈGLE : Somme des quantite_donnee_kg des distributions du cycle</span>
+                            <span class="comment">// Paramètres : idCycle</span>
+                            <span class="comment">// Retour : BigDecimal</span>
+
+                            <span class="keyword">public</span> BigDecimal <span class="keyword">getBiomasseProduite</span>(Long idCycle)
+                            <span class="comment">// RÈGLE : Récupérer la biomasse du lot_crevette ou calculer depuis suivi_hebdo_bassin</span>
+                            <span class="comment">// Paramètres : idCycle</span>
+                            <span class="comment">// Retour : BigDecimal</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">📊</span> Tables utilisées</div>
+                    <div class="tags">
+                        <span class="tag tag-table">distribution_nourriture</span>
+                        <span class="tag tag-table">cycle_bassin</span>
+                        <span class="tag tag-table">suivi_hebdo_bassin</span>
+                        <span class="tag tag-table">lot_crevette</span>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">📁</span> Fichiers utilisés / à créer</div>
+                    <div class="tags">
+                        <span class="tag tag-file">NourrissageController.java</span>
+                        <span class="tag tag-file">FCRService.java</span>
+                        <span class="tag tag-file">FCRDTO.java</span>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">🖥️</span> Pages concernées</div>
+                    <div class="tags">
+                        <span class="tag tag-page">nourrissage/historique.html</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- F3.6 -->
+            <div class="fonctionnalite">
+                <div class="titre">🔹 Fonctionnalité 3.6 : Mouvement stock aliment (perte/destruction)</div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">⚙️</span> Fonction, paramètres, retour</div>
+                    <div class="content">
+                        <div class="java">
+                            <span class="keyword">public</span> MouvementStockAliment <span class="keyword">enregistrerPerteAliment</span>(Long idEntreeStock, BigDecimal quantite, String motif, Long idUtilisateur)
+                            <span class="comment">// RÈGLE : Vérifier quantite &lt;= quantite_restante du lot</span>
+                            <span class="comment">// Décrémenter quantite_restante du lot</span>
+                            <span class="comment">// Enregistrer le mouvement (type_mouvement, quantite, motif, id_responsable)</span>
+                            <span class="comment">// Si lot expiré → seule destruction autorisée</span>
+                            <span class="comment">// Paramètres : idEntreeStock, quantite, motif, idUtilisateur</span>
+                            <span class="comment">// Retour : MouvementStockAliment créé</span>
+
+                            <span class="keyword">public</span> List&lt;MouvementStockAliment&gt; <span class="keyword">getMouvementsAlimentByEntree</span>(Long idEntreeStock)
+                            <span class="comment">// RÈGLE : Retourner tous les mouvements d'une entrée</span>
+                            <span class="comment">// Paramètres : idEntreeStock</span>
+                            <span class="comment">// Retour : List&lt;MouvementStockAliment&gt;</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">📊</span> Tables utilisées</div>
+                    <div class="tags">
+                        <span class="tag tag-table">mouvement_stock_aliment</span>
+                        <span class="tag tag-table">entree_stock_aliment</span>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">📁</span> Fichiers utilisés / à créer</div>
+                    <div class="tags">
+                        <span class="tag tag-file">StockAlimentController.java</span>
+                        <span class="tag tag-file">StockAlimentService.java</span>
+                        <span class="tag tag-file">MouvementStockAlimentRepository.java</span>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">🖥️</span> Pages concernées</div>
+                    <div class="tags">
+                        <span class="tag tag-page">stock/sortie.html</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- MODULE 4 -->
+    <!-- ============================================================ -->
+    <div class="module">
+        <div class="module-header">
+            💊 MODULE 4 : GESTION SANITAIRE
+            <span class="badge">6 fonctionnalités</span>
+        </div>
+        <div class="module-body">
+
+            <!-- F4.1 -->
+            <div class="fonctionnalite">
+                <div class="titre">🔹 Fonctionnalité 4.1 : CRUD Incident sanitaire</div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">⚙️</span> Fonction, paramètres, retour</div>
+                    <div class="content">
+                        <div class="java">
+                            <span class="keyword">public</span> IncidentSanitaire <span class="keyword">declarerIncident</span>(IncidentDTO dto)
+                            <span class="comment">// RÈGLE : Associé à un cycle/bassin</span>
+                            <span class="comment">// Vérifier : date_detection obligatoire, type_incident valide</span>
+                            <span class="comment">// Si niveau_gravite = CRITIQUE → bassin automatiquement en QUARANTAINE</span>
+                            <span class="comment">// Types : MALADIE, ANOMALIE_EAU, MORTALITE_ANORMALE, AUTRE</span>
+                            <span class="comment">// Paramètres : dto (id_cycle, date_detection, type_incident, description, niveau_gravite, id_responsable)</span>
+                            <span class="comment">// Retour : IncidentSanitaire créé</span>
+
+                            <span class="keyword">public</span> IncidentSanitaire <span class="keyword">modifierIncident</span>(Long id, IncidentDTO dto)
+                            <span class="comment">// RÈGLE : Vérifier que l'incident existe</span>
+                            <span class="comment">// Paramètres : id, dto</span>
+                            <span class="comment">// Retour : IncidentSanitaire modifié</span>
+
+                            <span class="keyword">public</span> List&lt;IncidentSanitaire&gt; <span class="keyword">getIncidentsByCycle</span>(Long idCycle)
+                            <span class="comment">// RÈGLE : Retourner tous les incidents d'un cycle</span>
+                            <span class="comment">// Paramètres : idCycle</span>
+                            <span class="comment">// Retour : List&lt;IncidentSanitaire&gt;</span>
+
+                            <span class="keyword">public</span> IncidentSanitaire <span class="keyword">getIncidentById</span>(Long id)
+                            <span class="comment">// RÈGLE : Retourner un incident par son id</span>
+                            <span class="comment">// Paramètres : id</span>
+                            <span class="comment">// Retour : IncidentSanitaire</span>
+
+                            <span class="keyword">public</span> <span class="keyword">void</span> <span class="keyword">resoudreIncident</span>(Long id)
+                            <span class="comment">// RÈGLE : Marquer l'incident comme résolu (est_resolu = true)</span>
+                            <span class="comment">// Paramètres : id</span>
+                            <span class="comment">// Retour : void</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">📊</span> Tables utilisées</div>
+                    <div class="tags">
+                        <span class="tag tag-table">incident_sanitaire</span>
+                        <span class="tag tag-table">cycle_bassin</span>
+                        <span class="tag tag-table">bassin</span>
+                        <span class="tag tag-table">statut_bassin</span>
+                        <span class="tag tag-table">histo_statut_bassin</span>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">📁</span> Fichiers utilisés / à créer</div>
+                    <div class="tags">
+                        <span class="tag tag-file">SanitaireController.java</span>
+                        <span class="tag tag-file">IncidentService.java</span>
+                        <span class="tag tag-file">IncidentSanitaireRepository.java</span>
+                        <span class="tag tag-file">IncidentDTO.java</span>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">🖥️</span> Pages concernées</div>
+                    <div class="tags">
+                        <span class="tag tag-page">sanitaire/index.html</span>
+                        <span class="tag tag-page">sanitaire/declaration.html</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- F4.2 -->
+            <div class="fonctionnalite">
+                <div class="titre">🔹 Fonctionnalité 4.2 : CRUD Traitement</div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">⚙️</span> Fonction, paramètres, retour</div>
+                    <div class="content">
+                        <div class="java">
+                            <span class="keyword">public</span> Traitement <span class="keyword">enregistrerTraitement</span>(TraitementDTO dto)
+                            <span class="comment">// RÈGLE : Référencer un incident</span>
+                            <span class="comment">// Vérifier : médicament disponible (quantite_restante > 0)</span>
+                            <span class="comment">// Vérifier : médicament non expiré</span>
+                            <span class="comment">// Décrémenter automatiquement le stock médicament (FIFO)</span>
+                            <span class="comment">// Paramètres : dto (id_incident, id_entree_medicament, dosage, duree_jours, date_debut, quantite_utilisee, id_responsable)</span>
+                            <span class="comment">// Retour : Traitement créé</span>
+
+                            <span class="keyword">public</span> List&lt;Traitement&gt; <span class="keyword">getTraitementsByIncident</span>(Long idIncident)
+                            <span class="comment">// RÈGLE : Retourner tous les traitements d'un incident</span>
+                            <span class="comment">// Paramètres : idIncident</span>
+                            <span class="comment">// Retour : List&lt;Traitement&gt;</span>
+
+                            <span class="keyword">public</span> Traitement <span class="keyword">getTraitementById</span>(Long id)
+                            <span class="comment">// RÈGLE : Retourner un traitement par son id</span>
+                            <span class="comment">// Paramètres : id</span>
+                            <span class="comment">// Retour : Traitement</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">📊</span> Tables utilisées</div>
+                    <div class="tags">
+                        <span class="tag tag-table">traitement</span>
+                        <span class="tag tag-table">incident_sanitaire</span>
+                        <span class="tag tag-table">entree_stock_medicament</span>
+                        <span class="tag tag-table">medicament</span>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">📁</span> Fichiers utilisés / à créer</div>
+                    <div class="tags">
+                        <span class="tag tag-file">SanitaireController.java</span>
+                        <span class="tag tag-file">TraitementService.java</span>
+                        <span class="tag tag-file">TraitementRepository.java</span>
+                        <span class="tag tag-file">TraitementDTO.java</span>
+                        <span class="tag tag-file">StockMedicamentService.java</span>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">🖥️</span> Pages concernées</div>
+                    <div class="tags">
+                        <span class="tag tag-page">sanitaire/traitement.html</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- F4.3 -->
+            <div class="fonctionnalite">
+                <div class="titre">🔹 Fonctionnalité 4.3 : Dashboard sanitaire <span class="wow">★ WOW</span></div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">⚙️</span> Fonction, paramètres, retour</div>
+                    <div class="content">
+                        <div class="java">
+                            <span class="keyword">public</span> SanitaireDashboardDTO <span class="keyword">getDashboardSanitaire</span>()
+                            <span class="comment">// RÈGLE : Retourner : nb bassins SAINS, EN_TRAITEMENT, QUARANTAINE, nb incidents actifs</span>
+                            <span class="comment">// Liste des incidents actifs avec détails (bassin, type, gravité, date, statut traitement)</span>
+                            <span class="comment">// Code couleur : Vert=SAIN, Orange=EN_TRAITEMENT, Rouge=QUARANTAINE</span>
+                            <span class="comment">// Paramètres : aucun</span>
+                            <span class="comment">// Retour : SanitaireDashboardDTO</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">📊</span> Tables utilisées</div>
+                    <div class="tags">
+                        <span class="tag tag-table">bassin</span>
+                        <span class="tag tag-table">statut_bassin</span>
+                        <span class="tag tag-table">incident_sanitaire</span>
+                        <span class="tag tag-table">cycle_bassin</span>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">📁</span> Fichiers utilisés / à créer</div>
+                    <div class="tags">
+                        <span class="tag tag-file">SanitaireController.java</span>
+                        <span class="tag tag-file">SanitaireService.java</span>
+                        <span class="tag tag-file">SanitaireDashboardDTO.java</span>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">🖥️</span> Pages concernées</div>
+                    <div class="tags">
+                        <span class="tag tag-page">sanitaire/dashboard.html</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- F4.4 -->
+            <div class="fonctionnalite">
+                <div class="titre">🔹 Fonctionnalité 4.4 : Historique sanitaire</div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">⚙️</span> Fonction, paramètres, retour</div>
+                    <div class="content">
+                        <div class="java">
+                            <span class="keyword">public</span> Page&lt;IncidentSanitaire&gt; <span class="keyword">getHistoriqueSanitaire</span>(Long idBassin, String type, LocalDateTime debut, LocalDateTime fin, String statut, Pageable pageable)
+                            <span class="comment">// RÈGLE : Filtrer par bassin, type, période, statut</span>
+                            <span class="comment">// Retourner journal complet des incidents et traitements</span>
+                            <span class="comment">// Paramètres : idBassin, type, debut, fin, statut, pageable</span>
+                            <span class="comment">// Retour : Page&lt;IncidentSanitaire&gt;</span>
+
+                            <span class="keyword">public</span> IncidentDetailDTO <span class="keyword">getIncidentDetail</span>(Long idIncident)
+                            <span class="comment">// RÈGLE : Retourner l'incident avec tous ses traitements</span>
+                            <span class="comment">// Paramètres : idIncident</span>
+                            <span class="comment">// Retour : IncidentDetailDTO</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">📊</span> Tables utilisées</div>
+                    <div class="tags">
+                        <span class="tag tag-table">incident_sanitaire</span>
+                        <span class="tag tag-table">traitement</span>
+                        <span class="tag tag-table">cycle_bassin</span>
+                        <span class="tag tag-table">bassin</span>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">📁</span> Fichiers utilisés / à créer</div>
+                    <div class="tags">
+                        <span class="tag tag-file">SanitaireController.java</span>
+                        <span class="tag tag-file">SanitaireService.java</span>
+                        <span class="tag tag-file">IncidentDetailDTO.java</span>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">🖥️</span> Pages concernées</div>
+                    <div class="tags">
+                        <span class="tag tag-page">sanitaire/historique.html</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- F4.5 -->
+            <div class="fonctionnalite">
+                <div class="titre">🔹 Fonctionnalité 4.5 : Mouvement stock médicament</div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">⚙️</span> Fonction, paramètres, retour</div>
+                    <div class="content">
+                        <div class="java">
+                            <span class="keyword">public</span> MouvementStockMedicament <span class="keyword">enregistrerPerteMedicament</span>(Long idEntreeStock, BigDecimal quantite, String motif, Long idUtilisateur)
+                            <span class="comment">// RÈGLE : Vérifier quantite &lt;= quantite_restante du lot</span>
+                            <span class="comment">// Décrémenter quantite_restante du lot</span>
+                            <span class="comment">// Enregistrer le mouvement (type_mouvement, quantite, motif, id_responsable)</span>
+                            <span class="comment">// Paramètres : idEntreeStock, quantite, motif, idUtilisateur</span>
+                            <span class="comment">// Retour : MouvementStockMedicament créé</span>
+
+                            <span class="keyword">public</span> List&lt;MouvementStockMedicament&gt; <span class="keyword">getMouvementsMedicamentByEntree</span>(Long idEntreeStock)
+                            <span class="comment">// RÈGLE : Retourner tous les mouvements d'une entrée</span>
+                            <span class="comment">// Paramètres : idEntreeStock</span>
+                            <span class="comment">// Retour : List&lt;MouvementStockMedicament&gt;</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">📊</span> Tables utilisées</div>
+                    <div class="tags">
+                        <span class="tag tag-table">mouvement_stock_medicament</span>
+                        <span class="tag tag-table">entree_stock_medicament</span>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">📁</span> Fichiers utilisés / à créer</div>
+                    <div class="tags">
+                        <span class="tag tag-file">StockMedicamentController.java</span>
+                        <span class="tag tag-file">StockMedicamentService.java</span>
+                        <span class="tag tag-file">MouvementStockMedicamentRepository.java</span>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">🖥️</span> Pages concernées</div>
+                    <div class="tags">
+                        <span class="tag tag-page">stock/sortie.html</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- F4.6 -->
+            <div class="fonctionnalite">
+                <div class="titre">🔹 Fonctionnalité 4.6 : Entrée stock médicament</div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">⚙️</span> Fonction, paramètres, retour</div>
+                    <div class="content">
+                        <div class="java">
+                            <span class="keyword">public</span> EntreeStockMedicament <span class="keyword">enregistrerEntreeMedicament</span>(EntreeStockMedicamentDTO dto)
+                            <span class="comment">// RÈGLE : Enregistrer l'achat avec son prix</span>
+                            <span class="comment">// Créer l'entrée de stock (quantite_restante = quantite_initiale)</span>
+                            <span class="comment">// Déclencher alerte si expiration proche (&lt; 7 jours)</span>
+                            <span class="comment">// Paramètres : dto (id_medicament, quantite, prix_total_ar, date_expiration, id_responsable)</span>
+                            <span class="comment">// Retour : EntreeStockMedicament créée</span>
+
+                            <span class="keyword">public</span> List&lt;EntreeStockMedicament&gt; <span class="keyword">getEntreesStockMedicament</span>()
+                            <span class="comment">// RÈGLE : Retourner toutes les entrées de stock médicament</span>
+                            <span class="comment">// Paramètres : aucun</span>
+                            <span class="comment">// Retour : List&lt;EntreeStockMedicament&gt;</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">📊</span> Tables utilisées</div>
+                    <div class="tags">
+                        <span class="tag tag-table">entree_stock_medicament</span>
+                        <span class="tag tag-table">medicament</span>
+                        <span class="tag tag-table">utilisateur</span>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">📁</span> Fichiers utilisés / à créer</div>
+                    <div class="tags">
+                        <span class="tag tag-file">StockMedicamentController.java</span>
+                        <span class="tag tag-file">StockMedicamentService.java</span>
+                        <span class="tag tag-file">EntreeStockMedicamentRepository.java</span>
+                        <span class="tag tag-file">EntreeStockMedicamentDTO.java</span>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">🖥️</span> Pages concernées</div>
+                    <div class="tags">
+                        <span class="tag tag-page">stock/entree.html</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- MODULE 5 -->
+    <!-- ============================================================ -->
+    <div class="module">
+        <div class="module-header">
+            📦 MODULE 5 : GESTION DES STOCKS (Crevettes)
+            <span class="badge">5 fonctionnalités</span>
+        </div>
+        <div class="module-body">
+
+            <!-- F5.1 -->
+            <div class="fonctionnalite">
+                <div class="titre">🔹 Fonctionnalité 5.1 : Récolte automatique (entrée stock crevette)</div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">⚙️</span> Fonction, paramètres, retour</div>
+                    <div class="content">
+                        <div class="java">
+                            <span class="keyword">public</span> LotCrevette <span class="keyword">declencherRecolte</span>(Long idCycle, Long idUtilisateur)
+                            <span class="comment">// RÈGLE : Déclenchée automatiquement quand bassin passe en RECOLTE</span>
+                            <span class="comment">// Générer numero_lot (B01-20260616)</span>
+                            <span class="comment">// Biomasse = dernière pesée * nb_vivants / 1000</span>
+                            <span class="comment">// Récupérer poids_moyen_actuel, taille_moyenne du cycle</span>
+                            <span class="comment">// Marquer le cycle comme clôturé</span>
+                            <span class="comment">// Vérifier poids >= 15g ET taille >= 110mm</span>
+                            <span class="comment">// Paramètres : idCycle, idUtilisateur</span>
+                            <span class="comment">// Retour : LotCrevette créé</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">📊</span> Tables utilisées</div>
+                    <div class="tags">
+                        <span class="tag tag-table">lot_crevette</span>
+                        <span class="tag tag-table">cycle_bassin</span>
+                        <span class="tag tag-table">bassin</span>
+                        <span class="tag tag-table">statut_bassin</span>
+                        <span class="tag tag-table">histo_statut_bassin</span>
+                        <span class="tag tag-table">suivi_hebdo_bassin</span>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">📁</span> Fichiers utilisés / à créer</div>
+                    <div class="tags">
+                        <span class="tag tag-file">RecolteController.java</span>
+                        <span class="tag tag-file">RecolteService.java</span>
+                        <span class="tag tag-file">LotCrevetteRepository.java</span>
+                        <span class="tag tag-file">CycleRepository.java</span>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">🖥️</span> Pages concernées</div>
+                    <div class="tags">
+                        <span class="tag tag-page">bassin/detail.html</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- F5.2 -->
+            <div class="fonctionnalite">
+                <div class="titre">🔹 Fonctionnalité 5.2 : Lot crevettes</div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">⚙️</span> Fonction, paramètres, retour</div>
+                    <div class="content">
+                        <div class="java">
+                            <span class="keyword">public</span> List&lt;LotCrevette&gt; <span class="keyword">getLotsCrevettes</span>()
+                            <span class="comment">// RÈGLE : Retourner tous les lots avec leur biomasse actuelle</span>
+                            <span class="comment">// Paramètres : aucun</span>
+                            <span class="comment">// Retour : List&lt;LotCrevette&gt;</span>
+
+                            <span class="keyword">public</span> LotCrevette <span class="keyword">getLotByNumero</span>(String numeroLot)
+                            <span class="comment">// RÈGLE : Retourner un lot par son numéro</span>
+                            <span class="comment">// Paramètres : numeroLot</span>
+                            <span class="comment">// Retour : LotCrevette</span>
+
+                            <span class="keyword">public</span> LotCrevette <span class="keyword">getLotById</span>(Long id)
+                            <span class="comment">// RÈGLE : Retourner un lot par son id</span>
+                            <span class="comment">// Paramètres : id</span>
+                            <span class="comment">// Retour : LotCrevette</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">📊</span> Tables utilisées</div>
+                    <div class="tags">
+                        <span class="tag tag-table">lot_crevette</span>
+                        <span class="tag tag-table">cycle_bassin</span>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">📁</span> Fichiers utilisés / à créer</div>
+                    <div class="tags">
+                        <span class="tag tag-file">StockCrevetteController.java</span>
+                        <span class="tag tag-file">LotCrevetteService.java</span>
+                        <span class="tag tag-file">LotCrevetteRepository.java</span>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">🖥️</span> Pages concernées</div>
+                    <div class="tags">
+                        <span class="tag tag-page">stock/index.html</span>
+                        <span class="tag tag-page">stock/dashboard.html</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- F5.3 -->
+            <div class="fonctionnalite">
+                <div class="titre">🔹 Fonctionnalité 5.3 : Mouvement stock crevette (perte)</div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">⚙️</span> Fonction, paramètres, retour</div>
+                    <div class="content">
+                        <div class="java">
+                            <span class="keyword">public</span> MouvementStockCrevette <span class="keyword">enregistrerPerteCrevette</span>(Long idLot, BigDecimal quantite, String motif, Long idUtilisateur)
+                            <span class="comment">// RÈGLE : Décrémenter biomasse_actuelle_kg du lot, enregistrer le mouvement</span>
+                            <span class="comment">// Motif : PERTE, DESTRUCTION</span>
+                            <span class="comment">// Paramètres : idLot, quantite, motif, idUtilisateur</span>
+                            <span class="comment">// Retour : MouvementStockCrevette créé</span>
+
+                            <span class="keyword">public</span> List&lt;MouvementStockCrevette&gt; <span class="keyword">getMouvementsCrevetteByLot</span>(Long idLot)
+                            <span class="comment">// RÈGLE : Retourner tous les mouvements d'un lot</span>
+                            <span class="comment">// Paramètres : idLot</span>
+                            <span class="comment">// Retour : List&lt;MouvementStockCrevette&gt;</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">📊</span> Tables utilisées</div>
+                    <div class="tags">
+                        <span class="tag tag-table">mouvement_stock_crevette</span>
+                        <span class="tag tag-table">lot_crevette</span>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">📁</span> Fichiers utilisés / à créer</div>
+                    <div class="tags">
+                        <span class="tag tag-file">StockCrevetteController.java</span>
+                        <span class="tag tag-file">StockCrevetteService.java</span>
+                        <span class="tag tag-file">MouvementStockCrevetteRepository.java</span>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">🖥️</span> Pages concernées</div>
+                    <div class="tags">
+                        <span class="tag tag-page">stock/sortie.html</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- F5.4 -->
+            <div class="fonctionnalite">
+                <div class="titre">🔹 Fonctionnalité 5.4 : Dashboard stock + alertes</div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">⚙️</span> Fonction, paramètres, retour</div>
+                    <div class="content">
+                        <div class="java">
+                            <span class="keyword">public</span> StockDashboardDTO <span class="keyword">getDashboardStock</span>()
+                            <span class="comment">// RÈGLE : KPI : stock crevettes disponible (kg), stock aliments (kg) + autonomie (jours), nb produits en stock faible, nb lots proches expiration</span>
+                            <span class="comment">// Liste alertes actives : stock faible, expiration proche (&lt; 7 jours)</span>
+                            <span class="comment">// Paramètres : aucun</span>
+                            <span class="comment">// Retour : StockDashboardDTO</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">📊</span> Tables utilisées</div>
+                    <div class="tags">
+                        <span class="tag tag-table">lot_crevette</span>
+                        <span class="tag tag-table">entree_stock_aliment</span>
+                        <span class="tag tag-table">entree_stock_medicament</span>
+                        <span class="tag tag-table">aliment</span>
+                        <span class="tag tag-table">medicament</span>
+                        <span class="tag tag-table">alerte</span>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">📁</span> Fichiers utilisés / à créer</div>
+                    <div class="tags">
+                        <span class="tag tag-file">StockController.java</span>
+                        <span class="tag tag-file">StockService.java</span>
+                        <span class="tag tag-file">StockDashboardDTO.java</span>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">🖥️</span> Pages concernées</div>
+                    <div class="tags">
+                        <span class="tag tag-page">stock/dashboard.html</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- F5.5 -->
+            <div class="fonctionnalite">
+                <div class="titre">🔹 Fonctionnalité 5.5 : Historique des mouvements</div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">⚙️</span> Fonction, paramètres, retour</div>
+                    <div class="content">
+                        <div class="java">
+                            <span class="keyword">public</span> Page&lt;MouvementDTO&gt; <span class="keyword">getHistoriqueMouvements</span>(String typeProduit, Long idProduit, String motif, LocalDateTime debut, LocalDateTime fin, Pageable pageable)
+                            <span class="comment">// RÈGLE : Union des mouvements (aliment, médicament, crevette) avec filtres</span>
+                            <span class="comment">// Type : ALIMENT, MEDICAMENT, CREVETTE</span>
+                            <span class="comment">// Motif : NOURRISSAGE, TRAITEMENT, PERTE, DESTRUCTION</span>
+                            <span class="comment">// Paramètres : typeProduit, idProduit, motif, debut, fin, pageable</span>
+                            <span class="comment">// Retour : Page&lt;MouvementDTO&gt;</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">📊</span> Tables utilisées</div>
+                    <div class="tags">
+                        <span class="tag tag-table">mouvement_stock_aliment</span>
+                        <span class="tag tag-table">mouvement_stock_medicament</span>
+                        <span class="tag tag-table">mouvement_stock_crevette</span>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">📁</span> Fichiers utilisés / à créer</div>
+                    <div class="tags">
+                        <span class="tag tag-file">StockController.java</span>
+                        <span class="tag tag-file">StockService.java</span>
+                        <span class="tag tag-file">MouvementDTO.java</span>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span class="icon">🖥️</span> Pages concernées</div>
+                    <div class="tags">
+                        <span class="tag tag-page">stock/historique.html</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- RÉCAPITULATIF -->
+    <!-- ============================================================ -->
+    <div class="recap">
+        <h2 style="color: white; margin-bottom: 15px;">📊 RÉCAPITULATIF DES FICHIERS À CRÉER</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Module</th>
+                    <th>Contrôleurs</th>
+                    <th>Services</th>
+                    <th>Repositories</th>
+                    <th>DTOs</th>
+                    <th>Pages HTML</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>M10 - Sécurité</strong></td>
+                    <td>4</td>
+                    <td>3</td>
+                    <td>4</td>
+                    <td>1</td>
+                    <td>4</td>
+                </tr>
+                <tr>
+                    <td><strong>M1 - Bassins</strong></td>
+                    <td>2</td>
+                    <td>4</td>
+                    <td>4</td>
+                    <td>4</td>
+                    <td>4</td>
+                </tr>
+                <tr>
+                    <td><strong>M2 - Biologique</strong></td>
+                    <td>2</td>
+                    <td>4</td>
+                    <td>2</td>
+                    <td>4</td>
+                    <td>4</td>
+                </tr>
+                <tr>
+                    <td><strong>M3 - Nourrissage</strong></td>
+                    <td>2</td>
+                    <td>4</td>
+                    <td>3</td>
+                    <td>6</td>
+                    <td>4</td>
+                </tr>
+                <tr>
+                    <td><strong>M4 - Sanitaire</strong></td>
+                    <td>2</td>
+                    <td>4</td>
+                    <td>4</td>
+                    <td>5</td>
+                    <td>6</td>
+                </tr>
+                <tr>
+                    <td><strong>M5 - Stock Crevettes</strong></td>
+                    <td>3</td>
+                    <td>4</td>
+                    <td>3</td>
+                    <td>2</td>
+                    <td>4</td>
+                </tr>
+                <tr style="border-top: 2px solid rgba(255,255,255,0.3); font-weight: bold;">
+                    <td><strong>TOTAL</strong></td>
+                    <td><span class="number">15</span></td>
+                    <td><span class="number">23</span></td>
+                    <td><span class="number">20</span></td>
+                    <td><span class="number">22</span></td>
+                    <td><span class="number">26</span></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div style="margin-top: 15px; display: flex; gap: 20px; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 150px;">
+                <div style="font-size: 0.85rem; color: #a0aec0;">Progression estimée</div>
+                <div class="progress-bar" style="width: 100%;"><div class="fill" style="width: 0%;"></div></div>
+                <div style="font-size: 0.75rem; color: #a0aec0; margin-top: 4px;">0% - À commencer</div>
+            </div>
+            <div style="flex: 1; min-width: 150px;">
+                <div style="font-size: 0.85rem; color: #a0aec0;">Fonctionnalités WOW</div>
+                <div style="color: #fbd38d; font-size: 1.2rem;">★ 5</div>
+            </div>
+            <div style="flex: 1; min-width: 150px;">
+                <div style="font-size: 0.85rem; color: #a0aec0;">Deadline</div>
+                <div style="color: #fc8181; font-size: 1.2rem;">26 Juin 2026</div>
+            </div>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

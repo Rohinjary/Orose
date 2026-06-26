@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layouts/default}">
+
+<head>
+    <title layout:fragment="page-title">Move Gasy — Cycles Actifs</title>
+    <th:block layout:fragment="page-styles">
+        <style>
+            /* Styles spécifiques à la page des cycles (harmonisés avec les bassins) */
+            .page-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 24px;
+            }
+
+            .action-group {
+                display: flex;
+                gap: 12px;
+                align-items: center;
+            }
+
+            /* Boutons personnalisés */
+            .btn-mg {
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                padding: 8px 16px;
+                border-radius: var(--radius);
+                font-size: 13px;
+                font-weight: 600;
+                text-decoration: none;
+                cursor: pointer;
+                transition: all 0.2s;
+                border: 1px solid transparent;
+            }
+
+            .btn-mg-primary {
+                background: var(--mg-primary);
+                color: white;
+            }
+
+            .btn-mg-primary:hover {
+                opacity: 0.9;
+            }
+
+            /* Tableaux modernes style Move Gasy */
+            .table-container {
+                background: var(--mg-surface-bright);
+                border: 1px solid var(--mg-outline);
+                border-radius: var(--radius);
+                overflow: hidden;
+                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+            }
+
+            .mg-table {
+                width: 100%;
+                border-collapse: collapse;
+                text-align: left;
+                font-size: 13px;
+            }
+
+            .mg-table th {
+                background: #f8fafc;
+                color: var(--mg-text-light);
+                font-weight: 700;
+                text-transform: uppercase;
+                font-size: 11px;
+                letter-spacing: 0.05em;
+                padding: 14px 20px;
+                border-bottom: 1px solid var(--mg-outline);
+            }
+
+            .mg-table td {
+                padding: 14px 20px;
+                border-bottom: 1px solid #f1f5f9;
+                color: var(--mg-secondary);
+                vertical-align: middle;
+            }
+
+            .mg-table tr:last-child td {
+                border-bottom: none;
+            }
+
+            .mg-table tr:hover td {
+                background: #fcfdfe;
+            }
+
+            /* Badge Statut dynamique style Bassins */
+            .status-badge {
+                display: inline-flex;
+                padding: 4px 8px;
+                border-radius: 4px;
+                font-size: 11px;
+                font-weight: 700;
+                text-transform: uppercase;
+            }
+
+            .status-active {
+                background: #d1fae5;
+                color: #065f46;
+            }
+
+            .status-closed {
+                background: #e2e8f0;
+                color: #475569;
+            }
+
+            /* Actions de ligne */
+            .row-actions {
+                display: flex;
+                gap: 8px;
+                align-items: center;
+            }
+
+            .row-link {
+                color: var(--mg-primary);
+                text-decoration: none;
+                font-weight: 600;
+                padding: 6px 12px;
+            }
+
+            .row-link:hover {
+                background: var(--mg-surface-container);
+                border-radius: var(--radius);
+            }
+        </style>
+    </th:block>
+</head>
+
+<body>
+    <div layout:fragment="content">
+        
+        <div class="page-header">
+            <h1 class="section-title" style="font-size: 22px;">Cycles Actifs</h1>
+
+            <div class="action-group">
+                <a th:href="@{/cycles/nouveau}" class="btn-mg btn-mg-primary">
+                    <i class="bi bi-plus-lg"></i> Nouveau cycle
+                </a>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table class="mg-table">
+                <thead>
+                    <tr>
+                        <th>Cycle</th>
+                        <th>Espèce</th>
+                        <th>Début</th>
+                        <th>Fin prévue</th>
+                        <th>Statut</th>
+                        <th style="text-align: right;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="cycle : ${cycles}">
+                        <td style="font-weight: 700; color: var(--mg-primary);" th:text="${cycle.codeUniqueCycle}">C01</td>
+                        <td th:text="${cycle.espece.nomCourant != null ? cycle.espece.nomCourant : cycle.espece.nomScientifique}">Crevette</td>
+                        <td th:text="${#temporals.format(cycle.dateDebut, 'dd/MM/yyyy')}">01/01/2024</td>
+                        <td th:text="${#temporals.format(cycle.dateFinPrevue, 'dd/MM/yyyy')}">31/05/2024</td>
+                        <td>
+                            <!-- Application dynamique de la couleur du badge selon le statut du cycle -->
+                            <span class="status-badge" 
+                                  th:classappend="${cycle.estCloture} ? 'status-closed' : 'status-active'"
+                                  th:text="${cycle.estCloture} ? 'Clôturé' : 'Actif'">
+                                Actif
+                            </span>
+                        </td>
+                        <td>
+                            <div class="row-actions" style="justify-content: flex-end;">
+                                <a th:href="@{/cycles/{id}(id=${cycle.id})}" class="row-link">
+                                    <i class="bi bi-eye"></i> Voir
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr th:if="${#lists.isEmpty(cycles)}">
+                        <td colspan="6" style="text-align: center; color: var(--mg-text-muted); padding: 40px;">
+                            Aucun cycle enregistré pour le moment.
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</body>
+
+</html>

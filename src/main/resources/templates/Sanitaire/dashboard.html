@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/default}">
+<head>
+    <title layout:fragment="page-title">Move Gasy — Tableau de bord sanitaire</title>
+    <th:block layout:fragment="page-styles">
+        <style>
+            .header-section {
+                margin-bottom: 32px;
+                padding-bottom: 16px;
+                border-bottom: 1px solid #e2e8f0;
+            }
+
+            .header-title {
+                font-size: 26px;
+                font-weight: 700;
+                margin-bottom: 8px;
+                color: var(--mg-primary);
+            }
+
+            .header-sub {
+                font-size: 14px;
+                color: var(--mg-text-muted);
+                line-height: 1.5;
+            }
+
+            .kpi-row {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 16px;
+                margin-bottom: 24px;
+            }
+
+            .kpi-card {
+                background: var(--mg-surface-bright);
+                border: 1px solid var(--mg-outline);
+                border-radius: var(--radius);
+                padding: 16px 20px;
+                display: flex;
+                flex-direction: column;
+                gap: 4px;
+            }
+
+            .kpi-label {
+                font-size: 11px;
+                font-weight: 700;
+                text-transform: uppercase;
+                color: var(--mg-secondary);
+                letter-spacing: 0.05em;
+            }
+
+            .kpi-value {
+                font-size: 24px;
+                font-weight: 700;
+                color: var(--mg-primary);
+                line-height: 1.2;
+            }
+
+            .kpi-sub {
+                font-size: 12px;
+                color: var(--mg-text-muted);
+            }
+
+            .kpi-card.sains { border-left: 4px solid #10b981; }
+            .kpi-card.traitement { border-left: 4px solid #f59e0b; }
+            .kpi-card.quarantaine { border-left: 4px solid #ef4444; }
+            .kpi-card.incidents { border-left: 4px solid var(--mg-primary); }
+
+            .grid-detail {
+                display: grid;
+                grid-template-columns: repeat(12, 1fr);
+                gap: 24px;
+            }
+
+            .col-4 { grid-column: span 4; }
+            .col-8 { grid-column: span 8; }
+
+            .card {
+                background: var(--mg-surface-bright);
+                border: 1px solid var(--mg-outline);
+                border-radius: var(--radius);
+                padding: 24px;
+                margin-bottom: 24px;
+            }
+
+            .card-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 20px;
+            }
+
+            .card-title {
+                font-size: 12px;
+                font-weight: 700;
+                color: var(--mg-primary);
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+            }
+
+            .pond-grid {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 12px;
+            }
+
+            .pond-item {
+                border: 1px solid var(--mg-outline);
+                border-radius: var(--radius);
+                padding: 12px;
+                text-align: center;
+                cursor: pointer;
+                transition: all 0.2s;
+                display: flex;
+                flex-direction: column;
+                gap: 4px;
+            }
+
+            .pond-item:hover {
+                border-color: var(--mg-primary);
+                background: var(--mg-surface);
+            }
+
+            .pond-id {
+                font-weight: 700;
+                font-size: 12px;
+                color: var(--mg-secondary);
+            }
+
+            .pond-status-dot {
+                width: 8px;
+                height: 8px;
+                border-radius: 50%;
+                margin: 0 auto;
+            }
+
+            .pond-status-dot.sain { background: #10b981; }
+            .pond-status-dot.traitement { background: #f59e0b; }
+            .pond-status-dot.quarantaine { background: #ef4444; }
+
+            .btn {
+                padding: 10px 20px;
+                border-radius: var(--radius);
+                font-size: 13px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: 0.2s;
+                border: 1px solid transparent;
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                text-decoration: none;
+                justify-content: center;
+            }
+
+            .btn-primary {
+                background: var(--mg-primary);
+                color: white;
+            }
+
+            .btn-primary:hover {
+                opacity: 0.9;
+            }
+
+            .btn-outline {
+                background: transparent;
+                border-color: var(--mg-outline);
+                color: var(--mg-primary);
+            }
+
+            .btn-outline:hover {
+                background: var(--mg-surface);
+            }
+
+            .btn-full {
+                width: 100%;
+            }
+
+            .table-container {
+                width: 100%;
+                overflow-x: auto;
+            }
+
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                text-align: left;
+            }
+
+            thead th {
+                background: var(--mg-surface);
+                padding: 12px 16px;
+                font-size: 11px;
+                font-weight: 700;
+                text-transform: uppercase;
+                color: var(--mg-secondary);
+                border-bottom: 1px solid var(--mg-outline);
+                letter-spacing: 0.05em;
+            }
+
+            tbody td {
+                padding: 14px 16px;
+                border-bottom: 1px solid var(--mg-outline);
+                font-size: 13px;
+            }
+
+            tbody tr:hover td {
+                background: var(--mg-surface);
+            }
+
+            .badge {
+                padding: 2px 8px;
+                border-radius: 20px;
+                font-size: 11px;
+                font-weight: 700;
+                display: inline-block;
+                text-transform: uppercase;
+            }
+
+            .badge-success { background: #dcfce7; color: #166534; }
+            .badge-warning { background: #fef3c7; color: #92400e; }
+            .badge-danger { background: #fee2e2; color: #991b1b; }
+            .badge-neutral { background: #f3f4f6; color: #4b5563; }
+
+            @media (max-width: 992px) {
+                .kpi-row { grid-template-columns: repeat(2, 1fr); }
+                .col-8, .col-4 { grid-column: span 12; }
+            }
+        </style>
+    </th:block>
+</head>
+<body>
+    <div layout:fragment="content">
+        <header class="header-section">
+            <h2 class="header-title">Tableau de bord sanitaire</h2>
+            <p class="header-sub">Vue globale de la santé des bassins et gestion des incidents actifs.</p>
+        </header>
+
+        <div class="kpi-row">
+            <div class="kpi-card sains">
+                <span class="kpi-label">Bassins Sains</span>
+                <span class="kpi-value" th:text="${dashboard.nbBassinsSains} + ' / ' + ${dashboard.totalBassins}">0 / 0</span>
+                <span class="kpi-sub">Sans anomalie</span>
+            </div>
+            <div class="kpi-card traitement">
+                <span class="kpi-label">En Traitement</span>
+                <span class="kpi-value" th:text="${dashboard.nbBassinsEnTraitement}">0</span>
+                <span class="kpi-sub">Pathologies mineures</span>
+            </div>
+            <div class="kpi-card quarantaine">
+                <span class="kpi-label">Quarantaine</span>
+                <span class="kpi-value" th:text="${dashboard.nbBassinsQuarantaine}">0</span>
+                <span class="kpi-sub">Bassins isolés</span>
+            </div>
+            <div class="kpi-card incidents">
+                <span class="kpi-label">Incidents Actifs</span>
+                <span class="kpi-value" th:text="${dashboard.nbIncidentsActifs}">0</span>
+                <span class="kpi-sub">En attente de résolution</span>
+            </div>
+        </div>
+
+        <div class="grid-detail">
+            <div class="col-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">État Global</h3>
+                    </div>
+                    <div class="pond-grid">
+                        <div class="pond-item" th:each="b : ${dashboard.bassinsEtat}">
+                            <span class="pond-id" th:text="${b.code}">B01</span>
+                            <div th:class="'pond-status-dot ' + ${b.statutDotClass}"></div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 24px; display: flex; flex-direction: column; gap: 8px;">
+                        <a class="btn btn-primary btn-full" th:href="@{/sanitaire/declaration}">
+                            <i class="bi bi-plus-circle"></i> NOUVEL INCIDENT
+                        </a>
+                        <a class="btn btn-outline btn-full" th:href="@{/sanitaire/historique}">
+                            <i class="bi bi-file-earmark-medical"></i> HISTORIQUE
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-8">
+                <div class="card" style="padding: 0;">
+                    <div class="card-header" style="padding: 16px 24px 0 24px;">
+                        <h3 class="card-title">Incidents Actifs</h3>
+                        <a class="btn btn-outline btn-sm" th:href="@{/sanitaire/historique}">VOIR TOUT</a>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Bassin</th>
+                                    <th>Type</th>
+                                    <th>Gravité</th>
+                                    <th>Date</th>
+                                    <th>Statut</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="inc : ${dashboard.incidentsActifs}">
+                                    <td><strong th:text="${inc.bassinCode}">--</strong></td>
+                                    <td th:text="${inc.typeIncident}">--</td>
+                                    <td>
+                                        <span th:if="${inc.gravite == 'CRITIQUE'}" class="badge badge-danger">Critique</span>
+                                        <span th:if="${inc.gravite == 'MODERE'}" class="badge badge-warning">Modéré</span>
+                                        <span th:if="${inc.gravite == 'FAIBLE'}" class="badge badge-neutral">Faible</span>
+                                    </td>
+                                    <td th:text="${#temporals.format(inc.dateDetection, 'dd/MM/yyyy')}">--</td>
+                                    <td>
+                                        <span th:if="${inc.statutTraitement == 'QUARANTAINE'}"><i class="bi bi-shield-lock"></i> Quarantaine</span>
+                                        <span th:if="${inc.statutTraitement != 'QUARANTAINE'}" th:text="${inc.statutTraitement}">--</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

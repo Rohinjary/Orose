@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/default}">
+<head>
+    <title layout:fragment="page-title">Move Gasy — Déclaration incident sanitaire</title>
+    <th:block layout:fragment="page-styles">
+        <style>
+            .header-section {
+                margin-bottom: 32px;
+                padding-bottom: 16px;
+                border-bottom: 1px solid #e2e8f0;
+            }
+
+            .header-title {
+                font-size: 26px;
+                font-weight: 700;
+                margin-bottom: 8px;
+                color: var(--mg-primary);
+            }
+
+            .header-sub {
+                font-size: 14px;
+                color: var(--mg-text-muted);
+                line-height: 1.5;
+            }
+
+            .card {
+                background: var(--mg-surface-bright);
+                border: 1px solid var(--mg-outline);
+                border-radius: var(--radius);
+                padding: 24px;
+                margin-bottom: 24px;
+            }
+
+            .form-group {
+                margin-bottom: 16px;
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .form-label {
+                font-size: 11px;
+                font-weight: 700;
+                text-transform: uppercase;
+                color: var(--mg-secondary);
+                letter-spacing: 0.05em;
+            }
+
+            .form-control {
+                font-family: var(--font-main);
+                font-size: 14px;
+                padding: 10px 12px;
+                border: 1px solid var(--mg-outline);
+                border-radius: var(--radius);
+                background: white;
+                color: var(--mg-primary);
+                outline: none;
+                transition: 0.2s;
+            }
+
+            .form-control:focus {
+                border-color: var(--mg-primary);
+            }
+
+            .grid-detail {
+                display: grid;
+                grid-template-columns: repeat(12, 1fr);
+                gap: 24px;
+            }
+
+            .col-4 { grid-column: span 4; }
+            .col-6 { grid-column: span 6; }
+            .col-8 { grid-column: span 8; }
+            .col-12 { grid-column: span 12; }
+
+            .kpi-row {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 16px;
+                margin-top: 16px;
+            }
+
+            .kpi-card {
+                background: var(--mg-surface-bright);
+                border: 1px solid var(--mg-outline);
+                border-radius: var(--radius);
+                padding: 16px 20px;
+                display: flex;
+                flex-direction: column;
+                gap: 4px;
+                border-left: 4px solid transparent;
+                cursor: pointer;
+                transition: all 0.2s ease;
+            }
+
+            .kpi-card:hover {
+                background: #f7f9fb;
+            }
+
+            .kpi-label {
+                font-size: 11px;
+                font-weight: 700;
+                text-transform: uppercase;
+                color: var(--mg-secondary);
+                letter-spacing: 0.05em;
+            }
+
+            .kpi-sub {
+                font-size: 12px;
+                color: var(--mg-text-muted);
+            }
+
+            .kpi-card.sains { border-left-color: #10b981; }
+            .kpi-card.traitement { border-left-color: #f59e0b; }
+            .kpi-card.quarantaine { border-left-color: #ef4444; }
+
+            textarea.form-control {
+                resize: vertical;
+                font-family: var(--font-main);
+            }
+
+            .btn {
+                padding: 10px 20px;
+                border-radius: var(--radius);
+                font-size: 13px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: 0.2s;
+                border: 1px solid transparent;
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                text-decoration: none;
+                justify-content: center;
+            }
+
+            .btn-primary {
+                background: var(--mg-primary);
+                color: white;
+            }
+
+            .btn-primary:hover {
+                opacity: 0.9;
+            }
+
+            .btn-outline {
+                background: transparent;
+                border-color: var(--mg-outline);
+                color: var(--mg-primary);
+            }
+
+            .btn-outline:hover {
+                background: var(--mg-surface);
+            }
+
+            .alert {
+                padding: 16px;
+                border-radius: var(--radius);
+                margin-bottom: 16px;
+                font-size: 14px;
+            }
+
+            .alert-danger {
+                background: #fee2e2;
+                color: #991b1b;
+                border: 1px solid #fca5a5;
+            }
+
+            @media (max-width: 992px) {
+                .kpi-row { grid-template-columns: 1fr; }
+                .col-8, .col-4 { grid-column: span 12; }
+            }
+        </style>
+    </th:block>
+</head>
+<body>
+    <div layout:fragment="content">
+        <header class="header-section">
+            <h2 class="header-title">Déclaration d'incident sanitaire</h2>
+            <p class="header-sub">Enregistrez une anomalie détectée pour déclencher le protocole approprié.</p>
+        </header>
+
+        <div class="card">
+            <form th:action="@{/sanitaire/declaration}" th:object="${incidentDTO}" method="POST">
+                <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+
+                <div class="grid-detail" style="margin-bottom: 24px; gap: 24px;">
+                    <div class="col-4">
+                        <div class="form-group">
+                            <label class="form-label">Bassin</label>
+                            <select class="form-control" th:field="*{idCycleBassinAssoc}" required>
+                                <option value="">Sélectionner un bassin</option>
+                                <option th:if="${#lists.isEmpty(cycleBassinAssocs)}" value="" disabled>
+                                    Aucun bassin ACTIF ou EN_TRAITEMENT disponible en cycle — vérifiez le statut des bassins
+                                </option>
+                                <option th:each="assoc : ${cycleBassinAssocs}"
+                                        th:value="${assoc.id}"
+                                        th:text="${assoc.bassin.code + ' — Cycle ' + assoc.cycle.codeUniqueCycle}">
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="form-group">
+                            <label class="form-label">Date du constat</label>
+                            <input class="form-control" type="date" th:field="*{dateDetection}" required />
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="form-group">
+                            <label class="form-label">Type d'incident</label>
+                            <select class="form-control" th:field="*{typeIncident}" required>
+                                <option value="">Sélectionner un type</option>
+                                <option value="MALADIE">Maladie suspectée</option>
+                                <option value="ANOMALIE_EAU">Anomalie paramètres eau</option>
+                                <option value="MORTALITE_ANORMALE">Mortalité inhabituelle</option>
+                                <option value="AUTRE">Autre</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="form-group">
+                            <label class="form-label">Responsable</label>
+                            <select class="form-control" th:field="*{idResponsable}" required>
+                                <option value="">Sélectionner un responsable</option>
+                                <option th:each="user : ${utilisateurs}" th:value="${user.id}" th:text="${user.nom} + ' - ' + ${user.prenom}"></option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 24px;">
+                    <label class="form-label">Niveau de gravité</label>
+                    <div class="kpi-row">
+                        <div class="kpi-card sains" onclick="document.getElementById('gravite-faible').checked=true; updateGraviteSelection(this)">
+                            <input type="radio" id="gravite-faible" th:field="*{niveauGravite}" value="FAIBLE" style="display:none;" />
+                            <span class="kpi-label">FAIBLE</span>
+                            <span class="kpi-sub">Surveillance simple</span>
+                        </div>
+                        <div class="kpi-card traitement" onclick="document.getElementById('gravite-modere').checked=true; updateGraviteSelection(this)">
+                            <input type="radio" id="gravite-modere" th:field="*{niveauGravite}" value="MODERE" style="display:none;" />
+                            <span class="kpi-label">MODÉRÉ</span>
+                            <span class="kpi-sub">Traitement requis</span>
+                        </div>
+                        <div class="kpi-card quarantaine" onclick="document.getElementById('gravite-critique').checked=true; updateGraviteSelection(this)">
+                            <input type="radio" id="gravite-critique" th:field="*{niveauGravite}" value="CRITIQUE" style="display:none;" />
+                            <span class="kpi-label">CRITIQUE</span>
+                            <span class="kpi-sub">Isolement immédiat</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 32px;">
+                    <label class="form-label">Description / Symptômes</label>
+                    <textarea class="form-control" th:field="*{description}" placeholder="Décrivez les signes cliniques ou les anomalies observées..." rows="5" required></textarea>
+                </div>
+
+                <div style="display: flex; justify-content: flex-end; gap: 12px; border-top: 1px solid var(--mg-outline); padding-top: 24px;">
+                    <button class="btn btn-outline" type="button" onclick="window.location.href='/sanitaire/index'">Annuler</button>
+                    <button class="btn btn-primary" type="submit">Enregistrer l'incident</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <th:block layout:fragment="page-scripts">
+        <script>
+            function updateGraviteSelection(element) {
+                document.querySelectorAll('.kpi-row .kpi-card').forEach(card => {
+                    card.style.opacity = '0.6';
+                });
+                element.style.opacity = '1';
+            }
+        </script>
+    </th:block>
+</body>
+</html>

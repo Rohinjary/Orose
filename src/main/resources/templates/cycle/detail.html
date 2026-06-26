@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/default}">
+<head>
+    <title layout:fragment="page-title">Détail du cycle — Move Gasy</title>
+    <th:block layout:fragment="page-styles">
+        <style>
+            /* Styles harmonisés avec la page Historique */
+            .page-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 24px;
+            }
+            .page-title { margin: 0; font-size: 24px; font-weight: 700; }
+            .page-sub { margin: 4px 0 0; color: var(--mg-secondary); font-size: 14px; }
+            
+            /* Grille de résumé style cartes Historique */
+            .cycle-summary {
+                display: grid;
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+                gap: 16px;
+                margin-bottom: 24px;
+            }
+            .summary-card {
+                background: white;
+                border: 1px solid var(--mg-outline);
+                border-radius: var(--radius);
+                padding: 16px 20px;
+                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+            }
+            .summary-card .label {
+                display: block;
+                margin-bottom: 6px;
+                font-size: 12px;
+                font-weight: 600;
+                text-transform: uppercase;
+                color: var(--mg-secondary);
+                letter-spacing: 0.04em;
+            }
+            .summary-card .value {
+                font-size: 18px;
+                font-weight: 700;
+                color: var(--mg-primary);
+            }
+
+            /* Conteneur et Tableaux style Historique */
+            .card {
+                background: white;
+                border: 1px solid var(--mg-outline);
+                border-radius: var(--radius);
+                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+                margin-bottom: 24px;
+            }
+            .card-header-custom {
+                padding: 16px 24px;
+                border-bottom: 1px solid var(--mg-outline);
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+            .card-header-custom h3 { margin: 0; font-size: 16px; font-weight: 700; color: var(--mg-primary); }
+            .table-container { overflow-x: auto; }
+            .table-container table { width: 100%; border-collapse: collapse; text-align: left; font-size: 13px; }
+            .table-container th { background: #f8fafc; color: var(--mg-secondary); font-weight: 700; text-transform: uppercase; font-size: 11px; letter-spacing: 0.05em; padding: 14px 20px; border-bottom: 1px solid var(--mg-outline); }
+            .table-container td { padding: 14px 20px; border-bottom: 1px solid #f1f5f9; color: var(--mg-secondary); vertical-align: middle; }
+            .table-container tr:last-child td { border-bottom: none; }
+            
+            /* Badges dynamiques calqués sur l'Historique */
+            .badge-actif { background: #dcfce7; color: #166534; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; }
+            .badge-vide { background: #f1f5f9; color: #475569; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; }
+            .bassin-tag { background: var(--mg-primary); color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 700; text-decoration: none; }
+            
+            /* Boutons et utilitaires de texte */
+            .button-group { display: flex; gap: 12px; align-items: center; }
+            .btn-custom { display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; border: 1px solid var(--mg-outline); border-radius: var(--radius); font-size: 13px; font-weight: 600; text-decoration: none; color: var(--mg-secondary); background: white; cursor: pointer; transition: all 0.2s; }
+            .btn-custom:hover { background: #f8fafc; color: var(--mg-primary); }
+            .empty-state { text-align: center; padding: 48px 32px; color: var(--mg-secondary); }
+            .empty-state i { font-size: 36px; display: block; margin-bottom: 12px; opacity: 0.3; }
+        </style>
+    </th:block>
+</head>
+<body>
+    <div layout:fragment="content">
+        
+        <!-- En-tête de page calqué sur l'Historique -->
+        <div class="page-header">
+            <div>
+                <h2 class="page-title" th:text="'Cycle ' + ${cycle.codeUniqueCycle}">Cycle C01</h2>
+                <p class="page-sub" th:text="${cycle.espece.nomCourant != null ? cycle.espece.nomCourant : cycle.espece.nomScientifique}">Crevette</p>
+            </div>
+            <div class="button-group">
+                <a th:href="@{/cycles}" class="btn-custom">
+                    <i class="bi bi-arrow-left"></i> Retour aux cycles
+                </a>
+                <a th:href="@{/biologique}" class="btn-custom">
+                    <i class="bi bi-activity"></i> Suivi biologique
+                </a>
+            </div>
+        </div>
+
+        <!-- Section résumé sous forme de cartes d'historique épurées -->
+        <div class="cycle-summary">
+            <div class="summary-card">
+                <span class="label">Début</span>
+                <span class="value" th:text="${#temporals.format(cycle.dateDebut, 'dd/MM/yyyy')}">01/01/2024</span>
+            </div>
+            <div class="summary-card">
+                <span class="label">Fin prévue</span>
+                <span class="value" th:text="${#temporals.format(cycle.dateFinPrevue, 'dd/MM/yyyy')}">31/05/2024</span>
+            </div>
+            <div class="summary-card">
+                <span class="label">Statut</span>
+                <div>
+                    <span th:class="${cycle.estCloture} ? 'badge-vide' : 'badge-actif'" th:text="${cycle.estCloture} ? 'Clôturé' : 'Actif'">Actif</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tableau des Bassins associés calqué sur la structure exacte de l'Historique -->
+        <div class="card">
+            <div class="card-header-custom">
+                <h3>Bassins associés</h3>
+                <span style="font-size: 13px; color: var(--mg-secondary);" th:text="${#lists.size(associations)} + ' bassin(s)'">0 bassin(s)</span>
+            </div>
+            
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Bassin</th>
+                            <th>Effectif initial</th>
+                            <th>Densité</th>
+                            <th>Coût PL</th>
+                            <th>Semaine</th>
+                            <th>Poids moyen</th>
+                            <th style="text-align: right;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Empty State réutilisé à l'identique de l'Historique -->
+                        <tr th:if="${#lists.isEmpty(associations)}">
+                            <td colspan="7">
+                                <div class="empty-state">
+                                    <i class="bi bi-water"></i>
+                                    <p>Aucun bassin associé à ce cycle.</p>
+                                </div>
+                            </td>
+                        </tr>
+                        <!-- Lignes de données -->
+                        <tr th:unless="${#lists.isEmpty(associations)}" th:each="assoc : ${associations}">
+                            <td><span class="bassin-tag" th:text="${assoc.bassin.code}">B01</span></td>
+                            <td th:text="${#numbers.formatInteger(assoc.effectifInitial, 0, 'WHITESPACE')}">150 000</td>
+                            <td th:text="${assoc.densiteM2 != null ? assoc.densiteM2 + ' PL/m²' : '—'}">—</td>
+                            <td th:text="${#numbers.formatInteger(assoc.coutPostLarves, 0, 'WHITESPACE')} + ' Ar'">0 Ar</td>
+                            <td style="font-weight: 600;" th:text="${assoc.semaineActuelle != null ? 'S' + assoc.semaineActuelle : 'S0'}">S0</td>
+                            <td th:text="${assoc.poidsMoyenActuel != null ? assoc.poidsMoyenActuel + ' g' : '—'}">—</td>
+                            <td>
+                                <div style="display: flex; justify-content: flex-end;">
+                                    <a th:href="@{/bassins/{id}(id=${assoc.bassin.id})}" class="btn-custom" style="padding: 6px 12px; font-size: 12px;">
+                                        <i class="bi bi-eye"></i> Voir
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>

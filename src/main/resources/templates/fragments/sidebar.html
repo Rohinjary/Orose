@@ -1,0 +1,149 @@
+<aside th:fragment="sidebar" class="sidebar">
+    <div class="sidebar-brand">
+        <div class="brand-logo"><i class="bi bi-water"></i></div>
+        <div class="brand-name">MOVE GASY</div>
+    </div>
+    <div class="nav-container">
+       
+
+        <div class="nav-label">Terrain</div>
+
+        <div class="nav-dropdown" th:classappend="${currentGroup == 'bassins'} ? 'open' : ''">
+            <a class="nav-item" onclick="toggleDropdown(this)">
+                <span class="nav-icon"><i class="bi bi-droplet-half"></i></span> Bassins
+                <span class="chevron-icon"><i class="bi bi-chevron-right"></i></span>
+            </a>
+            <div class="submenu">
+                <a class="nav-item" th:classappend="${currentPage == 'liste'} ? 'active' : ''"
+                    th:href="@{/bassins/liste}">
+                    Liste des bassins
+                </a>
+                <a class="nav-item" th:classappend="${currentPage == 'historique'} ? 'active' : ''"
+                    th:href="@{/bassins/historique}">
+                    Historique de modifications
+                </a>
+
+                <a th:if="${currentPage == 'detail'}" class="nav-item"
+                    th:classappend="${currentPage == 'detail'} ? 'active' : ''">
+                    Détail du bassin
+                </a>
+                <a th:if="${currentPage == 'nouveau'}" class="nav-item"
+                    th:classappend="${currentPage == 'nouveau'} ? 'active' : ''">
+                    Nouveau bassin
+                </a>
+                <a th:if="${currentPage == 'modifier'}" class="nav-item"
+                    th:classappend="${currentPage == 'modifier'} ? 'active' : ''">
+                    Modification bassin
+                </a>
+            </div>
+        </div>
+
+        <div class="nav-dropdown" th:classappend="${currentGroup == 'cycles'} ? 'open' : ''">
+            <a class="nav-item" onclick="toggleDropdown(this)">
+                <span class="nav-icon"><i class="bi bi-arrow-repeat"></i></span> Cycles
+                <span class="chevron-icon"><i class="bi bi-chevron-right"></i></span>
+            </a>
+            <div class="submenu">
+                <a class="nav-item" th:classappend="${currentPage == 'liste'} ? 'active' : ''"
+                    th:href="@{/cycles/liste}">
+                    Liste des cycles
+                </a>
+                <a th:if="${currentPage == 'detail'}" class="nav-item"
+                    th:classappend="${currentPage == 'detail'} ? 'active' : ''">
+                    Detail du cycle
+                </a>
+                <a th:if="${currentPage == 'nouveau'}" class="nav-item"
+                    th:classappend="${currentPage == 'nouveau'} ? 'active' : ''">
+                    Nouveau cycle
+                </a>
+
+            </div>
+        </div>
+
+        <div class="nav-dropdown" th:classappend="${currentGroup == 'biologique'} ? 'open' : ''">
+            <a class="nav-item" onclick="toggleDropdown(this)">
+                <span class="nav-icon"><i class="bi bi-activity"></i></span> Suivi biologique
+                <span class="chevron-icon"><i class="bi bi-chevron-right"></i></span>
+            </a>
+            <div class="submenu">
+                <a class="nav-item" th:classappend="${currentPage == 'tableau-de-bord'} ? 'active' : ''"
+                    th:href="@{/biologique}">
+                    Tableau de Bord
+                </a>
+                <a th:if="${currentPage == 'detail-bassin'}" class="nav-item"
+                    th:classappend="${currentPage == 'detail-bassin'} ? 'active' : ''">
+                    Détail du Bassin
+                </a>
+                <a th:if="${currentPage == 'nouvelle-pesee'}" class="nav-item"
+                    th:classappend="${currentPage == 'nouvelle-pesee'} ? 'active' : ''">
+                    Nouvelle pesée
+                </a>
+                
+                <a th:if="${currentPage == 'alertes-biologiques'}" class="nav-item"
+                    th:classappend="${currentPage == 'alertes-biologiques'} ? 'active' : ''">
+                    Alertes biologiques
+                </a>
+                
+
+            </div>
+        </div>
+
+        <!-- Module Sanitaire -->
+        <div class="nav-dropdown" th:classappend="${currentGroup == 'sanitaire'} ? 'open' : ''">
+            <a class="nav-item" onclick="toggleDropdown(this)">
+                <span class="nav-icon"><i class="bi bi-shield-check"></i></span> Sanitaire
+                <span class="chevron-icon"><i class="bi bi-chevron-right"></i></span>
+            </a>
+            <div class="submenu">
+                <a class="nav-item" th:classappend="${currentPage == 'dashboard'} ? 'active' : ''"
+                    th:href="@{/sanitaire/dashboard}">
+                    Tableau de bord
+                </a>
+                <a class="nav-item" th:classappend="${currentPage == 'index'} ? 'active' : ''"
+                    th:href="@{/sanitaire/index}">
+                    Registre des incidents
+                </a>
+                <a class="nav-item" th:classappend="${currentPage == 'declaration'} ? 'active' : ''"
+                    th:href="@{/sanitaire/declaration}">
+                    Déclaration incident
+                </a>
+                <a class="nav-item" th:classappend="${currentPage == 'historique'} ? 'active' : ''"
+                    th:href="@{/sanitaire/historique}">
+                    Historique global
+                </a>
+
+                <a th:if="${currentPage == 'traitement'}" class="nav-item"
+                    th:classappend="${currentPage == 'traitement'} ? 'active' : ''">
+                    Gestion traitement
+                </a>
+            </div>
+        </div>
+        <div class="nav-dropdown" th:classappend="${currentGroup == 'nourrissage'} ? 'open' : ''">
+            <a class="nav-item" onclick="toggleDropdown(this)">
+                <span class="nav-icon"><i class="bi bi-basket2"></i></span> Nourrissage
+                <span class="chevron-icon"><i class="bi bi-chevron-right"></i></span>
+            </a>
+            <div class="submenu">
+                <a class="nav-item" th:classappend="${currentPage == 'planning'} ? 'active' : ''"
+                   th:href="@{/nourrissage/planning}">
+                    Tableau de bord
+                </a>
+                <a class="nav-item" th:classappend="${currentPage == 'distribution'} ? 'active' : ''"
+                   th:href="@{/nourrissage/distribution}">
+                    Saisie distribution
+                </a>
+                <a class="nav-item" th:classappend="${currentPage == 'nourrissage-stock'} ? 'active' : ''"
+                   th:href="@{/nourrissage/stock}">
+                    Stock aliment
+                </a>
+                <a class="nav-item" th:classappend="${currentPage == 'nourrissage-historique'} ? 'active' : ''"
+                   th:href="@{/nourrissage/historique}">
+                    Historique
+                </a>
+            </div>
+        </div>
+
+       
+        
+    </div>
+</aside>
