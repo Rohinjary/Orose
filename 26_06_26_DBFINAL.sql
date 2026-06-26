@@ -490,8 +490,6 @@ INSERT INTO utilisateur_role VALUES(1,1);
 
 
 
-
-
 CREATE OR REPLACE FUNCTION fn_obtenir_ou_creer_planning_du_jour(id_utilisateur_connecte INT)
 RETURNS TABLE (
     id_bassin INT,
@@ -517,10 +515,11 @@ DECLARE
     v_id_aliment INT;
     v_heure_calcul_prevue TIME;
 BEGIN
+    -- Optimisation du comptage des créneaux
     SELECT COUNT(*) INTO nb_creneaux FROM creneau_horaire;
     IF nb_creneaux = 0 THEN nb_creneaux := 4; END IF;
 
-    -- MODIFICATION ICI : On filtre les bassins pour ne prendre que les statuts ACTIF ou EN_TRAITEMENT
+    -- 1. GÉNÉRATION : Uniquement pour les bassins ACTIF ou EN_TRAITEMENT avec un cycle ouvert
     FOR bassin_rec IN 
         SELECT b.id AS id_bassin, cba.id AS id_cycle_bassin_assoc, b.code
         FROM bassin b
@@ -529,7 +528,7 @@ BEGIN
         WHERE cba.est_cloture = FALSE 
           AND sb.code IN ('ACTIF', 'EN_TRAITEMENT')
     LOOP
-        -- 1. SÉLECTION DE L'ALIMENT AUTOMATIQUE
+        -- Sélection de l'aliment (indexation recommandée sur date_distribution)
         SELECT dn_sub.id_aliment INTO v_id_aliment
         FROM distribution_nourriture dn_sub
         WHERE dn_sub.id_cycle_bassin_assoc = bassin_rec.id_cycle_bassin_assoc
@@ -544,7 +543,7 @@ BEGIN
 
         IF v_id_aliment IS NULL THEN v_id_aliment := 1; END IF;
 
-        -- 2. VÉRIFICATION ET INSERTION
+        -- Vérification et insertion du planning du jour
         IF NOT EXISTS (
             SELECT 1 FROM distribution_nourriture dn_check
             WHERE dn_check.id_cycle_bassin_assoc = bassin_rec.id_cycle_bassin_assoc 
@@ -564,15 +563,6 @@ BEGIN
             ration_par_creneau_kg := ROUND(ration_totale_bassin_kg / nb_creneaux, 2);
 
             FOR creneau_rec IN SELECT ch_sub.id, ch_sub.libelle FROM creneau_horaire ch_sub ORDER BY ch_sub.ordre LOOP
-                
-                v_heure_calcul_prevue := CASE creneau_rec.libelle
-                    WHEN 'MATIN' THEN '06:00:00'::TIME
-                    WHEN 'MIDI'  THEN '11:00:00'::TIME
-                    WHEN 'SOIR'  THEN '17:00:00'::TIME
-                    WHEN 'NUIT'  THEN '22:00:00'::TIME
-                    ELSE '06:00:00'::TIME
-                END;
-
                 INSERT INTO distribution_nourriture (
                     id_cycle_bassin_assoc, id_aliment, id_creneau,
                     date_distribution, heure_nourrissage,
@@ -588,7 +578,7 @@ BEGIN
         END IF;
     END LOOP;
 
-    -- 3. RETOUR DU RÉSULTAT CORRIGÉ AVEC CALCUL DYNAMIQUE DU RETARD
+    -- 2. SÉLECTION ET RETOUR DU RÉSULTAT OPTIMISÉ (Utilisation de LAG au lieu de sous-requêtes)
     RETURN QUERY
     WITH planning_brut AS (
         SELECT 
@@ -603,27 +593,25 @@ BEGIN
                 WHEN 'MIDI'  THEN '05:00:00'::INTERVAL
                 WHEN 'SOIR'  THEN '06:00:00'::INTERVAL
                 WHEN 'NUIT'  THEN '05:00:00'::INTERVAL
-            END AS decalage
+            END AS decalage,
+            -- OPTIMISATION CRITIQUE : Trouve l'heure réelle précédente instantanément sans refaire de SELECT
+            LAG(dn.heure_nourrissage) OVER (PARTITION BY b.id ORDER BY ch.ordre) AS heure_reelle_precedente
         FROM bassin b
-        LEFT JOIN cycle_bassin_assoc cba ON b.id = cba.id_bassin AND cba.est_cloture = FALSE
+        JOIN statut_bassin sb ON b.id_statut_actuel = sb.id
+        JOIN cycle_bassin_assoc cba ON b.id = cba.id_bassin AND cba.est_cloture = FALSE
         CROSS JOIN creneau_horaire ch
         LEFT JOIN distribution_nourriture dn ON dn.id_cycle_bassin_assoc = cba.id 
             AND dn.id_creneau = ch.id 
             AND dn.date_distribution = CURRENT_DATE
-    ),
-    repas_prev_reels AS (
-        SELECT 
-            p1.b_id, p1.ch_id,
-            (SELECT p2.dn_heure_reelle FROM planning_brut p2 
-             WHERE p2.b_id = p1.b_id AND p2.ch_ordre = p1.ch_ordre - 1) AS heure_reelle_precedente
-        FROM planning_brut p1
+        -- RESTRICTION ICI AUSSI : Ne sélectionne que les bassins éligibles
+        WHERE sb.code IN ('ACTIF', 'EN_TRAITEMENT')
     ),
     planning_avec_heures AS (
         SELECT 
             p.b_id, p.b_code, p.b_notes, p.ch_id, p.ch_libelle, p.ch_ordre, p.dn_id, p.dn_date,
             CASE 
                 WHEN p.ch_libelle = 'MATIN' THEN '06:00:00'::TIME
-                WHEN r.heure_reelle_precedente IS NOT NULL THEN (r.heure_reelle_precedente + p.decalage)::TIME
+                WHEN p.heure_reelle_precedente IS NOT NULL THEN (p.heure_reelle_precedente + p.decalage)::TIME
                 ELSE 
                     CASE p.ch_libelle
                         WHEN 'MIDI' THEN '11:00:00'::TIME
@@ -633,13 +621,11 @@ BEGIN
             END AS calc_heure_prevue,
             p.dn_heure_reelle, p.dn_prevu, p.dn_donne, p.dn_statut, p.dn_valide
         FROM planning_brut p
-        JOIN repas_prev_reels r ON p.b_id = r.b_id AND p.ch_id = r.ch_id
     )
     SELECT 
         b_id, b_code, b_notes, ch_id, ch_libelle, dn_id, dn_date,
         calc_heure_prevue AS heure_prevue,
         dn_heure_reelle, dn_prevu, dn_donne,
-        -- LOGIQUE DU STATUT RETARD DYNAMIQUE :
         CASE 
             WHEN dn_statut = 'EN_ATTENTE' AND ch_libelle = 'NUIT' AND (CURRENT_TIME > calc_heure_prevue OR CURRENT_TIME <= '01:00:00'::TIME) THEN 'RETARD'
             WHEN dn_statut = 'EN_ATTENTE' AND ch_libelle != 'NUIT' AND CURRENT_TIME > calc_heure_prevue THEN 'RETARD'
@@ -650,14 +636,6 @@ BEGIN
     ORDER BY b_code, ch_ordre;
 END;
 $$ LANGUAGE plpgsql;
-
-
-
-
-
-
-
-
 
 
 
@@ -866,7 +844,6 @@ $$ LANGUAGE plpgsql;
 
 
 
-
 CREATE OR REPLACE PROCEDURE pr_enregistrer_distribution_manuelle(
     p_code_bassin VARCHAR(20),
     p_id_aliment INT,
@@ -933,11 +910,6 @@ BEGIN
 
 END;
 $$ LANGUAGE plpgsql;
-
-
-
-
-
 
 
 -- 1. Insertion de l'aliment

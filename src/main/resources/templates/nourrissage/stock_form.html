@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="fr" style="">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Stocks — Move Gasy</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap"
+        rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <style>
+        /* ═══════════════════════════════════════════════
+           DESIGN SYSTEM : MOVE GASY (MATCHING SCREEN_2)
+           Theme: LIGHT | Font: INTER | Roundness: 4px
+        ═══════════════════════════════════════════════ */
+        :root {
+            --mg-surface: #f7f9fb;
+            --mg-surface-dim: #d8dadc;
+            --mg-surface-bright: #ffffff;
+            --mg-surface-container: #eceef0;
+            --mg-primary: #1a1a1a;
+            --mg-secondary: #4a4a4a;
+            --mg-outline: #d1d5db;
+
+            --mg-success: #10b981;
+            --mg-warning: #f59e0b;
+            --mg-danger: #ef4444;
+            --mg-info: #3b82f6;
+
+            --font-main: 'Inter', sans-serif;
+            --radius: 4px;
+            --sidebar-w: 240px;
+            --topbar-h: 64px;
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--mg-surface);
+            color: var(--mg-primary);
+            font-size: 14px;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* LAYOUT */
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: var(--sidebar-w);
+            background: var(--mg-surface-bright);
+            border-right: 1px solid var(--mg-outline);
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            z-index: 101;
+        }
+
+        .sidebar-brand {
+            height: var(--topbar-h);
+            padding: 0 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid var(--mg-outline);
+        }
+
+        .brand-logo {
+            width: 32px;
+            height: 32px;
+            background: var(--mg-primary);
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: white;
+        }
+
+        .brand-name {
+            font-weight: 700;
+            font-size: 16px;
+            letter-spacing: -0.02em;
+        }
+
+        .nav-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px 12px;
+        }
+
+        .nav-label {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--mg-secondary);
+            margin: 24px 12px 8px;
+            letter-spacing: 0.05em;
+        }
+
+        .nav-label:first-child {
+            margin-top: 0;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            border-radius: var(--radius);
+            color: var(--mg-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+            margin-bottom: 2px;
+        }
+
+        .nav-item:hover {
+            background: var(--mg-surface-container);
+            color: var(--mg-primary);
+        }
+
+        .nav-item.active {
+            background: var(--mg-primary);
+            color: white;
+        }
+
+        .nav-icon {
+            font-size: 18px;
+            width: 20px;
+            text-align: center;
+        }
+
+        /* TOPBAR */
+        .topbar {
+            position: fixed;
+            top: 0;
+            left: var(--sidebar-w);
+            right: 0;
+            z-index: 100;
+            height: var(--topbar-h);
+            background: var(--mg-surface-bright);
+            border-bottom: 1px solid var(--mg-outline);
+            display: flex;
+            align-items: center;
+            padding: 0 32px;
+            justify-content: space-between;
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--mg-secondary);
+        }
+
+        .breadcrumb span.active {
+            color: var(--mg-primary);
+            font-weight: 600;
+        }
+
+        .breadcrumb .sep {
+            color: var(--mg-outline);
+        }
+
+        .topbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .icon-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            width: 36px;
+            height: 36px;
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--mg-secondary);
+            transition: background 0.2s;
+        }
+
+        .icon-btn:hover {
+            background: var(--mg-surface-container);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-left: 16px;
+            border-left: 1px solid var(--mg-outline);
+        }
+
+        .avatar {
+            width: 32px;
+            height: 32px;
+            background: var(--mg-primary);
+            color: white;
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        /* CONTENT */
+        .main-wrapper {
+            margin-left: var(--sidebar-w);
+            padding-top: var(--topbar-h);
+            width: 100%;
+        }
+
+        .content {
+            padding: 32px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* COMPONENTS */
+        .card {
+            background: var(--mg-surface-bright);
+            border: 1px solid var(--mg-outline);
+            border-radius: var(--radius);
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--mg-primary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .grid-layout {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 24px;
+        }
+
+        .col-8 {
+            grid-column: span 8;
+        }
+
+        .col-4 {
+            grid-column: span 4;
+        }
+
+        .col-12 {
+            grid-column: span 12;
+        }
+
+        /* KPI Style (Matching Cycle block in SCREEN_2) */
+        .kpi-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .kpi-card {
+            background: var(--mg-surface-bright);
+            border: 1px solid var(--mg-outline);
+            border-radius: var(--radius);
+            padding: 20px;
+        }
+
+        .kpi-label {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--mg-secondary);
+            margin-bottom: 8px;
+            letter-spacing: 0.05em;
+        }
+
+        .kpi-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--mg-primary);
+            display: flex;
+            align-items: baseline;
+            gap: 4px;
+        }
+
+        .kpi-sub {
+            font-size: 12px;
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .text-success {
+            color: var(--mg-success);
+        }
+
+        .text-danger {
+            color: var(--mg-danger);
+        }
+
+        /* Table Style (Matching History in SCREEN_2) */
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        thead th {
+            background: var(--mg-surface);
+            padding: 12px 16px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--mg-secondary);
+            border-bottom: 1px solid var(--mg-outline);
+        }
+
+        tbody td {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--mg-outline);
+            font-size: 13px;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Buttons & Badges */
+        .btn {
+            padding: 10px 20px;
+            border-radius: var(--radius);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            border: 1px solid transparent;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: var(--font-main);
+            justify-content: center;
+        }
+
+        .btn-primary {
+            background: var(--mg-primary);
+            color: white;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border-color: var(--mg-outline);
+            color: var(--mg-primary);
+        }
+
+        .btn-full {
+            width: 100%;
+        }
+
+        .btn-sm {
+            padding: 4px 12px;
+            font-size: 12px;
+        }
+
+        .badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .badge-warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-success {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .badge-danger {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--mg-secondary);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            display: block;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--mg-outline);
+            border-radius: var(--radius);
+            background: white;
+            font-family: var(--font-main);
+            font-size: 14px;
+        }
+
+        select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-chevron-down' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+        }
+
+        .input-readonly {
+            background: var(--mg-surface);
+            cursor: not-allowed;
+        }
+
+        /* Specific Lists */
+        .movement-item {
+            padding: 12px 0;
+            border-bottom: 1px solid var(--mg-outline);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .movement-item:last-child {
+            border-bottom: none;
+        }
+
+        .m-code {
+            font-weight: 700;
+            font-size: 13px;
+        }
+
+        .m-meta {
+            font-size: 11px;
+            color: var(--mg-secondary);
+        }
+
+        .m-val {
+            font-weight: 600;
+            font-size: 13px;
+            text-align: right;
+        }
+
+        .alert-box {
+            background: var(--mg-surface);
+            border-left: 3px solid var(--mg-primary);
+            padding: 12px;
+            margin-bottom: 16px;
+            font-size: 12px;
+        }
+    </style>
+    <link rel="stylesheet" href="../css/responsive.css">
+</head>
+
+<body>
+
+    <div class="sidebar-overlay"></div>
+    <div class="col-4">
+        <section class="card">
+            <h3 class="card-title" style="margin-bottom: 20px;">Entrée de Stock</h3>
+            <form th:action="@{/stock/enregistrer}" th:object="${entreeStockDTO}" method="post">
+                <div class="form-group">
+                    <label class="form-label">Type d'Aliment</label>
+                    <select th:field="*{idAliment}" class="form-control" required>
+                        <option value="" disabled selected>Sélectionner un type...</option>
+                        <option th:each="al : ${aliments}" th:value="${al.id}" th:text="${al.libelle}"></option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Responsable</label>
+                    <select th:field="*{idResponsable}" class="form-control" required>
+                        <option value="" disabled selected>Sélectionner un responsable...</option>
+                        <option th:each="u : ${utilisateurs}" th:value="${u.id}" th:text="${u.nom}"></option>
+                    </select>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
+                    <div>
+                        <label class="form-label">Quantité reçue (kg)</label>
+                        <input id="quantite" th:field="*{quantiteKg}" placeholder="0.00" type="number" step="0.01"
+                            required>
+                    </div>
+                    <div>
+                        <label class="form-label">Prix unitaire (Ar/kg)</label>
+                        <input id="prixUnitaire" th:field="*{prixUnitaire}" placeholder="0.00" type="number" step="0.01"
+                            required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Coût total (Ar)</label>
+                    <input type="text" id="totalGeneral" class="form-control" readonly
+                        style="background-color: #e9ecef;">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Date de réception</label>
+                    <input type="date" th:field="*{dateReception}" class="form-control" required>
+                </div>
+
+                <button class="btn btn-primary btn-full" type="submit">Enregistrer l'achat</button>
+            </form>
+        </section>
+        <section class="card">
+            <h3 class="card-title" style="margin-bottom: 16px;">Derniers Mouvements</h3>
+            <div class="movement-item">
+                <div>
+                    <div class="m-code">AL-SHR-02</div>
+                    <div class="m-meta">Achat — 12 Juin 2026</div>
+                </div>
+                <div class="m-val text-success">+500.0 kg</div>
+            </div>
+            <div class="movement-item">
+                <div>
+                    <div class="m-code">AL-SHR-01</div>
+                    <div class="m-meta">Sortie Bassin B01 — 11 Juin 2026</div>
+                </div>
+                <div class="m-val text-danger">-45.0 kg</div>
+            </div>
+            <div class="movement-item">
+                <div>
+                    <div class="m-code">MI-VIT-01</div>
+                    <div class="m-meta">Sortie Bassin B04 — 10 Juin 2026</div>
+                </div>
+                <div class="m-val text-danger">-2.5 kg</div>
+            </div>
+            <div style="margin-top: 16px;">
+                <a href="#"
+                    style="font-size: 12px; color: var(--mg-primary); font-weight: 700; text-decoration: none; display: flex; align-items: center; gap: 4px;"
+                    class="">
+                    Voir tout l'historique <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+        </section>
+    </div>
+    </div>
+    </main>
+    </div>
+    </div>
+</body>
+
+<script>
+    function toggleSidebar() {
+        document.querySelector('.sidebar').classList.toggle('open');
+        document.querySelector('.sidebar-overlay').classList.toggle('open');
+    }
+    document.querySelector('.sidebar-overlay')
+        ?.addEventListener('click', () => {
+            document.querySelector('.sidebar').classList.remove('open');
+            document.querySelector('.sidebar-overlay').classList.remove('open');
+        });
+    function initCalculTotal(idQuantite, idPrix, idTotal) {
+        const inputQuantite = document.getElementById(idQuantite);
+        const inputPrix = document.getElementById(idPrix);
+        const inputTotal = document.getElementById(idTotal);
+
+        function calculer() {
+            const qte = parseFloat(inputQuantite.value) || 0;
+            const prix = parseFloat(inputPrix.value) || 0;
+            const total = qte * prix;
+
+            // Formatage en monnaie malgache (Ar)
+            inputTotal.value = total.toLocaleString('fr-MG', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
+
+        // Ajout des écouteurs
+        inputQuantite.addEventListener('input', calculer);
+        inputPrix.addEventListener('input', calculer);
+    }
+
+    // Appel de la fonction une fois que le DOM est chargé
+    document.addEventListener('DOMContentLoaded', () => {
+        initCalculTotal('quantite', 'prixUnitaire', 'totalGeneral');
+    });
+</script>

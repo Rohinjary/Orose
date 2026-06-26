@@ -1,16 +1,18 @@
 package com.example.orose.service.nourrissage;
 
-import com.example.orose.model.Aliment;
-import com.example.orose.repository.AlimentRepository;
-import com.example.orose.repository.nourrissage.DistributionNourritureRepository;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+
+import com.example.orose.dto.nourrissage.JournalDTO;
+import com.example.orose.model.Aliment;
+import com.example.orose.model.DistributionNourriture;
+import com.example.orose.repository.AlimentRepository;
+import com.example.orose.repository.nourrissage.DistributionNourritureRepository;
 
 @Service
 public class NourrissageService {
@@ -128,6 +130,53 @@ public class NourrissageService {
 
     public List<Aliment> getAlimentsDisponibles() {
         return alimentRepository.findAll();
+    }
+
+    // 1. Journal complet (pour votre page historique)
+    public List<JournalDTO> getJournalActivites() {
+        return repository.findAllJournalComplet().stream()
+                .map(this::mapToJournalDTO)
+                .collect(Collectors.toList());
+    }
+
+    // 2. Historique filtré (version DTO)
+    public List<JournalDTO> getHistoriqueFiltreDTO(LocalDate date, String bassinCode, Long cycleId, Long creneauId) {
+        return repository.findByFilters(date, bassinCode, cycleId, creneauId).stream()
+                .map(this::mapToJournalDTO)
+                .collect(Collectors.toList());
+    }
+
+    // 3. Méthodes utilitaires (Entités pures)
+    public List<DistributionNourriture> getJournalDuJour() {
+        return repository.findJournalDuJour(LocalDate.now());
+    }
+
+    public List<DistributionNourriture> getHistorique(LocalDate debut, LocalDate fin, String codeBassin) {
+        return repository.findHistoriqueFiltre(debut, fin, codeBassin);
+    }
+
+    public List<DistributionNourriture> getHistoriqueFiltre(LocalDate date, String bassinCode, Long cycleId,
+            Long creneauId) {
+        return repository.findByFilters(date, bassinCode, cycleId, creneauId);
+    }
+
+    public List<DistributionNourriture> getJournalComplet() {
+        return repository.findAllJournalComplet();
+    }
+
+    // 4. Moteur de transformation (Le cœur du nettoyage)
+    private JournalDTO mapToJournalDTO(DistributionNourriture d) {
+        return new JournalDTO(
+                d.getId(),
+                d.getDateDistribution(),
+                d.getHeureNourrissage(),
+                (d.getCycleBassinAssoc() != null && d.getCycleBassinAssoc().getBassin() != null)
+                        ? d.getCycleBassinAssoc().getBassin().getCode()
+                        : "N/A",
+                (d.getAliment() != null) ? d.getAliment().getLibelle() : "Non défini",
+                (d.getQuantiteDonneeKg() != null) ? d.getQuantiteDonneeKg() : BigDecimal.ZERO,
+                (d.getResponsable() != null) ? d.getResponsable().getNom() : "Admin",
+                (d.getStatut() != null) ? d.getStatut() : "EN_ATTENTE");
     }
 
 }

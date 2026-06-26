@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="fr" style="">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Stocks — Move Gasy</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap"
+        rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <style>
+        /* ═══════════════════════════════════════════════
+           DESIGN SYSTEM : MOVE GASY (MATCHING SCREEN_2)
+           Theme: LIGHT | Font: INTER | Roundness: 4px
+        ═══════════════════════════════════════════════ */
+        :root {
+            --mg-surface: #f7f9fb;
+            --mg-surface-dim: #d8dadc;
+            --mg-surface-bright: #ffffff;
+            --mg-surface-container: #eceef0;
+            --mg-primary: #1a1a1a;
+            --mg-secondary: #4a4a4a;
+            --mg-outline: #d1d5db;
+
+            --mg-success: #10b981;
+            --mg-warning: #f59e0b;
+            --mg-danger: #ef4444;
+            --mg-info: #3b82f6;
+
+            --font-main: 'Inter', sans-serif;
+            --radius: 4px;
+            --sidebar-w: 240px;
+            --topbar-h: 64px;
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--mg-surface);
+            color: var(--mg-primary);
+            font-size: 14px;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* LAYOUT */
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: var(--sidebar-w);
+            background: var(--mg-surface-bright);
+            border-right: 1px solid var(--mg-outline);
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            z-index: 101;
+        }
+
+        .sidebar-brand {
+            height: var(--topbar-h);
+            padding: 0 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid var(--mg-outline);
+        }
+
+        .brand-logo {
+            width: 32px;
+            height: 32px;
+            background: var(--mg-primary);
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: white;
+        }
+
+        .brand-name {
+            font-weight: 700;
+            font-size: 16px;
+            letter-spacing: -0.02em;
+        }
+
+        .nav-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px 12px;
+        }
+
+        .nav-label {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--mg-secondary);
+            margin: 24px 12px 8px;
+            letter-spacing: 0.05em;
+        }
+
+        .nav-label:first-child {
+            margin-top: 0;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            border-radius: var(--radius);
+            color: var(--mg-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+            margin-bottom: 2px;
+        }
+
+        .nav-item:hover {
+            background: var(--mg-surface-container);
+            color: var(--mg-primary);
+        }
+
+        .nav-item.active {
+            background: var(--mg-primary);
+            color: white;
+        }
+
+        .nav-icon {
+            font-size: 18px;
+            width: 20px;
+            text-align: center;
+        }
+
+        /* TOPBAR */
+        .topbar {
+            position: fixed;
+            top: 0;
+            left: var(--sidebar-w);
+            right: 0;
+            z-index: 100;
+            height: var(--topbar-h);
+            background: var(--mg-surface-bright);
+            border-bottom: 1px solid var(--mg-outline);
+            display: flex;
+            align-items: center;
+            padding: 0 32px;
+            justify-content: space-between;
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--mg-secondary);
+        }
+
+        .breadcrumb span.active {
+            color: var(--mg-primary);
+            font-weight: 600;
+        }
+
+        .breadcrumb .sep {
+            color: var(--mg-outline);
+        }
+
+        .topbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .icon-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            width: 36px;
+            height: 36px;
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--mg-secondary);
+            transition: background 0.2s;
+        }
+
+        .icon-btn:hover {
+            background: var(--mg-surface-container);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-left: 16px;
+            border-left: 1px solid var(--mg-outline);
+        }
+
+        .avatar {
+            width: 32px;
+            height: 32px;
+            background: var(--mg-primary);
+            color: white;
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        /* CONTENT */
+        .main-wrapper {
+            margin-left: var(--sidebar-w);
+            padding-top: var(--topbar-h);
+            width: 100%;
+        }
+
+        .content {
+            padding: 32px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* COMPONENTS */
+        .card {
+            background: var(--mg-surface-bright);
+            border: 1px solid var(--mg-outline);
+            border-radius: var(--radius);
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--mg-primary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .grid-layout {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 24px;
+        }
+
+        .col-8 {
+            grid-column: span 8;
+        }
+
+        .col-4 {
+            grid-column: span 4;
+        }
+
+        .col-12 {
+            grid-column: span 12;
+        }
+
+        /* KPI Style (Matching Cycle block in SCREEN_2) */
+        .kpi-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .kpi-card {
+            background: var(--mg-surface-bright);
+            border: 1px solid var(--mg-outline);
+            border-radius: var(--radius);
+            padding: 20px;
+        }
+
+        .kpi-label {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--mg-secondary);
+            margin-bottom: 8px;
+            letter-spacing: 0.05em;
+        }
+
+        .kpi-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--mg-primary);
+            display: flex;
+            align-items: baseline;
+            gap: 4px;
+        }
+
+        .kpi-sub {
+            font-size: 12px;
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .text-success {
+            color: var(--mg-success);
+        }
+
+        .text-danger {
+            color: var(--mg-danger);
+        }
+
+        /* Table Style (Matching History in SCREEN_2) */
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        thead th {
+            background: var(--mg-surface);
+            padding: 12px 16px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--mg-secondary);
+            border-bottom: 1px solid var(--mg-outline);
+        }
+
+        tbody td {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--mg-outline);
+            font-size: 13px;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Buttons & Badges */
+        .btn {
+            padding: 10px 20px;
+            border-radius: var(--radius);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            border: 1px solid transparent;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: var(--font-main);
+            justify-content: center;
+        }
+
+        .btn-primary {
+            background: var(--mg-primary);
+            color: white;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border-color: var(--mg-outline);
+            color: var(--mg-primary);
+        }
+
+        .btn-full {
+            width: 100%;
+        }
+
+        .btn-sm {
+            padding: 4px 12px;
+            font-size: 12px;
+        }
+
+        .badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .badge-warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-success {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .badge-danger {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--mg-secondary);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            display: block;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--mg-outline);
+            border-radius: var(--radius);
+            background: white;
+            font-family: var(--font-main);
+            font-size: 14px;
+        }
+
+        select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-chevron-down' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+        }
+
+        .input-readonly {
+            background: var(--mg-surface);
+            cursor: not-allowed;
+        }
+
+        /* Specific Lists */
+        .movement-item {
+            padding: 12px 0;
+            border-bottom: 1px solid var(--mg-outline);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .movement-item:last-child {
+            border-bottom: none;
+        }
+
+        .m-code {
+            font-weight: 700;
+            font-size: 13px;
+        }
+
+        .m-meta {
+            font-size: 11px;
+            color: var(--mg-secondary);
+        }
+
+        .m-val {
+            font-weight: 600;
+            font-size: 13px;
+            text-align: right;
+        }
+
+        .alert-box {
+            background: var(--mg-surface);
+            border-left: 3px solid var(--mg-primary);
+            padding: 12px;
+            margin-bottom: 16px;
+            font-size: 12px;
+        }
+    </style>
+    <link rel="stylesheet" href="../css/responsive.css">
+</head>
+
+<body>
+
+    <div class="sidebar-overlay"></div>
+    <div class="layout">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <div class="brand-logo"><i class="bi bi-water"></i></div>
+                <div class="brand-name">MOVE GASY</div>
+            </div>
+            <div class="nav-container">
+                <div class="nav-label">Principal</div>
+                <a class="nav-item">
+                    <span class="nav-icon"><i class="bi bi-speedometer2"></i></span> Dashboard
+                </a>
+                <div class="nav-label">Terrain</div>
+                <a class="nav-item ">
+                    <span class="nav-icon"><i class="bi bi-droplet-half"></i></span> Bassins
+                </a>
+                <a class="nav-item">
+                    <span class="nav-icon"><i class="bi bi-activity"></i></span> Suivi biologique
+                </a>
+                <a class="nav-item active">
+                    <span class="nav-icon"><i class="bi bi-egg-fill"></i></span> Nourrissage
+                </a>
+                <!-- <a class="nav-item">
+                    <span class="nav-icon"><i class="bi bi-thermometer-half"></i></span> Environnement
+                </a> -->
+                <a class="nav-item">
+                    <span class="nav-icon"><i class="bi bi-plus-circle"></i></span> Sanitaire
+                </a>
+                <div class="nav-label">Logistique</div>
+                <a class="nav-item">
+                    <span class="nav-icon"><i class="bi bi-box-seam"></i></span> Stocks
+                </a>
+                <a class="nav-item">
+                    <span class="nav-icon"><i class="bi bi-cart3"></i></span> Commercial
+                </a>
+                <a class="nav-item">
+                    <span class="nav-icon"><i class="bi bi-truck"></i></span> Livraisons
+                </a>
+                <a class="nav-item">
+                    <span class="nav-icon"><i class="bi bi-cash-stack"></i></span> Finances
+                </a>
+                <div class="nav-label">Système</div>
+                <a class="nav-item" href="#">
+                    <span class="nav-icon"><i class="bi bi-lock"></i></span> Connexion</a>
+                <a class="nav-item">
+                    <span class="nav-icon"><i class="bi bi-gear"></i></span> Administration</a>
+                <div class="nav-label">Portail client</div>
+                <a class="nav-item">
+                    <span class="nav-icon"><i class="bi bi-person-lock"></i></span> Front Office
+                </a>
+            </div>
+        </aside>
+        <!-- MAIN WRAPPER -->
+        <div class="main-wrapper">
+            <!-- TOPBAR -->
+            <header class="topbar">
+                <button class="menu-toggle" onclick="toggleSidebar()">
+                    <i class="bi bi-list"></i>
+                </button>
+                <div class="breadcrumb">
+                    <span class="">Logistique</span>
+                    <span class="sep">/</span>
+                    <span class="active">Stocks</span>
+                </div>
+                <div class="topbar-actions">
+                    <button class="icon-btn"><i class="bi bi-bell"></i></button>
+                    <button class="icon-btn"><i class="bi bi-gear"></i></button>
+                    <div class="user-profile">
+                        <div class="avatar">AD</div>
+                    </div>
+                </div>
+            </header>
+            <!-- MAIN CONTENT -->
+            <main class="content">
+                <!-- KPI Section -->
+                <div class="kpi-row">
+                    <div class="kpi-card">
+                        <div class="kpi-label">Stock actuel (kg)</div>
+                        <div class="kpi-value">
+                            <span th:text="${#numbers.formatDecimal(stock_dispo, 1, 'POINT', 1, 'COMMA')}">0.0</span>
+                            <span style="font-size: 14px; font-weight: 400; margin-left: 4px;">kg</span>
+                        </div>
+                        <div class="kpi-sub text-success">
+                            <i class="bi bi-graph-up-arrow"></i>
+                            <span
+                                th:text="'+' + ${#numbers.formatDecimal(variationSemaine, 1, 'POINT', 0, 'COMMA')} + 'kg cette semaine'">+0kg
+                                cette semaine</span>
+                        </div>
+                    </div>
+
+                    <div class="kpi-card">
+                        <div class="kpi-label">Valeur du stock (Ar)</div>
+                        <div class="kpi-value">
+                            <span th:text="${#numbers.formatDecimal(valeur_stock, 0, 'POINT', 0, 'COMMA')}">0</span>
+                            <span style="font-size: 14px; font-weight: 400; margin-left: 4px;">Ar</span>
+                        </div>
+                        <div class="kpi-sub" style="color: var(--mg-secondary);">Total basé sur les prix unitaires</div>
+                    </div>
+
+                    <div class="kpi-card" style="background: var(--mg-primary); color: white; border: none;">
+                        <div class="kpi-label" style="color: rgba(255, 255, 255, 0.7);">Autonomie estimée</div>
+                        <div class="kpi-value">
+                            <span th:text="${autonomieJours}">0</span>
+                            <span style="font-size: 14px; font-weight: 400; margin-left: 4px;">Jours</span>
+                        </div>
+
+                        <div style="margin-top: 12px; display: flex; flex-direction: column; gap: 8px;">
+                            <div th:each="alerte : ${alertesStock}"
+                                th:class="${alerte.estCritique} ? 'kpi-sub text-danger' : 'kpi-sub text-warning'"
+                                style="font-weight: 600; margin: 0;">
+                                <i class="bi bi-exclamation-triangle-fill"></i>
+                                <span th:text="${alerte.message}">Message d'alerte</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="grid-layout">
+                    <!-- MAIN TABLE SECTION -->
+                    <div class="col-8">
+                        <section class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">Stocks Physiques</h3>
+                                <div style="display: flex; gap: 8px;">
+                                    <button class="btn btn-outline btn-sm">Exporter PDF</button>
+                                    <button class="btn btn-primary btn-sm">Inventaire Complet</button>
+                                </div>
+                            </div>
+                            <div class="table-container">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Désignation</th>
+                                            <th style="text-align: right;">Stock (kg)</th>
+                                            <th style="text-align: center;">Autonomie</th>
+                                            <th style="text-align: center;">Statut</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:if="${stocks == null or #lists.isEmpty(stocks)}">
+                                            <td colspan="4" style="text-align: center; padding: 20px;">Aucun stock
+                                                disponible.</td>
+                                        </tr>
+
+                                        <tr th:each="s : ${stocks}">
+                                            <td th:text="${s.libelle != null ? s.libelle : 'Non défini'}">Désignation
+                                            </td>
+
+                                            <td style="text-align: right;"
+                                                th:text="${s.quantite != null} ? ${#numbers.formatDecimal(s.quantite, 1, 1)} : '0.0'">
+                                                0.0
+                                            </td>
+
+                                            <td style="text-align: center;"
+                                                th:text="${s.autonomie != null ? s.autonomie + ' Jours' : 'N/A'}">
+                                                0 Jours
+                                            </td>
+
+                                            <td style="text-align: center;">
+                                                <span class="badge"
+                                                    th:classappend="${s.cssClass != null ? 'badge-' + s.cssClass : 'badge-secondary'}"
+                                                    th:text="${s.statut != null ? s.statut : 'Inconnu'}">
+                                                    Statut
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </section>
+                        <!-- Bottom block matching SCREEN_2 style -->
+                        <section class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">Analyse Prédictive de consommation</h3>
+                            </div>
+                            <div style="display: flex; gap: 40px; align-items: center;">
+                                <div style="flex: 1;">
+                                    <p style="font-size: 13px; color: var(--mg-secondary); margin-bottom: 8px;"
+                                        class="">Consommation moyenne journalière (tous bassins)</p>
+                                    <div style="font-size: 24px; font-weight: 700;" class="">124.5 kg <span
+                                            style="font-size: 14px; font-weight: 400; color: var(--mg-secondary);"
+                                            class="">/ jour</span></div>
+                                </div>
+                                <div style="flex: 2; border-left: 1px solid var(--mg-outline); padding-left: 40px;">
+                                    <p style="font-size: 13px; color: var(--mg-secondary); margin-bottom: 8px;"
+                                        class="">Projection fin de mois</p>
+                                    <div
+                                        style="height: 8px; background: var(--mg-surface-container); border-radius: 4px; margin-bottom: 8px;">
+                                        <div
+                                            style="height: 100%; width: 78%; background: var(--mg-primary); border-radius: 4px;">
+                                        </div>
+                                    </div>
+                                    <div
+                                        style="display: flex; justify-content: space-between; font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--mg-secondary);">
+                                        <span class="">Utilisé: 3,860kg</span>
+                                        <span class="">Capacité Max: 5,000kg</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+</body>
