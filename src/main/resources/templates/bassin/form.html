@@ -55,14 +55,14 @@
                     <!-- Surface -->
                     <div class="form-group">
                         <label for="surface_m2">Surface (m²) (inferieure a 100)</label>
-                        <input id="surface_m2" type="number" max="99" name="surface_m2" step="0.01" placeholder="0.00"
+                        <input id="surface_m2" type="number" min="0" max="99" name="surface_m2" step="0.01" placeholder="0.00" 
                             th:value="${bassinDTO.surface_m2}" />
                     </div>
 
                     <!-- Profondeur -->
                     <div class="form-group">
                         <label for="profondeur_metre">Profondeur (m) (inferieure a 100)</label>
-                        <input id="profondeur_metre" type="number" max="99" name="profondeur_metre" step="0.1"
+                        <input id="profondeur_metre" type="number" min="0" max="99" name="profondeur_metre" step="0.1"
                             placeholder="0.00" th:value="${bassinDTO.profondeur_metre}" />
                     </div>
 
@@ -70,6 +70,9 @@
                     <div class="form-group">
                         <label for="dateCreation">Date de creation</label>
                         <input id="dateCreation" type="date" name="dateCreation" th:value="${bassinDTO.dateCreation}" />
+                        <span id="date-error" style="color: #e53e3e; font-size: 12px; display: none;">
+                            La date doit être égale ou supérieure à aujourd'hui.
+                        </span>
                     </div>
 
                     <!-- Notes -->
@@ -108,22 +111,8 @@
                 document.querySelector('.sidebar-overlay').classList.remove('open');
             });
 
-<<<<<<< HEAD
-        document.getElementById('code').addEventListener('blur', function() {
-        const val = this.value.trim();
-        const regex = /^B0[1-9]$/;
-        const error = document.getElementById('code-error');
-        if (val && !regex.test(val)) {
-            error.style.display = 'block';
-            this.style.borderColor = '#e53e3e';
-        } else {
-            error.style.display = 'none';
-            this.style.borderColor = '';
-        }
-    });
-    </script>
-=======
-            document.getElementById('code')?.addEventListener('blur', function () {
+            // Validation code bassin
+            document.getElementById('code').addEventListener('blur', function () {
                 const val = this.value.trim();
                 const regex = /^B0[1-9]$/;
                 const error = document.getElementById('code-error');
@@ -131,13 +120,53 @@
                     error.style.display = 'block';
                     this.style.borderColor = '#e53e3e';
                 } else {
-                    if (error) error.style.display = 'none';
+                    error.style.display = 'none';
                     this.style.borderColor = '';
                 }
             });
+
+            // Bloquer les dates antérieures à aujourd'hui
+            const dateInput = document.getElementById('dateCreation');
+            const today = new Date().toISOString().split('T')[0];
+            dateInput.setAttribute('min', today);
+
+            dateInput.addEventListener('blur', function () {
+                const error = document.getElementById('date-error');
+                if (this.value && this.value < today) {
+                    error.style.display = 'block';
+                    this.style.borderColor = '#e53e3e';
+                } else {
+                    error.style.display = 'none';
+                    this.style.borderColor = '';
+                }
+            });
+
+            // Validation globale avant soumission
+            document.querySelector('form').addEventListener('submit', function (e) {
+                let valid = true;
+
+                // Vérif code
+                const code = document.getElementById('code').value.trim();
+                const codeError = document.getElementById('code-error');
+                if (!code || !/^B0[1-9]$/.test(code)) {
+                    codeError.style.display = 'block';
+                    document.getElementById('code').style.borderColor = '#e53e3e';
+                    valid = false;
+                }
+
+                // Vérif date
+                const dateVal = document.getElementById('dateCreation').value;
+                const dateError = document.getElementById('date-error');
+                if (!dateVal || dateVal < today) {
+                    dateError.style.display = 'block';
+                    document.getElementById('dateCreation').style.borderColor = '#e53e3e';
+                    valid = false;
+                }
+
+                if (!valid) e.preventDefault();
+            });
         </script>
     </th:block>
->>>>>>> origin/dev
 </body>
 
 </html>
