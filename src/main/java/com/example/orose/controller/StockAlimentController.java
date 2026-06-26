@@ -1,18 +1,14 @@
 package com.example.orose.controller;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.Collections;
 import java.util.List;
 
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model; // Nouveau DTO pour le stock
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.ModelAttribute; // Nouveau DTO pour le stock
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.orose.dto.EntreeStockDTO;
@@ -62,7 +58,6 @@ public class StockAlimentController {
         return "nourrissage/stock_form";
     }
 
-    
     @GetMapping("/liste/produit")
     public String afficherListeProduit(Model model) {
         return "stock/list_prod_stock";
@@ -105,52 +100,25 @@ public class StockAlimentController {
     }
 
     @GetMapping("/historique")
-    public String afficherHistorique(
-            @RequestParam(required = false) String date,
-            @RequestParam(required = false) String bassinCode,
-            @RequestParam(required = false) Long cycleId,
-            @RequestParam(required = false) Long creneauId,
-            Model model) {
+    public String afficherHistorique(Model model) {
+        // Appel de la méthode que vous avez ajoutée dans votre Service
+        List<JournalDTO> historique = nourrissageService.getJournalActivites();
 
-        LocalDate localDate = (date != null && !date.isEmpty()) ? LocalDate.parse(date) : null;
-
-        // 1. Récupération des listes
-        List<JournalDTO> listeJournal = (localDate == null && (bassinCode == null || bassinCode.isEmpty())
-                && cycleId == null && creneauId == null)
-                        ? nourrissageService.getJournalActivites()
-                        : nourrissageService.getHistoriqueFiltreDTO(localDate, bassinCode, cycleId, creneauId);
-
-        BigDecimal consommationTotale = nourrissageService.getConsommationTotale(bassinCode, localDate, localDate);
-
-        
-        model.addAttribute("historique", listeJournal != null ? listeJournal : Collections.emptyList());
-        model.addAttribute("consoTotale", consommationTotale != null ? consommationTotale : BigDecimal.ZERO);
-        model.addAttribute("dateSelectionnee", date);
-
-        // 4. Menus
-        model.addAttribute("bassins", bassinService.listerBassins());
-        model.addAttribute("cycles", cycleService.getCyclesActif());
-        model.addAttribute("listeCreneaux", creneauRepository.findAllByOrderByOrdreAsc());
+        // On passe la liste au modèle Thymeleaf
+        model.addAttribute("historique", historique);
 
         return "nourrissage/histo_nourri";
     }
-    
-    
-    
-    
-    
-    
-    
     // @GetMapping("/stock/dashboard")
-     // public String afficherDashboard(Model model) {
-     // // Indicateurs globaux de stock
-     // model.addAttribute("stock_dispo", stockAlimentService.getStockActuelTotal());
-     // model.addAttribute("valeur_stock",
-     // stockAlimentService.getValeurStockTotale());
-     // model.addAttribute("autonomieJours",
-     // stockAlimentService.estimerAutonomieJours());
-     // model.addAttribute("variationSemaine",
-     // stockAlimentService.getVariationStockSemaine());
+    // public String afficherDashboard(Model model) {
+    // // Indicateurs globaux de stock
+    // model.addAttribute("stock_dispo", stockAlimentService.getStockActuelTotal());
+    // model.addAttribute("valeur_stock",
+    // stockAlimentService.getValeurStockTotale());
+    // model.addAttribute("autonomieJours",
+    // stockAlimentService.estimerAutonomieJours());
+    // model.addAttribute("variationSemaine",
+    // stockAlimentService.getVariationStockSemaine());
 
     // // Alertes pour attirer l'attention (ex: seuil critique)
     // model.addAttribute("alertesStock", stockAlimentService.getAlertesStock());

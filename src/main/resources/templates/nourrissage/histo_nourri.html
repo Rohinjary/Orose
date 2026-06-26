@@ -686,35 +686,49 @@
                                 <span style="font-size: 12px; color: var(--mg-secondary);"
                                     th:text="'Affichage de ' + ${#lists.size(historique)} + ' entrées'"></span>
                             </div>
-                            <div class="table-container">
-                                <p>Nombre de résultats : <span
-                                        th:text="${historique != null ? #lists.size(historique) : 0}">0</span></p>
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3 class="card-title">Historique des nourrissages</h3>
+                                </div>
 
-                                <table>
-                                    <tbody>
-                                        <tr th:each="distrib : ${historique}">
-                                            <td th:text="${distrib.date}">Date</td>
-                                            <td th:text="${distrib.heure}">Heure</td>
-                                            <td><strong th:text="${distrib.codeBassin}">Bassin</strong></td>
-                                            <td th:text="${distrib.nomAliment}">Aliment</td>
+                                <div class="table-container">
+                                    <table th:if="${historique != null and not #lists.isEmpty(historique)}">
+                                        <thead>
+                                            <tr>
+                                                <th>Date</th>
+                                                <th>Heure</th>
+                                                <th>Responsable</th>
+                                                <th>Bassin</th>
+                                                <th>Aliment</th>
+                                                <th>Quantité</th>
+                                                <th>Statut</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr th:each="distrib : ${historique}">
+                                                <td th:text="${distrib.date}">00/00/0000</td>
+                                                <td th:text="${distrib.heure}">00:00</td>
+                                                <td th:text="${distrib.nomResponsable}">Nom</td>
+                                                <td><strong th:text="${distrib.codeBassin}">Bassin</strong></td>
+                                                <td th:text="${distrib.nomAliment}">Aliment</td>
+                                                <td th:text="${distrib.quantite} + ' kg'">0 kg</td>
+                                                <td>
+                                                    <span class="badge" th:classappend="${distrib.cssClass}"
+                                                        th:text="${distrib.statut}">Statut</span>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
 
-                                            <td
-                                                th:text="${distrib.quantite != null ? #numbers.formatDecimal(distrib.quantite, 1, 2) + ' kg' : '0.00 kg'}">
-                                                0.00 kg</td>
-
-                                            <td th:text="${distrib.nomResponsable}">Responsable</td>
-                                            <td>
-                                                <span class="badge" th:classappend="${distrib.cssClass}"
-                                                    th:text="${distrib.statut}">Statut</span>
-                                            </td>
-                                        </tr>
-
-                                        <tr th:if="${historique == null or #lists.isEmpty(historique)}">
-                                            <td colspan="7" style="text-align: center;">Aucune donnée trouvée pour ces
-                                                critères.</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                                    <div th:if="${historique == null or #lists.isEmpty(historique)}"
+                                        style="padding: 20px; text-align: center;">
+                                        <p>Aucune distribution de nourriture enregistrée.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div th:if="${historique == null or #lists.isEmpty(historique)}"
+                                style="text-align: center; padding: 20px;">
+                                <p>Aucune activité enregistrée.</p>
                             </div>
                             <div class="pagination">
                                 <button class="page-btn"><i class="bi bi-chevron-left"></i></button>

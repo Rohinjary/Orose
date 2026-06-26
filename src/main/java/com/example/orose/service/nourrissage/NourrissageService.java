@@ -132,60 +132,51 @@ public class NourrissageService {
         return alimentRepository.findAll();
     }
 
-    // 1. Récupération du journal des activités pour la journée en cours
+    // 1. Journal complet (pour votre page historique)
+    public List<JournalDTO> getJournalActivites() {
+        return repository.findAllJournalComplet().stream()
+                .map(this::mapToJournalDTO)
+                .collect(Collectors.toList());
+    }
+
+    // 2. Historique filtré (version DTO)
+    public List<JournalDTO> getHistoriqueFiltreDTO(LocalDate date, String bassinCode, Long cycleId, Long creneauId) {
+        return repository.findByFilters(date, bassinCode, cycleId, creneauId).stream()
+                .map(this::mapToJournalDTO)
+                .collect(Collectors.toList());
+    }
+
+    // 3. Méthodes utilitaires (Entités pures)
     public List<DistributionNourriture> getJournalDuJour() {
         return repository.findJournalDuJour(LocalDate.now());
     }
 
-    // 2. Récupération de l'historique filtré (Période, Bassin)
-    // Note: Vous pouvez passer 'null' pour les paramètres optionnels
     public List<DistributionNourriture> getHistorique(LocalDate debut, LocalDate fin, String codeBassin) {
         return repository.findHistoriqueFiltre(debut, fin, codeBassin);
     }
 
-    // 3. Calcul de la statistique de consommation totale (KPI pour le CDC)
-    public BigDecimal getConsommationTotale(String codeBassin, LocalDate debut, LocalDate fin) {
-        BigDecimal total = repository.sumQuantiteByBassinAndPeriode(codeBassin, debut, fin);
-        return (total != null) ? total : BigDecimal.ZERO;
-    }
-
-    // Dans NourrissageService.java, supprimez les @Query et remplacez par :
     public List<DistributionNourriture> getHistoriqueFiltre(LocalDate date, String bassinCode, Long cycleId,
             Long creneauId) {
         return repository.findByFilters(date, bassinCode, cycleId, creneauId);
-    }
-
-    public List<JournalDTO> getJournalActivites() {
-        return repository.findAllJournalComplet().stream()
-                .map(d -> new JournalDTO(
-                        d.getId(), // Si id est Integer dans le DTO, ça passe
-                        d.getDateDistribution(),
-                        d.getHeureNourrissage(),
-                        d.getCycleBassinAssoc().getBassin().getCode(),
-                        (d.getAliment() != null) ? d.getAliment().getLibelle() : "N/A", // CORRIGÉ : getLibelle()
-                        d.getQuantiteDonneeKg(),
-                        (d.getResponsable() != null) ? d.getResponsable().getNom() : "Admin", // CORRIGÉ : getNom()
-                        d.getStatut()))
-                .collect(Collectors.toList());
     }
 
     public List<DistributionNourriture> getJournalComplet() {
         return repository.findAllJournalComplet();
     }
 
-    public List<JournalDTO> getHistoriqueFiltreDTO(LocalDate date, String bassinCode, Long cycleId, Long creneauId) {
-        // Utilisation de findByFilters qui accepte bien les 4 paramètres
-        return repository.findByFilters(date, bassinCode, cycleId, creneauId).stream()
-                .map(d -> new JournalDTO(
-                        d.getId(),
-                        d.getDateDistribution(),
-                        d.getHeureNourrissage(),
-                        d.getCycleBassinAssoc().getBassin().getCode(),
-                        (d.getAliment() != null) ? d.getAliment().getLibelle() : "N/A",
-                        d.getQuantiteDonneeKg(),
-                        (d.getResponsable() != null) ? d.getResponsable().getNom() : "Admin",
-                        d.getStatut()))
-                .collect(Collectors.toList());
+    // 4. Moteur de transformation (Le cœur du nettoyage)
+    private JournalDTO mapToJournalDTO(DistributionNourriture d) {
+        return new JournalDTO(
+                d.getId(),
+                d.getDateDistribution(),
+                d.getHeureNourrissage(),
+                (d.getCycleBassinAssoc() != null && d.getCycleBassinAssoc().getBassin() != null)
+                        ? d.getCycleBassinAssoc().getBassin().getCode()
+                        : "N/A",
+                (d.getAliment() != null) ? d.getAliment().getLibelle() : "Non défini",
+                (d.getQuantiteDonneeKg() != null) ? d.getQuantiteDonneeKg() : BigDecimal.ZERO,
+                (d.getResponsable() != null) ? d.getResponsable().getNom() : "Admin",
+                (d.getStatut() != null) ? d.getStatut() : "EN_ATTENTE");
     }
 
 }
