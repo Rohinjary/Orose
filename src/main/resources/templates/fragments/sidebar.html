@@ -88,6 +88,31 @@
             </div>
         </div>
 
+        <div class="nav-dropdown" th:classappend="${currentGroup == 'nourrissage'} ? 'open' : ''">
+            <a class="nav-item" onclick="toggleDropdown(this)">
+                <span class="nav-icon"><i class="bi bi-basket2"></i></span> Nourrissage
+                <span class="chevron-icon"><i class="bi bi-chevron-right"></i></span>
+            </a>
+            <div class="submenu">
+                <a class="nav-item" th:classappend="${currentPage == 'planning'} ? 'active' : ''"
+                   th:href="@{/nourrissage/planning}">
+                    Tableau de bord
+                </a>
+                <a class="nav-item" th:classappend="${currentPage == 'distribution'} ? 'active' : ''"
+                   th:href="@{/nourrissage/distribution}">
+                    Saisie distribution
+                </a>
+                <a class="nav-item" th:classappend="${currentPage == 'nourrissage-stock'} ? 'active' : ''"
+                   th:href="@{/nourrissage/stock}">
+                    Stock aliment
+                </a>
+                <a class="nav-item" th:classappend="${currentPage == 'nourrissage-historique'} ? 'active' : ''"
+                   th:href="@{/nourrissage/historique}">
+                    Historique
+                </a>
+            </div>
+        </div>
+
        
         
     </div>
