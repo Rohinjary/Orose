@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layouts/default}">
+
+<head>
+    <title layout:fragment="page-title">Nourrissage — Move Gasy</title>
+    <th:block layout:fragment="page-styles">
+        <style>
+            /* KPI Cards Style modification if needed to fit layout */
+            .grid-detail {
+                display: grid;
+                grid-template-columns: repeat(12, 1fr);
+                gap: 24px;
+            }
+            .col-4 { grid-column: span 4; }
+            .col-8 { grid-column: span 8; }
+            .col-12 { grid-column: span 12; }
+
+            .stat-group {
+                display: flex;
+                align-items: baseline;
+                gap: 12px;
+                padding-top: 20px;
+                border-top: 1px solid var(--mg-outline);
+                margin-top: 20px;
+            }
+            .stat-item .label {
+                font-size: 12px;
+                color: var(--mg-secondary);
+                font-weight: 600;
+                margin-bottom: 4px;
+                text-transform: uppercase;
+            }
+            .stat-item .value {
+                font-size: 32px;
+                font-weight: 700;
+                color: var(--mg-primary);
+            }
+            .progress-container {
+                height: 8px;
+                background: var(--mg-surface-container);
+                border-radius: 4px;
+                margin: 12px 0;
+                overflow: hidden;
+            }
+            .progress-bar {
+                height: 100%;
+                background: var(--mg-primary);
+                border-radius: 4px;
+            }
+
+            /* Table Style alignment with modern Move Gasy specs */
+            .pond-id {
+                font-weight: 700;
+                font-size: 16px;
+                display: block;
+            }
+            .pond-meta {
+                font-size: 11px;
+                color: var(--mg-secondary);
+                text-transform: uppercase;
+            }
+            .cell-time {
+                font-size: 12px;
+                color: var(--mg-secondary);
+                margin-top: 4px;
+            }
+
+            /* Badges colors override */
+            .badge-danger { background: #dc2626; color: #fff; }
+            .badge-success { background: #16a34a; color: #fff; }
+            .badge-warning { background: #f59e0b; color: #fff; }
+            .badge-secondary { background: #6b7280; color: #fff; }
+
+            /* Local buttons */
+            .btn-outline {
+                background: transparent;
+                border: 1px solid var(--mg-outline);
+                color: var(--mg-primary);
+                padding: 6px 12px;
+                border-radius: var(--radius);
+                font-size: 12px;
+                cursor: pointer;
+            }
+            .btn-outline:hover { background: var(--mg-surface); }
+            .btn-danger {
+                background: #dc2626;
+                color: white;
+                border: 1px solid #dc2626;
+                padding: 6px 12px;
+                border-radius: var(--radius);
+                font-size: 12px;
+                cursor: pointer;
+            }
+            .btn-danger:hover { background: #b91c1c; }
+        </style>
+    </th:block>
+</head>
+
+<body>
+
+    <div layout:fragment="content">
+        
+        <!-- Alerts & SweetAlert Blocks -->
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script th:if="${error}">
+            Swal.fire({ icon: 'error', title: 'Erreur', text: '[[${error}]]' });
+        </script>
+        <script th:if="${success}">
+            Swal.fire({ icon: 'success', title: 'Succès', text: '[[${success}]]' });
+        </script>
+
+        <header class="header-section" style="margin-bottom: 32px;">
+            <h2 class="header-title" style="font-size: 24px; font-weight: 700; margin-bottom: 4px;">Tableau de bord Nourrissage</h2>
+            <p class="header-sub" style="color: var(--mg-secondary); font-size: 14px;">Suivi en temps réel des distributions d'aliments par bassin.</p>
+        </header>
+
+        <!-- KPI Cards -->
+        <div class="grid-detail" style="margin-bottom: 32px;">
+            <div class="col-4">
+                <section class="card" style="background: var(--mg-surface-bright); border: 1px solid var(--mg-outline); border-radius: var(--radius); padding: 24px; height: 100%;">
+                    <h3 class="card-title" style="font-size: 14px; font-weight: 700; color: var(--mg-primary); text-transform: uppercase; letter-spacing: 0.05em;">Prochain Repas</h3>
+                    <div class="stat-group">
+                        <div class="stat-item">
+                            <div th:text="${dashboard.prochaineHeure}" class="value">11:30</div>
+                            <div th:text="${dashboard.prochainBassin}" class="label" style="margin-top: 4px;">Bassin B-04</div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+            <div class="col-4">
+                <section class="card" style="background: var(--mg-surface-bright); border: 1px solid var(--mg-outline); border-radius: var(--radius); padding: 24px; height: 100%;">
+                    <h3 class="card-title" style="font-size: 14px; font-weight: 700; color: var(--mg-primary); text-transform: uppercase; letter-spacing: 0.05em;">Statut Global</h3>
+                    <div class="stat-group">
+                        <div class="stat-item">
+                            <div class="value" th:text="${dashboard.nbEnAttente}">1</div>
+                            <span class="badge badge-warning" style="vertical-align: middle; margin-left: 8px; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; text-transform: uppercase;">En attente</span>
+                        </div>
+                    </div>
+                </section>
+            </div>
+            <div class="col-4">
+                <section class="card" style="background: var(--mg-surface-bright); border: 1px solid var(--mg-outline); border-radius: var(--radius); padding: 24px; height: 100%;">
+                    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <h3 class="card-title" style="font-size: 14px; font-weight: 700; color: var(--mg-primary); text-transform: uppercase; letter-spacing: 0.05em;">Repas Distribués</h3>
+                        <span th:text="${dashboard.pourcentageDistribution + '%'}" style="font-weight: 700;">75%</span>
+                    </div>
+                    <div class="progress-container" style="margin: 0 0 16px 0;">
+                        <div class="progress-bar" th:style="'width:' + ${dashboard.pourcentageDistribution} + '%'"></div>
+                    </div>
+                    <div th:text="${dashboard.repasDistribues + ' / ' + dashboard.totalRepas}" style="font-size: 24px; font-weight: 700;">12 / 16</div>
+                </section>
+            </div>
+            <div class="col-12">
+                <section class="card" style="background: var(--mg-surface-bright); border: 1px solid var(--mg-outline); border-radius: var(--radius); padding: 24px;">
+                    <h3 class="card-title" style="font-size: 14px; font-weight: 700; color: var(--mg-primary); text-transform: uppercase; letter-spacing: 0.05em;">Stock Aliment</h3>
+                    <div class="stat-group" style="justify-content: space-between; align-items: center;">
+                        <div class="stat-item">
+                            <div th:text="${#numbers.formatDecimal(dashboard.stockDisponible,1,2)+' kg'}" class="value">450 kg</div>
+                            <div class="label" style="margin-top: 4px;">Stock disponible</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div th:if="${dashboard.stockCritique}" class="badge badge-danger" style="margin-bottom: 4px; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; text-transform: uppercase;">À COMMANDER</div>
+                            <div th:text="'Autonomie : ' + ${dashboard.autonomieJour} + ' jours'" class="cell-time" style="color: #dc2626; font-weight: 600;">Autonomie : 5 jours</div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <!-- Planning Table Card -->
+        <section class="card" style="background: var(--mg-surface-bright); border: 1px solid var(--mg-outline); border-radius: var(--radius); padding: 24px;">
+            <div class="card-header" style="margin-bottom: 20px;">
+                <h3 class="card-title" style="font-size: 14px; font-weight: 700; color: var(--mg-primary); text-transform: uppercase; letter-spacing: 0.05em;">Planning du Jour</h3>
+            </div>
+            <div class="table-container" style="width: 100%; overflow-x: auto; background: var(--mg-surface-bright); border: 1px solid var(--mg-outline); border-radius: var(--radius);">
+                <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 13px;">
+                    <thead>
+                        <tr>
+                            <th style="width: 20%; background: #f8fafc; padding: 12px 16px; font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--mg-secondary); border-bottom: 1px solid var(--mg-outline);">Bassin</th>
+                            <th style="background: #f8fafc; padding: 12px 16px; font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--mg-secondary); border-bottom: 1px solid var(--mg-outline);">Matin (06h-10h)</th>
+                            <th style="background: #f8fafc; padding: 12px 16px; font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--mg-secondary); border-bottom: 1px solid var(--mg-outline);">Midi (11h-14h)</th>
+                            <th style="background: #f8fafc; padding: 12px 16px; font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--mg-secondary); border-bottom: 1px solid var(--mg-outline);">Soir (17h-20h)</th>
+                            <th style="background: #f8fafc; padding: 12px 16px; font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--mg-secondary); border-bottom: 1px solid var(--mg-outline);">Nuit (22h-01h)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="bassin : ${bassins}">
+                            <!-- BASSIN -->
+                            <td style="border-left: 4px solid var(--mg-primary); padding: 16px; border-bottom: 1px solid var(--mg-outline);">
+                                <span class="pond-id" th:text="${bassin.codeBassin}"></span>
+                                <span class="pond-meta" th:text="${bassin.noteBassin}"></span>
+                            </td>
+
+                            <!-- MATIN -->
+                            <td style="padding: 16px; border-bottom: 1px solid var(--mg-outline);">
+                                <span class="badge" th:classappend="
+                                    ${bassin.matin == null} ? ' badge-secondary' :
+                                    (${bassin.matin.statutDistribution == 'NOURRI'} ? ' badge-success' :
+                                    (${bassin.matin.statutDistribution == 'RETARD'} ? ' badge-danger' :
+                                    ' badge-warning'))" th:text="${bassin.matin != null ? bassin.matin.statutDistribution : 'NON PLANIFIÉ'}"
+                                    style="padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; text-transform: uppercase;">
+                                </span>
+                                <div class="cell-time" th:text="${bassin.matin != null ? #temporals.format(bassin.matin.heurePrevue,'HH:mm') : '--:--'}"></div>
+                                <div class="cell-time">
+                                    <span th:text="${bassin.matin != null ? bassin.matin.quantiteDonneeKg : 0}"></span> /
+                                    <span th:text="${bassin.matin != null ? bassin.matin.quantitePrevueKg : 0}"></span> kg
+                                </div>
+                                <div th:if="${bassin.matin != null and (bassin.matin.statutDistribution == 'EN_ATTENTE' or bassin.matin.statutDistribution == 'RETARD')}" style="margin-top: 8px;">
+                                    <form th:action="@{/nourrissage/valider/{id}(id=${bassin.matin.idDistribution})}" method="POST">
+                                        <button type="submit" class="btn-outline" th:classappend="${bassin.matin.statutDistribution == 'RETARD'} ? ' btn-danger' : ''">
+                                            <i class="bi bi-check-circle"></i> Valider
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+
+                            <!-- MIDI -->
+                            <td style="padding: 16px; border-bottom: 1px solid var(--mg-outline);">
+                                <span class="badge" th:classappend="
+                                    ${bassin.midi == null} ? ' badge-secondary' :
+                                    (${bassin.midi.statutDistribution == 'NOURRI'} ? ' badge-success' :
+                                    (${bassin.midi.statutDistribution == 'RETARD'} ? ' badge-danger' :
+                                    ' badge-warning'))" th:text="${bassin.midi != null ? bassin.midi.statutDistribution : 'NON PLANIFIÉ'}"
+                                    style="padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; text-transform: uppercase;">
+                                </span>
+                                <div class="cell-time" th:text="${bassin.midi != null ? #temporals.format(bassin.midi.heurePrevue,'HH:mm') : '--:--'}"></div>
+                                <div class="cell-time">
+                                    <span th:text="${bassin.midi != null ? bassin.midi.quantiteDonneeKg : 0}"></span> /
+                                    <span th:text="${bassin.midi != null ? bassin.midi.quantitePrevueKg : 0}"></span> kg
+                                </div>
+                                <div th:if="${bassin.midi != null and (bassin.midi.statutDistribution == 'EN_ATTENTE' or bassin.midi.statutDistribution == 'RETARD')}" style="margin-top: 8px;">
+                                    <form th:action="@{/nourrissage/valider/{id}(id=${bassin.midi.idDistribution})}" method="POST">
+                                        <button type="submit" class="btn-outline" th:classappend="${bassin.midi.statutDistribution == 'RETARD'} ? ' btn-danger' : ''">
+                                            <i class="bi bi-check-circle"></i> Valider
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+
+                            <!-- SOIR -->
+                            <td style="padding: 16px; border-bottom: 1px solid var(--mg-outline);">
+                                <span class="badge" th:classappend="
+                                    ${bassin.soir == null} ? ' badge-secondary' :
+                                    (${bassin.soir.statutDistribution == 'NOURRI'} ? ' badge-success' :
+                                    (${bassin.soir.statutDistribution == 'RETARD'} ? ' badge-danger' :
+                                    ' badge-warning'))" th:text="${bassin.soir != null ? bassin.soir.statutDistribution : 'NON PLANIFIÉ'}"
+                                    style="padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; text-transform: uppercase;">
+                                </span>
+                                <div class="cell-time" th:text="${bassin.soir != null ? #temporals.format(bassin.soir.heurePrevue,'HH:mm') : '--:--'}"></div>
+                                <div class="cell-time">
+                                    <span th:text="${bassin.soir != null ? bassin.soir.quantiteDonneeKg : 0}"></span> /
+                                    <span th:text="${bassin.soir != null ? bassin.soir.quantitePrevueKg : 0}"></span> kg
+                                </div>
+                                <div th:if="${bassin.soir != null and (bassin.soir.statutDistribution == 'EN_ATTENTE' or bassin.soir.statutDistribution == 'RETARD')}" style="margin-top: 8px;">
+                                    <form th:action="@{/nourrissage/valider/{id}(id=${bassin.soir.idDistribution})}" method="POST">
+                                        <button type="submit" class="btn-outline" th:classappend="${bassin.soir.statutDistribution == 'RETARD'} ? ' btn-danger' : ''">
+                                            <i class="bi bi-check-circle"></i> Valider
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+
+                            <!-- NUIT -->
+                            <td style="padding: 16px; border-bottom: 1px solid var(--mg-outline);">
+                                <span class="badge" th:classappend="
+                                    ${bassin.nuit == null} ? ' badge-secondary' :
+                                    (${bassin.nuit.statutDistribution == 'NOURRI'} ? ' badge-success' :
+                                    (${bassin.nuit.statutDistribution == 'RETARD'} ? ' badge-danger' :
+                                    ' badge-warning'))" th:text="${bassin.nuit != null ? bassin.nuit.statutDistribution : 'NON PLANIFIÉ'}"
+                                    style="padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; text-transform: uppercase;">
+                                </span>
+                                <div class="cell-time" th:text="${bassin.nuit != null ? #temporals.format(bassin.nuit.heurePrevue,'HH:mm') : '--:--'}"></div>
+                                <div class="cell-time">
+                                    <span th:text="${bassin.nuit != null ? bassin.nuit.quantiteDonneeKg : 0}"></span> /
+                                    <span th:text="${bassin.nuit != null ? bassin.nuit.quantitePrevueKg : 0}"></span> kg
+                                </div>
+                                <div th:if="${bassin.nuit != null and (bassin.nuit.statutDistribution == 'EN_ATTENTE' or bassin.nuit.statutDistribution == 'RETARD')}" style="margin-top: 8px;">
+                                    <form th:action="@{/nourrissage/valider/{id}(id=${bassin.nuit.idDistribution})}" method="POST">
+                                        <button type="submit" class="btn-outline" th:classappend="${bassin.nuit.statutDistribution == 'RETARD'} ? ' btn-danger' : ''">
+                                            <i class="bi bi-check-circle"></i> Valider
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </div>
+
+    <th:block layout:fragment="page-scripts">
+        <!-- Javascript spécifique optionnel ici -->
+    </th:block>
+</body>
+
+</html>

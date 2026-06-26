@@ -23,7 +23,7 @@ public class StatutBassinService {
         "VIDE",         List.of("PREPARATION"),
         "PREPARATION",   List.of("ACTIF"),
         "ACTIF",         List.of("EN_TRAITEMENT", "RECOLTE"),
-        "EN_TRAITEMENT", List.of("ACTIF"),
+        // "EN_TRAITEMENT", List.of("ACTIF"),
         "RECOLTE",       List.of("VIDE")
     );
 

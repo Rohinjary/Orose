@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layouts/default}">
+
+<head>
+    <title layout:fragment="page-title">Move Gasy — Dashboard Sanitaire</title>
+    <th:block layout:fragment="page-styles">
+        <style>
+            .header-section {
+                margin-bottom: 32px;
+                padding-bottom: 16px;
+                border-bottom: 1px solid #e2e8f0;
+            }
+
+            .header-title {
+                font-size: 26px;
+                font-weight: 700;
+                margin-bottom: 8px;
+                color: var(--mg-primary);
+            }
+
+            .header-sub {
+                font-size: 14px;
+                color: var(--mg-text-muted);
+                line-height: 1.5;
+            }
+
+            .card {
+                background: var(--mg-surface-bright);
+                border: 1px solid var(--mg-outline);
+                border-radius: var(--radius);
+                padding: 24px;
+                margin-bottom: 24px;
+            }
+
+            .btn {
+                padding: 10px 20px;
+                border-radius: var(--radius);
+                font-size: 13px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: 0.2s;
+                border: 1px solid transparent;
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                text-decoration: none;
+                justify-content: center;
+            }
+
+            .btn-primary {
+                background: var(--mg-primary);
+                color: white;
+            }
+
+            .btn-primary:hover {
+                opacity: 0.9;
+            }
+
+            .btn-outline {
+                background: transparent;
+                border-color: var(--mg-outline);
+                color: var(--mg-primary);
+            }
+
+            .btn-outline:hover {
+                background: var(--mg-surface);
+            }
+
+            .form-group {
+                margin-bottom: 16px;
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .form-control {
+                font-family: var(--font-main);
+                font-size: 14px;
+                padding: 10px 12px;
+                border: 1px solid var(--mg-outline);
+                border-radius: var(--radius);
+                background: white;
+                color: var(--mg-primary);
+                outline: none;
+                transition: 0.2s;
+            }
+
+            .form-control:focus {
+                border-color: var(--mg-primary);
+            }
+
+            .table-container {
+                width: 100%;
+                overflow-x: auto;
+            }
+
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                text-align: left;
+            }
+
+            thead th {
+                background: var(--mg-surface);
+                padding: 12px 16px;
+                font-size: 11px;
+                font-weight: 700;
+                text-transform: uppercase;
+                color: var(--mg-secondary);
+                border-bottom: 1px solid var(--mg-outline);
+                letter-spacing: 0.05em;
+            }
+
+            tbody td {
+                padding: 14px 16px;
+                border-bottom: 1px solid var(--mg-outline);
+                font-size: 13px;
+            }
+
+            tbody tr:hover td {
+                background: var(--mg-surface);
+            }
+
+            .badge {
+                padding: 2px 8px;
+                border-radius: 20px;
+                font-size: 11px;
+                font-weight: 700;
+                display: inline-block;
+                text-transform: uppercase;
+            }
+
+            .badge-success { background: #dcfce7; color: #166534; }
+            .badge-warning { background: #fef3c7; color: #92400e; }
+            .badge-danger { background: #fee2e2; color: #991b1b; }
+            .badge-neutral { background: #f3f4f6; color: #4b5563; }
+
+            .icon-btn {
+                background: transparent;
+                border: none;
+                cursor: pointer;
+                width: 32px;
+                height: 32px;
+                border-radius: var(--radius);
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                color: var(--mg-secondary);
+                transition: background 0.2s;
+                text-decoration: none;
+            }
+
+            .icon-btn:hover {
+                background: var(--mg-surface-container);
+            }
+
+            @media (max-width: 992px) {
+                .table-container { overflow-x: auto; }
+            }
+        </style>
+    </th:block>
+</head>
+
+<body>
+
+    <div layout:fragment="content">
+        <header class="header-section">
+            <h2 class="header-title">Registre des Incidents</h2>
+            <p class="header-sub">Liste des anomalies et alertes sanitaires en cours ou résolues.</p>
+        </header>
+        
+        <div class="card" style="margin-bottom: 24px;">
+            <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+                <div class="form-group" style="flex: 1; min-width: 200px; margin-bottom: 0;">
+                    <input class="form-control" placeholder="Rechercher un incident..." type="text" />
+                </div>
+                <button class="btn btn-primary" onclick="window.location.href='/sanitaire/declaration'">
+                    <i class="bi bi-plus-circle"></i> NOUVEL INCIDENT
+                </button>
+            </div>
+        </div>
+        
+        <div class="card" style="padding: 0;">
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Bassin</th>
+                            <th>Type</th>
+                            <th>Gravité</th>
+                            <th>Description</th>
+                            <th>Responsable</th>
+                            <th>Statut</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="incident : ${incidents}">
+                            <td th:text="${#temporals.format(incident.dateDetection, 'dd/MM/yyyy')}">--</td>
+                            <td><strong th:text="${incident.cycleBassinAssoc.bassin.code}">--</strong></td>
+                            <td th:text="${incident.typeIncident}">--</td>
+                            <td>
+                                <span th:if="${incident.niveauGravite == 'CRITIQUE'}" class="badge badge-danger">Critique</span>
+                                <span th:if="${incident.niveauGravite == 'MODERE'}" class="badge badge-warning">Modéré</span>
+                                <span th:if="${incident.niveauGravite == 'FAIBLE'}" class="badge badge-neutral">Faible</span>
+                            </td>
+                            <td th:text="${#strings.abbreviate(incident.description, 50)}">--</td>
+                            <td th:text="${incident.responsable.nom} + ' ' + ${incident.responsable.prenom}">--</td>
+                            <td>
+                                <span th:if="${!incident.estResolu}" class="badge badge-neutral">En cours</span>
+                                <span th:if="${incident.estResolu}" class="badge badge-success">Résolu</span>
+                            </td>
+                            <td>
+                                <a class="icon-btn" style="display: inline-flex;" th:href="@{/sanitaire/traitement(incidentId=${incident.id})}" title="Ajouter traitement">
+                                    <i class="bi bi-plus-circle"></i>
+                                </a>
+                                <form th:if="${!incident.estResolu}" th:action="@{/sanitaire/resoudre/{id}(id=${incident.id})}" method="post" style="display:inline;" onsubmit="return confirm('Êtes-vous sûr?')">
+                                    <button type="submit" class="icon-btn" title="Marquer comme résolu">
+                                        <i class="bi bi-check-circle"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        <tr th:if="${incidents.isEmpty()}">
+                            <td colspan="8" style="text-align: center; padding: 40px;">Aucun incident enregistré</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <th:block layout:fragment="page-scripts">
+        </th:block>
+
+</body>
+</html>

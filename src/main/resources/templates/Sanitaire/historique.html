@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/default}">
+<head>
+    <title layout:fragment="page-title">Move Gasy — Historique sanitaire</title>
+    <th:block layout:fragment="page-styles">
+        <style>
+            .header-section {
+                margin-bottom: 32px;
+                padding-bottom: 16px;
+                border-bottom: 1px solid #e2e8f0;
+            }
+
+            .header-title {
+                font-size: 26px;
+                font-weight: 700;
+                margin-bottom: 8px;
+                color: var(--mg-primary);
+            }
+
+            .header-sub {
+                font-size: 14px;
+                color: var(--mg-text-muted);
+                line-height: 1.5;
+            }
+
+            .kpi-row {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 16px;
+                margin-bottom: 24px;
+            }
+
+            .kpi-card {
+                background: var(--mg-surface-bright);
+                border: 1px solid var(--mg-outline);
+                border-radius: var(--radius);
+                padding: 16px 20px;
+                display: flex;
+                flex-direction: column;
+                gap: 4px;
+            }
+
+            .kpi-label {
+                font-size: 11px;
+                font-weight: 700;
+                text-transform: uppercase;
+                color: var(--mg-secondary);
+                letter-spacing: 0.05em;
+            }
+
+            .kpi-value {
+                font-size: 24px;
+                font-weight: 700;
+                color: var(--mg-primary);
+                line-height: 1.2;
+            }
+
+            .kpi-sub {
+                font-size: 12px;
+                color: var(--mg-text-muted);
+            }
+
+            .card {
+                background: var(--mg-surface-bright);
+                border: 1px solid var(--mg-outline);
+                border-radius: var(--radius);
+                padding: 24px;
+                margin-bottom: 24px;
+            }
+
+            .card-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 20px;
+                flex-wrap: wrap;
+                gap: 12px;
+            }
+
+            .card-title {
+                font-size: 12px;
+                font-weight: 700;
+                color: var(--mg-primary);
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+            }
+
+            .form-group {
+                margin-bottom: 0;
+                display: flex;
+                flex-direction: column;
+                gap: 4px;
+            }
+
+            .form-control {
+                font-family: var(--font-main);
+                font-size: 14px;
+                padding: 8px 10px;
+                border: 1px solid var(--mg-outline);
+                border-radius: var(--radius);
+                background: white;
+                color: var(--mg-primary);
+                outline: none;
+                transition: 0.2s;
+            }
+
+            .form-control:focus {
+                border-color: var(--mg-primary);
+            }
+
+            .btn {
+                padding: 8px 16px;
+                border-radius: var(--radius);
+                font-size: 13px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: 0.2s;
+                border: 1px solid transparent;
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                text-decoration: none;
+                justify-content: center;
+            }
+
+            .btn-outline {
+                background: transparent;
+                border-color: var(--mg-outline);
+                color: var(--mg-primary);
+            }
+
+            .btn-outline:hover {
+                background: var(--mg-surface);
+            }
+
+            .btn-sm {
+                padding: 6px 12px;
+                font-size: 12px;
+            }
+
+            .table-container {
+                width: 100%;
+                overflow-x: auto;
+            }
+
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                text-align: left;
+            }
+
+            thead th {
+                background: var(--mg-surface);
+                padding: 12px 16px;
+                font-size: 11px;
+                font-weight: 700;
+                text-transform: uppercase;
+                color: var(--mg-secondary);
+                border-bottom: 1px solid var(--mg-outline);
+                letter-spacing: 0.05em;
+            }
+
+            tbody td {
+                padding: 14px 16px;
+                border-bottom: 1px solid var(--mg-outline);
+                font-size: 13px;
+            }
+
+            tbody tr:hover td {
+                background: var(--mg-surface);
+            }
+
+            .badge {
+                padding: 2px 8px;
+                border-radius: 20px;
+                font-size: 11px;
+                font-weight: 700;
+                display: inline-block;
+                text-transform: uppercase;
+            }
+
+            .badge-success { background: #dcfce7; color: #166534; }
+            .badge-warning { background: #fef3c7; color: #92400e; }
+            .badge-danger { background: #fee2e2; color: #991b1b; }
+            .badge-neutral { background: #f3f4f6; color: #4b5563; }
+
+            .pagination {
+                display: flex;
+                gap: 4px;
+                margin-top: 16px;
+                justify-content: center;
+            }
+
+            .pagination a, .pagination span {
+                padding: 6px 10px;
+                border: 1px solid var(--mg-outline);
+                border-radius: var(--radius);
+                font-size: 12px;
+                text-decoration: none;
+                color: var(--mg-primary);
+                transition: 0.2s;
+            }
+
+            .pagination a:hover {
+                background: var(--mg-surface);
+            }
+
+            .pagination .current {
+                background: var(--mg-primary);
+                color: white;
+                border-color: var(--mg-primary);
+            }
+
+            @media (max-width: 992px) {
+                .kpi-row { grid-template-columns: repeat(2, 1fr); }
+                .card-header { flex-direction: column; align-items: stretch; }
+                .table-container { overflow-x: auto; }
+            }
+        </style>
+    </th:block>
+</head>
+<body>
+    <div layout:fragment="content">
+        <header class="header-section">
+            <h2 class="header-title">Historique Sanitaire</h2>
+            <p class="header-sub">Journal complet des incidents, diagnostics et traitements terminés.</p>
+        </header>
+
+        <div class="kpi-row">
+            <div class="kpi-card">
+                <span class="kpi-label">Total Incidents (30j)</span>
+                <span class="kpi-value" th:text="${stats.totalIncidents30j}">0</span>
+                <span class="kpi-sub">Derniers 30 jours</span>
+            </div>
+            <div class="kpi-card">
+                <span class="kpi-label">Taux de guérison (%)</span>
+                <span class="kpi-value" th:text="${#numbers.formatDecimal(stats.tauxGuerison, 1, 1)} + '%'">0%</span>
+                <span class="kpi-sub">Objectif: &gt;90%</span>
+            </div>
+            <div class="kpi-card">
+                <span class="kpi-label">Incidents résolus</span>
+                <span class="kpi-value" th:text="${historiquePage.totalElements}">0</span>
+                <span class="kpi-sub">Total enregistrés</span>
+            </div>
+            <div class="kpi-card">
+                <span class="kpi-label">Dernier Diagnostic</span>
+                <span class="kpi-value" th:text="${stats.dernierBassinCode != null ? stats.dernierBassinCode : '—'}">—</span>
+                <span class="kpi-sub" th:text="${stats.dernierIncidentDate != null ? stats.dernierIncidentDate : 'Aucun incident'}">—</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header" style="margin-bottom: 16px; flex-wrap: wrap; gap: 12px;">
+                <h3 class="card-title">Journal des Interventions</h3>
+                <form th:action="@{/sanitaire/historique}" method="get" style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+                    <select class="form-control" name="idBassin" style="min-width: 180px;">
+                        <option value="">Tous les bassins</option>
+                        <option th:each="b : ${bassins}" th:value="${b.id}" th:text="${b.code}"
+                            th:selected="${filtreBassin != null && filtreBassin == b.id}"></option>
+                    </select>
+                    <select class="form-control" name="type" style="min-width: 160px;">
+                        <option value="">Tous les types</option>
+                        <option value="MALADIE" th:selected="${filtreType == 'MALADIE'}">Maladie</option>
+                        <option value="ANOMALIE_EAU" th:selected="${filtreType == 'ANOMALIE_EAU'}">Anomalie eau</option>
+                        <option value="MORTALITE_ANORMALE" th:selected="${filtreType == 'MORTALITE_ANORMALE'}">Mortalité anormale</option>
+                        <option value="AUTRE" th:selected="${filtreType == 'AUTRE'}">Autre</option>
+                    </select>
+                    <input class="form-control" type="date" name="debut" th:value="${filtreDebut}" style="max-width: 170px;" />
+                    <input class="form-control" type="date" name="fin" th:value="${filtreFin}" style="max-width: 170px;" />
+                    <select class="form-control" name="statut" style="min-width: 160px;">
+                        <option value="">Tous statuts</option>
+                        <option value="RESOLU" th:selected="${filtreStatut == 'RESOLU'}">Résolu</option>
+                        <option value="EN_COURS" th:selected="${filtreStatut == 'EN_COURS'}">En cours</option>
+                    </select>
+                    <button class="btn btn-outline btn-sm" type="submit"><i class="bi bi-funnel"></i> Filtrer</button>
+                </form>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Bassin</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                            <th>Traitement</th>
+                            <th>Date</th>
+                            <th>Durée</th>
+                            <th>Responsable</th>
+                            <th>Statut</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="inc : ${historiquePage.content}">
+                            <td><strong th:text="${inc.cycleBassinAssoc.bassin.code}">--</strong></td>
+                            <td th:text="${inc.typeIncident}">--</td>
+                            <td th:text="${#strings.abbreviate(inc.description, 40)}">--</td>
+                            <td>
+                                <span th:if="${traitementsParIncident[inc.id] != null && !traitementsParIncident[inc.id].isEmpty()}"
+                                      th:text="${traitementsParIncident[inc.id][0].entreeMedicament.medicament.libelle}">--</span>
+                            </td>
+                            <td th:text="${#temporals.format(inc.dateDetection, 'dd/MM/yyyy')}">--</td>
+                            <td th:text="${traitementsParIncident[inc.id] != null and !traitementsParIncident[inc.id].isEmpty() ? traitementsParIncident[inc.id][0].dureeJours + ' j' : '-'}">-</td>
+                            <td th:text="${inc.responsable.nom} + ' ' + ${inc.responsable.prenom}">--</td>
+                            <td>
+                                <span th:if="${inc.estResolu}" class="badge badge-success">Résolu</span>
+                                <span th:if="${!inc.estResolu}" class="badge badge-warning">En cours</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

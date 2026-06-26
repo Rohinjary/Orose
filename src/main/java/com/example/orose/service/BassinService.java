@@ -20,8 +20,8 @@ import com.example.orose.repository.UtilisateurRepository;
 import java.util.stream.Collectors;
 
 @Service
-public class BassinService {    
-    private final BassinRepository bassinRepository; 
+public class BassinService {
+    private final BassinRepository bassinRepository;
     private final StatutBassinRepository statutBassinRepository;
     private final CycleBassinAssocRepository cycleBassinAssocRepository;
     private final StatutBassinService statutBassinService;
@@ -29,11 +29,11 @@ public class BassinService {
     private final UtilisateurRepository utilisateurRepository;
 
     public BassinService(BassinRepository bassinRepository,
-                         StatutBassinRepository statutBassinRepository,
-                         CycleBassinAssocRepository cycleBassinAssocRepository,
-                         StatutBassinService statutBassinService,
-                         HistoStatutBassinRepository histoStatutBassinRepository,
-                         UtilisateurRepository utilisateurRepository) {
+            StatutBassinRepository statutBassinRepository,
+            CycleBassinAssocRepository cycleBassinAssocRepository,
+            StatutBassinService statutBassinService,
+            HistoStatutBassinRepository histoStatutBassinRepository,
+            UtilisateurRepository utilisateurRepository) {
         this.bassinRepository = bassinRepository;
         this.statutBassinRepository = statutBassinRepository;
         this.cycleBassinAssocRepository = cycleBassinAssocRepository;
@@ -90,7 +90,7 @@ public class BassinService {
         return bassinRepository.save(bassin);
     }
 
-    public List<Bassin> listerBassins(){
+    public List<Bassin> listerBassins() {
         return bassinRepository.findAll();
     }
 
@@ -103,7 +103,7 @@ public class BassinService {
         Bassin bassin = getBassinById(idBassin);
         String statutActuelCode = bassin.getStatutActuel().getCode();
 
-        statutBassinService.validerTransition(statutActuelCode, nouveauStatut);
+        // statutBassinService.validerTransition(statutActuelCode, nouveauStatut);
 
         StatutBassin nouveauStatutEntity = statutBassinRepository.findByCode(nouveauStatut)
                 .orElseThrow(() -> new IllegalArgumentException("Nouveau statut introuvable"));
@@ -128,13 +128,14 @@ public class BassinService {
         return statutBassinService.getTransitionsAutorisees(statutActuelCode);
     }
 
-    public List<HistoStatutBassin> getHistoriqueStatuts(Long idBassin, LocalDateTime debut, LocalDateTime fin, String typeEtat) {
+    public List<HistoStatutBassin> getHistoriqueStatuts(Long idBassin, LocalDateTime debut, LocalDateTime fin,
+            String typeEtat) {
         return histoStatutBassinRepository.findByBassinIdOrderByDateChangementDesc(idBassin).stream()
-            .filter(histo -> debut == null || !histo.getDateChangement().isBefore(debut))
-            .filter(histo -> fin == null || !histo.getDateChangement().isAfter(fin))
-            .filter(histo -> typeEtat == null || typeEtat.isBlank()
-                || (histo.getStatutBassin() != null && typeEtat.equals(histo.getStatutBassin().getCode())))
-            .collect(Collectors.toList());
+                .filter(histo -> debut == null || !histo.getDateChangement().isBefore(debut))
+                .filter(histo -> fin == null || !histo.getDateChangement().isAfter(fin))
+                .filter(histo -> typeEtat == null || typeEtat.isBlank()
+                        || (histo.getStatutBassin() != null && typeEtat.equals(histo.getStatutBassin().getCode())))
+                .collect(Collectors.toList());
     }
 
     public HistoStatutBassin getDernierStatut(Long idBassin) {
@@ -144,16 +145,22 @@ public class BassinService {
 
     public List<Bassin> getBassinsParStatut(String codeStatut) {
         return bassinRepository.findAll().stream()
-            .filter(b -> codeStatut.equals(b.getStatutActuel().getCode()))
-            .collect(Collectors.toList());
+                .filter(b -> codeStatut.equals(b.getStatutActuel().getCode()))
+                .collect(Collectors.toList());
     }
 
     public List<HistoStatutBassin> getHistoriqueGlobal(LocalDateTime debut, LocalDateTime fin, String typeEtat) {
         return histoStatutBassinRepository.findAllByOrderByDateChangementDesc().stream()
-            .filter(h -> debut == null || !h.getDateChangement().isBefore(debut))
-            .filter(h -> fin == null || !h.getDateChangement().isAfter(fin))
-            .filter(h -> typeEtat == null || typeEtat.isBlank()
-                || (h.getStatutBassin() != null && typeEtat.equals(h.getStatutBassin().getCode())))
-            .collect(Collectors.toList());
+                .filter(h -> debut == null || !h.getDateChangement().isBefore(debut))
+                .filter(h -> fin == null || !h.getDateChangement().isAfter(fin))
+                .filter(h -> typeEtat == null || typeEtat.isBlank()
+                        || (h.getStatutBassin() != null && typeEtat.equals(h.getStatutBassin().getCode())))
+                .collect(Collectors.toList());
+    }
+
+    public List<Bassin> getBassinsActifsEtEnTraitement() {
+        List<Bassin> bassins = bassinRepository.findByStatutActuel_CodeIn(
+                List.of("ACTIF", "EN_TRAITEMENT"));
+        return bassins;
     }
 }
