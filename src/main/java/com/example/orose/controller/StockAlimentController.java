@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.example.orose.dto.BassinDTO;
 import com.example.orose.dto.EntreeStockDTO;
 import com.example.orose.dto.nourrissage.JournalDTO;
 import com.example.orose.repository.AlimentRepository;
@@ -64,14 +63,18 @@ public class StockAlimentController {
         return "stock/list_prod_stock";
     }
 
-    public String enregistrer(
-            @Valid @ModelAttribute("EntreeStockDTO") EntreeStockDTO dto,
-            BindingResult bindingResult,
-            Model model) {
+    @PostMapping("/enregistrer")
+    public String enregistrerStock(@Valid @ModelAttribute("entreeStockDTO") EntreeStockDTO dto,
+            BindingResult result, Model model, RedirectAttributes redirectAttributes) {
 
-        if (bindingResult.hasErrors()) {
-            return "entree-stock/form";
+        if (result.hasErrors()) {
+            result.getFieldErrors()
+                    .forEach(e -> System.out.println("ERREUR : " + e.getField() + " - " + e.getDefaultMessage()));
+            model.addAttribute("aliments", alimentRepository.findAll());
+            model.addAttribute("utilisateurs", utilisateurRepository.findAllTechniciens());
+            return "/stock_form";
         }
+
         try {
             stockAlimentService.enregistrerEntree(dto);
             redirectAttributes.addFlashAttribute("success", "Stock enregistré avec succès !");
@@ -79,7 +82,7 @@ public class StockAlimentController {
             model.addAttribute("error", "Erreur : " + e.getMessage());
             model.addAttribute("aliments", alimentRepository.findAll());
             model.addAttribute("utilisateurs", utilisateurRepository.findAllTechniciens());
-            return "nourrissage/stock_form";
+            return "/stock_form";
         }
 
         return "redirect:/stock/liste";
