@@ -482,11 +482,11 @@ CROSS JOIN (VALUES
 WHERE e.nom_courant = 'Crevette blanche';
 
 INSERT INTO utilisateur (nom, prenom, email, mot_de_passe, statut) VALUES
+
 ('Admin', 'OROSE', 'admin@baovola.mg', 'a_remplacer_par_hash_bcrypt', 'ACTIF');
 
-
-
-
+INSERT INTO role VALUES (1, 'TECH', 'TECH');
+INSERT INTO utilisateur_role VALUES(1,1);
 
 
 
