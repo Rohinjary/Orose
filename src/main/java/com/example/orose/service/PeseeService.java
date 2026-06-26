@@ -1,15 +1,5 @@
 package com.example.orose.service;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
-import java.util.List;
-import java.util.Optional;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.example.orose.dto.PeseeDTO;
 import com.example.orose.model.Cycle;
 import com.example.orose.model.CycleBassinAssoc;
@@ -18,8 +8,16 @@ import com.example.orose.model.Utilisateur;
 import com.example.orose.repository.CycleBassinAssocRepository;
 import com.example.orose.repository.SuiviHebdoBassinRepository;
 import com.example.orose.repository.UtilisateurRepository;
-
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -240,10 +238,14 @@ public class PeseeService {
         if (dto.getTailleMoyenneMm() == null || dto.getTailleMoyenneMm().compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("La taille moyenne doit être supérieure à 0");
         }
-        if (dto.getNbVivants() != null && assoc.getEffectifInitial() != null
-                && dto.getNbVivants() > assoc.getEffectifInitial()) {
-            throw new IllegalArgumentException("Le nombre de vivants ne peut pas dépasser l'effectif initial ("
-                    + assoc.getEffectifInitial() + ")");
+        // Effectif de départ = nbVivants de la pesée précédente, sinon effectif initial
+        int effectifDepart = dernierePesee
+                .map(SuiviHebdoBassin::getNbVivants)
+                .orElse(assoc.getEffectifInitial() != null ? assoc.getEffectifInitial() : Integer.MAX_VALUE);
+        if (dto.getNbVivants() != null && dto.getNbVivants() > effectifDepart) {
+            throw new IllegalArgumentException(
+                    "Le nombre de vivants (" + dto.getNbVivants()
+                    + ") ne peut pas dépasser l'effectif de départ (" + effectifDepart + ")");
         }
     }
 

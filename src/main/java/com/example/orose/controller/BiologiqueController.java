@@ -84,10 +84,13 @@ public class BiologiqueController {
         CycleBassinAssoc assoc = cycleBassinAssocRepository.findById(id.longValue())
                 .orElseThrow(() -> new EntityNotFoundException("Association cycle-bassin introuvable"));
 
-        // Date de la dernière pesée : bloque toute date antérieure ou égale
-        LocalDate dateDernierePesee = peseeService.getDernierePesee(id)
-                .map(SuiviHebdoBassin::getDateSuivi)
-                .orElse(null);
+        // Dernière pesée : date min + effectif de départ pour la nouvelle pesée
+        java.util.Optional<SuiviHebdoBassin> dernierePeseeOpt = peseeService.getDernierePesee(id);
+        LocalDate dateDernierePesee = dernierePeseeOpt.map(SuiviHebdoBassin::getDateSuivi).orElse(null);
+        // Effectif de départ = nbVivants de la dernière pesée, sinon effectif initial du cycle
+        Integer effectifDepart = dernierePeseeOpt
+                .map(SuiviHebdoBassin::getNbVivants)
+                .orElse(assoc.getEffectifInitial());
 
         preparerLayoutBiologique(model, "Nouvelle pesée", "nouvelle-pesee");
         model.addAttribute("peseeDTO", new PeseeDTO());
@@ -95,6 +98,7 @@ public class BiologiqueController {
         model.addAttribute("assoc", assoc);
         model.addAttribute("modeEdition", false);
         model.addAttribute("dateDernierePesee", dateDernierePesee);
+        model.addAttribute("effectifDepart", effectifDepart);
         model.addAttribute("techniciens", utilisateurRepository.findAll().stream()
                 .filter(u -> "ACTIF".equals(u.getStatut())).toList());
         return "biologique/pesee-form";
@@ -144,6 +148,15 @@ public class BiologiqueController {
         dto.setIdTechnicien(pesee.getTechnicien().getId().longValue());
         dto.setNotes(pesee.getNotes());
 
+        // Effectif de départ = nbVivants de la pesée qui précède, sinon effectif initial
+        Integer effectifDepart = toutesLesPesees.stream()
+                .filter(p -> !p.getId().equals(idPesee))
+                .filter(p -> p.getDateSuivi().isBefore(pesee.getDateSuivi())
+                          || p.getDateSuivi().isEqual(pesee.getDateSuivi()))
+                .max(Comparator.comparing(SuiviHebdoBassin::getDateSuivi))
+                .map(SuiviHebdoBassin::getNbVivants)
+                .orElse(assoc.getEffectifInitial());
+
         preparerLayoutBiologique(model, "Modifier pesée", "modifier-pesee");
         model.addAttribute("peseeDTO", dto);
         model.addAttribute("idPesee", idPesee);
@@ -151,6 +164,7 @@ public class BiologiqueController {
         model.addAttribute("assoc", assoc);
         model.addAttribute("modeEdition", true);
         model.addAttribute("dateDernierePesee", dateDernierePeseeAvant);
+        model.addAttribute("effectifDepart", effectifDepart);
         model.addAttribute("techniciens", utilisateurRepository.findAll().stream()
                 .filter(u -> "ACTIF".equals(u.getStatut())).toList());
         return "biologique/pesee-form";
