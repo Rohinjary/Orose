@@ -1,0 +1,182 @@
+package com.example.orose.controller;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.Collections;
+import java.util.List;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model; // Nouveau DTO pour le stock
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import com.example.orose.dto.EntreeStockDTO;
+import com.example.orose.dto.nourrissage.JournalDTO;
+import com.example.orose.repository.AlimentRepository;
+import com.example.orose.repository.CreneauRepository;
+import com.example.orose.repository.UtilisateurRepository;
+import com.example.orose.service.BassinService;
+import com.example.orose.service.CycleService;
+import com.example.orose.service.StockAlimentService;
+import com.example.orose.service.nourrissage.NourrissageService;
+
+import jakarta.validation.Valid;
+
+@Controller
+@RequestMapping("/stock")
+public class StockAlimentController {
+
+    private final AlimentRepository alimentRepository;
+    private final UtilisateurRepository utilisateurRepository;
+    private final BassinService bassinService;
+    private final StockAlimentService stockAlimentService;
+    private final CycleService cycleService;
+    private final CreneauRepository creneauRepository;
+    private final NourrissageService nourrissageService;
+
+    public StockAlimentController(AlimentRepository alimentRepository,
+            UtilisateurRepository utilisateurRepository,
+            BassinService bassinService,
+            StockAlimentService stockAlimentService,
+            CycleService cycleService,
+            CreneauRepository creneauRepository, NourrissageService nourrissageService) {
+        this.alimentRepository = alimentRepository;
+        this.utilisateurRepository = utilisateurRepository;
+        this.bassinService = bassinService;
+        this.stockAlimentService = stockAlimentService;
+        this.cycleService = cycleService;
+        this.creneauRepository = creneauRepository;
+        this.nourrissageService = nourrissageService;
+    }
+
+    @GetMapping("/formulaire")
+    public String afficherFormulaireStock(Model model) {
+        model.addAttribute("entreeStockDTO", new EntreeStockDTO());
+        model.addAttribute("aliments", alimentRepository.findAll());
+        model.addAttribute("utilisateurs", utilisateurRepository.findAllTechniciens()); // Ajoutez cette ligne
+        return "nourrissage/stock_form";
+    }
+
+    @GetMapping("/creation")
+    public String afficherCreationPorduit(Model model) {
+        return "stock/crud_produit_stock";
+    }
+
+    @GetMapping("/liste/produit")
+    public String afficherListeProduit(Model model) {
+        return "stock/list_prod_stock";
+    }
+
+    @PostMapping("/enregistrer")
+    public String enregistrerStock(@Valid @ModelAttribute("entreeStockDTO") EntreeStockDTO dto,
+            BindingResult result, Model model, RedirectAttributes redirectAttributes) {
+
+        if (result.hasErrors()) {
+            result.getFieldErrors()
+                    .forEach(e -> System.out.println("ERREUR : " + e.getField() + " - " + e.getDefaultMessage()));
+            model.addAttribute("aliments", alimentRepository.findAll());
+            model.addAttribute("utilisateurs", utilisateurRepository.findAllTechniciens());
+            return "/stock_form";
+        }
+
+        try {
+            stockAlimentService.enregistrerEntree(dto);
+            redirectAttributes.addFlashAttribute("success", "Stock enregistré avec succès !");
+        } catch (Exception e) {
+            model.addAttribute("error", "Erreur : " + e.getMessage());
+            model.addAttribute("aliments", alimentRepository.findAll());
+            model.addAttribute("utilisateurs", utilisateurRepository.findAllTechniciens());
+            return "/stock_form";
+        }
+
+        return "redirect:/stock/liste";
+    }
+
+    @GetMapping("/liste")
+    public String afficherListeStock(Model model) {
+        model.addAttribute("stock_dispo", stockAlimentService.getStockActuelTotal());
+        model.addAttribute("valeur_stock", stockAlimentService.getValeurStockTotale());
+        model.addAttribute("variationSemaine", stockAlimentService.getVariationStockSemaine());
+
+        model.addAttribute("stocks", stockAlimentService.getDetailStocks());
+
+        return "nourrissage/stock_liste";
+    }
+
+    @GetMapping("/historique")
+    public String afficherHistorique(
+            @RequestParam(required = false) String date,
+            @RequestParam(required = false) String bassinCode,
+            @RequestParam(required = false) Long cycleId,
+            @RequestParam(required = false) Long creneauId,
+            Model model) {
+
+        LocalDate localDate = (date != null && !date.isEmpty()) ? LocalDate.parse(date) : null;
+
+        // 1. Récupération des listes
+        List<JournalDTO> listeJournal = (localDate == null && (bassinCode == null || bassinCode.isEmpty())
+                && cycleId == null && creneauId == null)
+                        ? nourrissageService.getJournalActivites()
+                        : nourrissageService.getHistoriqueFiltreDTO(localDate, bassinCode, cycleId, creneauId);
+
+        BigDecimal consommationTotale = nourrissageService.getConsommationTotale(bassinCode, localDate, localDate);
+
+        
+        model.addAttribute("historique", listeJournal != null ? listeJournal : Collections.emptyList());
+        model.addAttribute("consoTotale", consommationTotale != null ? consommationTotale : BigDecimal.ZERO);
+        model.addAttribute("dateSelectionnee", date);
+
+        // 4. Menus
+        model.addAttribute("bassins", bassinService.listerBassins());
+        model.addAttribute("cycles", cycleService.getCyclesActif());
+        model.addAttribute("listeCreneaux", creneauRepository.findAllByOrderByOrdreAsc());
+
+        return "nourrissage/histo_nourri";
+    }
+    
+    
+    
+    
+    
+    
+    
+    // @GetMapping("/stock/dashboard")
+     // public String afficherDashboard(Model model) {
+     // // Indicateurs globaux de stock
+     // model.addAttribute("stock_dispo", stockAlimentService.getStockActuelTotal());
+     // model.addAttribute("valeur_stock",
+     // stockAlimentService.getValeurStockTotale());
+     // model.addAttribute("autonomieJours",
+     // stockAlimentService.estimerAutonomieJours());
+     // model.addAttribute("variationSemaine",
+     // stockAlimentService.getVariationStockSemaine());
+
+    // // Alertes pour attirer l'attention (ex: seuil critique)
+    // model.addAttribute("alertesStock", stockAlimentService.getAlertesStock());
+
+    // // Historique récent (pour visualiser les derniers mouvements)
+    // // model.addAttribute("derniersMouvements",
+    // // stockAlimentService.getDerniersMouvements(5));
+
+    // return "nourrissage/dashboard_nourri";
+    // }
+    // @GetMapping("/stock/dashboard")
+    // public String afficherDashboard(Model model) {
+    // model.addAttribute("stock_dispo", stockAlimentService.getStockActuelTotal());
+
+    // // 1. Appel du service qui contient toute ta logique métier
+    // // Le service retourne la liste des bassins avec leurs statuts calculés
+    // model.addAttribute("listeBassins", dashboardService.getPlanningDuJour());
+
+    // // 2. Retourne le chemin vers ton fichier HTML
+    // // Il doit être situé dans :
+    // // src/main/resources/templates/nourrissage/dashboard_nourri.html
+    // return "nourrissage/dashboard_nourri";
+    // }
+
+}
