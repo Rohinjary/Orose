@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layouts/default}">
+
+<head>
+    <title layout:fragment="page-title">Move Gasy — Saisie de Traitement</title>
+    <th:block layout:fragment="page-styles">
+        <style>
+            .header-section {
+                margin-bottom: 32px;
+                padding-bottom: 16px;
+                border-bottom: 1px solid #e2e8f0;
+            }
+
+            .header-title {
+                font-size: 26px;
+                font-weight: 700;
+                margin-bottom: 8px;
+                color: var(--mg-primary);
+            }
+
+            .header-sub {
+                font-size: 14px;
+                color: var(--mg-text-muted);
+                line-height: 1.5;
+            }
+
+            .grid-detail {
+                display: grid;
+                grid-template-columns: repeat(12, 1fr);
+                gap: 24px;
+            }
+
+            .col-4 { grid-column: span 4; }
+            .col-6 { grid-column: span 6; }
+            .col-8 { grid-column: span 8; }
+            .col-12 { grid-column: span 12; }
+
+            .card {
+                background: var(--mg-surface-bright);
+                border: 1px solid var(--mg-outline);
+                border-radius: var(--radius);
+                padding: 24px;
+                margin-bottom: 24px;
+            }
+
+            .card-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 20px;
+            }
+
+            .card-title {
+                font-size: 12px;
+                font-weight: 700;
+                color: var(--mg-primary);
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+            }
+
+            .form-group {
+                margin-bottom: 16px;
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .form-label {
+                font-size: 11px;
+                font-weight: 700;
+                text-transform: uppercase;
+                color: var(--mg-secondary);
+                letter-spacing: 0.05em;
+            }
+
+            .form-control {
+                font-family: var(--font-main);
+                font-size: 14px;
+                padding: 10px 12px;
+                border: 1px solid var(--mg-outline);
+                border-radius: var(--radius);
+                background: white;
+                color: var(--mg-primary);
+                outline: none;
+                transition: 0.2s;
+            }
+
+            .form-control:focus {
+                border-color: var(--mg-primary);
+            }
+
+            .btn {
+                padding: 10px 20px;
+                border-radius: var(--radius);
+                font-size: 13px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: 0.2s;
+                border: 1px solid transparent;
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                text-decoration: none;
+                justify-content: center;
+            }
+
+            .btn-primary {
+                background: var(--mg-primary);
+                color: white;
+            }
+
+            .btn-primary:hover {
+                opacity: 0.9;
+            }
+
+            .btn-outline {
+                background: transparent;
+                border-color: var(--mg-outline);
+                color: var(--mg-primary);
+            }
+
+            .btn-outline:hover {
+                background: var(--mg-surface);
+            }
+
+            @media (max-width: 992px) {
+                .col-8, .col-4, .col-6 { grid-column: span 12; }
+            }
+        </style>
+    </th:block>
+</head>
+
+<body>
+
+    <div layout:fragment="content">
+        <header class="header-section">
+            <h2 class="header-title">Saisie de Traitement</h2>
+            <p class="header-sub">Enregistrement manuel d'une application thérapeutique ou préventive.</p>
+        </header>
+
+        <div class="grid-detail">
+            <div class="col-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Détails du Traitement</h3>
+                    </div>
+                    <form th:action="@{/sanitaire/traitement}" th:object="${traitementDTO}" method="POST">
+                        <input type="hidden" th:field="*{idIncident}" />
+                        <div class="form-group">
+                            <label class="form-label">Médicament</label>
+                            <select class="form-control" th:field="*{idEntreeMedicament}" required onchange="updateStockInfo(this)">
+                                <option value="">Sélectionner un médicament</option>
+                                <option th:each="med : ${medicaments}" th:value="${med.id}" th:text="${med.medicament.libelle} + ' (Stock: ' + ${med.quantiteRestante} + ' ' + ${med.medicament.unite} + ')'"></option>
+                            </select>
+                        </div>
+                        <div class="grid-detail" style="gap: 16px;">
+                            <div class="col-6">
+                                <div class="form-group">
+                                    <label class="form-label">Dosage</label>
+                                    <input class="form-control" th:field="*{dosage}" placeholder="Ex: 5.0 mg/kg" required />
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-group">
+                                    <label class="form-label">Durée (Jours)</label>
+                                    <input class="form-control" th:field="*{dureeJours}" placeholder="Ex: 7" type="number" required />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Date début</label>
+                            <input class="form-control" th:field="*{dateDebut}" type="date" required />
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Quantité utilisée (kg)</label>
+                            <input class="form-control" th:field="*{quantiteUtilisee}" placeholder="Ex: 0.75" step="0.01" type="number" required />
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Responsable</label>
+                            <select class="form-control" th:field="*{idResponsable}" required>
+                                <option value="">Sélectionner un responsable</option>
+                                <option th:each="user : ${utilisateurs}" th:value="${user.id}" th:text="${user.nom} + ' ' + ${user.prenom}"></option>
+                            </select>
+                        </div>
+                        <div style="margin-top: 24px; display: flex; gap: 12px;">
+                            <button class="btn btn-primary" type="submit">ENREGISTRER LE TRAITEMENT</button>
+                            <button class="btn btn-outline" type="button" onclick="window.location.href='/sanitaire/index'">ANNULER</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="col-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Impact Stock Médicaments</h3>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 16px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="color: var(--mg-secondary);">Stock Actuel</span>
+                            <span style="font-weight: 600;" id="current-stock">--</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="color: var(--mg-secondary);">Déduction Estimée</span>
+                            <span style="font-weight: 600; color: var(--mg-danger);" id="deduction-amount">-</span>
+                        </div>
+                        <div style="height: 1px; background: var(--mg-outline);"></div>
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-weight: 700;">Stock Résiduel</span>
+                            <span style="font-weight: 700;" id="residual-stock">--</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card" style="background: #fff7ed; border-color: #fdba74;">
+                    <div class="card-header">
+                        <h3 class="card-title" style="color: #9a3412;">Alerte Bio-sécurité</h3>
+                    </div>
+                    <p style="font-size: 12px; color: #9a3412;">
+                        L'application de ce traitement nécessite le port d'équipements de protection
+                        individuelle (EPI) et l'isolement strict du circuit d'eau du bassin concerné.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <th:block layout:fragment="page-scripts">
+        <script>
+            // Logique JS spécifique à cette page
+            function updateStockInfo(select) {
+                const quantiteInput = document.querySelector('input[name="quantiteUtilisee"]');
+                
+                function calculateStock() {
+                    const stockText = select.options[select.selectedIndex]?.text;
+                    const stockMatch = stockText?.match(/Stock: ([\d.]+)/);
+                    if (stockMatch) {
+                        const currentStock = parseFloat(stockMatch[1]);
+                        const deduction = parseFloat(quantiteInput.value) || 0;
+                        const residual = currentStock - deduction;
+                        document.getElementById('current-stock').textContent = currentStock + ' kg';
+                        document.getElementById('deduction-amount').textContent = '- ' + deduction + ' kg';
+                        document.getElementById('residual-stock').textContent = residual.toFixed(2) + ' kg';
+                    }
+                }
+
+                // Initialiser l'événement sur l'input quantite
+                quantiteInput?.addEventListener('input', calculateStock);
+                
+                // Exécuter une première fois au changement de select
+                calculateStock();
+            }
+        </script>
+    </th:block>
+
+</body>
+</html>

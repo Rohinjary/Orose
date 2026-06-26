@@ -108,6 +108,21 @@
                 document.querySelector('.sidebar-overlay').classList.remove('open');
             });
 
+<<<<<<< HEAD
+        document.getElementById('code').addEventListener('blur', function() {
+        const val = this.value.trim();
+        const regex = /^B0[1-9]$/;
+        const error = document.getElementById('code-error');
+        if (val && !regex.test(val)) {
+            error.style.display = 'block';
+            this.style.borderColor = '#e53e3e';
+        } else {
+            error.style.display = 'none';
+            this.style.borderColor = '';
+        }
+    });
+    </script>
+=======
             document.getElementById('code')?.addEventListener('blur', function () {
                 const val = this.value.trim();
                 const regex = /^B0[1-9]$/;
@@ -122,6 +137,7 @@
             });
         </script>
     </th:block>
+>>>>>>> origin/dev
 </body>
 
 </html>

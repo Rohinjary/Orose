@@ -88,6 +88,36 @@
             </div>
         </div>
 
+        <!-- Module Sanitaire -->
+        <div class="nav-dropdown" th:classappend="${currentGroup == 'sanitaire'} ? 'open' : ''">
+            <a class="nav-item" onclick="toggleDropdown(this)">
+                <span class="nav-icon"><i class="bi bi-shield-check"></i></span> Sanitaire
+                <span class="chevron-icon"><i class="bi bi-chevron-right"></i></span>
+            </a>
+            <div class="submenu">
+                <a class="nav-item" th:classappend="${currentPage == 'dashboard'} ? 'active' : ''"
+                    th:href="@{/sanitaire/dashboard}">
+                    Tableau de bord
+                </a>
+                <a class="nav-item" th:classappend="${currentPage == 'index'} ? 'active' : ''"
+                    th:href="@{/sanitaire/index}">
+                    Registre des incidents
+                </a>
+                <a class="nav-item" th:classappend="${currentPage == 'declaration'} ? 'active' : ''"
+                    th:href="@{/sanitaire/declaration}">
+                    Déclaration incident
+                </a>
+                <a class="nav-item" th:classappend="${currentPage == 'historique'} ? 'active' : ''"
+                    th:href="@{/sanitaire/historique}">
+                    Historique global
+                </a>
+
+                <a th:if="${currentPage == 'traitement'}" class="nav-item"
+                    th:classappend="${currentPage == 'traitement'} ? 'active' : ''">
+                    Gestion traitement
+                </a>
+            </div>
+        </div>
         <div class="nav-dropdown" th:classappend="${currentGroup == 'nourrissage'} ? 'open' : ''">
             <a class="nav-item" onclick="toggleDropdown(this)">
                 <span class="nav-icon"><i class="bi bi-basket2"></i></span> Nourrissage
