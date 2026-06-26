@@ -149,8 +149,8 @@
                         <input type="hidden" th:field="*{idIncident}" />
                         <div class="form-group">
                             <label class="form-label">Médicament</label>
-                            <select class="form-control" th:field="*{idEntreeMedicament}" required onchange="updateStockInfo(this)">
-                                <option value="">Sélectionner un médicament</option>
+                            <select class="form-control" th:field="*{idEntreeMedicament}" onchange="updateStockInfo(this)">
+                                <option value="1">Sélectionner un médicament</option>
                                 <option th:each="med : ${medicaments}" th:value="${med.id}" th:text="${med.medicament.libelle} + ' (Stock: ' + ${med.quantiteRestante} + ' ' + ${med.medicament.unite} + ')'"></option>
                             </select>
                         </div>

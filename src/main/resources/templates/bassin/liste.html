@@ -185,12 +185,11 @@
                 </thead>
                 <tbody>
                     <tr th:each="bassin : ${bassins}">
-                        <td style="font-weight: 700; color: var(--mg-primary);" th:text="${bassin.code}">B-01</td>
-                        <td th:text="${bassin.surfaceM2 + ' m²'}">3,500 m²</td>
-                        <td th:text="${bassin.profondeurMetre + ' m'}">1.2 m</td>
+                        <td style="font-weight: 700; color: var(--mg-primary);" th:text="${bassin.code}"></td>
+                        <td th:text="${bassin.surfaceM2 + ' m²'}"></td>
+                        <td th:text="${bassin.profondeurMetre + ' m'}"></td>
                         <td>
-                            <span class="status-badge status-active" th:text="${bassin.statutActuel.libelle}">En
-                                Production</span>
+                            <span class="status-badge status-active" th:text="${bassin.statutActuel.libelle}"></span>
                         </td>
                         <td>
                             <div class="row-actions" style="justify-content: flex-end;">

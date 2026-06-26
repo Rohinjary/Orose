@@ -11,166 +11,6 @@
 
     <th:block layout:fragment="page-styles">
         <link href="/css/cycle/form.css" rel="stylesheet" />
-        <style>
-            .bassin-selector {
-                display: grid;
-                grid-template-columns: repeat(3, 1fr);
-                gap: 12px;
-                margin-top: 8px;
-            }
-
-            .bassin-card-select {
-                border: 2px solid var(--mg-outline);
-                border-radius: var(--radius);
-                padding: 16px;
-                cursor: pointer;
-                transition: all 0.2s;
-                position: relative;
-                background: white;
-            }
-
-            .bassin-card-select:hover {
-                border-color: var(--mg-primary);
-                background: var(--mg-surface);
-            }
-
-            .bassin-card-select input[type="checkbox"] {
-                position: absolute;
-                top: 12px;
-                right: 12px;
-                width: 16px;
-                height: 16px;
-                cursor: pointer;
-            }
-
-            .bassin-card-select.selected {
-                border-color: var(--mg-primary);
-                background: var(--mg-surface-container);
-            }
-
-            .bassin-card-select .bassin-code {
-                font-size: 20px;
-                font-weight: 700;
-                color: var(--mg-primary);
-                margin-bottom: 8px;
-            }
-
-            .bassin-card-select .bassin-info {
-                font-size: 12px;
-                color: var(--mg-secondary);
-                line-height: 1.8;
-            }
-
-            .counter {
-                font-size: 12px;
-                color: var(--mg-secondary);
-                margin-top: 8px;
-            }
-
-            .counter span {
-                font-weight: 700;
-                color: var(--mg-primary);
-            }
-
-            .form-label {
-                font-size: 12px;
-                font-weight: 600;
-                text-transform: uppercase;
-                color: var(--mg-secondary);
-                letter-spacing: 0.04em;
-                display: block;
-                margin-bottom: 6px;
-            }
-
-            .form-control {
-                width: 100%;
-                padding: 10px 12px;
-                border: 1px solid var(--mg-outline);
-                border-radius: var(--radius);
-                font-family: var(--font-main);
-                font-size: 14px;
-                color: var(--mg-primary);
-                background: white;
-                outline: none;
-                transition: border-color 0.2s;
-            }
-
-            .form-control:focus {
-                border-color: var(--mg-primary);
-            }
-
-            .form-control[readonly] {
-                background: var(--mg-surface-container);
-                color: var(--mg-secondary);
-            }
-
-            .form-grid {
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 16px;
-                margin-bottom: 16px;
-            }
-
-            .info-list {
-                list-style: none;
-            }
-
-            .info-item {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                padding: 10px 0;
-                border-bottom: 1px solid var(--mg-outline);
-                font-size: 13px;
-            }
-
-            .info-item:last-child {
-                border-bottom: none;
-            }
-
-            .info-item .label {
-                color: var(--mg-secondary);
-                font-weight: 500;
-            }
-
-            .info-item .value {
-                font-weight: 600;
-                color: var(--mg-primary);
-            }
-
-            .bassin-tag {
-                background: var(--mg-primary);
-                color: white;
-                padding: 2px 8px;
-                border-radius: var(--radius);
-                font-size: 12px;
-                font-weight: 700;
-            }
-
-            .no-bassins {
-                text-align: center;
-                padding: 32px;
-                color: var(--mg-secondary);
-                font-size: 14px;
-            }
-
-            .no-bassins i {
-                font-size: 32px;
-                display: block;
-                margin-bottom: 12px;
-                opacity: 0.4;
-            }
-
-            select.form-control {
-                appearance: none;
-                background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
-                background-repeat: no-repeat;
-                background-position: right 12px center;
-                padding-right: 36px;
-            }
-
-
-        </style>
     </th:block>
 
     <div layout:fragment="content">
@@ -259,15 +99,19 @@
                             </div>
                         </div>
 
-                        <div class="form-grid">
-                            <div>
-                                <label class="form-label">Date de debut</label>
-                                <input class="form-control" type="date" name="dateDebut" id="start-date" />
-                            </div>
-                            <div>
-                                <label class="form-label">Date de fin prevue</label>
-                                <input class="form-control" type="date" name="dateFinPrevue" id="end-date" />
-                            </div>
+                        <div>
+                            <label class="form-label">Date de debut</label>
+                            <input class="form-control" type="date" name="dateDebut" id="start-date" />
+                            <span id="date-debut-error" style="color: #e53e3e; font-size: 12px; display: none;">
+                                <i class="bi bi-exclamation-circle"></i> La date de début ne peut pas être après la date de fin.
+                            </span>
+                        </div>
+                        <div>
+                            <label class="form-label">Date de fin prevue</label>
+                            <input class="form-control" type="date" name="dateFinPrevue" id="end-date" />
+                            <span id="date-fin-error" style="color: #e53e3e; font-size: 12px; display: none;">
+                                <i class="bi bi-exclamation-circle"></i> La durée du cycle doit être d'au moins 4 mois.
+                            </span>
                         </div>
 
                         <div
@@ -306,7 +150,6 @@
 
     <th:block layout:fragment="page-scripts">
         <script>
-
             const SURFACE_PAR_BASSIN = 1000; // a ajuster
 
             function updateCount() {
@@ -314,22 +157,18 @@
                 const count = checked.length;
                 document.getElementById('count').textContent = count;
 
-                // Update visual state
                 document.querySelectorAll('.bassin-card-select').forEach(card => {
                     const cb = card.querySelector('input[type="checkbox"]');
                     card.classList.toggle('selected', cb.checked);
                 });
 
-                // Disable unchecked if 3 already selected
                 document.querySelectorAll('input[name="idBassins"]:not(:checked)').forEach(cb => {
                     cb.disabled = count >= 3;
                     cb.closest('.bassin-card-select').style.opacity = (count >= 3) ? '0.4' : '1';
                 });
 
-                // Enable submit only when exactly 3
-                document.getElementById('submit-btn').disabled = count !== 3;
+                updateSubmitBtn();
 
-                // Update summary
                 const summary = document.getElementById('selected-summary');
                 if (count === 0) {
                     summary.innerHTML = '<span style="color: var(--mg-secondary);">Aucun bassin selectionne</span>';
@@ -340,14 +179,14 @@
                     });
                     summary.innerHTML = codes.map(c =>
                         `<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--mg-outline);">
-                        <span class="bassin-tag" style="background:var(--mg-primary);color:white;padding:2px 8px;border-radius:4px;font-size:12px;font-weight:700;">${c}</span>
-                        <span style="font-size:13px;color:var(--mg-primary);font-weight:500;">Selectionne</span>
-                    </div>`
+                            <span class="bassin-tag" style="background:var(--mg-primary);color:white;padding:2px 8px;border-radius:4px;font-size:12px;font-weight:700;">${c}</span>
+                            <span style="font-size:13px;color:var(--mg-primary);font-weight:500;">Selectionne</span>
+                        </div>`
                     ).join('');
                 }
             }
 
-            // Calcul densite automatique
+            // Calcul densité automatique
             document.getElementById('pl-count')?.addEventListener('input', (e) => {
                 const count = parseInt(e.target.value);
                 const densityInput = document.getElementById('density');
@@ -358,16 +197,74 @@
                 }
             });
 
-            // Date fin auto (+4 mois)
+            function validateDates() {
+                const startVal = document.getElementById('start-date').value;
+                const endVal = document.getElementById('end-date').value;
+                const debutError = document.getElementById('date-debut-error');
+                const finError = document.getElementById('date-fin-error');
+
+                let valid = true;
+
+                if (startVal && endVal) {
+                    const start = new Date(startVal);
+                    const end = new Date(endVal);
+
+                    // Vérif : début < fin
+                    if (start >= end) {
+                        debutError.style.display = 'block';
+                        document.getElementById('start-date').style.borderColor = '#e53e3e';
+                        valid = false;
+                    } else {
+                        debutError.style.display = 'none';
+                        document.getElementById('start-date').style.borderColor = '';
+                    }
+
+                    // Vérif : durée >= 4 mois
+                    const minEnd = new Date(start);
+                    minEnd.setMonth(minEnd.getMonth() + 4);
+
+                    if (end < minEnd) {
+                        finError.style.display = 'block';
+                        document.getElementById('end-date').style.borderColor = '#e53e3e';
+                        valid = false;
+                    } else {
+                        finError.style.display = 'none';
+                        document.getElementById('end-date').style.borderColor = '';
+                    }
+                }
+
+                return valid;
+            }
+
+            function updateSubmitBtn() {
+                const checked = document.querySelectorAll('input[name="idBassins"]:checked').length;
+                const datesOk = validateDates();
+                document.getElementById('submit-btn').disabled = (checked !== 3 || !datesOk);
+            }
+
+            // Date fin auto (+4 mois) quand on change la date de début
             document.getElementById('start-date')?.addEventListener('change', (e) => {
                 if (e.target.value) {
                     const date = new Date(e.target.value);
                     date.setMonth(date.getMonth() + 4);
-                    const endInput = document.getElementById('end-date');
-                    endInput.value = date.toISOString().split('T')[0];
+                    document.getElementById('end-date').value = date.toISOString().split('T')[0];
                 }
+                validateDates();
+                updateSubmitBtn();
             });
 
+            // Revalider quand on change la date de fin manuellement
+            document.getElementById('end-date')?.addEventListener('change', () => {
+                validateDates();
+                updateSubmitBtn();
+            });
+
+            // Bloquer la soumission si invalide (sécurité supplémentaire)
+            document.getElementById('cycle-form')?.addEventListener('submit', (e) => {
+                if (!validateDates()) {
+                    e.preventDefault();
+                }
+            });
         </script>
     </th:block>
 </body>

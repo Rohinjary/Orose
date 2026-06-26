@@ -2,6 +2,7 @@ package com.example.orose.controller;
 
 import com.example.orose.dto.IncidentDTO;
 import com.example.orose.dto.TraitementDTO;
+import com.example.orose.model.CycleBassinAssoc;
 import com.example.orose.service.IncidentService;
 import com.example.orose.service.SanitaireService;
 import com.example.orose.service.TraitementService;
@@ -77,17 +78,22 @@ public class SanitaireController {
     }
 
     @PostMapping("/declaration")
-    public String declarerIncident(@ModelAttribute IncidentDTO dto, RedirectAttributes redirectAttributes) {
-        try {
-            incidentService.declarerIncident(dto);
-            bassinService.changerStatutBassin(dto.getIdCycleBassinAssoc().longValue(), "QUARANTAINE", "Incident déclaré", dto.getIdResponsable());
-            redirectAttributes.addFlashAttribute("message", "Incident déclaré avec succès.");
-            return "redirect:/sanitaire/index";
-        } catch (IllegalStateException ex) {
-            redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
-            return "redirect:/sanitaire/declaration";
+        public String declarerIncident(@ModelAttribute IncidentDTO dto, RedirectAttributes redirectAttributes) {
+            try {
+                incidentService.declarerIncident(dto);
+                CycleBassinAssoc assoc = cycleBassinAssocRepository.findById(dto.getIdCycleBassinAssoc().longValue())
+                        .orElseThrow(() -> new IllegalArgumentException("Association introuvable"));
+                Long bassinId = assoc.getBassin().getId().longValue();
+
+                bassinService.changerStatutBassin(bassinId, "QUARANTAINE", "Incident déclaré", dto.getIdResponsable());
+
+                redirectAttributes.addFlashAttribute("message", "Incident déclaré avec succès.");
+                return "redirect:/sanitaire/index";
+            } catch (IllegalStateException ex) {
+                redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
+                return "redirect:/sanitaire/declaration";
+            }
         }
-    }
 
     @GetMapping("/traitement")
     public String afficherFormulaireTraitement(@RequestParam("incidentId") Integer incidentId, Model model) {

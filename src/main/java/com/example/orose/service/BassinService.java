@@ -58,6 +58,16 @@ public class BassinService {
         bassin.setStatutActuel(statutInitial);
         bassin.setCreatedAt(dto.getDateCreation().atStartOfDay());
 
+        Utilisateur utilisateur = utilisateurRepository.findById(1L)
+                .orElseThrow(() -> new IllegalArgumentException("Utilisateur introuvable"));
+
+        HistoStatutBassin histo = new HistoStatutBassin();
+        histo.setBassin(bassin);
+        histo.setStatutBassin(bassin.getStatutActuel());
+        histo.setUtilisateur(utilisateur);
+        histo.setMotif("Création du bassin");
+        histoStatutBassinRepository.save(histo);
+
         return bassinRepository.save(bassin);
     }
 
@@ -65,12 +75,12 @@ public class BassinService {
         Bassin bassin = bassinRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Bassin introuvable"));
 
-        // Vérifier qu'aucun cycle n'est associé (historique de cycles)
+        // Vérifier qu'aucun cycle actif n'est associé
         if (cycleBassinAssocRepository.existsByBassinIdAndEstClotureFalse(id)) {
-            throw new IllegalStateException("Impossible de supprimer le bassin car il est associé à des cycles");
+            throw new IllegalStateException("Impossible de désactiver le bassin car il est associé à un cycle en cours");
         }
 
-        bassinRepository.delete(bassin);
+        changerStatutBassin(id, "INACTIF", "Bassin désactivé", 1L);
     }
 
     public Bassin modifierBassin(Long id, BassinDTO dto) {

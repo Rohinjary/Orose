@@ -482,3 +482,160 @@
             background-repeat: no-repeat;
             background-position: right 12px center;
         }
+
+        .bassin-selector {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 12px;
+                margin-top: 8px;
+            }
+
+            .bassin-card-select {
+                border: 2px solid var(--mg-outline);
+                border-radius: var(--radius);
+                padding: 16px;
+                cursor: pointer;
+                transition: all 0.2s;
+                position: relative;
+                background: white;
+            }
+
+            .bassin-card-select:hover {
+                border-color: var(--mg-primary);
+                background: var(--mg-surface);
+            }
+
+            .bassin-card-select input[type="checkbox"] {
+                position: absolute;
+                top: 12px;
+                right: 12px;
+                width: 16px;
+                height: 16px;
+                cursor: pointer;
+            }
+
+            .bassin-card-select.selected {
+                border-color: var(--mg-primary);
+                background: var(--mg-surface-container);
+            }
+
+            .bassin-card-select .bassin-code {
+                font-size: 20px;
+                font-weight: 700;
+                color: var(--mg-primary);
+                margin-bottom: 8px;
+            }
+
+            .bassin-card-select .bassin-info {
+                font-size: 12px;
+                color: var(--mg-secondary);
+                line-height: 1.8;
+            }
+
+            .counter {
+                font-size: 12px;
+                color: var(--mg-secondary);
+                margin-top: 8px;
+            }
+
+            .counter span {
+                font-weight: 700;
+                color: var(--mg-primary);
+            }
+
+            .form-label {
+                font-size: 12px;
+                font-weight: 600;
+                text-transform: uppercase;
+                color: var(--mg-secondary);
+                letter-spacing: 0.04em;
+                display: block;
+                margin-bottom: 6px;
+            }
+
+            .form-control {
+                width: 100%;
+                padding: 10px 12px;
+                border: 1px solid var(--mg-outline);
+                border-radius: var(--radius);
+                font-family: var(--font-main);
+                font-size: 14px;
+                color: var(--mg-primary);
+                background: white;
+                outline: none;
+                transition: border-color 0.2s;
+            }
+
+            .form-control:focus {
+                border-color: var(--mg-primary);
+            }
+
+            .form-control[readonly] {
+                background: var(--mg-surface-container);
+                color: var(--mg-secondary);
+            }
+
+            .form-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 16px;
+                margin-bottom: 16px;
+            }
+
+            .info-list {
+                list-style: none;
+            }
+
+            .info-item {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 10px 0;
+                border-bottom: 1px solid var(--mg-outline);
+                font-size: 13px;
+            }
+
+            .info-item:last-child {
+                border-bottom: none;
+            }
+
+            .info-item .label {
+                color: var(--mg-secondary);
+                font-weight: 500;
+            }
+
+            .info-item .value {
+                font-weight: 600;
+                color: var(--mg-primary);
+            }
+
+            .bassin-tag {
+                background: var(--mg-primary);
+                color: white;
+                padding: 2px 8px;
+                border-radius: var(--radius);
+                font-size: 12px;
+                font-weight: 700;
+            }
+
+            .no-bassins {
+                text-align: center;
+                padding: 32px;
+                color: var(--mg-secondary);
+                font-size: 14px;
+            }
+
+            .no-bassins i {
+                font-size: 32px;
+                display: block;
+                margin-bottom: 12px;
+                opacity: 0.4;
+            }
+
+            select.form-control {
+                appearance: none;
+                background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
+                background-repeat: no-repeat;
+                background-position: right 12px center;
+                padding-right: 36px;
+            }
