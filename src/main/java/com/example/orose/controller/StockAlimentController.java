@@ -62,11 +62,7 @@ public class StockAlimentController {
         return "nourrissage/stock_form";
     }
 
-    @GetMapping("/creation")
-    public String afficherCreationPorduit(Model model) {
-        return "stock/crud_produit_stock";
-    }
-
+    
     @GetMapping("/liste/produit")
     public String afficherListeProduit(Model model) {
         return "stock/list_prod_stock";

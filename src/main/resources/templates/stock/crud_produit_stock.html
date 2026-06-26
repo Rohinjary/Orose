@@ -410,73 +410,51 @@
                         finis.</p>
                 </header>
 
-                <div class="grid-detail">
-                    <div class="col-8">
-                        <div class="card">
-                            <div class="card-header">
-                                <h3 class="card-title">Informations Générales</h3>
-                            </div>
-                            <form>
-                                <!-- Nom du produit (Sélection ou texte) -->
-                                <div class="form-group">
-                                    <label class="form-label">Médicament</label>
-                                    <input type="text" class="form-control" placeholder="Nom du médicament">
-                                </div>
-
-                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
-                                    <!-- Quantité à entrer -->
-                                    <div class="form-group">
-                                        <label class="form-label">Quantité à ajouter</label>
-                                        <input type="number" class="form-control" placeholder="0.00">
-                                    </div>
-                                    <!-- Unité -->
-                                    <div class="form-group">
-                                        <label class="form-label">Unité</label>
-                                        <select class="form-control">
-                                            <option value="kg">kg</option>
-                                            <option value="litre">litre</option>
-                                            <option value="pièce">pièce</option>
-                                            <option value="boîte">boîte</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <!-- Date de péremption (essentiel pour les médicaments) -->
-                                <div class="form-group">
-                                    <label class="form-label">Date de péremption</label>
-                                    <input type="date" class="form-control">
-                                </div>
-
-                                <!-- Numéro de lot -->
-                                <div class="form-group">
-                                    <label class="form-label">Numéro de lot</label>
-                                    <input type="text" class="form-control" placeholder="Ex: LOT-2026-001">
-                                </div>
-
-                                <div style="margin-top: 32px; display: flex; gap: 12px;">
-                                    <button type="submit" class="btn btn-primary">VALIDER L'ENTRÉE</button>
-                                    <button type="button" class="btn btn-outline">ANNULER</button>
-                                </div>
-                            </form>
-                        </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Informations Générales</h3>
                     </div>
+                    <form th:action="@{/stock/medicament/entree}" th:object="${entreeDto}" method="post">
 
-                    <div class="col-4">
-                        <div class="card">
-                            <div class="card-header">
-                                <h3 class="card-title">Règle Logistique</h3>
+                        <div class="form-group">
+                            <label class="form-label">Médicament</label>
+                            <select class="form-control" th:field="*{idMedicament}">
+                                <option th:each="m : ${listeMedicaments}" th:value="${m.id}" th:text="${m.libelle}">
+                                </option>
+                            </select>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                            <div class="form-group">
+                                <label class="form-label">Quantité</label>
+                                <input type="number" step="0.01" class="form-control" th:field="*{quantite}"
+                                    placeholder="0.00">
                             </div>
-                            <p style="font-size: 13px; color: var(--mg-secondary); margin-bottom: 16px;">
-                                Les produits de catégorie <strong>ALIMENT</strong> et <strong>MÉDICAMENT</strong> sont
-                                gérés selon la méthode <strong>FIFO</strong> (First In, First Out).
-                            </p>
-                            <div class="alert-box">
-                                <i class="bi bi-info-circle"></i>
-                                <span>L'ajout d'une nouvelle référence permet ensuite de saisir des entrées de stock
-                                    associées à des numéros de lot et des dates d'expiration.</span>
+                            <div class="form-group">
+                                <label class="form-label">Prix Total (Ar)</label>
+                                <input type="number" step="0.01" class="form-control" th:field="*{prixTotalAr}"
+                                    placeholder="0.00">
                             </div>
                         </div>
-                    </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Date de péremption</label>
+                            <input type="date" class="form-control" th:field="*{dateExpiration}">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Responsable</label>
+                            <select class="form-control" th:field="*{idResponsable}">
+                                <option th:each="u : ${listeResponsables}" th:value="${u.id}" th:text="${u.nom}">
+                                </option>
+                            </select>
+                        </div>
+
+                        <div style="margin-top: 32px; display: flex; gap: 12px;">
+                            <button type="submit" class="btn btn-primary">VALIDER L'ENTRÉE</button>
+                            <a href="/stock/medicament/liste" class="btn btn-outline">ANNULER</a>
+                        </div>
+                    </form>
                 </div>
             </main>
         </div>

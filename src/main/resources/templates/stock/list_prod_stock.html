@@ -10,7 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap"
         rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-<style>
+    <style>
         :root {
             --mg-surface: #f7f9fb;
             --mg-surface-dim: #d8dadc;
@@ -377,7 +377,7 @@
 </head>
 
 <body>
-        <div class="sidebar-overlay"></div>
+    <div class="sidebar-overlay"></div>
     <div class="layout">
         <aside class="sidebar">
             <div class="sidebar-brand">
@@ -398,22 +398,23 @@
                 <a class="nav-item"><span class="nav-icon"><i class="bi bi-truck"></i></span> Livraisons</a>
                 <a class="nav-item"><span class="nav-icon"><i class="bi bi-cash-stack"></i></span> Finances</a>
                 <div class="nav-label">Système</div>
- <a class="nav-item" href="#">
-          <span class="nav-icon"><i class="bi bi-lock"></i></span> Connexion</a>
-                <a class="nav-item"><span class="nav-icon"><i class="bi bi-gear"></i></span> Administration  <div class="nav-label">Portail client</div>
-                 <a class="nav-item">
-                    <span class="nav-icon"><i class="bi bi-person-lock"></i></span> Front Office
-                </a>
+                <a class="nav-item" href="#">
+                    <span class="nav-icon"><i class="bi bi-lock"></i></span> Connexion</a>
+                <a class="nav-item"><span class="nav-icon"><i class="bi bi-gear"></i></span> Administration <div
+                        class="nav-label">Portail client</div>
+                    <a class="nav-item">
+                        <span class="nav-icon"><i class="bi bi-person-lock"></i></span> Front Office
+                    </a>
             </div>
         </aside>
 
         <div class="main-wrapper">
             <header class="topbar">
-                
+
                 <button class="menu-toggle" onclick="toggleSidebar()">
                     <i class="bi bi-list"></i>
                 </button>
-<div class="breadcrumb">
+                <div class="breadcrumb">
                     </span><span class="">Stocks</span><span class="sep">/</span><span class="active">Référentiel
                         Produits</span>
                 </div>
@@ -457,80 +458,52 @@
                         <table>
                             <thead>
                                 <tr>
-                                    <th class="">Nom du produit</th>
-                                    <th class="">Catégorie</th>
-                                    <th class="">Unité</th>
-                                    <th class="">Stock actuel</th>
-                                    <th class="">Seuil min.</th>
-                                    <th class="">Statut</th>
-                                    <th class="">Actions</th>
+                                    <th>Nom du produit</th>
+                                    <th>Catégorie</th>
+                                    <th>Unité</th>
+                                    <th>Stock actuel</th>
+                                    <th>Seuil min.</th>
+                                    <th>Statut</th>
+                                    <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td class=""><strong>Aliment Croissance G2</strong></td>
-                                    <td class=""><span class="badge"
-                                            style="background:#f1f5f9; color:#475569">ALIMENT</span></td>
-                                    <td class="">kg</td>
-                                    <td class="">1 250.00</td>
-                                    <td class="">500.00</td>
-                                    <td class=""><span class="badge badge-success">OPTIMAL</span></td>
-                                    <td style="display:flex; gap:8px">
-                                        <button class="btn-outline btn-sm" title="Modifier"><i
-                                                class="bi bi-pencil"></i></button>
-                                        <button class="btn-outline btn-sm" title="Supprimer"><i
-                                                class="bi bi-trash"></i></button>
+                                <tr th:each="item : ${listeStock}">
+                                    <td><strong th:text="${item.medicament.libelle}">Nom produit</strong></td>
+                                    <td>
+                                        <span class="badge" style="background:#f1f5f9; color:#475569">MÉDICAMENT</span>
                                     </td>
-                                </tr>
-                                <tr>
-                                    <td class=""><strong>Probiotique AquaClean Pro</strong></td>
-                                    <td class=""><span class="badge"
-                                            style="background:#f1f5f9; color:#475569">MÉDICAMENT</span></td>
-                                    <td class="">L</td>
-                                    <td class="">12.50</td>
-                                    <td class="">40.00</td>
-                                    <td class=""><span class="badge badge-danger">RUPTURE</span></td>
-                                    <td style="display:flex; gap:8px">
-                                        <button class="btn-outline btn-sm" title="Modifier"><i
-                                                class="bi bi-pencil"></i></button>
-                                        <button class="btn-outline btn-sm" title="Supprimer"><i
-                                                class="bi bi-trash"></i></button>
+                                    <td th:text="${item.medicament.unite}">Unité</td>
+                                    <td
+                                        th:text="${#numbers.formatDecimal(item.quantiteRestante, 1, 'WHITESPACE', 2, 'POINT')}">
+                                        0.00</td>
+                                    <td
+                                        th:text="${#numbers.formatDecimal(item.medicament.seuilMinimum, 1, 'WHITESPACE', 2, 'POINT')}">
+                                        0.00</td>
+
+                                    <td>
+                                        <span class="badge"
+                                            th:classappend="${item.quantiteRestante <= 0 ? 'badge-danger' : (item.quantiteRestante <= item.medicament.seuilMinimum ? 'badge-warning' : 'badge-success')}"
+                                            th:text="${item.quantiteRestante <= 0 ? 'RUPTURE' : (item.quantiteRestante <= item.medicament.seuilMinimum ? 'FAIBLE' : 'OPTIMAL')}">
+                                        </span>
                                     </td>
-                                </tr>
-                                <tr>
-                                    <td class=""><strong>Sonde pH Remplacement</strong></td>
-                                    <td class=""><span class="badge"
-                                            style="background:#f1f5f9; color:#475569">MATÉRIEL</span></td>
-                                    <td class="">pièce</td>
-                                    <td class="">5.00</td>
-                                    <td class="">2.00</td>
-                                    <td class=""><span class="badge badge-success">OPTIMAL</span></td>
+
                                     <td style="display:flex; gap:8px">
-                                        <button class="btn-outline btn-sm" title="Modifier"><i
-                                                class="bi bi-pencil"></i></button>
-                                        <button class="btn-outline btn-sm" title="Supprimer"><i
-                                                class="bi bi-trash"></i></button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class=""><strong>Sacs de Récolte 50kg</strong></td>
-                                    <td class=""><span class="badge"
-                                            style="background:#f1f5f9; color:#475569">LOGISTIQUE</span></td>
-                                    <td class="">pièce</td>
-                                    <td class="">45.00</td>
-                                    <td class="">100.00</td>
-                                    <td class=""><span class="badge badge-warning">FAIBLE</span></td>
-                                    <td style="display:flex; gap:8px">
-                                        <button class="btn-outline btn-sm" title="Modifier"><i
-                                                class="bi bi-pencil"></i></button>
-                                        <button class="btn-outline btn-sm" title="Supprimer"><i
-                                                class="bi bi-trash"></i></button>
+                                        <a th:href="@{/stock/medicament/modifier/{id}(id=${item.id})}"
+                                            class="btn-outline btn-sm" title="Modifier">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <a th:href="@{/stock/medicament/supprimer/{id}(id=${item.id})}"
+                                            class="btn-outline btn-sm" title="Supprimer">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
+
                         <div class="pagination">
-                            <span>Affichage de 1-4 sur 128 produits</span>
+                            <span>Affichage des entrées en stock</span>
                             <div style="display: flex; gap: 8px;">
                                 <button class="btn btn-outline btn-sm" style="padding: 4px 8px;"><i
                                         class="bi bi-chevron-left"></i></button>
