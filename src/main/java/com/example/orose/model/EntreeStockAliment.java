@@ -1,9 +1,17 @@
 package com.example.orose.model;
 
-import jakarta.persistence.*;
-import lombok.Data;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import lombok.Data;
 
 @Entity
 @Table(name = "entree_stock_aliment")
@@ -27,7 +35,13 @@ public class EntreeStockAliment {
     @Column(name = "prix_unitaire_ar", nullable = false, precision = 15, scale = 2)
     private BigDecimal prixUnitaireAr;
 
-    @Column(name = "prix_total_ar", nullable = false, precision = 15, scale = 2)
+    /*
+     * * MISE À JOUR :
+     * insertable = false, updatable = false indique à Hibernate de ne jamais
+     * inclure cette colonne dans les requêtes INSERT ou UPDATE.
+     * C'est la base de données qui gère sa valeur via le TRIGGER/GENERATED COLUMN.
+     */
+    @Column(name = "prix_total_ar", insertable = false, updatable = false, precision = 15, scale = 2)
     private BigDecimal prixTotalAr;
 
     @Column(name = "date_reception", nullable = false)

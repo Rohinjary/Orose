@@ -35,7 +35,6 @@ public class StockAlimentService {
         this.utilisateurRepository = utilisateurRepository;
     }
 
-
     public BigDecimal getStockActuelTotal() {
         BigDecimal total = stockRepository.sumQuantiteRestante();
         return total != null ? total : BigDecimal.ZERO;
@@ -52,95 +51,102 @@ public class StockAlimentService {
     }
 
     // public long estimerAutonomieJours() {
-    //     BigDecimal stockTotal = getStockActuelTotal();
+    // BigDecimal stockTotal = getStockActuelTotal();
 
-    //     // Calcul de la date limite en Java (propre et compatible)
-    //     LocalDate dateLimite = LocalDate.now().minusDays(7);
+    // // Calcul de la date limite en Java (propre et compatible)
+    // LocalDate dateLimite = LocalDate.now().minusDays(7);
 
-    //     // Passage de la date au repository
-    //     BigDecimal consoMoyenne = distributionRepository.getConsommationMoyenneQuotidienne(dateLimite);
+    // // Passage de la date au repository
+    // BigDecimal consoMoyenne =
+    // distributionRepository.getConsommationMoyenneQuotidienne(dateLimite);
 
-    //     return (consoMoyenne == null || consoMoyenne.compareTo(BigDecimal.ZERO) == 0) ? 0
-    //             : stockTotal.divide(consoMoyenne, java.math.RoundingMode.HALF_UP).longValue();
+    // return (consoMoyenne == null || consoMoyenne.compareTo(BigDecimal.ZERO) == 0)
+    // ? 0
+    // : stockTotal.divide(consoMoyenne,
+    // java.math.RoundingMode.HALF_UP).longValue();
     // }
 
     // public List<AlerteDTO> getAlertesStock() {
-    //     List<AlerteDTO> alertes = new ArrayList<>();
+    // List<AlerteDTO> alertes = new ArrayList<>();
 
-    //     alimentRepository.findAll().forEach(a -> {
-    //         BigDecimal stock = stockRepository.sumStockByAliment(a.getId().longValue());
-    //         if (stock != null && stock.compareTo(a.getSeuilMinimumKg()) <= 0) {
-    //             // Remplacement de 'false' (boolean) par 'ORANGE' (String)
-    //             alertes.add(new AlerteDTO("Stock bas : " + a.getLibelle(), "ORANGE"));
-    //         }
-    //     });
+    // alimentRepository.findAll().forEach(a -> {
+    // BigDecimal stock = stockRepository.sumStockByAliment(a.getId().longValue());
+    // if (stock != null && stock.compareTo(a.getSeuilMinimumKg()) <= 0) {
+    // // Remplacement de 'false' (boolean) par 'ORANGE' (String)
+    // alertes.add(new AlerteDTO("Stock bas : " + a.getLibelle(), "ORANGE"));
+    // }
+    // });
 
-    //     if (estimerAutonomieJours() < 7) {
-    //         // Remplacement de 'true' (boolean) par 'ROUGE' (String)
-    //         alertes.add(new AlerteDTO("Autonomie critique : < 7 jours", "ROUGE"));
-    //     }
+    // if (estimerAutonomieJours() < 7) {
+    // // Remplacement de 'true' (boolean) par 'ROUGE' (String)
+    // alertes.add(new AlerteDTO("Autonomie critique : < 7 jours", "ROUGE"));
+    // }
 
-    //     return alertes;
+    // return alertes;
     // }
 
     // @Transactional
     // public void validerDistribution(DistributionNourriture dist) {
-    //     // Accès au bassin via la table d'association
-    //     CycleBassinAssoc association = dist.getCycleBassinAssoc();
+    // // Accès au bassin via la table d'association
+    // CycleBassinAssoc association = dist.getCycleBassinAssoc();
 
-    //     // Vérification : existence de l'association, du bassin et statut ACTIF
-    //     if (association == null || association.getBassin() == null ||
-    //             !"ACTIF".equals(association.getBassin().getStatutActuel().getCode())) {
-    //         throw new RuntimeException("Distribution impossible : bassin non ACTIF.");
-    //     }
+    // // Vérification : existence de l'association, du bassin et statut ACTIF
+    // if (association == null || association.getBassin() == null ||
+    // !"ACTIF".equals(association.getBassin().getStatutActuel().getCode())) {
+    // throw new RuntimeException("Distribution impossible : bassin non ACTIF.");
+    // }
 
-    //     // Vérification : une seule distribution par cycle/bassin, date et créneau
-    //     if (distributionRepository.existsByCycleBassinAssocAndDateDistributionAndCreneau(
-    //             association, dist.getDateDistribution(), dist.getCreneau())) {
-    //         throw new RuntimeException("Distribution déjà enregistrée pour ce créneau.");
-    //     }
+    // // Vérification : une seule distribution par cycle/bassin, date et créneau
+    // if
+    // (distributionRepository.existsByCycleBassinAssocAndDateDistributionAndCreneau(
+    // association, dist.getDateDistribution(), dist.getCreneau())) {
+    // throw new RuntimeException("Distribution déjà enregistrée pour ce créneau.");
+    // }
 
-    //     // Vérification : stock suffisant
-    //     if (dist.getQuantiteDonneeKg().compareTo(getStockActuelTotal()) > 0) {
-    //         throw new RuntimeException("Stock aliment insuffisant.");
-    //     }
+    // // Vérification : stock suffisant
+    // if (dist.getQuantiteDonneeKg().compareTo(getStockActuelTotal()) > 0) {
+    // throw new RuntimeException("Stock aliment insuffisant.");
+    // }
 
-    //     dist.setEstValide(true);
-    //     distributionRepository.save(dist);
+    // dist.setEstValide(true);
+    // distributionRepository.save(dist);
     // }
 
     @Transactional
     public void enregistrerEntree(EntreeStockDTO dto) {
-        // 1. Récupérer l'entité Aliment
-        // CORRECTION : Supprimez .intValue()
+        // 1. Récupérer les entités liées
         Aliment aliment = alimentRepository.findById(dto.getIdAliment())
                 .orElseThrow(() -> new RuntimeException("Aliment introuvable"));
-        // 2. Récupérer l'entité Responsable
-        // On utilise l'ID envoyé par le nouveau menu déroulant du formulaire
+
         Utilisateur responsable = utilisateurRepository.findById(dto.getIdResponsable())
                 .orElseThrow(() -> new RuntimeException("Responsable introuvable"));
-        // 3. Créer l'entité EntreeStockAliment
+
+        // 2. Créer l'entité
         EntreeStockAliment entree = new EntreeStockAliment();
         entree.setAliment(aliment);
-        entree.setResponsable(responsable); // Assignation pour respecter la contrainte NOT NULL
+        entree.setResponsable(responsable);
 
+        // 3. Initialiser les quantités
         entree.setQuantiteKg(dto.getQuantiteKg());
-        entree.setQuantiteRestanteKg(dto.getQuantiteKg());
+        entree.setQuantiteRestanteKg(dto.getQuantiteKg()); // Indispensable pour éviter le null
+
+        // 4. Prix unitaire uniquement
         entree.setPrixUnitaireAr(dto.getPrixUnitaire());
 
-        // Calcul du total
-        entree.setPrixTotalAr(dto.getQuantiteKg().multiply(dto.getPrixUnitaire()));
+        /*
+         * * MISE À JOUR CRITIQUE :
+         * Ne PAS appeler setPrixTotalAr().
+         * La base de données le calculera automatiquement.
+         * En Java, on ne fait rien ici pour ce champ.
+         */
 
-        // Gestion des dates
+        // 5. Gestion des dates
         entree.setDateReception(dto.getDateReception());
+        entree.setDateExpiration(dto.getDateExpiration() != null
+                ? dto.getDateExpiration()
+                : dto.getDateReception().plusMonths(6));
 
-        if (dto.getDateExpiration() != null) {
-            entree.setDateExpiration(dto.getDateExpiration());
-        } else {
-            entree.setDateExpiration(dto.getDateReception().plusMonths(6));
-        }
-
-        // 4. Sauvegarder l'entité
+        // 6. Sauvegarder
         stockRepository.save(entree);
     }
 
