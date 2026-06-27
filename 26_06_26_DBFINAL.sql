@@ -490,6 +490,157 @@ INSERT INTO utilisateur_role VALUES(1,1);
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+CREATE OR REPLACE PROCEDURE pr_valider_nourrissage_direct(
+    p_id_distribution INT,
+    p_id_utilisateur INT
+) AS $$
+DECLARE
+    v_id_cycle_bassin_assoc INT;
+    v_date_distribution DATE;
+    v_id_creneau INT;
+    v_creneau_ordre INT;
+    v_id_aliment INT;
+    v_quantite_prevue DECIMAL(10,2);
+    v_quantite_a_retirer DECIMAL(10,2);
+    v_stock_global_dispo DECIMAL(10,2);
+    v_lot_rec RECORD;
+    v_quantite_piquee DECIMAL(10,2);
+    
+    -- Variables pour la vérification de l'heure
+    v_creneau_libelle VARCHAR(20);
+    v_heure_actuelle TIME;
+    v_heure_valide BOOLEAN := FALSE;
+    
+    -- Variable pour la vérification du retard bloquant
+    v_creneau_retard_bloquant VARCHAR(20);
+BEGIN
+    v_heure_actuelle := CURRENT_TIME;
+
+    -- 1. Récupérer les infos du repas ciblé ainsi que l'ordre de son créneau et sa date
+    SELECT 
+        dn.id_cycle_bassin_assoc, dn.date_distribution, dn.id_creneau, ch.ordre,
+        dn.id_aliment, dn.quantite_prevue_kg, ch.libelle 
+    INTO 
+        v_id_cycle_bassin_assoc, v_date_distribution, v_id_creneau, v_creneau_ordre,
+        v_id_aliment, v_quantite_prevue, v_creneau_libelle
+    FROM distribution_nourriture dn
+    JOIN creneau_horaire ch ON ch.id = dn.id_creneau
+    WHERE dn.id = p_id_distribution AND dn.statut IN ('EN_ATTENTE', 'RETARD');
+
+    IF NOT FOUND THEN
+        RAISE EXCEPTION 'Distribution introuvable, déjà validée ou non éligible (ID: %)', p_id_distribution;
+    END IF;
+
+    -- =========================================================================
+    -- NOUVELLE RÈGLE MÉTIER : SÉCURITÉ DE CHRONOLOGIE (MÊME JOURNÉE UNIQUEMENT)
+    -- =========================================================================
+    -- On cherche s'il existe un autre repas non validé pour ce bassin, le MÊME JOUR, 
+    -- mais sur un créneau antérieur (ordre inférieur) au repas qu'on essaie de valider.
+    SELECT ch_sub.libelle INTO v_creneau_retard_bloquant
+    FROM distribution_nourriture dn_sub
+    JOIN creneau_horaire ch_sub ON ch_sub.id = dn_sub.id_creneau
+    WHERE dn_sub.id_cycle_bassin_assoc = v_id_cycle_bassin_assoc
+      AND dn_sub.date_distribution = v_date_distribution
+      AND ch_sub.ordre < v_creneau_ordre
+      AND dn_sub.est_valide = FALSE
+    ORDER BY ch_sub.ordre ASC
+    LIMIT 1;
+
+    IF v_creneau_retard_bloquant IS NOT NULL THEN
+        RAISE EXCEPTION 'Action refusée : Impossible de valider le repas du % car le repas précédent du % n''a pas encore été validé pour ce bassin aujourd''hui.', 
+            v_creneau_libelle, v_creneau_retard_bloquant;
+    END IF;
+    -- =========================================================================
+
+    -- 2. VÉRIFICATION DE LA PLAGE HORAIRE DE DÉBUT
+    CASE v_creneau_libelle
+        WHEN 'MATIN' THEN
+            IF v_heure_actuelle >= '06:00:00'::TIME THEN v_heure_valide := TRUE; END IF;
+        WHEN 'MIDI' THEN
+            IF v_heure_actuelle >= '11:00:00'::TIME THEN v_heure_valide := TRUE; END IF;
+        WHEN 'SOIR' THEN
+            IF v_heure_actuelle >= '17:00:00'::TIME THEN v_heure_valide := TRUE; END IF;
+        WHEN 'NUIT' THEN
+            IF v_heure_actuelle >= '22:00:00'::TIME OR v_heure_actuelle < '06:00:00'::TIME THEN v_heure_valide := TRUE; END IF;
+    END CASE;
+
+    IF NOT v_heure_valide THEN
+        RAISE EXCEPTION 'Action refusée : Impossible de valider le repas du % de manière anticipée. Heure actuelle : %', 
+            v_creneau_libelle, TO_CHAR(v_heure_actuelle, 'HH24:MI');
+    END IF;
+
+    -- 3. VÉRIFICATION STRICTE DU STOCK GLOBAL DISPONIBLE
+    SELECT COALESCE(SUM(quantite_restante_kg), 0) INTO v_stock_global_dispo
+    FROM entree_stock_aliment
+    WHERE id_aliment = v_id_aliment AND quantite_restante_kg > 0;
+
+    IF v_stock_global_dispo < v_quantite_prevue THEN
+        RAISE EXCEPTION 'Action impossible : Stock insuffisant pour cet aliment. Requis : % kg, Disponible : % kg.', 
+            v_quantite_prevue, v_stock_global_dispo;
+    END IF;
+
+    -- 4. Mettre à jour l'entête
+    UPDATE distribution_nourriture
+    SET 
+        quantite_donnee_kg = v_quantite_prevue,
+        heure_nourrissage = v_heure_actuelle, 
+        statut = 'NOURRI',
+        est_valide = TRUE,
+        id_responsable = p_id_utilisateur
+    WHERE id = p_id_distribution;
+
+    -- 5. Déstockage Multi-Lots (FEFO)
+    v_quantite_a_retirer := v_quantite_prevue;
+
+    FOR v_lot_rec IN 
+        SELECT id, quantite_restante_kg 
+        FROM entree_stock_aliment
+        WHERE id_aliment = v_id_aliment AND quantite_restante_kg > 0
+        ORDER BY date_expiration ASC, id ASC
+    LOOP
+        EXIT WHEN v_quantite_a_retirer <= 0;
+
+        IF v_lot_rec.quantite_restante_kg >= v_quantite_a_retirer THEN
+            v_quantite_piquee := v_quantite_a_retirer;
+            v_quantite_a_retirer := 0;
+        ELSE
+            v_quantite_piquee := v_lot_rec.quantite_restante_kg;
+            v_quantite_a_retirer := v_quantite_a_retirer - v_lot_rec.quantite_restante_kg;
+        END IF;
+
+        INSERT INTO distribution_nourriture_lot (id_distribution, id_entree_aliment, quantite_piquee_kg)
+        VALUES (p_id_distribution, v_lot_rec.id, v_quantite_piquee);
+    END LOOP;
+
+END;
+$$ LANGUAGE plpgsql;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 CREATE OR REPLACE FUNCTION fn_obtenir_ou_creer_planning_du_jour(id_utilisateur_connecte INT)
 RETURNS TABLE (
     id_bassin INT,
@@ -513,7 +664,6 @@ DECLARE
     ration_par_creneau_kg DECIMAL(10,2);
     nb_creneaux INT;
     v_id_aliment INT;
-    v_heure_calcul_prevue TIME;
 BEGIN
     -- Optimisation du comptage des créneaux
     SELECT COUNT(*) INTO nb_creneaux FROM creneau_horaire;
@@ -528,7 +678,7 @@ BEGIN
         WHERE cba.est_cloture = FALSE 
           AND sb.code IN ('ACTIF', 'EN_TRAITEMENT')
     LOOP
-        -- Sélection de l'aliment (indexation recommandée sur date_distribution)
+        -- Sélection de l'aliment
         SELECT dn_sub.id_aliment INTO v_id_aliment
         FROM distribution_nourriture dn_sub
         WHERE dn_sub.id_cycle_bassin_assoc = bassin_rec.id_cycle_bassin_assoc
@@ -578,7 +728,7 @@ BEGIN
         END IF;
     END LOOP;
 
-    -- 2. SÉLECTION ET RETOUR DU RÉSULTAT OPTIMISÉ (Utilisation de LAG au lieu de sous-requêtes)
+    -- 2. SÉLECTION, CALCUL DU CHANGEMENT DE JOUR ET FILTRAGE STRICT
     RETURN QUERY
     WITH planning_brut AS (
         SELECT 
@@ -594,8 +744,8 @@ BEGIN
                 WHEN 'SOIR'  THEN '06:00:00'::INTERVAL
                 WHEN 'NUIT'  THEN '05:00:00'::INTERVAL
             END AS decalage,
-            -- OPTIMISATION CRITIQUE : Trouve l'heure réelle précédente instantanément sans refaire de SELECT
-            LAG(dn.heure_nourrissage) OVER (PARTITION BY b.id ORDER BY ch.ordre) AS heure_reelle_precedente
+            LAG(dn.heure_nourrissage) OVER (PARTITION BY b.id ORDER BY ch.ordre) AS heure_reelle_precedente,
+            LAG(dn.date_distribution) OVER (PARTITION BY b.id ORDER BY ch.ordre) AS date_reelle_precedente
         FROM bassin b
         JOIN statut_bassin sb ON b.id_statut_actuel = sb.id
         JOIN cycle_bassin_assoc cba ON b.id = cba.id_bassin AND cba.est_cloture = FALSE
@@ -603,137 +753,43 @@ BEGIN
         LEFT JOIN distribution_nourriture dn ON dn.id_cycle_bassin_assoc = cba.id 
             AND dn.id_creneau = ch.id 
             AND dn.date_distribution = CURRENT_DATE
-        -- RESTRICTION ICI AUSSI : Ne sélectionne que les bassins éligibles
         WHERE sb.code IN ('ACTIF', 'EN_TRAITEMENT')
     ),
-    planning_avec_heures AS (
+    planning_avec_dates_calculees AS (
         SELECT 
-            p.b_id, p.b_code, p.b_notes, p.ch_id, p.ch_libelle, p.ch_ordre, p.dn_id, p.dn_date,
+            p.b_id, p.b_code, p.b_notes, p.ch_id, p.ch_libelle, p.ch_ordre, p.dn_id,
             CASE 
-                WHEN p.ch_libelle = 'MATIN' THEN '06:00:00'::TIME
-                WHEN p.heure_reelle_precedente IS NOT NULL THEN (p.heure_reelle_precedente + p.decalage)::TIME
+                WHEN p.ch_libelle = 'MATIN' THEN (p.dn_date + '06:00:00'::TIME)::TIMESTAMP
+                WHEN p.heure_reelle_precedente IS NOT NULL THEN (COALESCE(p.date_reelle_precedente, p.dn_date) + p.heure_reelle_precedente + p.decalage)::TIMESTAMP
                 ELSE 
                     CASE p.ch_libelle
-                        WHEN 'MIDI' THEN '11:00:00'::TIME
-                        WHEN 'SOIR' THEN '17:00:00'::TIME
-                        WHEN 'NUIT' THEN '22:00:00'::TIME
+                        WHEN 'MIDI' THEN (p.dn_date + '11:00:00'::TIME)::TIMESTAMP
+                        WHEN 'SOIR' THEN (p.dn_date + '17:00:00'::TIME)::TIMESTAMP
+                        WHEN 'NUIT' THEN (p.dn_date + '22:00:00'::TIME)::TIMESTAMP
                     END
-            END AS calc_heure_prevue,
+            END AS ts_calcule,
             p.dn_heure_reelle, p.dn_prevu, p.dn_donne, p.dn_statut, p.dn_valide
         FROM planning_brut p
     )
     SELECT 
-        b_id, b_code, b_notes, ch_id, ch_libelle, dn_id, dn_date,
-        calc_heure_prevue AS heure_prevue,
+        b_id, b_code, b_notes, ch_id, ch_libelle, dn_id,
+        (ts_calcule)::DATE AS date_distribution,
+        (ts_calcule)::TIME AS heure_prevue,
         dn_heure_reelle, dn_prevu, dn_donne,
         CASE 
-            WHEN dn_statut = 'EN_ATTENTE' AND ch_libelle = 'NUIT' AND (CURRENT_TIME > calc_heure_prevue OR CURRENT_TIME <= '01:00:00'::TIME) THEN 'RETARD'
-            WHEN dn_statut = 'EN_ATTENTE' AND ch_libelle != 'NUIT' AND CURRENT_TIME > calc_heure_prevue THEN 'RETARD'
+            WHEN dn_statut = 'EN_ATTENTE' AND ch_libelle = 'NUIT' AND (CURRENT_TIME > (ts_calcule)::TIME OR CURRENT_TIME <= '01:00:00'::TIME) THEN 'RETARD'
+            WHEN dn_statut = 'EN_ATTENTE' AND ch_libelle != 'NUIT' AND CURRENT_TIME > (ts_calcule)::TIME THEN 'RETARD'
             ELSE dn_statut
         END AS statut_distribution,
         dn_valide
-    FROM planning_avec_heures
+    FROM planning_avec_dates_calculees
+    -- Filtre : On ne retourne QUE les repas calculés pour aujourd'hui
+    WHERE (ts_calcule)::DATE = CURRENT_DATE
     ORDER BY b_code, ch_ordre;
 END;
 $$ LANGUAGE plpgsql;
 
 
-
-CREATE OR REPLACE PROCEDURE pr_valider_nourrissage_direct(
-    p_id_distribution INT,
-    p_id_utilisateur INT
-) AS $$
-DECLARE
-    v_id_aliment INT;
-    v_quantite_prevue DECIMAL(10,2);
-    v_quantite_a_retirer DECIMAL(10,2);
-    v_stock_global_dispo DECIMAL(10,2);
-    v_lot_rec RECORD;
-    v_quantite_piquee DECIMAL(10,2);
-    
-    -- Variables pour la vérification de l'heure
-    v_creneau_libelle VARCHAR(20);
-    v_heure_actuelle TIME;
-    v_heure_valide BOOLEAN := FALSE;
-BEGIN
-    v_heure_actuelle := CURRENT_TIME;
-
-    -- 1. Récupérer l'aliment, la quantité PRÉVUE et le LIBELLÉ du créneau
-    -- Autorise la sélection si le statut est 'EN_ATTENTE' OU 'RETARD'
-    SELECT dn.id_aliment, dn.quantite_prevue_kg, ch.libelle 
-    INTO v_id_aliment, v_quantite_prevue, v_creneau_libelle
-    FROM distribution_nourriture dn
-    JOIN creneau_horaire ch ON ch.id = dn.id_creneau
-    WHERE dn.id = p_id_distribution AND dn.statut IN ('EN_ATTENTE', 'RETARD');
-
-    IF NOT FOUND THEN
-        RAISE EXCEPTION 'Distribution introuvable, déjà validée ou non éligible (ID: %)', p_id_distribution;
-    END IF;
-
-    -- 2. VÉRIFICATION DE LA PLAGE HORAIRE DE DÉBUT (Empêche la validation anticipée)
-    -- On autorise la validation si l'heure actuelle est supérieure à l'heure d'ouverture du créneau
-    CASE v_creneau_libelle
-        WHEN 'MATIN' THEN
-            IF v_heure_actuelle >= '06:00:00'::TIME THEN v_heure_valide := TRUE; END IF;
-        WHEN 'MIDI' THEN
-            IF v_heure_actuelle >= '11:00:00'::TIME THEN v_heure_valide := TRUE; END IF;
-        WHEN 'SOIR' THEN
-            IF v_heure_actuelle >= '17:00:00'::TIME THEN v_heure_valide := TRUE; END IF;
-        WHEN 'NUIT' THEN
-            -- Le créneau de NUIT commence à 22h00 et reste actif jusqu'au lendemain matin (ex: avant le MATIN à 06h00)
-            IF v_heure_actuelle >= '22:00:00'::TIME OR v_heure_actuelle < '06:00:00'::TIME THEN v_heure_valide := TRUE; END IF;
-    END CASE;
-
-    IF NOT v_heure_valide THEN
-        RAISE EXCEPTION 'Action refusée : Impossible de valider le repas du % de manière anticipée. Heure actuelle : %', 
-            v_creneau_libelle, TO_CHAR(v_heure_actuelle, 'HH24:MI');
-    END IF;
-
-    -- 3. VÉRIFICATION STRICTE DU STOCK GLOBAL DISPONIBLE
-    SELECT COALESCE(SUM(quantite_restante_kg), 0) INTO v_stock_global_dispo
-    FROM entree_stock_aliment
-    WHERE id_aliment = v_id_aliment AND quantite_restante_kg > 0;
-
-    IF v_stock_global_dispo < v_quantite_prevue THEN
-        RAISE EXCEPTION 'Action impossible : Stock insuffisant pour cet aliment. Requis : % kg, Disponible : % kg.', 
-            v_quantite_prevue, v_stock_global_dispo;
-    END IF;
-
-    -- 4. Mettre à jour l'entête : Le statut passe systématiquement à 'NOURRI'
-    UPDATE distribution_nourriture
-    SET 
-        quantite_donnee_kg = v_quantite_prevue,
-        heure_nourrissage = v_heure_actuelle, 
-        statut = 'NOURRI',
-        est_valide = TRUE,
-        id_responsable = p_id_utilisateur
-    WHERE id = p_id_distribution;
-
-    -- 5. Déstockage Multi-Lots (FEFO)
-    v_quantite_a_retirer := v_quantite_prevue;
-
-    FOR v_lot_rec IN 
-        SELECT id, quantite_restante_kg 
-        FROM entree_stock_aliment
-        WHERE id_aliment = v_id_aliment AND quantite_restante_kg > 0
-        ORDER BY date_expiration ASC, id ASC
-    LOOP
-        EXIT WHEN v_quantite_a_retirer <= 0;
-
-        IF v_lot_rec.quantite_restante_kg >= v_quantite_a_retirer THEN
-            v_quantite_piquee := v_quantite_a_retirer;
-            v_quantite_a_retirer := 0;
-        ELSE
-            v_quantite_piquee := v_lot_rec.quantite_restante_kg;
-            v_quantite_a_retirer := v_quantite_a_retirer - v_lot_rec.quantite_restante_kg;
-        END IF;
-
-        INSERT INTO distribution_nourriture_lot (id_distribution, id_entree_aliment, quantite_piquee_kg)
-        VALUES (p_id_distribution, v_lot_rec.id, v_quantite_piquee);
-    END LOOP;
-
-END;
-$$ LANGUAGE plpgsql;
 
 
 

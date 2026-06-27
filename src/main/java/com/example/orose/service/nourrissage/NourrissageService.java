@@ -71,7 +71,7 @@ public class NourrissageService {
             throw new RuntimeException(message);
         }
 
-        decrementerStockAliment(idDistribution, idUtilisateur);
+        
     }
 
     private void decrementerStockAliment(Integer idDistribution, Integer idUtilisateur) {
