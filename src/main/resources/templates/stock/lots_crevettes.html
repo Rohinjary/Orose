@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/default}">
+<head>
+    <title layout:fragment="page-title">Move Gasy — Lots Crevettes</title>
+    <th:block layout:fragment="page-styles">
+        <style>
+            .header-section { margin-bottom: 32px; padding-bottom: 16px; border-bottom: 1px solid #e2e8f0; }
+            .header-title { font-size: 26px; font-weight: 700; margin-bottom: 8px; color: var(--mg-primary); }
+            .header-sub { font-size: 14px; color: var(--mg-text-muted); line-height: 1.5; }
+            .card { background: var(--mg-surface-bright); border: 1px solid var(--mg-outline); border-radius: var(--radius); padding: 24px; margin-bottom: 24px; }
+            .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+            .card-title { font-size: 12px; font-weight: 700; color: var(--mg-primary); text-transform: uppercase; letter-spacing: 0.05em; }
+            .table-container { width: 100%; overflow-x: auto; }
+            table { width: 100%; border-collapse: collapse; text-align: left; }
+            thead th { background: var(--mg-surface); padding: 12px 16px; font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--mg-secondary); border-bottom: 1px solid var(--mg-outline); letter-spacing: 0.05em; }
+            tbody td { padding: 14px 16px; border-bottom: 1px solid var(--mg-outline); font-size: 13px; }
+            tbody tr:hover td { background: var(--mg-surface); }
+            .badge { padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 700; display: inline-block; text-transform: uppercase; }
+            .badge-success { background: #dcfce7; color: #166534; }
+            .badge-info { background: #dbeafe; color: #1e40af; }
+            .badge-neutral { background: #f3f4f6; color: #4b5563; }
+            .lot-number { font-family: monospace; font-weight: 700; font-size: 13px; padding: 2px 6px; background: #f1f5f9; border-radius: 4px; }
+            .val-positive { color: var(--mg-success); font-weight: 700; }
+            .btn { padding: 10px 20px; border-radius: var(--radius); font-size: 13px; font-weight: 600; cursor: pointer; transition: 0.2s; border: 1px solid transparent; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; justify-content: center; }
+            .btn-primary { background: var(--mg-primary); color: white; }
+            .btn-primary:hover { opacity: 0.9; }
+            .btn-outline { background: transparent; border-color: var(--mg-outline); color: var(--mg-primary); }
+            .btn-outline:hover { background: var(--mg-surface); }
+            .alert-banner { display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: var(--radius); margin-bottom: 24px; font-size: 13px; color: #1e40af; }
+            @media (max-width: 992px) { .table-container { overflow-x: auto; } }
+        </style>
+    </th:block>
+</head>
+<body>
+    <div layout:fragment="content">
+        <header class="header-section">
+            <h2 class="header-title">Registre des Récoltes</h2>
+            <p class="header-sub">Suivi des entrées automatiques de stock générées par les récoltes.</p>
+        </header>
+
+        <div class="alert-banner">
+            <i class="bi bi-info-circle"></i>
+            <span><strong>Automatisation active :</strong> Les entrées crevettes sont créées automatiquement lors du passage d'un bassin en état RÉCOLTÉ. Aucune saisie manuelle requise.</span>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Lots récoltés</h3>
+                <span class="badge badge-neutral" th:text="${#lists.size(lots)} + ' lot(s)'">0</span>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date récolte</th>
+                            <th>N° Lot</th>
+                            <th>Produit</th>
+                            <th>Biomasse (kg)</th>
+                            <th>Stock actuel (kg)</th>
+                            <th>Origine</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="lot : ${lots}">
+                            <td th:text="${#temporals.format(lot.dateRecolte, 'dd/MM/yyyy')}">--</td>
+                            <td><span class="lot-number" th:text="${lot.numeroLotUnique}">--</span></td>
+                            <td>Crevettes (calibre ≥ 20g)</td>
+                            <td class="val-positive" th:text="${#numbers.formatDecimal(lot.biomasseTotaleKg, 1, 2)}">--</td>
+                            <td th:text="${#numbers.formatDecimal(lot.biomasseActuelleKg, 1, 2)}">--</td>
+                            <td th:text="${lot.cycleBassinAssoc != null ? lot.cycleBassinAssoc.bassin.code + ' / Cycle ' + lot.cycleBassinAssoc.cycle.codeUniqueCycle : 'N/A'}">--</td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(lots)}">
+                            <td colspan="6" style="text-align: center; padding: 40px; color: var(--mg-text-muted);">Aucune récolte enregistrée</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

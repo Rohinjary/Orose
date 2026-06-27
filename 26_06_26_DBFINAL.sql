@@ -639,46 +639,6 @@ $$ LANGUAGE plpgsql;
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 CREATE OR REPLACE PROCEDURE pr_valider_nourrissage_direct(
     p_id_distribution INT,
     p_id_utilisateur INT
