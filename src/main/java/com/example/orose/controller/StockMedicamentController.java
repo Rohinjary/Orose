@@ -50,16 +50,25 @@ public class StockMedicamentController {
             Model model,
             RedirectAttributes redirectAttributes) {
 
-        // Vérification des erreurs de validation (annotations dans le DTO)
+        // 1. Validation de base : Si erreur, on reste sur la page SANS redirection
         if (bindingResult.hasErrors()) {
+            model.addAttribute("error", "Formulaire invalide, veuillez vérifier les champs.");
             model.addAttribute("listeMedicaments", medicamentRepository.findAll());
             model.addAttribute("listeResponsables", utilisateurRepository.findAll());
-            return "stock/crud_produit_stock"; // Retourne au formulaire avec les erreurs
+            return "stock/crud_produit_stock";
         }
 
-        stockService.enregistrerEntreeMedicament(dto);
-        redirectAttributes.addFlashAttribute("message", "Entrée de médicament enregistrée avec succès.");
-        return "redirect:/stock/medicament/liste";
+        try {
+            // 2. Enregistrement
+            stockService.enregistrerEntreeMedicament(dto);
+            redirectAttributes.addFlashAttribute("success", "Entrée de médicament enregistrée avec succès.");
+            return "redirect:/stock/medicament/liste";
+
+        } catch (Exception e) {
+            // 3. Ici, on utilise addFlashAttribute ET une redirection
+            redirectAttributes.addFlashAttribute("error", "Erreur : " + e.getMessage());
+            return "redirect:/stock/medicament/entree"; // Ceci appelle votre @GetMapping
+        }
     }
 
     @GetMapping("/liste")

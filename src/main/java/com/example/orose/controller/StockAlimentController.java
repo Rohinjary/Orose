@@ -6,8 +6,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping; // Nouveau DTO pour le stock
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.orose.dto.EntreeStockDTO;
 import com.example.orose.dto.nourrissage.JournalDTO;
@@ -62,16 +64,21 @@ public class StockAlimentController {
     }
 
     @PostMapping("/enregistrer")
-    public String enregistrerEntree(@Valid EntreeStockDTO dto, BindingResult result, Model model) {
+    public String enregistrerEntree(@Valid @ModelAttribute("entreeDto") EntreeStockDTO dto,
+            BindingResult result,
+            RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
-            return "nourrissage/stock_form";
+            // En cas d'erreur de validation (ex: champ vide)
+            redirectAttributes.addFlashAttribute("error", "Veuillez vérifier les informations saisies.");
+            return "redirect:/nourrissage/stock_form";
         }
         try {
             stockAlimentService.enregistrerEntree(dto);
+            redirectAttributes.addFlashAttribute("success", "Stock enregistré avec succès.");
             return "redirect:/stock/liste";
         } catch (Exception e) {
-            model.addAttribute("error", "Erreur lors de l'enregistrement : " + e.getMessage());
-            return "nourrissage/stock_form";
+            redirectAttributes.addFlashAttribute("error", "Erreur : " + e.getMessage());
+            return "redirect:/nourrissage/stock_form";
         }
     }
 

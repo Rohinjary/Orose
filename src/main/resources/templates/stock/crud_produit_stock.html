@@ -354,128 +354,174 @@
 </head>
 
 <body>
-    <div class="sidebar-overlay"></div>
-    <div class="layout">
-        <aside class="sidebar">
-            <div class="sidebar-brand">
-                <div class="brand-logo"><i class="bi bi-water"></i></div>
-                <div class="brand-name">MOVE GASY</div>
+
+    <div layout:fragment="content">
+
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script th:if="${error}">
+            Swal.fire({ icon: 'error', title: 'Erreur', text: '[[${error}]]' });
+        </script>
+        <script th:if="${success}">
+            Swal.fire({ icon: 'success', title: 'Succès', text: '[[${success}]]' });
+        </script>
+
+        <header class="header-section" style="margin-bottom: 32px;">
+            <h2 class="header-title">Création de Produit</h2>
+            <p class="header-sub">Enregistrez une nouvelle référence dans le catalogue.</p>
+        </header>
+
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Informations Générales</h3>
             </div>
-            <div class="nav-container">
-                <div class="nav-label">Principal</div>
-                <a class="nav-item"><span class="nav-icon"><i class="bi bi-speedometer2"></i></span> Dashboard</a>
-                <div class="nav-label">Terrain</div>
-                <a class="nav-item"><span class="nav-icon"><i class="bi bi-droplet-half"></i></span> Bassins</a>
-                <a class="nav-item"><span class="nav-icon"><i class="bi bi-activity"></i></span> Suivi biologique</a>
-                <a class="nav-item"><span class="nav-icon"><i class="bi bi-egg-fill"></i></span> Nourrissage</a>
-                <a class="nav-item"><span class="nav-icon"><i class="bi bi-plus-circle"></i></span> Sanitaire</a>
-                <div class="nav-label">Logistique</div>
-                <a class="nav-item active"><span class="nav-icon"><i class="bi bi-box-seam"></i></span> Stocks</a>
-                <a class="nav-item"><span class="nav-icon"><i class="bi bi-cart3"></i></span> Commercial</a>
-                <a class="nav-item"><span class="nav-icon"><i class="bi bi-truck"></i></span> Livraisons</a>
-                <a class="nav-item"><span class="nav-icon"><i class="bi bi-cash-stack"></i></span> Finances</a>
-                <div class="nav-label">Système</div>
-                <a class="nav-item" href="#">
-                    <span class="nav-icon"><i class="bi bi-lock"></i></span> Connexion</a>
-                <a class="nav-item"><span class="nav-icon"><i class="bi bi-gear"></i></span> Administration <div
-                        class="nav-label">Portail client</div>
-                    <a class="nav-item">
-                        <span class="nav-icon"><i class="bi bi-person-lock"></i></span> Front Office
-                    </a>
-            </div>
-        </aside>
-
-        <div class="main-wrapper">
-            <header class="topbar">
-
-                <button class="menu-toggle" onclick="toggleSidebar()">
-                    <i class="bi bi-list"></i>
-                </button>
-                <div class="breadcrumb">
-                    <span>Stocks</span><span class="sep">/</span><span class="active">Nouveau Produit</span>
-                </div>
-                <div class="topbar-actions">
-                    <button class="icon-btn"><i class="bi bi-bell"></i></button>
-                    <button class="icon-btn"><i class="bi bi-gear"></i></button>
-                    <div class="user-profile">
-                        <div class="avatar">AD</div>
+            <div class="sidebar-overlay"></div>
+            <div class="layout">
+                <aside class="sidebar">
+                    <div class="sidebar-brand">
+                        <div class="brand-logo"><i class="bi bi-water"></i></div>
+                        <div class="brand-name">MOVE GASY</div>
                     </div>
-                </div>
-            </header>
-
-            <main class="content">
-                <header class="header-section">
-                    <h2 class="header-title">Création de Produit</h2>
-                    <p class="header-sub">Enregistrez une nouvelle référence dans le catalogue des intrants ou produits
-                        finis.</p>
-                </header>
-
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">Informations Générales</h3>
+                    <div class="nav-container">
+                        <div class="nav-label">Principal</div>
+                        <a class="nav-item"><span class="nav-icon"><i class="bi bi-speedometer2"></i></span>
+                            Dashboard</a>
+                        <div class="nav-label">Terrain</div>
+                        <a class="nav-item"><span class="nav-icon"><i class="bi bi-droplet-half"></i></span> Bassins</a>
+                        <a class="nav-item"><span class="nav-icon"><i class="bi bi-activity"></i></span> Suivi
+                            biologique</a>
+                        <a class="nav-item"><span class="nav-icon"><i class="bi bi-egg-fill"></i></span> Nourrissage</a>
+                        <a class="nav-item"><span class="nav-icon"><i class="bi bi-plus-circle"></i></span>
+                            Sanitaire</a>
+                        <div class="nav-label">Logistique</div>
+                        <a class="nav-item active"><span class="nav-icon"><i class="bi bi-box-seam"></i></span>
+                            Stocks</a>
+                        <a class="nav-item"><span class="nav-icon"><i class="bi bi-cart3"></i></span> Commercial</a>
+                        <a class="nav-item"><span class="nav-icon"><i class="bi bi-truck"></i></span> Livraisons</a>
+                        <a class="nav-item"><span class="nav-icon"><i class="bi bi-cash-stack"></i></span> Finances</a>
+                        <div class="nav-label">Système</div>
+                        <a class="nav-item" href="#">
+                            <span class="nav-icon"><i class="bi bi-lock"></i></span> Connexion</a>
+                        <a class="nav-item"><span class="nav-icon"><i class="bi bi-gear"></i></span> Administration <div
+                                class="nav-label">Portail client</div>
+                            <a class="nav-item">
+                                <span class="nav-icon"><i class="bi bi-person-lock"></i></span> Front Office
+                            </a>
                     </div>
-                    <form th:action="@{/stock/medicament/entree}" th:object="${entreeDto}" method="post">
+                </aside>
 
-                        <div class="form-group">
-                            <label class="form-label">Médicament</label>
-                            <select class="form-control" th:field="*{idMedicament}">
-                                <option th:each="m : ${listeMedicaments}" th:value="${m.id}" th:text="${m.libelle}">
-                                </option>
-                            </select>
+                <div class="main-wrapper">
+                    <header class="topbar">
+
+                        <button class="menu-toggle" onclick="toggleSidebar()">
+                            <i class="bi bi-list"></i>
+                        </button>
+                        <div class="breadcrumb">
+                            <span>Stocks</span><span class="sep">/</span><span class="active">Nouveau Produit</span>
                         </div>
-
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
-                            <div class="form-group">
-                                <label class="form-label">Quantité</label>
-                                <input type="number" step="0.01" class="form-control" th:field="*{quantite}"
-                                    placeholder="0.00">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Prix Total (Ar)</label>
-                                <input type="number" step="0.01" class="form-control" th:field="*{prixTotalAr}"
-                                    placeholder="0.00">
+                        <div class="topbar-actions">
+                            <button class="icon-btn"><i class="bi bi-bell"></i></button>
+                            <button class="icon-btn"><i class="bi bi-gear"></i></button>
+                            <div class="user-profile">
+                                <div class="avatar">AD</div>
                             </div>
                         </div>
-                         <div class="form-group">
-                            <label class="form-label">Date de réception</label>
-                            <input type="date" class="form-control" th:field="*{dateReception}">
-                        </div>
+                    </header>
 
+                    <main class="content">
+                        <header class="header-section">
+                            <h2 class="header-title">Création de Produit</h2>
+                            <p class="header-sub">Enregistrez une nouvelle référence dans le catalogue des intrants ou
+                                produits
+                                finis.</p>
+                        </header>
 
-                        <div class="form-group">
-                            <label class="form-label">Date de péremption</label>
-                            <input type="date" class="form-control" th:field="*{dateExpiration}">
-                        </div>
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">Informations Générales</h3>
+                            </div>
+                            <form th:action="@{/stock/medicament/entree}" th:object="${entreeDto}" method="post">
 
-                        <div class="form-group">
-                            <label class="form-label">Responsable</label>
-                            <select class="form-control" th:field="*{idResponsable}">
-                                <option th:each="u : ${listeResponsables}" th:value="${u.id}" th:text="${u.nom}">
-                                </option>
-                            </select>
-                        </div>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px;">
 
-                        <div style="margin-top: 32px; display: flex; gap: 12px;">
-                            <button type="submit" class="btn btn-primary">VALIDER L'ENTRÉE</button>
-                            <a href="/stock/medicament/liste" class="btn btn-outline">ANNULER</a>
+                                    <div>
+                                        <h4 style="margin-bottom: 16px;">Informations Médicament</h4>
+
+                                        <div class="form-group">
+                                            <label class="form-label">Médicament</label>
+                                            <select class="form-control" th:field="*{idMedicament}"
+                                                th:classappend="${#fields.hasErrors('idMedicament')} ? 'is-invalid'">
+                                                <option value="" disabled selected>Choisir un médicament...</option>
+                                                <option th:each="m : ${listeMedicaments}" th:value="${m.id}"
+                                                    th:text="${m.libelle}"></option>
+                                            </select>
+                                            <div class="text-danger" th:if="${#fields.hasErrors('idMedicament')}"
+                                                th:errors="*{idMedicament}"></div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="form-label">Quantité</label>
+                                            <input type="number" step="0.01" class="form-control" th:field="*{quantite}"
+                                                placeholder="0.00">
+                                            <div class="text-danger" th:if="${#fields.hasErrors('quantite')}"
+                                                th:errors="*{quantite}"></div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="form-label">Prix Total (Ar)</label>
+                                            <input type="number" step="0.01" class="form-control"
+                                                th:field="*{prixTotalAr}" placeholder="0.00">
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <h4 style="margin-bottom: 16px;">Traçabilité</h4>
+
+                                        <div class="form-group">
+                                            <label class="form-label">Date de réception</label>
+                                            <input type="date" class="form-control" th:field="*{dateReception}">
+                                            <div class="text-danger" th:if="${#fields.hasErrors('dateReception')}"
+                                                th:errors="*{dateReception}"></div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="form-label">Date de péremption</label>
+                                            <input type="date" class="form-control" th:field="*{dateExpiration}">
+                                            <div class="text-danger" th:if="${#fields.hasErrors('dateExpiration')}"
+                                                th:errors="*{dateExpiration}"></div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="form-label">Responsable</label>
+                                            <select class="form-control" th:field="*{idResponsable}">
+                                                <option th:each="u : ${listeResponsables}" th:value="${u.id}"
+                                                    th:text="${u.nom}"></option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div
+                                    style="margin-top: 32px; display: flex; gap: 12px; justify-content: flex-end; border-top: 1px solid var(--mg-outline); padding-top: 24px;">
+                                    <a th:href="@{/stock/medicament/liste}" class="btn btn-outline">ANNULER</a>
+                                    <button type="submit" class="btn btn-primary">VALIDER L'ENTRÉE</button>
+                                </div>
+                            </form>
                         </div>
-                    </form>
+                    </main>
                 </div>
-            </main>
-        </div>
-    </div>
+            </div>
 
-    <script>
-        function toggleSidebar() {
-            document.querySelector('.sidebar').classList.toggle('open');
-            document.querySelector('.sidebar-overlay').classList.toggle('open');
-        }
-        document.querySelector('.sidebar-overlay')
-            ?.addEventListener('click', () => {
-                document.querySelector('.sidebar').classList.remove('open');
-                document.querySelector('.sidebar-overlay').classList.remove('open');
-            });
-    </script>
+            <script>
+                function toggleSidebar() {
+                    document.querySelector('.sidebar').classList.toggle('open');
+                    document.querySelector('.sidebar-overlay').classList.toggle('open');
+                }
+                document.querySelector('.sidebar-overlay')
+                    ?.addEventListener('click', () => {
+                        document.querySelector('.sidebar').classList.remove('open');
+                        document.querySelector('.sidebar-overlay').classList.remove('open');
+                    });
+            </script>
 </body>
 
 </html>
