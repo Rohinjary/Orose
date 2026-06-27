@@ -3,11 +3,13 @@ package com.example.orose.service;
 import com.example.orose.dto.TraitementDTO;
 import com.example.orose.model.EntreeStockMedicament;
 import com.example.orose.model.IncidentSanitaire;
+import com.example.orose.model.MouvementStockMedicament;
 import com.example.orose.model.Traitement;
 import com.example.orose.model.Utilisateur;
 import com.example.orose.repository.BassinRepository;
 import com.example.orose.repository.EntreeStockMedicamentRepository;
 import com.example.orose.repository.IncidentSanitaireRepository;
+import com.example.orose.repository.MouvementStockMedicamentRepository;
 import com.example.orose.repository.TraitementRepository;
 import com.example.orose.repository.UtilisateurRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +29,8 @@ public class TraitementService {
     private IncidentSanitaireRepository incidentRepository;
     @Autowired
     private EntreeStockMedicamentRepository entreeStockRepository;
+    @Autowired
+    private MouvementStockMedicamentRepository mouvementStockMedicamentRepository;
     @Autowired
     private UtilisateurRepository utilisateurRepository;
     @Autowired
@@ -58,6 +62,18 @@ public class TraitementService {
         traitement.setCreatedAt(LocalDateTime.now());
 
         Traitement traitementSauve = traitementRepository.save(traitement);
+
+        entree.setQuantiteRestante(entree.getQuantiteRestante().subtract(dto.getQuantiteUtilisee()));
+        entreeStockRepository.save(entree);
+
+        MouvementStockMedicament mvt = new MouvementStockMedicament();
+        mvt.setEntreeMedicament(entree);
+        mvt.setTypeMouvement("TRAITEMENT");
+        mvt.setQuantite(dto.getQuantiteUtilisee());
+        mvt.setMotif("Traitement #" + traitementSauve.getId() + " pour incident #" + incident.getId());
+        mvt.setDateMouvement(LocalDateTime.now());
+        mvt.setResponsable(responsable);
+        mouvementStockMedicamentRepository.save(mvt);
 
         Integer idBassin = incident.getCycleBassinAssoc().getBassin().getId();
         String statutActuel = bassinRepository.findById(idBassin)

@@ -11,3 +11,4 @@ M4	Medicament, EntreeStockMedicament, IncidentSanitaire, Traitement
 M5	LotCrevette, MouvementStockCrevette
 
 M9	Alerte
+

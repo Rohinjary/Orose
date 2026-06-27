@@ -143,7 +143,39 @@
             </div>
         </div>
 
-       
-        
+        <!-- Module Stock -->
+        <div class="nav-label">Logistique</div>
+        <div class="nav-dropdown" th:classappend="${currentGroup == 'stock'} ? 'open' : ''">
+            <a class="nav-item" onclick="toggleDropdown(this)">
+                <span class="nav-icon"><i class="bi bi-box-seam"></i></span> Stocks
+                <span class="chevron-icon"><i class="bi bi-chevron-right"></i></span>
+            </a>
+            <div class="submenu">
+                <a class="nav-item" th:classappend="${currentPage == 'stock-dashboard'} ? 'active' : ''"
+                    th:href="@{/stock/dashboard}">
+                    Tableau de bord
+                </a>
+                <a class="nav-item" th:classappend="${currentPage == 'stock-produits'} ? 'active' : ''"
+                    th:href="@{/stock/produits}">
+                    Liste des produits
+                </a>
+                <a class="nav-item" th:classappend="${currentPage == 'stock-lots'} ? 'active' : ''"
+                    th:href="@{/stock/lots-crevettes}">
+                    Lots crevettes
+                </a>
+                <a class="nav-item" th:classappend="${currentPage == 'stock-entree'} ? 'active' : ''"
+                    th:href="@{/stock/entree}">
+                    Entrée stock
+                </a>
+                <a class="nav-item" th:classappend="${currentPage == 'stock-sortie'} ? 'active' : ''"
+                    th:href="@{/stock/sortie}">
+                    Sortie stock
+                </a>
+                <a class="nav-item" th:classappend="${currentPage == 'stock-mouvements'} ? 'active' : ''"
+                    th:href="@{/stock/mouvements}">
+                    Historique mouvements
+                </a>
+            </div>
+        </div>
     </div>
 </aside>

@@ -53,7 +53,7 @@ public class BiologiqueController {
 
     @GetMapping
     public String liste(Model model) {
-        preparerLayoutBiologique(model, "Tableau de bord", "tableau-de-bord");
+        preparerLayoutBiologique(model, "Ta bleau de bord", "tableau-de-bord");
         model.addAttribute("bassinsEnSuivi", biologiqueService.getBassinsSuivi());
         return "biologique/liste";
     }

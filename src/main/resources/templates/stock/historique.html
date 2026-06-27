@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/default}">
+<head>
+    <title layout:fragment="page-title">Move Gasy — Historique des Mouvements</title>
+    <th:block layout:fragment="page-styles">
+        <style>
+            .header-section { margin-bottom: 32px; padding-bottom: 16px; border-bottom: 1px solid #e2e8f0; }
+            .header-title { font-size: 26px; font-weight: 700; margin-bottom: 8px; color: var(--mg-primary); }
+            .header-sub { font-size: 14px; color: var(--mg-text-muted); line-height: 1.5; }
+            .card { background: var(--mg-surface-bright); border: 1px solid var(--mg-outline); border-radius: var(--radius); padding: 24px; margin-bottom: 24px; }
+            .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
+            .card-title { font-size: 12px; font-weight: 700; color: var(--mg-primary); text-transform: uppercase; letter-spacing: 0.05em; }
+            .table-container { width: 100%; overflow-x: auto; }
+            table { width: 100%; border-collapse: collapse; text-align: left; }
+            thead th { background: var(--mg-surface); padding: 12px 16px; font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--mg-secondary); border-bottom: 1px solid var(--mg-outline); letter-spacing: 0.05em; }
+            tbody td { padding: 14px 16px; border-bottom: 1px solid var(--mg-outline); font-size: 13px; }
+            tbody tr:hover td { background: var(--mg-surface); }
+            .badge { padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 700; display: inline-block; text-transform: uppercase; }
+            .badge-success { background: #dcfce7; color: #166534; }
+            .badge-danger { background: #fee2e2; color: #991b1b; }
+            .badge-neutral { background: #f3f4f6; color: #4b5563; }
+            .badge-info { background: #dbeafe; color: #1e40af; }
+            .val-positive { color: var(--mg-success); font-weight: 700; }
+            .val-negative { color: var(--mg-danger); font-weight: 700; }
+            .btn { padding: 10px 20px; border-radius: var(--radius); font-size: 13px; font-weight: 600; cursor: pointer; transition: 0.2s; border: 1px solid transparent; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; justify-content: center; }
+            .btn-outline { background: transparent; border-color: var(--mg-outline); color: var(--mg-primary); }
+            .btn-outline:hover { background: var(--mg-surface); }
+            .btn-sm { padding: 6px 12px; font-size: 12px; }
+            .form-group { margin-bottom: 0; display: flex; flex-direction: column; gap: 4px; }
+            .form-control { font-family: var(--font-main); font-size: 14px; padding: 8px 10px; border: 1px solid var(--mg-outline); border-radius: var(--radius); background: white; color: var(--mg-primary); outline: none; }
+            .form-control:focus { border-color: var(--mg-primary); }
+            .filters-bar { display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end; margin-bottom: 20px; }
+            .filter-group { display: flex; flex-direction: column; gap: 4px; }
+            .filter-label { font-size: 11px; font-weight: 700; color: var(--mg-secondary); text-transform: uppercase; letter-spacing: 0.05em; }
+            .filter-select { font-family: var(--font-main); font-size: 13px; padding: 8px 10px; border: 1px solid var(--mg-outline); border-radius: var(--radius); background: white; color: var(--mg-primary); outline: none; }
+            .data-meta { display: block; font-size: 11px; color: var(--mg-text-muted); }
+            @media (max-width: 992px) { .table-container { overflow-x: auto; } }
+        </style>
+    </th:block>
+</head>
+<body>
+    <div layout:fragment="content">
+        <header class="header-section">
+            <h2 class="header-title">Journal des Mouvements</h2>
+            <p class="header-sub">Historique complet des entrées et sorties de stock.</p>
+        </header>
+
+        <div class="card" style="padding: 0;">
+            <div class="card-header" style="padding: 20px 24px 0 24px;">
+                <h3 class="card-title">Tous les mouvements</h3>
+                <span class="badge badge-neutral" th:text="${#lists.size(mouvements)} + ' mouvement(s)'">0</span>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date &amp; Heure</th>
+                            <th>Produit</th>
+                            <th>Type</th>
+                            <th>Quantité</th>
+                            <th>Motif</th>
+                            <th>Source</th>
+                            <th>Responsable</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="mvt : ${mouvements}">
+                            <td>
+                                <span th:text="${#temporals.format(mvt.dateMouvement, 'dd/MM/yyyy')}">--</span>
+                                <span class="data-meta" th:text="${#temporals.format(mvt.dateMouvement, 'HH:mm:ss')}">--</span>
+                            </td>
+                            <td><strong th:text="${mvt.produit}">--</strong></td>
+                            <td>
+                                <span th:if="${mvt.type == 'ENTRÉE'}" class="badge badge-success"><i class="bi bi-arrow-down-left"></i> Entrée</span>
+                                <span th:if="${mvt.type == 'SORTIE'}" class="badge badge-danger"><i class="bi bi-arrow-up-right"></i> Sortie</span>
+                            </td>
+                            <td th:class="${mvt.type == 'ENTRÉE'} ? 'val-positive' : 'val-negative'" th:text="${mvt.type == 'ENTRÉE' ? '+' : ''} + ${#numbers.formatDecimal(mvt.quantite, 1, 2)} + ' kg'">--</td>
+                            <td th:text="${mvt.motif}">--</td>
+                            <td><span class="badge badge-info" th:text="${mvt.source}">--</span></td>
+                            <td th:text="${mvt.responsable}">--</td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(mouvements)}">
+                            <td colspan="7" style="text-align: center; padding: 40px; color: var(--mg-text-muted);">Aucun mouvement enregistré</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

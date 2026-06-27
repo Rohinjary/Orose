@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layouts/default}">
+
+<head>
+    <title layout:fragment="page-title">Move Gasy — Dashboard Stock</title>
+    <th:block layout:fragment="page-styles">
+        <style>
+            .header-section {
+                margin-bottom: 32px;
+                padding-bottom: 16px;
+                border-bottom: 1px solid #e2e8f0;
+            }
+
+            .header-title {
+                font-size: 26px;
+                font-weight: 700;
+                margin-bottom: 8px;
+                color: var(--mg-primary);
+            }
+
+            .header-sub {
+                font-size: 14px;
+                color: var(--mg-text-muted);
+                line-height: 1.5;
+            }
+
+            .kpi-row {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 16px;
+                margin-bottom: 24px;
+            }
+
+            .kpi-card {
+                background: var(--mg-surface-bright);
+                border: 1px solid var(--mg-outline);
+                border-radius: var(--radius);
+                padding: 16px 20px;
+                display: flex;
+                flex-direction: column;
+                gap: 4px;
+            }
+
+            .kpi-label {
+                font-size: 11px;
+                font-weight: 700;
+                text-transform: uppercase;
+                color: var(--mg-secondary);
+                letter-spacing: 0.05em;
+            }
+
+            .kpi-value {
+                font-size: 24px;
+                font-weight: 700;
+                color: var(--mg-primary);
+                line-height: 1.2;
+            }
+
+            .kpi-sub {
+                font-size: 12px;
+                color: var(--mg-text-muted);
+            }
+
+            .kpi-card.crevettes {
+                border-left: 4px solid #3b82f6;
+            }
+
+            .kpi-card.aliments {
+                border-left: 4px solid #10b981;
+            }
+
+            .kpi-card.faible {
+                border-left: 4px solid #f59e0b;
+            }
+
+            .kpi-card.expirations {
+                border-left: 4px solid #ef4444;
+            }
+
+            .grid-detail {
+                display: grid;
+                grid-template-columns: repeat(12, 1fr);
+                gap: 24px;
+            }
+
+            .col-4 {
+                grid-column: span 4;
+            }
+
+            .col-8 {
+                grid-column: span 8;
+            }
+
+            .col-12 {
+                grid-column: span 12;
+            }
+
+            .card {
+                background: var(--mg-surface-bright);
+                border: 1px solid var(--mg-outline);
+                border-radius: var(--radius);
+                padding: 24px;
+                margin-bottom: 24px;
+            }
+
+            .card-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 20px;
+            }
+
+            .card-title {
+                font-size: 12px;
+                font-weight: 700;
+                color: var(--mg-primary);
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+            }
+
+            .table-container {
+                width: 100%;
+                overflow-x: auto;
+            }
+
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                text-align: left;
+            }
+
+            thead th {
+                background: var(--mg-surface);
+                padding: 12px 16px;
+                font-size: 11px;
+                font-weight: 700;
+                text-transform: uppercase;
+                color: var(--mg-secondary);
+                border-bottom: 1px solid var(--mg-outline);
+                letter-spacing: 0.05em;
+            }
+
+            tbody td {
+                padding: 14px 16px;
+                border-bottom: 1px solid var(--mg-outline);
+                font-size: 13px;
+            }
+
+            tbody tr:hover td {
+                background: var(--mg-surface);
+            }
+
+            .badge {
+                padding: 2px 8px;
+                border-radius: 20px;
+                font-size: 11px;
+                font-weight: 700;
+                display: inline-block;
+                text-transform: uppercase;
+            }
+
+            .badge-success {
+                background: #dcfce7;
+                color: #166534;
+            }
+
+            .badge-warning {
+                background: #fef3c7;
+                color: #92400e;
+            }
+
+            .badge-danger {
+                background: #fee2e2;
+                color: #991b1b;
+            }
+
+            .badge-neutral {
+                background: #f3f4f6;
+                color: #4b5563;
+            }
+
+            .btn {
+                padding: 10px 20px;
+                border-radius: var(--radius);
+                font-size: 13px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: 0.2s;
+                border: 1px solid transparent;
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                text-decoration: none;
+                justify-content: center;
+            }
+
+            .btn-primary {
+                background: var(--mg-primary);
+                color: white;
+            }
+
+            .btn-primary:hover {
+                opacity: 0.9;
+            }
+
+            .btn-outline {
+                background: transparent;
+                border-color: var(--mg-outline);
+                color: var(--mg-primary);
+            }
+
+            .btn-outline:hover {
+                background: var(--mg-surface);
+            }
+
+            .btn-full {
+                width: 100%;
+            }
+
+            .alert-item {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 12px;
+                border-radius: var(--radius);
+                margin-bottom: 8px;
+            }
+
+            .alert-item.warning {
+                background: #fffbeb;
+                border: 1px solid #fde68a;
+            }
+
+            .alert-item.danger {
+                background: #fef2f2;
+                border: 1px solid #fca5a5;
+            }
+
+            .alert-item-icon {
+                font-size: 20px;
+            }
+
+            .alert-item.warning .alert-item-icon {
+                color: #f59e0b;
+            }
+
+            .alert-item.danger .alert-item-icon {
+                color: #ef4444;
+            }
+
+            .alert-item-content {
+                flex: 1;
+            }
+
+            .alert-item-name {
+                font-weight: 600;
+                font-size: 13px;
+                display: block;
+            }
+
+            .alert-item-meta {
+                font-size: 11px;
+                color: var(--mg-secondary);
+            }
+
+            .val-positive {
+                color: var(--mg-success);
+                font-weight: 700;
+            }
+
+            .val-negative {
+                color: var(--mg-danger);
+                font-weight: 700;
+            }
+
+            @media (max-width: 992px) {
+                .kpi-row {
+                    grid-template-columns: repeat(2, 1fr);
+                }
+
+                .col-8,
+                .col-4 {
+                    grid-column: span 12;
+                }
+            }
+        </style>
+    </th:block>
+</head>
+
+<body>
+    <div layout:fragment="content">
+        <header class="header-section">
+            <h2 class="header-title">Tableau de bord Stock</h2>
+            <p class="header-sub">Vue globale de l'état des stocks et alertes critiques.</p>
+        </header>
+
+        <div class="kpi-row">
+            <div class="kpi-card crevettes">
+                <span class="kpi-label">Stock Crevettes</span>
+                <span class="kpi-value" th:text="${#numbers.formatDecimal(dashboard.stockCrevetteKg, 1, 2)} + ' kg'">0
+                    kg</span>
+                <span class="kpi-sub">Valeur : <span
+                        th:text="${#numbers.formatDecimal(dashboard.valeurCrevetteAr, 1, 0)} + ' Ar'">0 Ar</span></span>
+            </div>
+            <div class="kpi-card aliments">
+                <span class="kpi-label">Stock Aliments</span>
+                <span class="kpi-value" th:text="${#numbers.formatDecimal(dashboard.stockAlimentKg, 1, 2)} + ' kg'">0
+                    kg</span>
+                <span class="kpi-sub">Autonomie : <span style="color: var(--mg-success); font-weight: 700;"
+                        th:text="${#numbers.formatDecimal(dashboard.autonomieAlimentJours, 1, 1)} + ' jours'">0
+                        jours</span></span>
+            </div>
+            <div class="kpi-card faible">
+                <span class="kpi-label">Alertes Niveau</span>
+                <span class="kpi-value" th:text="${dashboard.nbProduitsFaibles} + ' Produits'">0</span>
+                <span class="kpi-sub" th:if="${dashboard.nbProduitsFaibles > 0}"
+                    style="color: var(--mg-danger); font-weight: 600;">Stock faible détecté</span>
+                <span class="kpi-sub" th:if="${dashboard.nbProduitsFaibles <= 0}"
+                    style="color: var(--mg-success); font-weight: 600;">Tout est optimal</span>
+            </div>
+            <div class="kpi-card expirations">
+                <span class="kpi-label">Lots périmés</span>
+                <span class="kpi-value" th:text="${dashboard.nbLotsPerimes} + ' Lots'">0</span>
+                <span class="kpi-sub" th:if="${dashboard.nbLotsPerimes > 0}"
+                    style="color: var(--mg-danger); font-weight: 600;">Action requise</span>
+                <span class="kpi-sub" th:if="${dashboard.nbLotsPerimes <= 0}"
+                    style="color: var(--mg-success); font-weight: 600;">Aucun lot périmé</span>
+            </div>
+        </div>
+
+        <div class="grid-detail">
+            <div class="col-4">
+                <div class="card" style="padding: 0; overflow: hidden;">
+                    <div class="card-header"
+                        style="padding: 20px 24px; margin-bottom: 0; border-bottom: 1px solid var(--mg-outline);">
+                        <h3 class="card-title">Alertes Actives</h3>
+                        <span class="badge badge-neutral"
+                            th:text="${#lists.size(dashboard.alertes)} + ' TOTAL'">0</span>
+                    </div>
+                    <div style="padding: 12px;">
+                        <div th:each="alerte : ${dashboard.alertes}"
+                            th:class="'alert-item ' + (${alerte.niveau == 'ROUGE'} ? 'danger' : 'warning')">
+                            <div class="alert-item-icon">
+                                <i th:if="${alerte.type == 'RUPTURE' || alerte.type == 'RUPTURE_CREVETTE'}"
+                                    class="bi bi-exclamation-triangle-fill"></i>
+                                <i th:if="${alerte.type == 'STOCK_FAIBLE'}" class="bi bi-box-seam"></i>
+                                <i th:if="${alerte.type == 'EXPIRATION_PROCHAINE' || alerte.type == 'EXPIRE'}"
+                                    class="bi bi-calendar-x"></i>
+                            </div>
+                            <div class="alert-item-content">
+                                <span class="alert-item-name" th:text="${alerte.message}">--</span>
+                                <div class="alert-item-meta" th:if="${alerte.quantiteRestante > 0}">
+                                    <span
+                                        th:text="${#numbers.formatDecimal(alerte.quantiteRestante, 1, 2)} + ' restants'">--</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div th:if="${#lists.isEmpty(dashboard.alertes)}"
+                            style="text-align: center; padding: 20px; color: var(--mg-text-muted);">
+                            Aucune alerte active
+                        </div>
+                    </div>
+                    <a class="btn btn-outline btn-full" th:href="@{/stock/produits}"
+                        style="border: none; border-top: 1px solid var(--mg-outline); border-radius: 0; padding: 15px;">
+                        VOIR TOUTES LES ALERTES
+                    </a>
+                </div>
+            </div>
+            <div class="col-8">
+                <div class="card" style="padding: 0; overflow: hidden;">
+                    <div class="card-header"
+                        style="padding: 20px 24px; margin-bottom: 0; border-bottom: 1px solid var(--mg-outline);">
+                        <h3 class="card-title">Derniers Mouvements</h3>
+                        <a class="btn btn-outline btn-sm" th:href="@{/stock/mouvements}">VOIR TOUT</a>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Produit</th>
+                                    <th>Type</th>
+                                    <th>Quantité</th>
+                                    <th>Responsable</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="mvt : ${derniersMouvements}">
+                                    <td th:text="${#temporals.format(mvt.dateMouvement, 'dd/MM HH:mm')}">--</td>
+                                    <td><strong th:text="${mvt.produit}">--</strong></td>
+                                    <td>
+                                        <span th:if="${mvt.type == 'ENTRÉE'}"
+                                            style="color: var(--mg-success); font-weight: 700; font-size: 10px;">
+                                            <i class="bi bi-arrow-down-left"></i> ENTRÉE
+                                        </span>
+                                        <span th:if="${mvt.type == 'SORTIE'}"
+                                            style="color: var(--mg-danger); font-weight: 700; font-size: 10px;">
+                                            <i class="bi bi-arrow-up-right"></i> SORTIE
+                                        </span>
+                                    </td>
+                                    <td th:class="${mvt.type == 'ENTRÉE'} ? 'val-positive' : 'val-negative'"
+                                        th:text="${#numbers.formatDecimal(mvt.quantite, 1, 2)} + ' kg'">--</td>
+                                    <td th:text="${mvt.responsable}">--</td>
+                                </tr>
+                                <tr th:if="${#lists.isEmpty(derniersMouvements)}">
+                                    <td colspan="5"
+                                        style="text-align: center; padding: 40px; color: var(--mg-text-muted);">Aucun
+                                        mouvement récent</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid-detail" style="margin-top: 24px;">
+            <div class="col-12" style="display: flex; gap: 12px; justify-content: flex-end;">
+                <a class="btn btn-outline" th:href="@{/stock/entree}"><i class="bi bi-plus"></i> NOUVELLE ENTRÉE</a>
+                <a class="btn btn-outline" th:href="@{/stock/sortie}"><i class="bi bi-dash"></i> NOUVELLE SORTIE</a>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

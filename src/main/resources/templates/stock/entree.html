@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/default}">
+<head>
+    <title layout:fragment="page-title">Move Gasy — Entrée Stock</title>
+    <th:block layout:fragment="page-styles">
+        <style>
+            .header-section { margin-bottom: 32px; padding-bottom: 16px; border-bottom: 1px solid #e2e8f0; }
+            .header-title { font-size: 26px; font-weight: 700; margin-bottom: 8px; color: var(--mg-primary); }
+            .header-sub { font-size: 14px; color: var(--mg-text-muted); line-height: 1.5; }
+            .card { background: var(--mg-surface-bright); border: 1px solid var(--mg-outline); border-radius: var(--radius); padding: 24px; margin-bottom: 24px; }
+            .card-title { font-size: 12px; font-weight: 700; color: var(--mg-primary); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 20px; }
+            .form-group { margin-bottom: 16px; display: flex; flex-direction: column; gap: 8px; }
+            .form-label { font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--mg-secondary); letter-spacing: 0.05em; }
+            .form-control { font-family: var(--font-main); font-size: 14px; padding: 10px 12px; border: 1px solid var(--mg-outline); border-radius: var(--radius); background: white; color: var(--mg-primary); outline: none; transition: 0.2s; }
+            .form-control:focus { border-color: var(--mg-primary); }
+            .grid-detail { display: grid; grid-template-columns: repeat(12, 1fr); gap: 24px; }
+            .col-4 { grid-column: span 4; }
+            .col-6 { grid-column: span 6; }
+            .col-8 { grid-column: span 8; }
+            .col-12 { grid-column: span 12; }
+            .btn { padding: 10px 20px; border-radius: var(--radius); font-size: 13px; font-weight: 600; cursor: pointer; transition: 0.2s; border: 1px solid transparent; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; justify-content: center; }
+            .btn-primary { background: var(--mg-primary); color: white; }
+            .btn-primary:hover { opacity: 0.9; }
+            .btn-outline { background: transparent; border-color: var(--mg-outline); color: var(--mg-primary); }
+            .btn-outline:hover { background: var(--mg-surface); }
+            .alert { padding: 12px 16px; border-radius: var(--radius); margin-bottom: 16px; font-size: 13px; }
+            .alert-success { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
+            .alert-danger { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+            @media (max-width: 992px) { .col-8, .col-4, .col-6 { grid-column: span 12; } }
+        </style>
+    </th:block>
+</head>
+<body>
+    <div layout:fragment="content">
+        <script th:if="${success}">
+            alert('[[${success}]]');
+        </script>
+        <script th:if="${error}">
+            alert('[[${error}]]');
+        </script>
+
+        <header class="header-section">
+            <h2 class="header-title">Réception de Médicament</h2>
+            <p class="header-sub">Enregistrement d'une entrée de stock de médicament.</p>
+        </header>
+
+        <div class="grid-detail">
+            <div class="col-8">
+                <div class="card">
+                    <h3 class="card-title">Détails de l'Entrée</h3>
+                    <form th:action="@{/stock/entree}" th:object="${entreeDTO}" method="POST">
+                        <input type="hidden" th:field="*{typeProduit}" value="MEDICAMENT" />
+                        <div class="form-group">
+                            <label class="form-label">Médicament</label>
+                            <select class="form-control" th:field="*{idProduit}" required>
+                                <option value="">Sélectionner un médicament</option>
+                                <option th:each="m : ${medicaments}" th:value="${m.id}" th:text="${m.libelle}"></option>
+                            </select>
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                            <div class="form-group">
+                                <label class="form-label">Quantité reçue</label>
+                                <input class="form-control" type="number" step="0.01" min="0" th:field="*{quantite}" placeholder="0.00" required />
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Prix total (Ar)</label>
+                                <input class="form-control" type="number" step="0.01" min="0" th:field="*{prixTotalAr}" placeholder="0.00" />
+                            </div>
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                            <div class="form-group">
+                                <label class="form-label">Date réception</label>
+                                <input class="form-control" type="date" th:field="*{dateReception}" required />
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Date expiration</label>
+                                <input class="form-control" type="date" th:field="*{dateExpiration}" required />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Responsable</label>
+                            <select class="form-control" th:field="*{idResponsable}" required>
+                                <option value="">Sélectionner un responsable</option>
+                                <option th:each="u : ${utilisateurs}" th:value="${u.id}" th:text="${u.nom} + ' ' + ${u.prenom}"></option>
+                            </select>
+                        </div>
+                        <div style="margin-top: 24px; display: flex; gap: 12px; border-top: 1px solid var(--mg-outline); padding-top: 24px;">
+                            <button class="btn btn-primary" type="submit">ENREGISTRER L'ENTRÉE</button>
+                            <a class="btn btn-outline" th:href="@{/stock/produits}">ANNULER</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="card">
+                    <h3 class="card-title">Règles de gestion</h3>
+                    <p style="font-size: 13px; color: var(--mg-secondary); margin-bottom: 16px;">
+                        Les entrées de stock sont gérées selon la méthode <strong>FIFO</strong> (First In, First Out).
+                    </p>
+                    <p style="font-size: 13px; color: var(--mg-secondary); margin-bottom: 16px;">
+                        Une entrée d'aliments génère automatiquement une dépense dans le module Finances (catégorie ALIMENTATION).
+                    </p>
+                    <div style="background: var(--mg-surface); padding: 12px; border-radius: var(--radius); border-left: 3px solid var(--mg-primary);">
+                        <span style="font-size: 11px; font-weight: 700; color: var(--mg-secondary); text-transform: uppercase;">Bon à savoir</span>
+                        <p style="font-size: 12px; color: var(--mg-secondary); margin-top: 4px;">Les entrées de médicaments sont gérées via ce formulaire. Les entrées d'aliments s'effectuent depuis le module Nourrissage.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <th:block layout:fragment="page-scripts"></th:block>
+</body>
+</html>

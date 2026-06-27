@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/default}">
+<head>
+    <title layout:fragment="page-title">Move Gasy — Produits</title>
+    <th:block layout:fragment="page-styles">
+        <style>
+            .header-section { margin-bottom: 32px; padding-bottom: 16px; border-bottom: 1px solid #e2e8f0; }
+            .header-title { font-size: 26px; font-weight: 700; margin-bottom: 8px; color: var(--mg-primary); }
+            .header-sub { font-size: 14px; color: var(--mg-text-muted); line-height: 1.5; }
+            .card { background: var(--mg-surface-bright); border: 1px solid var(--mg-outline); border-radius: var(--radius); padding: 24px; margin-bottom: 24px; }
+            .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
+            .card-title { font-size: 12px; font-weight: 700; color: var(--mg-primary); text-transform: uppercase; letter-spacing: 0.05em; }
+            .table-container { width: 100%; overflow-x: auto; }
+            table { width: 100%; border-collapse: collapse; text-align: left; }
+            thead th { background: var(--mg-surface); padding: 12px 16px; font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--mg-secondary); border-bottom: 1px solid var(--mg-outline); letter-spacing: 0.05em; }
+            tbody td { padding: 14px 16px; border-bottom: 1px solid var(--mg-outline); font-size: 13px; }
+            tbody tr:hover td { background: var(--mg-surface); }
+            .badge { padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 700; display: inline-block; text-transform: uppercase; }
+            .badge-success { background: #dcfce7; color: #166534; }
+            .badge-warning { background: #fef3c7; color: #92400e; }
+            .badge-danger { background: #fee2e2; color: #991b1b; }
+            .badge-neutral { background: #f3f4f6; color: #4b5563; }
+            .badge-info { background: #dbeafe; color: #1e40af; }
+            .btn { padding: 10px 20px; border-radius: var(--radius); font-size: 13px; font-weight: 600; cursor: pointer; transition: 0.2s; border: 1px solid transparent; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; justify-content: center; }
+            .btn-primary { background: var(--mg-primary); color: white; }
+            .btn-primary:hover { opacity: 0.9; }
+            .btn-outline { background: transparent; border-color: var(--mg-outline); color: var(--mg-primary); }
+            .btn-outline:hover { background: var(--mg-surface); }
+            .btn-sm { padding: 6px 12px; font-size: 12px; }
+            .alert-item { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: var(--radius); margin-bottom: 6px; font-size: 13px; }
+            .alert-item.warning { background: #fffbeb; border-left: 3px solid #f59e0b; }
+            .alert-item.danger { background: #fef2f2; border-left: 3px solid #ef4444; }
+            .alert-item.info { background: #eff6ff; border-left: 3px solid #3b82f6; }
+            .alert-item-icon { font-size: 16px; margin-right: 8px; }
+            .form-group { margin-bottom: 0; display: flex; flex-direction: column; gap: 4px; }
+            .form-control { font-family: var(--font-main); font-size: 14px; padding: 8px 10px; border: 1px solid var(--mg-outline); border-radius: var(--radius); background: white; color: var(--mg-primary); outline: none; }
+            .form-control:focus { border-color: var(--mg-primary); }
+            @media (max-width: 992px) { .table-container { overflow-x: auto; } }
+        </style>
+    </th:block>
+</head>
+<body>
+    <div layout:fragment="content">
+        <header class="header-section">
+            <h2 class="header-title">Référentiel Produits</h2>
+            <p class="header-sub">Liste des produits en stock, niveaux et alertes associées.</p>
+        </header>
+
+        <div style="display: flex; gap: 12px; justify-content: flex-end; margin-bottom: 24px;">
+            <a class="btn btn-outline" th:href="@{/stock/entree}"><i class="bi bi-plus"></i> NOUVELLE ENTRÉE</a>
+            <a class="btn btn-outline" th:href="@{/stock/sortie}"><i class="bi bi-dash"></i> NOUVELLE SORTIE</a>
+        </div>
+
+        <div th:if="${not #lists.isEmpty(alertes)}" class="card" style="padding: 16px 24px;">
+            <div class="card-header" style="margin-bottom: 12px;">
+                <h3 class="card-title">Alertes Actives</h3>
+                <span class="badge badge-neutral" th:text="${#lists.size(alertes)} + ' ALERTE(S)'"></span>
+            </div>
+            <div th:each="alerte : ${alertes}">
+                <div th:class="'alert-item ' + (${alerte.niveau == 'ROUGE'} ? 'danger' : 'warning')">
+                    <span class="alert-item-icon">
+                        <i th:if="${alerte.type == 'RUPTURE' || alerte.type == 'RUPTURE_CREVETTE'}" class="bi bi-exclamation-triangle-fill"></i>
+                        <i th:if="${alerte.type == 'STOCK_FAIBLE'}" class="bi bi-box-seam"></i>
+                        <i th:if="${alerte.type == 'EXPIRATION_PROCHAINE' || alerte.type == 'EXPIRE'}" class="bi bi-calendar-x"></i>
+                    </span>
+                    <span th:text="${alerte.message}">--</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" style="padding: 0;">
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Produit</th>
+                            <th>Catégorie</th>
+                            <th>Stock actuel</th>
+                            <th>Seuil min.</th>
+                            <th>Statut</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="p : ${produits}">
+                            <td><strong th:text="${p.nom}">--</strong></td>
+                            <td><span class="badge badge-info" th:text="${p.categorie}">--</span></td>
+                            <td th:text="${#numbers.formatDecimal(p.stockActuel, 1, 2)}">--</td>
+                            <td th:text="${#numbers.formatDecimal(p.seuilMinimum, 1, 2)}">--</td>
+                            <td>
+                                <span th:class="'badge badge-' + ${p.cssClass}" th:text="${p.statut}">--</span>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(produits)}">
+                            <td colspan="5" style="text-align: center; padding: 40px; color: var(--mg-text-muted);">Aucun produit enregistré</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
