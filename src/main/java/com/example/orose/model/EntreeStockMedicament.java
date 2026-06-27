@@ -1,9 +1,17 @@
 package com.example.orose.model;
 
-import jakarta.persistence.*;
-import lombok.Data;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import lombok.Data;
 
 @Entity
 @Table(name = "entree_stock_medicament")
@@ -36,4 +44,16 @@ public class EntreeStockMedicament {
     @ManyToOne
     @JoinColumn(name = "id_responsable", nullable = false)
     private Utilisateur responsable;
+
+    public String getStatut() {
+        BigDecimal seuil = this.medicament.getSeuilMinimum();
+
+        if (this.quantiteRestante.compareTo(BigDecimal.ZERO) <= 0) {
+            return "RUPTURE";
+        } else if (this.quantiteRestante.compareTo(seuil) <= 0) {
+            return "FAIBLE";
+        } else {
+            return "OPTIMAL";
+        }
+    }
 }

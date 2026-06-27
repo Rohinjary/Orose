@@ -2,6 +2,7 @@ package com.example.orose.controller;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -62,16 +63,37 @@ public class StockMedicamentController {
     }
 
     @GetMapping("/liste")
-    public String afficherListeStock(Model model) {
-        // On récupère la liste complète des entrées depuis le service
+    public String afficherListeStock(
+            @RequestParam(required = false) String statut,
+            @RequestParam(required = false) Integer medicamentId,
+            Model model) {
+
+        // 1. On récupère tout via le service
         List<EntreeStockMedicament> entrees = stockService.getAllEntrees();
-        
-        // On ajoute cette liste au modèle sous le nom "listeStock" 
-        // (Assurez-vous que votre HTML utilise bien ${listeStock} dans la boucle th:each)
-        model.addAttribute("listeStock", entrees);
-        
+
+        // 2. Filtrage
+        List<EntreeStockMedicament> listeFiltree = entrees.stream()
+                .filter(item -> {
+                    boolean matchStatut = (statut == null || statut.isEmpty()) || item.getStatut().equals(statut);
+                    boolean matchMedicament = (medicamentId == null)
+                            || item.getMedicament().getId().equals(medicamentId);
+                    return matchStatut && matchMedicament;
+                })
+                .collect(Collectors.toList());
+
+        // 3. Modèle
+        model.addAttribute("listeStock", listeFiltree);
+
+        // Utilisation du service pour récupérer les médicaments (plus propre)
+        model.addAttribute("listeMedicaments", medicamentRepository.findAll());
+
+        // Maintien des valeurs sélectionnées
+        model.addAttribute("statutSelectionne", statut);
+        model.addAttribute("medicamentIdSelectionne", medicamentId);
+
         return "stock/list_prod_stock";
     }
+
     @GetMapping("/perte")
     public String afficherFormulairePerte(Model model) {
         return "stock/sortie";

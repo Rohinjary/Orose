@@ -1,0 +1,15 @@
+3. Historique des distributions
+Historique complet avec statistiques de consommation
+Contenu :
+•
+Date, Heure, Bassin, Aliment, Quantité (kg), Responsable, Statut
+Statistiques :
+•Consommation totale par bassin
+•Consommation totale par cycle
+•Consommation sur une période
+9 sur 33
+10/06/2026 19:22CDC BAOVOLA - Cahier des Charges Fonctionnel
+ﬁle:///home/njary/Documents/b.html
+Filtres :
+•
+Date, Bassin, Cycle, Période

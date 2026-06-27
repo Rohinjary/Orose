@@ -438,80 +438,76 @@
                 </header>
 
                 <div class="card">
-                    <div class="filter-bar">
-                        <select class="filter-select">
-                            <option value="">Toutes les catégories</option>
-                            <option value="ALIMENT">ALIMENT</option>
-                            <option value="MÉDICAMENT">MÉDICAMENT</option>
-                            <option value="CREVETTE">CREVETTE</option>
-                        </select>
-                        <select class="filter-select">
-                            <option value="">Tous les statuts</option>
-                            <option value="OPTIMAL">OPTIMAL</option>
-                            <option value="FAIBLE">STOCK FAIBLE</option>
-                            <option value="RUPTURE">RUPTURE</option>
-                        </select>
-                        <button class="btn btn-outline btn-sm"><i class="bi bi-funnel"></i> FILTRER</button>
-                    </div>
+                    <div class="card">
+                        <form th:action="@{/stock/medicament/liste}" method="get" class="filter-bar">
+                            <select name="medicamentId" class="filter-select">
+                                <option value="">Tous les médicaments</option>
+                                <option th:each="m : ${listeMedicaments}" th:value="${m.id}" th:text="${m.libelle}"
+                                    th:selected="${m.id == medicamentIdSelectionne}">
+                                </option>
+                            </select>
 
-                    <div class="table-container">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Nom du produit</th>
-                                    <th>Catégorie</th>
-                                    <th>Unité</th>
-                                    <th>Stock actuel</th>
-                                    <th>Seuil min.</th>
-                                    <th>Statut</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr th:each="item : ${listeStock}">
-                                    <td><strong th:text="${item.medicament.libelle}">Nom produit</strong></td>
-                                    <td>
-                                        <span class="badge" style="background:#f1f5f9; color:#475569">MÉDICAMENT</span>
-                                    </td>
-                                    <td th:text="${item.medicament.unite}">Unité</td>
-                                    <td
-                                        th:text="${#numbers.formatDecimal(item.quantiteRestante, 1, 'WHITESPACE', 2, 'POINT')}">
-                                        0.00</td>
-                                    <td
-                                        th:text="${#numbers.formatDecimal(item.medicament.seuilMinimum, 1, 'WHITESPACE', 2, 'POINT')}">
-                                        0.00</td>
+                            <select name="statut" class="filter-select">
+                                <option value="">Tous les statuts</option>
+                                <option value="OPTIMAL" th:selected="${statutSelectionne == 'OPTIMAL'}">OPTIMAL</option>
+                                <option value="FAIBLE" th:selected="${statutSelectionne == 'FAIBLE'}">STOCK FAIBLE
+                                </option>
+                                <option value="RUPTURE" th:selected="${statutSelectionne == 'RUPTURE'}">RUPTURE</option>
+                            </select>
 
-                                    <td>
-                                        <span class="badge"
-                                            th:classappend="${item.quantiteRestante <= 0 ? 'badge-danger' : (item.quantiteRestante <= item.medicament.seuilMinimum ? 'badge-warning' : 'badge-success')}"
-                                            th:text="${item.quantiteRestante <= 0 ? 'RUPTURE' : (item.quantiteRestante <= item.medicament.seuilMinimum ? 'FAIBLE' : 'OPTIMAL')}">
-                                        </span>
-                                    </td>
+                            <button type="submit" class="btn btn-outline btn-sm">
+                                <i class="bi bi-funnel"></i> FILTRER
+                            </button>
+                        </form>
 
-                                    <td style="display:flex; gap:8px">
-                                        <a th:href="@{/stock/medicament/modifier/{id}(id=${item.id})}"
-                                            class="btn-outline btn-sm" title="Modifier">
-                                            <i class="bi bi-pencil"></i>
-                                        </a>
-                                        <a th:href="@{/stock/medicament/supprimer/{id}(id=${item.id})}"
-                                            class="btn-outline btn-sm" title="Supprimer">
-                                            <i class="bi bi-trash"></i>
-                                        </a>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Nom du produit</th>
+                                        <th>Catégorie</th>
+                                        <th>Unité</th>
+                                        <th>Stock actuel</th>
+                                        <th>Seuil min.</th>
+                                        <th>Statut</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="item : ${listeStock}">
+                                        <td><strong th:text="${item.medicament.libelle}">Nom produit</strong></td>
+                                        <td>
+                                            <span class="badge"
+                                                style="background:#f1f5f9; color:#475569">MÉDICAMENT</span>
+                                        </td>
+                                        <td th:text="${item.medicament.unite}">Unité</td>
+                                        <td
+                                            th:text="${#numbers.formatDecimal(item.quantiteRestante, 1, 'WHITESPACE', 2, 'POINT')}">
+                                            0.00</td>
+                                        <td
+                                            th:text="${#numbers.formatDecimal(item.medicament.seuilMinimum, 1, 'WHITESPACE', 2, 'POINT')}">
+                                            0.00</td>
 
-                        <div class="pagination">
-                            <span>Affichage des entrées en stock</span>
-                            <div style="display: flex; gap: 8px;">
-                                <button class="btn btn-outline btn-sm" style="padding: 4px 8px;"><i
-                                        class="bi bi-chevron-left"></i></button>
-                                <button class="btn btn-primary btn-sm" style="padding: 4px 12px;">1</button>
-                                <button class="btn btn-outline btn-sm" style="padding: 4px 12px;">2</button>
-                                <button class="btn btn-outline btn-sm" style="padding: 4px 8px;"><i
-                                        class="bi bi-chevron-right"></i></button>
-                            </div>
+                                        <td>
+                                            <span class="badge"
+                                                th:classappend="${item.statut == 'RUPTURE' ? 'badge-danger' : (item.statut == 'FAIBLE' ? 'badge-warning' : 'badge-success')}"
+                                                th:text="${item.statut}">
+                                            </span>
+                                        </td>
+
+                                        <td style="display:flex; gap:8px">
+                                            <a th:href="@{/stock/medicament/modifier/{id}(id=${item.id})}"
+                                                class="btn-outline btn-sm" title="Modifier">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <a th:href="@{/stock/medicament/supprimer/{id}(id=${item.id})}"
+                                                class="btn-outline btn-sm" title="Supprimer">
+                                                <i class="bi bi-trash"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
