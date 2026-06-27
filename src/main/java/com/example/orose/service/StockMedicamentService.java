@@ -32,21 +32,19 @@ public class StockMedicamentService {
 
     @Transactional
     public EntreeStockMedicament enregistrerEntreeMedicament(EntreeStockMedicamentDTO dto) {
-        // 1. Récupérer le responsable (Correct)
         Utilisateur responsable = utilisateurRepository.findById(Long.valueOf(dto.getIdResponsable()))
                 .orElseThrow(() -> new RuntimeException("Responsable non trouvé"));
 
         Medicament medicament = medicamentRepository.findById(dto.getIdMedicament())
                 .orElseThrow(() -> new RuntimeException("Médicament non trouvé"));
 
-        // 3. Création de l'entité
         EntreeStockMedicament entree = new EntreeStockMedicament();
         entree.setMedicament(medicament); // On injecte l'objet complet
         entree.setQuantite(dto.getQuantite());
         entree.setQuantiteRestante(dto.getQuantite());
         entree.setPrixTotalAr(dto.getPrixTotalAr());
         entree.setDateExpiration(dto.getDateExpiration());
-        entree.setDateReception(java.time.LocalDate.now());
+        entree.setDateReception(dto.getDateReception());
         entree.setResponsable(responsable);
 
         return entreeRepository.save(entree);

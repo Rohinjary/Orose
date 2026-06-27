@@ -10,6 +10,7 @@ public class EntreeStockMedicamentDTO {
     private Integer idMedicament;
     private BigDecimal quantite;
     private BigDecimal prixTotalAr;
+    private LocalDate dateReception;
     private LocalDate dateExpiration;
     private Integer idResponsable;
 }
