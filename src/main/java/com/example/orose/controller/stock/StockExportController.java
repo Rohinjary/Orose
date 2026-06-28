@@ -3,6 +3,7 @@ package com.example.orose.controller.stock;
 import java.io.PrintWriter;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.springframework.format.annotation.DateTimeFormat;
@@ -53,7 +54,13 @@ public class StockExportController {
         if (q != null && !q.isBlank()) {
             data = GenericFilterUtil.filtrer(data, new GenericFilter().contains("nom", q));
         }
-        ecrire(response, data, "produits-stock", format, "Référentiel produits stock");
+        LinkedHashMap<String, String> cols = new LinkedHashMap<>();
+        cols.put("nom", "Produit");
+        cols.put("categorie", "Catégorie");
+        cols.put("stockActuel", "Stock actuel");
+        cols.put("seuilMinimum", "Seuil minimum");
+        cols.put("statut", "Statut");
+        ecrire(response, data, "produits-stock", format, "Référentiel produits stock", cols);
     }
 
     @GetMapping("/mouvements/export")
@@ -67,7 +74,15 @@ public class StockExportController {
         if (dateMin != null || dateMax != null) f.dateBetween("dateMouvement", dateMin, dateMax);
         if (q != null && !q.isBlank()) f.contains("produit", q);
         data = GenericFilterUtil.filtrer(data, f);
-        ecrire(response, data, "historique-mouvements", format, "Historique des mouvements de stock");
+        LinkedHashMap<String, String> cols = new LinkedHashMap<>();
+        cols.put("dateMouvement", "Date & heure");
+        cols.put("produit", "Produit");
+        cols.put("type", "Type");
+        cols.put("quantite", "Quantité");
+        cols.put("motif", "Motif");
+        cols.put("source", "Source");
+        cols.put("responsable", "Responsable");
+        ecrire(response, data, "historique-mouvements", format, "Historique des mouvements de stock", cols);
     }
 
     @GetMapping("/lots-crevettes/export")
@@ -87,7 +102,14 @@ public class StockExportController {
                     bassin,
                     cycle));
         }
-        ecrire(response, data, "lots-crevettes", format, "Lots de crevettes récoltés");
+        LinkedHashMap<String, String> cols = new LinkedHashMap<>();
+        cols.put("dateRecolte", "Date récolte");
+        cols.put("numeroLot", "N° Lot");
+        cols.put("biomasseTotaleKg", "Biomasse totale (kg)");
+        cols.put("stockActuelKg", "Stock actuel (kg)");
+        cols.put("bassin", "Bassin");
+        cols.put("cycle", "Cycle");
+        ecrire(response, data, "lots-crevettes", format, "Lots de crevettes récoltés", cols);
     }
 
     @GetMapping("/medicament/liste/export")
@@ -108,30 +130,38 @@ public class StockExportController {
         if (q != null && !q.isBlank()) {
             data = GenericFilterUtil.filtrer(data, new GenericFilter().contains("medicament", q));
         }
-        ecrire(response, data, "stock-medicament", format, "Stock médicament");
+        LinkedHashMap<String, String> cols = new LinkedHashMap<>();
+        cols.put("medicament", "Médicament");
+        cols.put("unite", "Unité");
+        cols.put("quantite", "Quantité initiale");
+        cols.put("quantiteRestante", "Quantité restante");
+        cols.put("dateReception", "Date réception");
+        cols.put("dateExpiration", "Date expiration");
+        cols.put("responsable", "Responsable");
+        ecrire(response, data, "stock-medicament", format, "Stock médicament", cols);
     }
 
     // ─────────────────────── Helpers ───────────────────────
 
     private <T> void ecrire(HttpServletResponse response, List<T> data, String nomFichier,
-                             String format, String titrePdf) throws Exception {
+                             String format, String titrePdf, LinkedHashMap<String, String> colonnes) throws Exception {
         String fmt = format == null ? "excel" : format.toLowerCase();
         switch (fmt) {
             case "csv":
                 response.setContentType("text/csv; charset=UTF-8");
                 response.setHeader("Content-Disposition", "attachment; filename=\"" + nomFichier + ".csv\"");
-                ExportService.exportCsv(data, new PrintWriter(response.getWriter()));
+                ExportService.exportCsv(data, new PrintWriter(response.getWriter()), colonnes);
                 break;
             case "pdf":
                 response.setContentType("application/pdf");
                 response.setHeader("Content-Disposition", "attachment; filename=\"" + nomFichier + ".pdf\"");
-                ExportService.exportPdf(data, response.getOutputStream(), titrePdf);
+                ExportService.exportPdf(data, response.getOutputStream(), titrePdf, colonnes);
                 break;
             case "excel":
             default:
                 response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
                 response.setHeader("Content-Disposition", "attachment; filename=\"" + nomFichier + ".xlsx\"");
-                ExportService.exportExcel(data, response.getOutputStream());
+                ExportService.exportExcel(data, response.getOutputStream(), colonnes);
                 break;
         }
     }
