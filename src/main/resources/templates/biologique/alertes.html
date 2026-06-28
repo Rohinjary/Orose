@@ -12,10 +12,15 @@
         <div th:if="${erreur}" class="alert alert-danger" th:text="${erreur}"></div>
 
         <div class="page-header">
-            <h1>🚨 Alertes biologiques actives (<span th:text="${#lists.size(alertes)}">0</span>)</h1>
-            <a th:href="@{/biologique}" class="btn btn-outline-secondary btn-sm">
-                <i class="bi bi-arrow-left"></i> Retour suivi biologique
-            </a>
+            <h1>Alertes biologiques actives (<span th:text="${#lists.size(alertes)}">0</span>)</h1>
+            <div style="display: flex; gap: 8px; align-items: center;">
+                <a class="btn btn-outline-secondary btn-sm" th:href="@{/biologique/alertes/export(format='excel')}"><i class="bi bi-file-earmark-excel"></i> Excel</a>
+                <a class="btn btn-outline-secondary btn-sm" th:href="@{/biologique/alertes/export(format='pdf')}"><i class="bi bi-file-earmark-pdf"></i> PDF</a>
+                <a class="btn btn-outline-secondary btn-sm" th:href="@{/biologique/alertes/export(format='csv')}"><i class="bi bi-filetype-csv"></i> CSV</a>
+                <a th:href="@{/biologique}" class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-arrow-left"></i> Retour suivi biologique
+                </a>
+            </div>
         </div>
 
         <div th:if="${#lists.isEmpty(alertes)}" class="alert-empty">
