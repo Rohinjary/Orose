@@ -50,6 +50,14 @@ public class ImportService {
         }
     }
 
+    /**
+     * Un champ est obligatoire si son type est primitif (int, double, etc. ne peuvent être null).
+     * Les wrappers et String sont considérés comme optionnels par défaut.
+     */
+    private static boolean estObligatoire(java.lang.reflect.Field champ) {
+        return champ.getType().isPrimitive();
+    }
+
     public static void validerType(String nomColonne, String valeur, Class<?> typeCible, int numeroLigne) {
         try {
             Converter.convert(valeur, typeCible);
@@ -148,9 +156,13 @@ public class ImportService {
                 for (Map.Entry<String, String> e : ligne.entrySet()) {
                     if (e.getKey().trim().equalsIgnoreCase(nom)) { valeur = e.getValue(); break; }
                 }
-                validerChampObligatoire(nom, valeur, numeroLigne);
-                validerType(nom, valeur, champ.getType(), numeroLigne);
-                champ.set(objet, Converter.convert(valeur, champ.getType()));
+                if (estObligatoire(champ)) {
+                    validerChampObligatoire(nom, valeur, numeroLigne);
+                }
+                if (valeur != null && !valeur.trim().isEmpty()) {
+                    validerType(nom, valeur, champ.getType(), numeroLigne);
+                    champ.set(objet, Converter.convert(valeur, champ.getType()));
+                }
             }
             validerDoublon(resultat, objet, champs);
             resultat.add(objet);

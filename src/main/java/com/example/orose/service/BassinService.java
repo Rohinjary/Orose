@@ -1,13 +1,16 @@
 package com.example.orose.service;
 
 import com.example.orose.dto.BassinDTO;
+import com.example.orose.dto.BassinImportDTO;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.orose.model.Bassin;
 import com.example.orose.model.CycleBassinAssoc;
@@ -111,6 +114,45 @@ public class BassinService {
 
     public List<Bassin> listerBassins() {
         return bassinRepository.findAll();
+    }
+
+    /**
+     * Importe une liste de bassins déjà parsée depuis un CSV/Excel.
+     * Statut initial = VIDE, createdAt = now.
+     * Rejette le batch entier si un code est déjà présent en base ou en doublon dans le fichier.
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public int importerBassins(List<BassinImportDTO> dtos) {
+        StatutBassin statutInitial = statutBassinRepository.findByCode("VIDE")
+                .orElseThrow(() -> new IllegalArgumentException("Statut VIDE introuvable"));
+
+        List<String> codesVus = new ArrayList<>();
+        List<Bassin> aSauver = new ArrayList<>();
+        int ligne = 2;
+        for (BassinImportDTO dto : dtos) {
+            if (dto.getCode() == null || dto.getCode().isBlank()) {
+                throw new IllegalArgumentException("Ligne " + ligne + " : code de bassin obligatoire");
+            }
+            if (codesVus.contains(dto.getCode())) {
+                throw new IllegalArgumentException("Ligne " + ligne + " : code '" + dto.getCode() + "' dupliqué dans le fichier");
+            }
+            if (bassinRepository.existsByCode(dto.getCode())) {
+                throw new IllegalArgumentException("Ligne " + ligne + " : code '" + dto.getCode() + "' déjà présent en base");
+            }
+            codesVus.add(dto.getCode());
+
+            Bassin b = new Bassin();
+            b.setCode(dto.getCode());
+            b.setSurfaceM2(dto.getSurfaceM2());
+            b.setProfondeurMetre(dto.getProfondeurMetre());
+            b.setNotes(dto.getNotes());
+            b.setStatutActuel(statutInitial);
+            b.setCreatedAt(LocalDateTime.now());
+            aSauver.add(b);
+            ligne++;
+        }
+        bassinRepository.saveAll(aSauver);
+        return aSauver.size();
     }
 
     public Bassin getBassinById(Long id) {

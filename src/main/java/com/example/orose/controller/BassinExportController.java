@@ -8,14 +8,21 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.orose.common.filter.GenericFilter;
 import com.example.orose.common.filter.GenericFilterUtil;
 import com.example.orose.common.io.ExportService;
+import com.example.orose.common.io.ImportService;
+import com.example.orose.common.io.exception.ImportException;
+import com.example.orose.dto.BassinImportDTO;
 import com.example.orose.model.Bassin;
 import com.example.orose.model.HistoStatutBassin;
 import com.example.orose.service.BassinService;
@@ -64,6 +71,34 @@ public class BassinExportController {
         cols.put("createdAt", "Date création");
         cols.put("notes", "Notes");
         ecrire(response, data, "bassins", format, "Liste des bassins de production", cols);
+    }
+
+    @PostMapping("/import")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String importer(@RequestParam("fichier") MultipartFile fichier,
+                            @RequestParam(defaultValue = "csv") String format,
+                            RedirectAttributes ra) {
+        if (fichier == null || fichier.isEmpty()) {
+            ra.addFlashAttribute("erreur", "Aucun fichier sélectionné");
+            return "redirect:/bassins/liste";
+        }
+        try {
+            List<BassinImportDTO> dtos;
+            if ("excel".equalsIgnoreCase(format)) {
+                dtos = ImportService.importerExcel(BassinImportDTO.class, fichier, 0);
+            } else {
+                dtos = ImportService.importerCsv(BassinImportDTO.class, fichier, ';');
+            }
+            int n = bassinService.importerBassins(dtos);
+            ra.addFlashAttribute("succes", n + " bassin(s) importé(s) avec succès");
+        } catch (ImportException e) {
+            ra.addFlashAttribute("erreur", "Erreur de format : " + e.getMessage());
+        } catch (IllegalArgumentException e) {
+            ra.addFlashAttribute("erreur", e.getMessage());
+        } catch (Exception e) {
+            ra.addFlashAttribute("erreur", "Erreur d'import : " + e.getMessage());
+        }
+        return "redirect:/bassins/liste";
     }
 
     @GetMapping("/historique/export")
