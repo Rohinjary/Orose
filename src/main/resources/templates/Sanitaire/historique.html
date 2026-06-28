@@ -220,6 +220,9 @@
     </th:block>
 </head>
 <body>
+    <th:block layout:fragment="page-scripts">
+        <script th:src="@{/js/list-filter.js}"></script>
+    </th:block>
     <div layout:fragment="content">
         <header class="header-section">
             <h2 class="header-title">Historique Sanitaire</h2>
@@ -273,10 +276,17 @@
                         <option value="EN_COURS" th:selected="${filtreStatut == 'EN_COURS'}">En cours</option>
                     </select>
                     <button class="btn btn-outline btn-sm" type="submit"><i class="bi bi-funnel"></i> Filtrer</button>
+                    <button class="btn btn-outline btn-sm" type="submit" th:formaction="@{/sanitaire/historique/export}" name="format" value="excel"><i class="bi bi-file-earmark-excel"></i> Excel</button>
+                    <button class="btn btn-outline btn-sm" type="submit" th:formaction="@{/sanitaire/historique/export}" name="format" value="pdf"><i class="bi bi-file-earmark-pdf"></i> PDF</button>
+                    <button class="btn btn-outline btn-sm" type="submit" th:formaction="@{/sanitaire/historique/export}" name="format" value="csv"><i class="bi bi-filetype-csv"></i> CSV</button>
                 </form>
             </div>
+            <div style="padding: 0 24px 12px 24px;">
+                <input type="text" data-list-filter="#table-histo-sanitaire" placeholder="Rechercher dans la page (bassin, type, description...)..."
+                       class="form-control" style="max-width: 360px;" />
+            </div>
             <div class="table-container">
-                <table>
+                <table id="table-histo-sanitaire">
                     <thead>
                         <tr>
                             <th>Bassin</th>
