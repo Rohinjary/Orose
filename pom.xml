@@ -70,6 +70,16 @@
 			<scope>test</scope>
 		</dependency>
 
+		<!-- Spring Security : authentification + autorisation par rôle -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.thymeleaf.extras</groupId>
+			<artifactId>thymeleaf-extras-springsecurity6</artifactId>
+		</dependency>
+
 		<!-- Import / Export : Excel + CSV + PDF (utilisés par com.example.orose.common.io) -->
 		<dependency>
 			<groupId>org.apache.poi</groupId>
