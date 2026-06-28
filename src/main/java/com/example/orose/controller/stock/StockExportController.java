@@ -2,7 +2,6 @@ package com.example.orose.controller.stock;
 
 import java.io.PrintWriter;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -182,9 +181,5 @@ public class StockExportController {
         public LocalDate getDateReception() { return dateReception; }
         public LocalDate getDateExpiration() { return dateExpiration; }
         public String getResponsable() { return responsable; }
-
-        // dummy override for satisfying any reflection helper that expects setters
-        @SuppressWarnings("unused")
-        private LocalDateTime ignored;
     }
 }
