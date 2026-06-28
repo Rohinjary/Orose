@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
     layout:decorate="~{layouts/default}">
 
 <head>
@@ -143,7 +144,7 @@
                 <a class="btn-mg" style="background:transparent;border:1px solid var(--mg-outline);color:var(--mg-primary);" th:href="@{/cycles/liste/export(format='excel')}"><i class="bi bi-file-earmark-excel"></i> Excel</a>
                 <a class="btn-mg" style="background:transparent;border:1px solid var(--mg-outline);color:var(--mg-primary);" th:href="@{/cycles/liste/export(format='pdf')}"><i class="bi bi-file-earmark-pdf"></i> PDF</a>
                 <a class="btn-mg" style="background:transparent;border:1px solid var(--mg-outline);color:var(--mg-primary);" th:href="@{/cycles/liste/export(format='csv')}"><i class="bi bi-filetype-csv"></i> CSV</a>
-                <a th:href="@{/cycles/nouveau}" class="btn-mg btn-mg-primary">
+                <a th:href="@{/cycles/nouveau}" class="btn-mg btn-mg-primary" sec:authorize="hasRole('ADMIN')">
                     <i class="bi bi-plus-lg"></i> Nouveau cycle
                 </a>
             </div>

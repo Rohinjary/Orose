@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
     layout:decorate="~{layouts/default}">
 
 <head>
@@ -172,7 +173,7 @@
                 <a class="btn-mg btn-mg-secondary" th:href="@{/bassins/liste/export(format='excel')}"><i class="bi bi-file-earmark-excel"></i> Excel</a>
                 <a class="btn-mg btn-mg-secondary" th:href="@{/bassins/liste/export(format='pdf')}"><i class="bi bi-file-earmark-pdf"></i> PDF</a>
                 <a class="btn-mg btn-mg-secondary" th:href="@{/bassins/liste/export(format='csv')}"><i class="bi bi-filetype-csv"></i> CSV</a>
-                <a th:href="@{/bassins/nouveau}" class="btn-mg btn-mg-primary">
+                <a th:href="@{/bassins/nouveau}" class="btn-mg btn-mg-primary" sec:authorize="hasRole('ADMIN')">
                     <i class="bi bi-plus-lg"></i> Nouveau bassin
                 </a>
             </div>
@@ -202,10 +203,11 @@
                                 <a th:href="@{/bassins/{id}(id=${bassin.id})}" class="row-link">
                                     <i class="bi bi-eye"></i> Voir
                                 </a>
-                                <a th:href="@{/bassins/{id}/modifier(id=${bassin.id})}" class="row-link">
+                                <a th:href="@{/bassins/{id}/modifier(id=${bassin.id})}" class="row-link" sec:authorize="hasRole('ADMIN')">
                                     <i class="bi bi-pencil"></i> Modifier
                                 </a>
                                 <form th:action="@{/bassins/{id}/supprimer(id=${bassin.id})}" method="post"
+                                    sec:authorize="hasRole('ADMIN')"
                                     style="display:inline"
                                     onsubmit="return confirm('Voulez-vous vraiment supprimer ce bassin ?');">
                                     <button type="submit" class="btn-mg btn-mg-danger">

@@ -10,6 +10,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -44,6 +45,7 @@ public class NourrissageController {
     }
 
     @PostMapping("/valider/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN','TECH','RS')")
     public String validerRepasDirect(@PathVariable("id") Integer idDistribution,
             RedirectAttributes redirectAttributes) {
 
@@ -64,6 +66,7 @@ public class NourrissageController {
     }
 
     @PostMapping("/enregistrer")
+    @PreAuthorize("hasAnyRole('ADMIN','TECH','RS')")
     public String enregistrer(
             @RequestParam String codeBassin,
             @RequestParam Integer idAliment,

@@ -1,5 +1,6 @@
 package com.example.orose.controller.stock;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -60,6 +61,7 @@ public String formulaireEntree(Model model) {
 }
 
     @PostMapping("/entree")
+    @PreAuthorize("hasAnyRole('ADMIN','TECH','RS')")
     public String enregistrerEntree(@ModelAttribute EntreeStockIntrantDTO dto,
                                      RedirectAttributes redirectAttributes) {
         try {
@@ -83,6 +85,7 @@ public String formulaireEntree(Model model) {
     }
 
     @PostMapping("/sortie")
+    @PreAuthorize("hasAnyRole('ADMIN','TECH','RS')")
     public String enregistrerSortie(@ModelAttribute SortieStockIntrantDTO dto,
                                      RedirectAttributes redirectAttributes) {
         try {

@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html lang="fr" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/default}">
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+    layout:decorate="~{layouts/default}">
 <head>
     <title layout:fragment="page-title">Move Gasy — Produits</title>
     <th:block layout:fragment="page-styles">
@@ -56,8 +58,8 @@
                 <a class="btn btn-outline btn-sm" th:href="@{/stock/produits/export(format='excel')}"><i class="bi bi-file-earmark-excel"></i> Excel</a>
                 <a class="btn btn-outline btn-sm" th:href="@{/stock/produits/export(format='pdf')}"><i class="bi bi-file-earmark-pdf"></i> PDF</a>
                 <a class="btn btn-outline btn-sm" th:href="@{/stock/produits/export(format='csv')}"><i class="bi bi-filetype-csv"></i> CSV</a>
-                <a class="btn btn-outline" th:href="@{/stock/entree}"><i class="bi bi-plus"></i> NOUVELLE ENTRÉE</a>
-                <a class="btn btn-outline" th:href="@{/stock/sortie}"><i class="bi bi-dash"></i> NOUVELLE SORTIE</a>
+                <a class="btn btn-outline" th:href="@{/stock/entree}" sec:authorize="hasAnyRole('ADMIN','TECH','RS')"><i class="bi bi-plus"></i> NOUVELLE ENTRÉE</a>
+                <a class="btn btn-outline" th:href="@{/stock/sortie}" sec:authorize="hasAnyRole('ADMIN','TECH','RS')"><i class="bi bi-dash"></i> NOUVELLE SORTIE</a>
             </div>
         </div>
 

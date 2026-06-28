@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
     layout:decorate="~{layouts/default}">
 
 <head>
@@ -178,7 +179,8 @@
                 <a class="btn btn-outline" th:href="@{/sanitaire/index/export(format='excel')}"><i class="bi bi-file-earmark-excel"></i> Excel</a>
                 <a class="btn btn-outline" th:href="@{/sanitaire/index/export(format='pdf')}"><i class="bi bi-file-earmark-pdf"></i> PDF</a>
                 <a class="btn btn-outline" th:href="@{/sanitaire/index/export(format='csv')}"><i class="bi bi-filetype-csv"></i> CSV</a>
-                <button class="btn btn-primary" onclick="window.location.href='/sanitaire/declaration'">
+                <button class="btn btn-primary" onclick="window.location.href='/sanitaire/declaration'"
+                        sec:authorize="hasAnyRole('ADMIN','TECH','RS')">
                     <i class="bi bi-plus-circle"></i> NOUVEL INCIDENT
                 </button>
             </div>

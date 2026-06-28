@@ -9,6 +9,7 @@ import com.example.orose.service.AlerteService;
 import com.example.orose.service.BiologiqueService;
 import com.example.orose.service.PeseeService;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -66,6 +67,7 @@ public class BiologiqueController {
     }
 
     @PostMapping("/alertes/{id}/resoudre")
+    @PreAuthorize("hasAnyRole('ADMIN','TECH','RS')")
     public String resoudreAlerte(@PathVariable Long id, RedirectAttributes ra) {
         Long idUtilisateur = 1L; // TODO: session
         try {
@@ -101,6 +103,7 @@ public class BiologiqueController {
     }
 
     @PostMapping("/{id}/pesee/nouvelle")
+    @PreAuthorize("hasAnyRole('ADMIN','TECH','RS')")
     public String enregistrerPesee(@PathVariable("id") Integer id,
                                    @ModelAttribute PeseeDTO dto,
                                    RedirectAttributes ra) {
@@ -157,6 +160,7 @@ public class BiologiqueController {
     }
 
     @PostMapping("/pesee/{idPesee}/modifier")
+    @PreAuthorize("hasAnyRole('ADMIN','TECH','RS')")
     public String modifierPesee(@PathVariable Long idPesee,
                                 @ModelAttribute PeseeDTO dto,
                                 RedirectAttributes ra) {
@@ -175,6 +179,7 @@ public class BiologiqueController {
     // ── Archiver pesée ────────────────────────────────────────────────────────
 
     @PostMapping("/pesee/{idPesee}/archiver")
+    @PreAuthorize("hasAnyRole('ADMIN','TECH','RS')")
     public String archiverPesee(@PathVariable Long idPesee, RedirectAttributes ra) {
         SuiviHebdoBassin pesee = peseeService.getPeseeById(idPesee);
         Integer idCba = pesee.getCycleBassinAssoc().getId();

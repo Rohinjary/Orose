@@ -8,6 +8,7 @@ import com.example.orose.dto.BassinDTO;
 import com.example.orose.model.Bassin;
 import com.example.orose.service.BassinService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -43,6 +44,7 @@ public class BassinController {
 
     // Affiche le formulaire vide de création
     @GetMapping("/nouveau")
+    @PreAuthorize("hasRole('ADMIN')")
     public String formulaireCreation(Model model) {
         preparerLayoutBassins(model, "Nouveau bassin", "nouveau");
         model.addAttribute("bassinDTO", new BassinDTO());
@@ -52,6 +54,7 @@ public class BassinController {
 
     // Traite la soumission du formulaire de création
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public String creer(@ModelAttribute BassinDTO bassinDTO, Model model) {
         try {
             bassinService.creerBassin(bassinDTO);
@@ -67,6 +70,7 @@ public class BassinController {
 
     // Affiche le formulaire pré-rempli de modification
     @GetMapping("/{id}/modifier")
+    @PreAuthorize("hasRole('ADMIN')")
     public String formulaireModification(@PathVariable Long id, Model model) {
         preparerLayoutBassins(model, "Modifier le bassin", "modifier");
         Bassin bassin = bassinService.getBassinById(id);
@@ -85,6 +89,7 @@ public class BassinController {
 
     // Traite la soumission du formulaire de modification
     @PostMapping("/{id}/modifier")
+    @PreAuthorize("hasRole('ADMIN')")
     public String modifier(@PathVariable Long id, @ModelAttribute BassinDTO bassinDTO, Model model) {
         try {
             bassinService.modifierBassin(id, bassinDTO);
@@ -101,6 +106,7 @@ public class BassinController {
 
     // Suppression (un formulaire HTML ne sait faire que GET/POST, donc POST ici)
     @PostMapping("/{id}/supprimer")
+    @PreAuthorize("hasRole('ADMIN')")
     public String supprimer(@PathVariable Long id) {
         bassinService.supprimerBassin(id);
         return "redirect:/bassins/liste";
@@ -121,6 +127,7 @@ public class BassinController {
 
     // Traite le changement de statut
     @PostMapping("/{id}/statut")
+    @PreAuthorize("hasRole('ADMIN')")
     public String changerStatut(@PathVariable Long id,
                                 @RequestParam String nouveauStatut,
                                 @RequestParam String motif,
