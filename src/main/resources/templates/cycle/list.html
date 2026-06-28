@@ -129,12 +129,20 @@
 </head>
 
 <body>
+    <th:block layout:fragment="page-scripts">
+        <script th:src="@{/js/list-filter.js}"></script>
+    </th:block>
     <div layout:fragment="content">
         
         <div class="page-header">
             <h1 class="section-title" style="font-size: 22px;">Cycles Actifs</h1>
 
             <div class="action-group">
+                <input type="text" data-list-filter="#table-cycles" placeholder="Rechercher un cycle..."
+                       style="font-size: 13px; padding: 8px 12px; border: 1px solid var(--mg-outline); border-radius: var(--radius); min-width: 200px;" />
+                <a class="btn-mg" style="background:transparent;border:1px solid var(--mg-outline);color:var(--mg-primary);" th:href="@{/cycles/liste/export(format='excel')}"><i class="bi bi-file-earmark-excel"></i> Excel</a>
+                <a class="btn-mg" style="background:transparent;border:1px solid var(--mg-outline);color:var(--mg-primary);" th:href="@{/cycles/liste/export(format='pdf')}"><i class="bi bi-file-earmark-pdf"></i> PDF</a>
+                <a class="btn-mg" style="background:transparent;border:1px solid var(--mg-outline);color:var(--mg-primary);" th:href="@{/cycles/liste/export(format='csv')}"><i class="bi bi-filetype-csv"></i> CSV</a>
                 <a th:href="@{/cycles/nouveau}" class="btn-mg btn-mg-primary">
                     <i class="bi bi-plus-lg"></i> Nouveau cycle
                 </a>
@@ -142,7 +150,7 @@
         </div>
 
         <div class="table-container">
-            <table class="mg-table">
+            <table id="table-cycles" class="mg-table">
                 <thead>
                     <tr>
                         <th>Cycle</th>
