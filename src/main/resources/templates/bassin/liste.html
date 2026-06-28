@@ -166,6 +166,12 @@
             <h1 class="section-title" style="font-size: 22px;">Bassins de Production</h1>
 
             <div class="action-group">
+                <input type="text" data-list-filter="#table-bassins"
+                       placeholder="Rechercher un bassin..."
+                       style="font-size: 13px; padding: 8px 12px; border: 1px solid var(--mg-outline); border-radius: var(--radius); min-width: 200px;" />
+                <a class="btn-mg btn-mg-secondary" th:href="@{/bassins/liste/export(format='excel')}"><i class="bi bi-file-earmark-excel"></i> Excel</a>
+                <a class="btn-mg btn-mg-secondary" th:href="@{/bassins/liste/export(format='pdf')}"><i class="bi bi-file-earmark-pdf"></i> PDF</a>
+                <a class="btn-mg btn-mg-secondary" th:href="@{/bassins/liste/export(format='csv')}"><i class="bi bi-filetype-csv"></i> CSV</a>
                 <a th:href="@{/bassins/nouveau}" class="btn-mg btn-mg-primary">
                     <i class="bi bi-plus-lg"></i> Nouveau bassin
                 </a>
@@ -173,7 +179,7 @@
         </div>
 
         <div class="table-container">
-            <table class="mg-table">
+            <table id="table-bassins" class="mg-table">
                 <thead>
                     <tr>
                         <th>Code Bassin</th>
@@ -222,9 +228,7 @@
     </div>
 
     <th:block layout:fragment="page-scripts">
-        <script>
-            // Logique optionnelle liée à la table
-        </script>
+        <script th:src="@{/js/list-filter.js}"></script>
     </th:block>
 </body>
 
