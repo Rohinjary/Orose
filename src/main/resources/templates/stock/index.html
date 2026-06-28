@@ -40,15 +40,25 @@
     </th:block>
 </head>
 <body>
+    <th:block layout:fragment="page-scripts">
+        <script th:src="@{/js/list-filter.js}"></script>
+    </th:block>
     <div layout:fragment="content">
         <header class="header-section">
             <h2 class="header-title">Référentiel Produits</h2>
             <p class="header-sub">Liste des produits en stock, niveaux et alertes associées.</p>
         </header>
 
-        <div style="display: flex; gap: 12px; justify-content: flex-end; margin-bottom: 24px;">
-            <a class="btn btn-outline" th:href="@{/stock/entree}"><i class="bi bi-plus"></i> NOUVELLE ENTRÉE</a>
-            <a class="btn btn-outline" th:href="@{/stock/sortie}"><i class="bi bi-dash"></i> NOUVELLE SORTIE</a>
+        <div style="display: flex; gap: 12px; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap;">
+            <input type="text" class="form-control" style="max-width: 280px;"
+                   data-list-filter="#table-produits" placeholder="Rechercher un produit..." />
+            <div style="display: flex; gap: 8px;">
+                <a class="btn btn-outline btn-sm" th:href="@{/stock/produits/export(format='excel')}"><i class="bi bi-file-earmark-excel"></i> Excel</a>
+                <a class="btn btn-outline btn-sm" th:href="@{/stock/produits/export(format='pdf')}"><i class="bi bi-file-earmark-pdf"></i> PDF</a>
+                <a class="btn btn-outline btn-sm" th:href="@{/stock/produits/export(format='csv')}"><i class="bi bi-filetype-csv"></i> CSV</a>
+                <a class="btn btn-outline" th:href="@{/stock/entree}"><i class="bi bi-plus"></i> NOUVELLE ENTRÉE</a>
+                <a class="btn btn-outline" th:href="@{/stock/sortie}"><i class="bi bi-dash"></i> NOUVELLE SORTIE</a>
+            </div>
         </div>
 
         <div th:if="${not #lists.isEmpty(alertes)}" class="card" style="padding: 16px 24px;">
@@ -70,7 +80,7 @@
 
         <div class="card" style="padding: 0;">
             <div class="table-container">
-                <table>
+                <table id="table-produits">
                     <thead>
                         <tr>
                             <th>Produit</th>

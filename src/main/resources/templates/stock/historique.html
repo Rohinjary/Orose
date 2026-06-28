@@ -39,6 +39,9 @@
     </th:block>
 </head>
 <body>
+    <th:block layout:fragment="page-scripts">
+        <script th:src="@{/js/list-filter.js}"></script>
+    </th:block>
     <div layout:fragment="content">
         <header class="header-section">
             <h2 class="header-title">Journal des Mouvements</h2>
@@ -50,8 +53,28 @@
                 <h3 class="card-title">Tous les mouvements</h3>
                 <span class="badge badge-neutral" th:text="${#lists.size(mouvements)} + ' mouvement(s)'">0</span>
             </div>
+
+            <div class="filters-bar" style="padding: 0 24px 16px 24px;">
+                <input type="text" class="form-control" style="max-width: 260px;"
+                       data-list-filter="#table-mouvements" placeholder="Filtrer (produit, motif, etc.)..." />
+
+                <form id="export-mouvements" method="get" th:action="@{/stock/mouvements/export}" style="display: flex; gap: 8px; align-items: flex-end; flex-wrap: wrap;">
+                    <div class="filter-group">
+                        <label class="filter-label" for="dateMin">Du</label>
+                        <input type="date" id="dateMin" name="dateMin" class="filter-select" />
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label" for="dateMax">Au</label>
+                        <input type="date" id="dateMax" name="dateMax" class="filter-select" />
+                    </div>
+                    <button type="submit" name="format" value="excel" class="btn btn-outline btn-sm"><i class="bi bi-file-earmark-excel"></i> Excel</button>
+                    <button type="submit" name="format" value="pdf" class="btn btn-outline btn-sm"><i class="bi bi-file-earmark-pdf"></i> PDF</button>
+                    <button type="submit" name="format" value="csv" class="btn btn-outline btn-sm"><i class="bi bi-filetype-csv"></i> CSV</button>
+                </form>
+            </div>
+
             <div class="table-container">
-                <table>
+                <table id="table-mouvements">
                     <thead>
                         <tr>
                             <th>Date &amp; Heure</th>
