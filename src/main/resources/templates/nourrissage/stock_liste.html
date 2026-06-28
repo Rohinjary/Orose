@@ -623,13 +623,17 @@
                         <section class="card">
                             <div class="card-header">
                                 <h3 class="card-title">Stocks Physiques</h3>
-                                <div style="display: flex; gap: 8px;">
-                                    <button class="btn btn-outline btn-sm">Exporter PDF</button>
+                                <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+                                    <input type="text" data-list-filter="#table-stock-aliment" placeholder="Rechercher..."
+                                           style="font-size: 12px; padding: 6px 10px; border: 1px solid var(--mg-outline); border-radius: var(--radius);" />
+                                    <a class="btn btn-outline btn-sm" th:href="@{/nourrissage/stock-aliment/export(format='excel')}"><i class="bi bi-file-earmark-excel"></i> Excel</a>
+                                    <a class="btn btn-outline btn-sm" th:href="@{/nourrissage/stock-aliment/export(format='pdf')}"><i class="bi bi-file-earmark-pdf"></i> PDF</a>
+                                    <a class="btn btn-outline btn-sm" th:href="@{/nourrissage/stock-aliment/export(format='csv')}"><i class="bi bi-filetype-csv"></i> CSV</a>
                                     <button class="btn btn-primary btn-sm">Inventaire Complet</button>
                                 </div>
                             </div>
                             <div class="table-container">
-                                <table class="table">
+                                <table id="table-stock-aliment" class="table">
                                     <thead>
                                         <tr>
                                             <th>Désignation</th>
