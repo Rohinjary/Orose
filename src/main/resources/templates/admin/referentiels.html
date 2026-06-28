@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{layouts/default}">
+<head>
+    <title layout:fragment="page-title">Move Gasy — Référentiels</title>
+    <th:block layout:fragment="page-styles">
+        <style>
+            .ref-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; margin-top: 16px; }
+            @media (max-width: 992px) { .ref-grid { grid-template-columns: 1fr; } }
+            .ref-card { background: white; border: 1px solid var(--mg-outline); border-radius: var(--radius); padding: 20px; }
+            .ref-card h3 { font-size: 14px; font-weight: 700; text-transform: uppercase; color: var(--mg-primary); letter-spacing: 0.05em; margin-bottom: 12px; }
+            .ref-card .meta { font-size: 12px; color: var(--mg-secondary); margin-bottom: 16px; }
+            .ref-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+            .ref-actions label { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; font-size: 12px; font-weight: 600; cursor: pointer; border: 1px solid var(--mg-outline); border-radius: var(--radius); background: white; color: var(--mg-primary); }
+            .ref-actions label:hover { background: var(--mg-surface); }
+            .ref-list { font-size: 13px; max-height: 280px; overflow-y: auto; border-top: 1px solid var(--mg-outline); padding-top: 12px; }
+            .ref-list-item { padding: 6px 0; border-bottom: 1px solid #f1f5f9; }
+            .ref-list-item:last-child { border-bottom: none; }
+            .ref-list-item small { color: var(--mg-secondary); }
+        </style>
+    </th:block>
+</head>
+<body>
+    <div layout:fragment="content">
+        <header class="header-section">
+            <h2 class="header-title">Gestion des référentiels</h2>
+            <p class="header-sub">Import en masse et consultation des données de référence : aliments, médicaments, espèces de crevette.</p>
+        </header>
+
+        <div th:if="${succes}" style="background:#dcfce7;color:#166534;padding:10px 16px;border-radius:var(--radius);margin-bottom:16px;border-left:3px solid #10b981;"
+             th:text="${succes}">Succès</div>
+        <div th:if="${erreur}" style="background:#fee2e2;color:#991b1b;padding:10px 16px;border-radius:var(--radius);margin-bottom:16px;border-left:3px solid #ef4444;"
+             th:text="${erreur}">Erreur</div>
+
+        <div class="ref-grid">
+
+            <!-- Aliments -->
+            <div class="ref-card">
+                <h3>Aliments</h3>
+                <p class="meta">Colonnes attendues : <code>libelle;seuilMinimumKg</code></p>
+                <div class="ref-actions">
+                    <form method="post" enctype="multipart/form-data" th:action="@{/admin/referentiels/aliments/import}" style="display:inline;">
+                        <input type="hidden" name="format" value="csv" />
+                        <label><i class="bi bi-upload"></i> CSV
+                            <input type="file" name="fichier" accept=".csv" onchange="this.form.submit()" style="display:none" />
+                        </label>
+                    </form>
+                    <form method="post" enctype="multipart/form-data" th:action="@{/admin/referentiels/aliments/import}" style="display:inline;">
+                        <input type="hidden" name="format" value="excel" />
+                        <label><i class="bi bi-upload"></i> Excel
+                            <input type="file" name="fichier" accept=".xlsx,.xls" onchange="this.form.submit()" style="display:none" />
+                        </label>
+                    </form>
+                </div>
+                <div class="ref-list">
+                    <div th:each="a : ${aliments}" class="ref-list-item">
+                        <strong th:text="${a.libelle}">Libellé</strong>
+                        <small th:text="' — seuil min : ' + ${a.seuilMinimumKg} + ' kg'"></small>
+                    </div>
+                    <div th:if="${#lists.isEmpty(aliments)}" style="color:var(--mg-secondary); padding: 12px 0;">Aucun aliment enregistré</div>
+                </div>
+            </div>
+
+            <!-- Médicaments -->
+            <div class="ref-card">
+                <h3>Médicaments</h3>
+                <p class="meta">Colonnes attendues : <code>libelle;unite;seuilMinimum</code></p>
+                <div class="ref-actions">
+                    <form method="post" enctype="multipart/form-data" th:action="@{/admin/referentiels/medicaments/import}" style="display:inline;">
+                        <input type="hidden" name="format" value="csv" />
+                        <label><i class="bi bi-upload"></i> CSV
+                            <input type="file" name="fichier" accept=".csv" onchange="this.form.submit()" style="display:none" />
+                        </label>
+                    </form>
+                    <form method="post" enctype="multipart/form-data" th:action="@{/admin/referentiels/medicaments/import}" style="display:inline;">
+                        <input type="hidden" name="format" value="excel" />
+                        <label><i class="bi bi-upload"></i> Excel
+                            <input type="file" name="fichier" accept=".xlsx,.xls" onchange="this.form.submit()" style="display:none" />
+                        </label>
+                    </form>
+                </div>
+                <div class="ref-list">
+                    <div th:each="m : ${medicaments}" class="ref-list-item">
+                        <strong th:text="${m.libelle}">Libellé</strong>
+                        <small th:text="' — ' + ${m.unite} + ', seuil min : ' + ${m.seuilMinimum}"></small>
+                    </div>
+                    <div th:if="${#lists.isEmpty(medicaments)}" style="color:var(--mg-secondary); padding: 12px 0;">Aucun médicament enregistré</div>
+                </div>
+            </div>
+
+            <!-- Espèces -->
+            <div class="ref-card">
+                <h3>Espèces de crevette</h3>
+                <p class="meta">Colonnes attendues : <code>nomScientifique;nomCourant</code></p>
+                <div class="ref-actions">
+                    <form method="post" enctype="multipart/form-data" th:action="@{/admin/referentiels/especes/import}" style="display:inline;">
+                        <input type="hidden" name="format" value="csv" />
+                        <label><i class="bi bi-upload"></i> CSV
+                            <input type="file" name="fichier" accept=".csv" onchange="this.form.submit()" style="display:none" />
+                        </label>
+                    </form>
+                    <form method="post" enctype="multipart/form-data" th:action="@{/admin/referentiels/especes/import}" style="display:inline;">
+                        <input type="hidden" name="format" value="excel" />
+                        <label><i class="bi bi-upload"></i> Excel
+                            <input type="file" name="fichier" accept=".xlsx,.xls" onchange="this.form.submit()" style="display:none" />
+                        </label>
+                    </form>
+                </div>
+                <div class="ref-list">
+                    <div th:each="e : ${especes}" class="ref-list-item">
+                        <strong th:text="${e.nomCourant}">Nom courant</strong>
+                        <small th:text="' (' + ${e.nomScientifique} + ')'"></small>
+                    </div>
+                    <div th:if="${#lists.isEmpty(especes)}" style="color:var(--mg-secondary); padding: 12px 0;">Aucune espèce enregistrée</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
