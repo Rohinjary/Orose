@@ -1,14 +1,8 @@
-M10	Role, Utilisateur, JournalAction
-
-M1	StatutBassin, Bassin, HistoStatutBassin
-
-M2	EspeceCrevette, EvolutionHebdoEspece, CycleBassin, SuiviHebdoBassin
-
-M3	Aliment, EntreeStockAliment, CreneauHoraire, DistributionNourriture, MouvementStockAliment
-
-M4	Medicament, EntreeStockMedicament, IncidentSanitaire, Traitement
-
-M5	LotCrevette, MouvementStockCrevette
-
-M9	Alerte
-
+TEST CODE:
+    1- localhost:8080 -> page vide | dashboard
+    2- suivi biologique:
+        -aiza ny pesee? sa mila mampiditra cycle vao hita?
+    3-sanitaire:
+        -dashboard: mbola misy quarantaine
+    4- nourrissage:
+        -stock aliment, historique -> tsisy mandeha 
