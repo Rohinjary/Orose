@@ -66,39 +66,22 @@ public class StockAlimentController {
 
     @PostMapping("/enregistrer")
     @PreAuthorize("hasAnyRole('ADMIN','TECH','RS')")
-    public String enregistrerStock(@Valid @ModelAttribute("entreeStockDTO") EntreeStockDTO dto,
-            BindingResult result, Model model, RedirectAttributes redirectAttributes) {
-
+    public String enregistrerEntree(@Valid @ModelAttribute("entreeDto") EntreeStockDTO dto,
+            BindingResult result,
+            RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
-            result.getFieldErrors()
-                    .forEach(e -> System.out.println("ERREUR : " + e.getField() + " - " + e.getDefaultMessage()));
-            model.addAttribute("aliments", alimentRepository.findAll());
-            model.addAttribute("utilisateurs", utilisateurRepository.findAllTechniciens());
-            return "/stock_form";
+            // En cas d'erreur de validation (ex: champ vide)
+            redirectAttributes.addFlashAttribute("error", "Veuillez vérifier les informations saisies.");
+            return "redirect:/nourrissage/stock_form";
         }
-
         try {
             stockAlimentService.enregistrerEntree(dto);
-            redirectAttributes.addFlashAttribute("success", "Stock enregistré avec succès !");
+            redirectAttributes.addFlashAttribute("success", "Stock enregistré avec succès.");
+            return "redirect:/stock/liste";
         } catch (Exception e) {
-            model.addAttribute("error", "Erreur : " + e.getMessage());
-            model.addAttribute("aliments", alimentRepository.findAll());
-            model.addAttribute("utilisateurs", utilisateurRepository.findAllTechniciens());
-            return "/stock_form";
+            redirectAttributes.addFlashAttribute("error", "Erreur : " + e.getMessage());
+            return "redirect:/nourrissage/stock_form";
         }
-
-        return "redirect:/stock/liste";
-    }
-
-    @GetMapping("/liste")
-    public String afficherListeStock(Model model) {
-        model.addAttribute("stock_dispo", stockAlimentService.getStockActuelTotal());
-        model.addAttribute("valeur_stock", stockAlimentService.getValeurStockTotale());
-        model.addAttribute("variationSemaine", stockAlimentService.getVariationStockSemaine());
-
-        model.addAttribute("stocks", stockAlimentService.getDetailStocks());
-
-        return "nourrissage/stock_liste";
     }
 
     @GetMapping("/historique")
