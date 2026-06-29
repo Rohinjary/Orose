@@ -288,6 +288,15 @@
                title="Réinitialiser">
                 <i class="bi bi-x-lg"></i>
             </a>
+            <button type="submit" th:formaction="@{/biologique/export}" name="format" value="excel" class="btn-filter-primary"
+                    style="background: white; color: var(--mg-primary); border: 1px solid var(--mg-outline);"
+                    title="Exporter Excel"><i class="bi bi-file-earmark-excel"></i></button>
+            <button type="submit" th:formaction="@{/biologique/export}" name="format" value="pdf" class="btn-filter-primary"
+                    style="background: white; color: var(--mg-primary); border: 1px solid var(--mg-outline);"
+                    title="Exporter PDF"><i class="bi bi-file-earmark-pdf"></i></button>
+            <button type="submit" th:formaction="@{/biologique/export}" name="format" value="csv" class="btn-filter-primary"
+                    style="background: white; color: var(--mg-primary); border: 1px solid var(--mg-outline);"
+                    title="Exporter CSV"><i class="bi bi-filetype-csv"></i></button>
         </div>
     </form>
 

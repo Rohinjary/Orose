@@ -1,6 +1,7 @@
 package com.example.orose.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -12,5 +13,6 @@ public interface UtilisateurRepository extends JpaRepository<Utilisateur, Long> 
             "JOIN u.roles r " +
             "WHERE r.code = 'TECH'")
     List<Utilisateur> findAllTechniciens();
- 
+
+    Optional<Utilisateur> findByEmail(String email);
 }

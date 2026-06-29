@@ -2,6 +2,7 @@ package com.example.orose.controller;
 
 import java.util.List;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -64,6 +65,7 @@ public class StockAlimentController {
     }
 
     @PostMapping("/enregistrer")
+    @PreAuthorize("hasAnyRole('ADMIN','TECH','RS')")
     public String enregistrerStock(@Valid @ModelAttribute("entreeStockDTO") EntreeStockDTO dto,
             BindingResult result, Model model, RedirectAttributes redirectAttributes) {
 

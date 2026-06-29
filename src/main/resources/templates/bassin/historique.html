@@ -26,6 +26,9 @@
     </th:block>
 </head>
 <body>
+    <th:block layout:fragment="page-scripts">
+        <script th:src="@{/js/list-filter.js}"></script>
+    </th:block>
     <div layout:fragment="content">
         <div class="page-header">
             <div>
@@ -59,12 +62,21 @@
                     </div>
                     <button class="btn btn-primary" type="submit" style="height: 40px;"><i class="bi bi-funnel"></i> Filtrer</button>
                 </div>
+
+                <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--mg-outline);">
+                    <input type="text" data-list-filter="#table-historique-bassins" placeholder="Rechercher dans la page (bassin, motif...)..."
+                           class="filter-input" style="max-width: 320px;" />
+                    <span style="flex: 1; font-size: 12px; color: var(--mg-secondary);">Les exports respectent les filtres ci-dessus (date / type d'etat) ; la recherche locale ne s'applique qu'a l'affichage.</span>
+                    <button type="submit" th:formaction="@{/bassins/historique/export}" name="format" value="excel" class="btn btn-outline btn-sm"><i class="bi bi-file-earmark-excel"></i> Excel</button>
+                    <button type="submit" th:formaction="@{/bassins/historique/export}" name="format" value="pdf" class="btn btn-outline btn-sm"><i class="bi bi-file-earmark-pdf"></i> PDF</button>
+                    <button type="submit" th:formaction="@{/bassins/historique/export}" name="format" value="csv" class="btn btn-outline btn-sm"><i class="bi bi-filetype-csv"></i> CSV</button>
+                </div>
             </form>
         </div>
 
         <div class="card" style="padding: 0;">
             <div class="table-container">
-                <table>
+                <table id="table-historique-bassins">
                     <thead>
                         <tr>
                             <th>Bassin</th>

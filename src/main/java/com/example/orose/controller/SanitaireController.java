@@ -14,6 +14,7 @@ import com.example.orose.service.BassinService;
 import com.example.orose.repository.TraitementRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -78,6 +79,7 @@ public class SanitaireController {
     }
 
     @PostMapping("/declaration")
+    @PreAuthorize("hasAnyRole('ADMIN','TECH','RS')")
         public String declarerIncident(@ModelAttribute IncidentDTO dto, RedirectAttributes redirectAttributes) {
             try {
                 incidentService.declarerIncident(dto);
@@ -111,6 +113,7 @@ public class SanitaireController {
     }
 
     @PostMapping("/traitement")
+    @PreAuthorize("hasAnyRole('ADMIN','TECH','RS')")
     public String enregistrerTraitement(@ModelAttribute TraitementDTO dto, RedirectAttributes redirectAttributes) {
         traitementService.enregistrerTraitement(dto);
         redirectAttributes.addFlashAttribute("message", "Traitement enregistré avec succès.");
@@ -167,6 +170,7 @@ public class SanitaireController {
     }
 
     @PostMapping("/resoudre/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN','TECH','RS')")
     public String resoudreIncident(@PathVariable Integer id) {
         incidentService.resoudreIncident(id);
         bassinService.changerStatutBassin(id.longValue(), "ACTIF", "Incident résolu", 1L);

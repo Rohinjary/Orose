@@ -32,6 +32,9 @@
     </th:block>
 </head>
 <body>
+    <th:block layout:fragment="page-scripts">
+        <script th:src="@{/js/list-filter.js}"></script>
+    </th:block>
     <div layout:fragment="content">
         <header class="header-section">
             <h2 class="header-title">Registre des Récoltes</h2>
@@ -44,12 +47,19 @@
         </div>
 
         <div class="card">
-            <div class="card-header">
+            <div class="card-header" style="flex-wrap: wrap; gap: 12px;">
                 <h3 class="card-title">Lots récoltés</h3>
                 <span class="badge badge-neutral" th:text="${#lists.size(lots)} + ' lot(s)'">0</span>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+                    <input type="text" style="font-size: 13px; padding: 6px 10px; border: 1px solid var(--mg-outline); border-radius: var(--radius);"
+                           data-list-filter="#table-lots" placeholder="Rechercher..." />
+                    <a class="btn btn-outline btn-sm" th:href="@{/stock/lots-crevettes/export(format='excel')}"><i class="bi bi-file-earmark-excel"></i> Excel</a>
+                    <a class="btn btn-outline btn-sm" th:href="@{/stock/lots-crevettes/export(format='pdf')}"><i class="bi bi-file-earmark-pdf"></i> PDF</a>
+                    <a class="btn btn-outline btn-sm" th:href="@{/stock/lots-crevettes/export(format='csv')}"><i class="bi bi-filetype-csv"></i> CSV</a>
+                </div>
             </div>
             <div class="table-container">
-                <table>
+                <table id="table-lots">
                     <thead>
                         <tr>
                             <th>Date récolte</th>

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
     layout:decorate="~{layouts/default}">
 
 <head>
@@ -166,14 +167,20 @@
             <h1 class="section-title" style="font-size: 22px;">Bassins de Production</h1>
 
             <div class="action-group">
-                <a th:href="@{/bassins/nouveau}" class="btn-mg btn-mg-primary">
+                <input type="text" data-list-filter="#table-bassins"
+                       placeholder="Rechercher un bassin..."
+                       style="font-size: 13px; padding: 8px 12px; border: 1px solid var(--mg-outline); border-radius: var(--radius); min-width: 200px;" />
+                <a class="btn-mg btn-mg-secondary" th:href="@{/bassins/liste/export(format='excel')}"><i class="bi bi-file-earmark-excel"></i> Excel</a>
+                <a class="btn-mg btn-mg-secondary" th:href="@{/bassins/liste/export(format='pdf')}"><i class="bi bi-file-earmark-pdf"></i> PDF</a>
+                <a class="btn-mg btn-mg-secondary" th:href="@{/bassins/liste/export(format='csv')}"><i class="bi bi-filetype-csv"></i> CSV</a>
+                <a th:href="@{/bassins/nouveau}" class="btn-mg btn-mg-primary" sec:authorize="hasRole('ADMIN')">
                     <i class="bi bi-plus-lg"></i> Nouveau bassin
                 </a>
             </div>
         </div>
 
         <div class="table-container">
-            <table class="mg-table">
+            <table id="table-bassins" class="mg-table">
                 <thead>
                     <tr>
                         <th>Code Bassin</th>
@@ -196,10 +203,11 @@
                                 <a th:href="@{/bassins/{id}(id=${bassin.id})}" class="row-link">
                                     <i class="bi bi-eye"></i> Voir
                                 </a>
-                                <a th:href="@{/bassins/{id}/modifier(id=${bassin.id})}" class="row-link">
+                                <a th:href="@{/bassins/{id}/modifier(id=${bassin.id})}" class="row-link" sec:authorize="hasRole('ADMIN')">
                                     <i class="bi bi-pencil"></i> Modifier
                                 </a>
                                 <form th:action="@{/bassins/{id}/supprimer(id=${bassin.id})}" method="post"
+                                    sec:authorize="hasRole('ADMIN')"
                                     style="display:inline"
                                     onsubmit="return confirm('Voulez-vous vraiment supprimer ce bassin ?');">
                                     <button type="submit" class="btn-mg btn-mg-danger">
@@ -222,9 +230,7 @@
     </div>
 
     <th:block layout:fragment="page-scripts">
-        <script>
-            // Logique optionnelle liée à la table
-        </script>
+        <script th:src="@{/js/list-filter.js}"></script>
     </th:block>
 </body>
 

@@ -6,6 +6,7 @@ import com.example.orose.service.BassinService;
 import com.example.orose.service.CycleService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -50,6 +51,7 @@ public class CycleController {
     }
 
     @GetMapping("/nouveau")
+    @PreAuthorize("hasRole('ADMIN')")
     public String formulaireDemarrage(Model model) {
         preparerLayoutCycles(model, "Nouveau cycle", "nouveau");
         model.addAttribute("bassinsVides", bassinService.getBassinsParStatut("VIDE"));
@@ -66,6 +68,7 @@ public class CycleController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public String demarrer(@RequestParam List<Long> idBassins,
                            @ModelAttribute CycleDemarrageDTO cycleDTO,
                            RedirectAttributes redirectAttributes) {

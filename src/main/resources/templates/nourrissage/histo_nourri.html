@@ -629,7 +629,13 @@
                         <h2 class="header-title">Historique des distributions</h2>
                         <p class="header-sub">Suivi chronologique et analytique du nourrissage sur le site.</p>
                     </div>
-                    <button class="btn btn-primary"><i class="bi bi-download"></i> Exporter (.xlsx)</button>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+                        <input type="text" data-list-filter="#table-histo-nourri" placeholder="Rechercher (bassin, aliment, responsable)..."
+                               style="font-size: 13px; padding: 8px 12px; border: 1px solid var(--mg-outline); border-radius: var(--radius); min-width: 240px;" />
+                        <a class="btn btn-outline" th:href="@{/nourrissage/historique/export(format='excel')}"><i class="bi bi-file-earmark-excel"></i> Excel</a>
+                        <a class="btn btn-outline" th:href="@{/nourrissage/historique/export(format='pdf')}"><i class="bi bi-file-earmark-pdf"></i> PDF</a>
+                        <a class="btn btn-outline" th:href="@{/nourrissage/historique/export(format='csv')}"><i class="bi bi-filetype-csv"></i> CSV</a>
+                    </div>
                 </div>
                 <!-- FILTERS -->
                 <section class="card">
@@ -692,7 +698,7 @@
                                 </div>
 
                                 <div class="table-container">
-                                    <table th:if="${historique != null and not #lists.isEmpty(historique)}">
+                                    <table id="table-histo-nourri" th:if="${historique != null and not #lists.isEmpty(historique)}">
                                         <thead>
                                             <tr>
                                                 <th>Date</th>
@@ -816,6 +822,7 @@
                 document.querySelector('.sidebar-overlay').classList.remove('open');
             });
     </script>
+    <script th:src="@{/js/list-filter.js}"></script>
 
 </body>
 

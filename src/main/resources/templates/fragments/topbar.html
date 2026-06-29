@@ -1,26 +1,37 @@
-<header th:fragment="topbar(parentLabel, currentLabel)" class="topbar" xmlns:th="http://www.thymeleaf.org">
+<header th:fragment="topbar(parentLabel, currentLabel)" class="topbar"
+        xmlns:th="http://www.thymeleaf.org"
+        xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
     <button class="menu-toggle" onclick="toggleSidebar()">
         <i class="bi bi-list"></i>
     </button>
-    
+
     <div class="breadcrumb">
         <span th:text="${parentLabel}">Suivi biologique</span>
         <span class="breadcrumb-separator">/</span>
         <span class="breadcrumb-current" th:text="${currentLabel}">Alertes Biologiques</span>
     </div>
-    
+
     <div class="topbar-actions">
         <button class="notification-btn">
             <i class="bi bi-bell"></i>
             <span class="notification-dot"></span>
         </button>
-        <div class="user-profile">
+        <div class="user-profile" sec:authorize="isAuthenticated()">
             <div class="user-info">
-                <!-- Ces données pourront provenir de Spring Security ultérieurement -->
-                <div class="user-name">Jean Dupont</div>
-                <div class="user-role">Superviseur Site</div>
+                <div class="user-name" sec:authentication="name">utilisateur@orose.mg</div>
+                <div class="user-role">
+                    <span sec:authorize="hasRole('ADMIN')">Administrateur</span>
+                    <span sec:authorize="hasRole('DIR')">Directeur</span>
+                    <span sec:authorize="hasRole('TECH')">Technicien</span>
+                    <span sec:authorize="hasRole('RS')">Resp. Sanitaire</span>
+                </div>
             </div>
-            <div class="user-avatar">JD</div>
+            <form th:action="@{/logout}" method="post" style="margin:0;">
+                <button type="submit" class="icon-btn" title="Se déconnecter"
+                        style="background:transparent;border:none;cursor:pointer;padding:6px 10px;color:var(--mg-secondary);">
+                    <i class="bi bi-box-arrow-right"></i>
+                </button>
+            </form>
         </div>
     </div>
 </header>

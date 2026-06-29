@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -44,6 +45,7 @@ public class StockMedicamentController {
     }
 
     @PostMapping("/entree")
+    @PreAuthorize("hasAnyRole('ADMIN','TECH','RS')")
     public String enregistrerEntree(@Valid @ModelAttribute("entreeDto") EntreeStockMedicamentDTO dto,
             BindingResult bindingResult,
             Model model,
@@ -78,6 +80,7 @@ public class StockMedicamentController {
     }
 
     @PostMapping("/perte")
+    @PreAuthorize("hasAnyRole('ADMIN','TECH','RS')")
     public String enregistrerPerte(
             @RequestParam Integer idEntreeStock,
             @RequestParam BigDecimal quantite,
