@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html lang="fr" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/default}">
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{layouts/default}">
 <head>
     <title layout:fragment="page-title" th:text="'Bassin ' + ${bassin.code} + ' — Move Gasy'">Bassin — Move Gasy</title>
     <th:block layout:fragment="page-styles">
@@ -39,12 +41,12 @@
                     </div>
 
                     <div class="action-bar">
-                        <a th:href="@{/bassins/{id}/modifier(id=${bassin.id})}" class="btn btn-outline btn-sm"><i class="bi bi-pencil"></i> Modifier</a>
+                        <a th:href="@{/bassins/{id}/modifier(id=${bassin.id})}" class="btn btn-outline btn-sm" sec:authorize="hasRole('ADMIN')"><i class="bi bi-pencil"></i> Modifier</a>
                         <a th:href="@{/bassins/liste}" class="btn btn-outline btn-sm"><i class="bi bi-arrow-left"></i> Retour</a>
                     </div>
                 </section>
 
-                <section class="card" th:unless="${#lists.isEmpty(transitions)}">
+                <section class="card" sec:authorize="hasRole('ADMIN')" th:unless="${#lists.isEmpty(transitions)}">
                     <div class="card-header">
                         <h3 class="card-title">Changer l'etat operationnel</h3>
                         <span style="font-size: 12px; color: var(--mg-secondary);" th:text="${bassin.statutActuel.code == 'VIDE'} ? '0 transition(s) disponible(s)' : ${#lists.size(transitions)} + ' transition(s) disponible(s)'"></span>

@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html lang="fr" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/default}">
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{layouts/default}">
 <head>
     <title layout:fragment="page-title">Alertes biologiques — Move Gasy</title>
     <th:block layout:fragment="page-styles">
@@ -46,7 +48,7 @@
                     Date : <span th:text="${#temporals.format(alerte.dateCreation, 'dd/MM/yyyy HH:mm')}">—</span>
                 </div>
             </div>
-            <div class="alerte-footer">
+            <div class="alerte-footer" sec:authorize="hasAnyRole('ADMIN','TECH','RS')">
                 <form th:action="@{/biologique/alertes/{id}/resoudre(id=${alerte.id})}" method="post" style="display:inline;">
                     <button type="submit" class="btn btn-sm btn-outline-dark">
                         <i class="bi bi-check-lg"></i> Marquer comme résolue

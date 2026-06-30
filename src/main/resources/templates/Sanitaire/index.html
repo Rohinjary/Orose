@@ -217,7 +217,7 @@
                                 <span th:if="${!incident.estResolu}" class="badge badge-neutral">En cours</span>
                                 <span th:if="${incident.estResolu}" class="badge badge-success">Résolu</span>
                             </td>
-                            <td>
+                            <td sec:authorize="hasAnyRole('ADMIN','TECH','RS')">
                                 <a class="icon-btn" style="display: inline-flex;" th:href="@{/sanitaire/traitement(incidentId=${incident.id})}" title="Ajouter traitement">
                                     <i class="bi bi-plus-circle"></i>
                                 </a>
