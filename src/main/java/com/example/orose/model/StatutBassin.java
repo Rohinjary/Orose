@@ -13,7 +13,7 @@ public class StatutBassin {
     private Integer id;
 
     @Column(nullable = false, unique = true, length = 30)
-    private String code; // PREPARATION, ACTIF, EN_TRAITEMENT, RECOLTE, QUARANTAINE
+    private String code; // PREPARATION, ACTIF, EN_TRAITEMENT, RECOLTE
 
     @Column(nullable = false, length = 50)
     private String libelle;

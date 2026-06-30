@@ -67,7 +67,7 @@ public class SanitaireController {
                 .filter(assoc -> assoc.getBassin() != null && assoc.getBassin().getStatutActuel() != null)
                 .filter(assoc -> {
                     String code = assoc.getBassin().getStatutActuel().getCode();
-                    return "ACTIF".equalsIgnoreCase(code) || "EN_TRAITEMENT".equalsIgnoreCase(code);
+                    return "ACTIF".equalsIgnoreCase(code);
                 })
                 .toList());
         model.addAttribute("utilisateurs", utilisateurRepository.findAll());
@@ -87,7 +87,7 @@ public class SanitaireController {
                         .orElseThrow(() -> new IllegalArgumentException("Association introuvable"));
                 Long bassinId = assoc.getBassin().getId().longValue();
 
-                bassinService.changerStatutBassin(bassinId, "QUARANTAINE", "Incident déclaré", dto.getIdResponsable());
+                bassinService.changerStatutBassin(bassinId, "EN_TRAITEMENT", "Incident déclaré", dto.getIdResponsable());
 
                 redirectAttributes.addFlashAttribute("message", "Incident déclaré avec succès.");
                 return "redirect:/sanitaire/index";

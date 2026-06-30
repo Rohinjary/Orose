@@ -76,12 +76,18 @@ public class CycleService {
         Cycle savedCycle = cycleRepository.save(cycle);
 
         // Calculer la surface totale des 3 bassins
-    BigDecimal surfaceTotale = idBassins.stream()
-        .map(id -> bassinRepository.findById(id).get().getSurfaceM2())
-        .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal surfaceTotale = idBassins.stream()
+            .map(id -> bassinRepository.findById(id).get().getSurfaceM2())
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-    BigDecimal densiteM2 = dto.getEffectifInitial()
-        .divide(surfaceTotale, 2, RoundingMode.HALF_UP);
+        BigDecimal densiteM2 = dto.getEffectifInitial()
+            .divide(surfaceTotale, 2, RoundingMode.HALF_UP);
+
+        // Si dateDebut <= aujourd'hui : ACTIF immédiatement, sinon PREPARATION (le scheduler activera plus tard)
+        String statutCible = !dto.getDateDebut().isAfter(LocalDate.now()) ? "ACTIF" : "PREPARATION";
+        String motif = "ACTIF".equals(statutCible)
+            ? "Demarrage immediat — cycle " + savedCycle.getCodeUniqueCycle()
+            : "Demarrage cycle " + savedCycle.getCodeUniqueCycle();
 
         // Creer 1 CycleBassinAssoc par bassin
         for (Long idBassin : idBassins) {
@@ -97,8 +103,7 @@ public class CycleService {
 
             cycleBassinAssocRepository.save(assoc);
 
-            // Passer le bassin en PREPARATION
-            bassinService.changerStatutBassin(idBassin, "PREPARATION", "Demarrage cycle " + savedCycle.getCodeUniqueCycle(), 1L);
+            bassinService.changerStatutBassin(idBassin, statutCible, motif, 1L);
         }
     }
 
