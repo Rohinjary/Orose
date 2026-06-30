@@ -1,4 +1,6 @@
-<aside th:fragment="sidebar" class="sidebar">
+<aside th:fragment="sidebar" class="sidebar"
+       xmlns:th="http://www.thymeleaf.org"
+       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
     <div class="sidebar-brand">
         <div class="brand-logo"><i class="bi bi-water"></i></div>
         <div class="brand-name">MOVE GASY</div>
@@ -175,6 +177,23 @@
                     th:href="@{/stock/mouvements}">
                     Historique mouvements
                 </a>
+            </div>
+        </div>
+
+        <!-- Section Administration (visible uniquement pour ADMIN) -->
+        <div sec:authorize="hasRole('ADMIN')">
+            <div class="nav-label">Administration</div>
+            <div class="nav-dropdown" th:classappend="${currentGroup == 'admin'} ? 'open' : ''">
+                <a class="nav-item" onclick="toggleDropdown(this)">
+                    <span class="nav-icon"><i class="bi bi-gear"></i></span> Référentiels
+                    <span class="chevron-icon"><i class="bi bi-chevron-right"></i></span>
+                </a>
+                <div class="submenu">
+                    <a class="nav-item" th:classappend="${currentPage == 'admin-referentiels'} ? 'active' : ''"
+                        th:href="@{/admin/referentiels}">
+                        Aliments / Médicaments / Espèces
+                    </a>
+                </div>
             </div>
         </div>
     </div>
