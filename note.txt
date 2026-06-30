@@ -1,8 +1,65 @@
 TEST CODE:
-    1- localhost:8080 -> page vide | dashboard
-    2- suivi biologique:
-        -aiza ny pesee? sa mila mampiditra cycle vao hita?
-    3-sanitaire:
+    1- localhost:8080 ->
+        -page authentification design non integre
+        -ajouter 'voir mdp'
+
+
+    2-bassin:
+        -tsy mandeha ny supprimer(Whitelabel Error Page)
+        -surface bassin -> 700 fa tsy <100
+        -update -> tsy mandeha ny update date de creation
+        -create -> tsisy heure
+        -historique de modification -> 
+            recherche filtree -> 
+                -alana ny heure:minute fa date fotsiny
+                -manao recherche B01 fotsiny dia ny export nefa izy rehetra ihany
+        -tokony tsy afaka mamadika status EN_TRAITEMENT fa VIDE,ACTIF,RECOLTE ihany
+        -tsy afaka atao RECOLTE raha tsy mahatratra anle objecti(tokony alana zany le RECOLTE fa via SUIVI BIOLOGIQUE ihany)
+    
+
+    3-cycle:
+        ?? : raha mi demarrer cycle de date > aujourd'hui, tokony tode miova actif ve sa miandry date vo actif?
+
+        -rehefa avy mampiditra cycle, dia mi recharge page liste des cycles fa tsy liste des bassins
+        - detail du cycle ->
+            -amle tableau, tsy affiche akory ny densite(tsy tafiditra base surement)
+        -gestion d'erreur:
+            -asina kely hoe "veuillez remplir nanani nanana" Whitelabel Error Page
+
+
+    4- suivi biologique:
+        -aiza ny pesee? sa mila mampiditra cycle vao hita? ok efa iio 
+        -pesee to tsy mety raha tsy androany ihany?(logique mais la c'est une simulation)
+        -tokony aty koa afaka manao changement d'etat RECOLTE rehefa atteint ilay seuil(amzay tsy mivezivezy be)
+        -taux de survie 1898.99%?
+        -tableau de bord ->
+            -tsy affiche le poids (probleme de div maybe)
+        -
+
+    5-sanitaire: TSY VITA TEST TSARA
         -dashboard: mbola misy quarantaine
-    4- nourrissage:
-        -stock aliment, historique -> tsisy mandeha 
+        -nouvel incident->
+            -tsy mandeh any declaration d'incident(Whitelabel Error Page)
+        -mila jerena hoe mandeha ve EN_TRAITEMENT->ACTIF rehefa regle io
+        -EN_TRAITEMENT foana fa tsisy quarantaine
+   
+
+    6- nourrissage:
+        -stock aliment, historique -> tsisy mandeha hany nefa efa pull request 
+        -Calcul FCR ?
+        -mahery be le scurisation dia tsy mety valide-na alina
+        -tsy mbola ni test saisie distribution ndry
+
+
+    7-stock:
+        -stock crevette:
+            tableau de bord->
+                -manao RECOLTE status bassin dia ny stock crevtte mbola 0 ihany
+                tokony hoe vao miova RECOLTE iny dia misy mitsofoka quantite anaty stock
+        -lots crevettes->
+            -zay RECOLTE hita hoe lasa LOTS CREVETTES, fa tsisy biomasse,stock actuel
+
+
+    REMARQUE:
+    stock->liste deroulante:(crevette,aliment,medicament)-> liste deroulante entre/sortie/vue stock actuel/historique can
+    stock->tableau de bord: stock crevette, stock aliment,stock medicament,alerte niveau,lot permies
