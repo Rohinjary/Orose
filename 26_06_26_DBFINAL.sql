@@ -481,12 +481,31 @@ CROSS JOIN (VALUES
 ) AS v(semaine, poids, taille)
 WHERE e.nom_courant = 'Crevette blanche';
 
-INSERT INTO utilisateur (nom, prenom, email, mot_de_passe, statut) VALUES
+-- INSERT INTO utilisateur (nom, prenom, email, mot_de_passe, statut) VALUES
 
-('Admin', 'OROSE', 'admin@baovola.mg', 'a_remplacer_par_hash_bcrypt', 'ACTIF');
+-- ('Admin', 'OROSE', 'admin@baovola.mg', 'a_remplacer_par_hash_bcrypt', 'ACTIF');
 
-INSERT INTO role VALUES (1, 'TECH', 'TECH');
-INSERT INTO utilisateur_role VALUES(1,1);
+-- INSERT INTO role VALUES (1, 'TECH', 'TECH');
+-- INSERT INTO utilisateur_role VALUES(1,1);
+
+------------authentification
+INSERT INTO role (code, libelle) VALUES
+('ADMIN', 'Administrateur'),
+('DIR', 'Directeur'),
+('TECH', 'Technicien'),
+('RS', 'Responsable sanitaire')
+ON CONFLICT (code) DO NOTHING;
+
+INSERT INTO utilisateur (nom, prenom, email, mot_de_passe, statut)
+VALUES ('Admin', 'OROSE', 'admin@baovola.mg', 'admin123', 'ACTIF')
+ON CONFLICT (email) DO NOTHING;
+
+INSERT INTO utilisateur_role (id_utilisateur, id_role)
+SELECT u.id, r.id
+FROM utilisateur u
+JOIN role r ON r.code = 'ADMIN'
+WHERE u.email = 'admin@baovola.mg'
+ON CONFLICT DO NOTHING;
 
 
 
@@ -942,3 +961,4 @@ VALUES
 (101, 1, 100.00, 100.00,  '2026-09-01'::DATE, 200, 1),  -- Reçu 100kg, il reste 50kg (Expire en 1er)
 (102, 1, 200.00, 200.00, '2026-12-31'::DATE,200,1),  -- Reçu 200kg, il reste 200kg (Expire en 2e)
 (103, 1, 150.00, 150.00, '2027-03-15'::DATE,200,1);  -- Reçu 150kg, il reste 150kg (Expire en dernier)
+
