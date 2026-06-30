@@ -101,10 +101,20 @@ public class BassinService {
             throw new IllegalArgumentException("Le code du bassin doit être unique");
         }
 
+        Utilisateur utilisateur = utilisateurRepository.findById(1L)
+                .orElseThrow(() -> new IllegalArgumentException("Utilisateur introuvable"));
+
         bassin.setCode(dto.getCode());
         bassin.setSurfaceM2(dto.getSurface_m2());
         bassin.setProfondeurMetre(dto.getProfondeur_metre());
         bassin.setNotes(dto.getNotes());
+        bassin.setCreatedAt(dto.getDateCreation().atStartOfDay());
+
+        HistoStatutBassin histo = new HistoStatutBassin();
+        histo.setBassin(bassin);
+        histo.setUtilisateur(utilisateur);
+        histo.setMotif("Modification des informations du bassin");
+        histoStatutBassinRepository.save(histo);
 
         return bassinRepository.save(bassin);
     }

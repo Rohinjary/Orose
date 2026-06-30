@@ -78,6 +78,6 @@ public class CycleController {
             redirectAttributes.addFlashAttribute("erreur", e.getMessage());
             return "redirect:/cycles/nouveau";
         }
-        return "redirect:/bassins/liste";
+        return "redirect:/cycles/liste";
     }
 }

@@ -22,7 +22,7 @@ public class StatutBassinService {
     private static final Map<String, List<String>> TRANSITIONS_AUTORISEES = Map.of(
         "VIDE",         List.of("PREPARATION"),
         "PREPARATION",   List.of("ACTIF"),
-        "ACTIF",         List.of("EN_TRAITEMENT", "RECOLTE"),
+        "ACTIF",         List.of("EN_TRAITEMENT"),
         // "EN_TRAITEMENT", List.of("ACTIF"),
         "INACTIF",       List.of("VIDE"),
         "RECOLTE",       List.of("VIDE")

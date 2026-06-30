@@ -1,5 +1,7 @@
 package com.example.orose.service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -66,11 +68,20 @@ public class CycleService {
         Cycle cycle = new Cycle();
         cycle.setCodeUniqueCycle(genererCodeUniqueCycle());
         cycle.setEspece(espece);
+        cycle.setTechnicien(null);
         cycle.setDateDebut(dto.getDateDebut());
         cycle.setDateFinPrevue(dto.getDateFinPrevue());
         cycle.setEstCloture(false);
 
         Cycle savedCycle = cycleRepository.save(cycle);
+
+        // Calculer la surface totale des 3 bassins
+    BigDecimal surfaceTotale = idBassins.stream()
+        .map(id -> bassinRepository.findById(id).get().getSurfaceM2())
+        .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+    BigDecimal densiteM2 = dto.getEffectifInitial()
+        .divide(surfaceTotale, 2, RoundingMode.HALF_UP);
 
         // Creer 1 CycleBassinAssoc par bassin
         for (Long idBassin : idBassins) {
@@ -79,6 +90,7 @@ public class CycleService {
             CycleBassinAssoc assoc = new CycleBassinAssoc();
             assoc.setCycle(savedCycle);
             assoc.setBassin(bassin);
+            assoc.setDensiteM2(densiteM2);
             assoc.setEffectifInitial(dto.getEffectifInitial().intValue());
             assoc.setCoutPostLarves(dto.getCoutPostLarves());
             assoc.setEstCloture(false);
