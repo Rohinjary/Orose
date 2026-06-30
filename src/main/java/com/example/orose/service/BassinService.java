@@ -113,6 +113,7 @@ public class BassinService {
         HistoStatutBassin histo = new HistoStatutBassin();
         histo.setBassin(bassin);
         histo.setUtilisateur(utilisateur);
+        histo.setStatutBassin(bassin.getStatutActuel());
         histo.setMotif("Modification des informations du bassin");
         histoStatutBassinRepository.save(histo);
 
