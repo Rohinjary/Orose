@@ -84,8 +84,8 @@
 
 | Fichier | Changement |
 |---------|------------|
-| `fragments/sidebar.html` | Menu "Stocks" sous "Logistique" avec 6 sous-liens |
-| `fragments/header.html` | Sous-menu `max-height: 200px` → `400px` |
-| `service/BassinService.java` | `creerBassin()` : sauvegarde bassin avant histo. `changerStatutBassin()` : auto-création LotCrevette + clôture CycleBassinAssoc si RECOLTE |
+ | `fragments/sidebar.html` | Menu Stocks restructuré par catégorie (Crevette/Aliment/Médicament) avec sous-labels |
+| `fragments/header.html` | Sous-menu `max-height: 400px` → `600px`. Ajout style `.nav-sub-label` |
+| `service/BassinService.java` | `creerBassin()` : sauvegarde bassin avant histo. `changerStatutBassin()` : auto-création LotCrevette + clôture CycleBassinAssoc si RECOLTE. Fallback vers dernière pesée pour `poidsMoyenFinalG`/`tailleMoyenneFinaleMm` (évite biomasse=0). Injection `SuiviHebdoBassinRepository` |
 | `service/TraitementService.java` | `enregistrerTraitement()` : décrémente `quantiteRestante` + crée `MouvementStockMedicament` type TRAITEMENT |
 | `service/nourrissage/NourrissageService.java` | `valider()` : `@Transactional` + FIFO `EntreeStockAliment` + crée `MouvementStockAliment` type NOURRISSAGE |

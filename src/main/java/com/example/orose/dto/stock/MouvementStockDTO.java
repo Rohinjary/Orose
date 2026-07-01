@@ -11,6 +11,7 @@ public class MouvementStockDTO {
     private String motif;
     private String source;
     private String responsable;
+    private String categorie;
 
     public LocalDateTime getDateMouvement() {
         return dateMouvement;
@@ -66,5 +67,13 @@ public class MouvementStockDTO {
 
     public void setResponsable(String responsable) {
         this.responsable = responsable;
+    }
+
+    public String getCategorie() {
+        return categorie;
+    }
+
+    public void setCategorie(String categorie) {
+        this.categorie = categorie;
     }
 }

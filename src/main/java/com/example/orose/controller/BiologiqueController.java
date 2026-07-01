@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
@@ -190,6 +191,23 @@ public class BiologiqueController {
             ra.addFlashAttribute("erreur", e.getMessage());
         }
         return "redirect:/biologique/" + idCba + "/detail";
+    }
+
+    // ── Déclaration de récolte ───────────────────────────────────────────────
+
+    @PostMapping("/{id}/recolte")
+    @PreAuthorize("hasAnyRole('ADMIN','TECH','RS')")
+    public String declarerRecolte(@PathVariable("id") Integer id,
+                                  @RequestParam String motif,
+                                  RedirectAttributes ra) {
+        Long idUtilisateur = 1L; // TODO: session
+        try {
+            biologiqueService.declarerRecolte(id, motif, idUtilisateur);
+            ra.addFlashAttribute("succes", "Récolte déclarée : le bassin est passé au statut RECOLTE");
+        } catch (IllegalArgumentException | IllegalStateException | EntityNotFoundException e) {
+            ra.addFlashAttribute("erreur", e.getMessage());
+        }
+        return "redirect:/biologique/" + id + "/detail";
     }
 
     // ── Détail ────────────────────────────────────────────────────────────────

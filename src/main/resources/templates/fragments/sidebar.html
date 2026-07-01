@@ -157,20 +157,36 @@
                 </a>
                 <a class="nav-item" th:classappend="${currentPage == 'stock-produits'} ? 'active' : ''"
                     th:href="@{/stock/produits}">
-                    Liste des produits
+                    Stock actuel
                 </a>
+                <div class="nav-sub-label">Crevette</div>
                 <a class="nav-item" th:classappend="${currentPage == 'stock-lots'} ? 'active' : ''"
                     th:href="@{/stock/lots-crevettes}">
                     Lots crevettes
                 </a>
+                <a class="nav-item" th:classappend="${currentPage == 'stock-mouvements-crevette'} ? 'active' : ''"
+                    th:href="@{/stock/mouvements(categorie='CREVETTE')}">
+                    Historique
+                </a>
+                <div class="nav-sub-label">Aliment</div>
+                <a class="nav-item" th:classappend="${currentPage == 'stock-mouvements-aliment'} ? 'active' : ''"
+                    th:href="@{/stock/mouvements(categorie='ALIMENT')}">
+                    Historique
+                </a>
+                <div class="nav-sub-label">Médicament</div>
                 <a class="nav-item" th:classappend="${currentPage == 'stock-entree'} ? 'active' : ''"
                     th:href="@{/stock/entree}">
-                    Entrée stock
+                    Entrée
                 </a>
                 <a class="nav-item" th:classappend="${currentPage == 'stock-sortie'} ? 'active' : ''"
                     th:href="@{/stock/sortie}">
-                    Sortie stock
+                    Sortie
                 </a>
+                <a class="nav-item" th:classappend="${currentPage == 'stock-mouvements-medicament'} ? 'active' : ''"
+                    th:href="@{/stock/mouvements(categorie='MEDICAMENT')}">
+                    Historique
+                </a>
+                <div class="nav-sub-label">Général</div>
                 <a class="nav-item" th:classappend="${currentPage == 'stock-mouvements'} ? 'active' : ''"
                     th:href="@{/stock/mouvements}">
                     Historique mouvements

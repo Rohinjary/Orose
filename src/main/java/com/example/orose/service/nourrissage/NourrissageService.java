@@ -7,6 +7,9 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +34,9 @@ public class NourrissageService {
     private final MouvementStockAlimentRepository mouvementStockAlimentRepository;
     private final UtilisateurRepository utilisateurRepository;
     private static final Integer ID_UTILISATEUR_CONNECTE = 1;
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     public NourrissageService(DistributionNourritureRepository distributionRepository,
             AlimentRepository alimentRepository,
@@ -71,7 +77,37 @@ public class NourrissageService {
             throw new RuntimeException(message);
         }
 
-        
+        enregistrerMouvementsAliment(idDistribution, idUtilisateur);
+    }
+
+    private void enregistrerMouvementsAliment(Integer idDistribution, Integer idUtilisateur) {
+        entityManager.clear();
+        List<Object[]> lots = entityManager.createNativeQuery(
+                "SELECT dnl.id_entree_aliment, dnl.quantite_piquee_kg " +
+                "FROM distribution_nourriture_lot dnl WHERE dnl.id_distribution = :id")
+                .setParameter("id", idDistribution)
+                .getResultList();
+
+        if (lots.isEmpty()) return;
+
+        Utilisateur user = utilisateurRepository.findById(idUtilisateur.longValue()).orElse(null);
+        if (user == null) return;
+
+        for (Object[] lot : lots) {
+            Integer entreeAlimentId = ((Number) lot[0]).intValue();
+            BigDecimal quantite = (BigDecimal) lot[1];
+
+            EntreeStockAliment entree = entityManager.getReference(EntreeStockAliment.class, entreeAlimentId);
+
+            MouvementStockAliment mvt = new MouvementStockAliment();
+            mvt.setEntreeAliment(entree);
+            mvt.setTypeMouvement("NOURRISSAGE");
+            mvt.setQuantiteKg(quantite);
+            mvt.setMotif("Distribution #" + idDistribution + " validée");
+            mvt.setDateMouvement(LocalDateTime.now());
+            mvt.setUtilisateur(user);
+            mouvementStockAlimentRepository.save(mvt);
+        }
     }
 
     private void decrementerStockAliment(Integer idDistribution, Integer idUtilisateur) {

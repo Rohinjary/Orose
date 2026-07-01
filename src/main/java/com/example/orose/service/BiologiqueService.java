@@ -36,15 +36,44 @@ public class BiologiqueService {
     private final SuiviHebdoBassinRepository suiviHebdoBassinRepository;
     private final AlerteRepository alerteRepository;
     private final EvolutionHebdoEspeceRepository evolutionHebdoEspeceRepository;
+    private final BassinService bassinService;
 
     public BiologiqueService(CycleBassinAssocRepository cycleBassinAssocRepository,
                              SuiviHebdoBassinRepository suiviHebdoBassinRepository,
                              AlerteRepository alerteRepository,
-                             EvolutionHebdoEspeceRepository evolutionHebdoEspeceRepository) {
+                             EvolutionHebdoEspeceRepository evolutionHebdoEspeceRepository,
+                             BassinService bassinService) {
         this.cycleBassinAssocRepository = cycleBassinAssocRepository;
         this.suiviHebdoBassinRepository = suiviHebdoBassinRepository;
         this.alerteRepository = alerteRepository;
         this.evolutionHebdoEspeceRepository = evolutionHebdoEspeceRepository;
+        this.bassinService = bassinService;
+    }
+
+    /**
+     * Seule voie autorisée pour faire passer un bassin en statut RECOLTE :
+     * le calibre de récolte (poids + taille de la dernière pesée) doit être atteint.
+     */
+    public void declarerRecolte(Integer idCycleBassinAssoc, String motif, Long idUtilisateur) {
+        CycleBassinAssoc assoc = cycleBassinAssocRepository.findById(idCycleBassinAssoc.longValue())
+                .orElseThrow(() -> new EntityNotFoundException("Association cycle-bassin introuvable : " + idCycleBassinAssoc));
+
+        if (Boolean.TRUE.equals(assoc.getEstCloture())) {
+            throw new IllegalStateException("Ce cycle est déjà clôturé.");
+        }
+
+        SuiviHebdoBassin dernierePesee = suiviHebdoBassinRepository
+                .findTopByCycleBassinAssocIdOrderByDateSuiviDesc(idCycleBassinAssoc)
+                .orElseThrow(() -> new IllegalStateException("Aucune pesée enregistrée : impossible de vérifier le calibre de récolte."));
+
+        boolean calibreAtteint = dernierePesee.getPoidsMoyenGramme().compareTo(SEUIL_POIDS_RECOLTE) >= 0
+                && dernierePesee.getTailleMoyenneMm().compareTo(SEUIL_TAILLE_RECOLTE) >= 0;
+        if (!calibreAtteint) {
+            throw new IllegalStateException("Le calibre de récolte n'est pas encore atteint (seuils : "
+                    + SEUIL_POIDS_RECOLTE + " g / " + SEUIL_TAILLE_RECOLTE + " mm).");
+        }
+
+        bassinService.changerStatutBassin(assoc.getBassin().getId().longValue(), "RECOLTE", motif, idUtilisateur);
     }
 
     public List<BassinSuiviDTO> getBassinsSuivi() {
