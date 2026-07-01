@@ -45,8 +45,6 @@ public class SanitaireService {
             String code = b.getStatutActuel().getCode();
             if ("EN_TRAITEMENT".equalsIgnoreCase(code)) {
                 etat.setStatutDotClass("traitement");
-            } else if ("QUARANTAINE".equalsIgnoreCase(code)) {
-                etat.setStatutDotClass("quarantaine");
             } else {
                 etat.setStatutDotClass("sain");
             }
@@ -57,8 +55,6 @@ public class SanitaireService {
             String code = b.getStatutActuel().getCode();
             if ("EN_TRAITEMENT".equalsIgnoreCase(code)) {
                 nbEnTraitement++;
-            } else if ("QUARANTAINE".equalsIgnoreCase(code)) {
-                nbQuarantaine++;
             } else {
                 nbSains++;
             }
@@ -75,9 +71,6 @@ public class SanitaireService {
             List<Traitement> traitements = traitementRepository.findByIncidentId(inc.getId());
             if (traitements.isEmpty()) {
                 dto.setStatutTraitement("AUCUN");
-            } else if ("QUARANTAINE".equalsIgnoreCase(
-                    inc.getCycleBassinAssoc().getBassin().getStatutActuel().getCode())) {
-                dto.setStatutTraitement("QUARANTAINE");
             } else {
                 dto.setStatutTraitement("EN_COURS");
             }

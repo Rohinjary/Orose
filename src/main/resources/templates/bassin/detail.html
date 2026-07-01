@@ -18,7 +18,8 @@
                 <section class="card">
                     <div class="card-header">
                         <h3 class="card-title">Informations Generales</h3>
-                        <span class="badge" th:classappend="${bassin.statutActuel.code == 'ACTIF'} ? 'badge-actif' : (${bassin.statutActuel.code == 'PREPARATION'} ? 'badge-preparation' : (${bassin.statutActuel.code == 'QUARANTAINE'} ? 'badge-quarantaine' : (${bassin.statutActuel.code == 'EN_TRAITEMENT'} ? 'badge-traitement' : 'badge-recolte')))" th:text="${bassin.statutActuel.libelle}"></span>
+                        <span class="badge" th:classappend="${bassin.statutActuel.code == 'ACTIF'} ? 'badge-actif' : (bassin.statutActuel.code == 'PREPARATION' ? 'badge-preparation' :
+                         (bassin.statutActuel.code == 'EN_TRAITEMENT' ? 'badge-traitement' : 'badge-recolte'))" th:text="${bassin.statutActuel.libelle}"></span>
                     </div>
 
                     <h2 style="font-size: 28px; font-weight: 700; margin-bottom: 4px;" th:text="'Bassin ' + ${bassin.code}">Bassin</h2>
@@ -90,9 +91,10 @@
                             </thead>
                             <tbody>
                                 <tr th:each="h : ${historique}">
-                                    <td class="date-cell" th:text="${#temporals.format(h.dateChangement, 'dd MMM yyyy | HH:mm')}">—</td>
+                                    <td class="date-cell" th:text="${#temporals.format(h.dateChangement, 'dd MMM yyyy')}">—</td>
                                     <td>
-                                        <span class="badge" th:classappend="${h.statutBassin.code == 'ACTIF'} ? 'badge-actif' : (${h.statutBassin.code == 'PREPARATION'} ? 'badge-preparation' : (${h.statutBassin.code == 'QUARANTAINE'} ? 'badge-quarantaine' : (${h.statutBassin.code == 'EN_TRAITEMENT'} ? 'badge-traitement' : (${h.statutBassin.code == 'RECOLTE'} ? 'badge-recolte' : 'badge-vide'))))" th:text="${h.statutBassin.libelle}">—</span>
+                                        <span class="badge" th:classappend="${bassin.statutActuel.code == 'ACTIF'} ? 'badge-actif' : (bassin.statutActuel.code == 'PREPARATION' ? 'badge-preparation' :
+                         (bassin.statutActuel.code == 'EN_TRAITEMENT' ? 'badge-traitement' : 'badge-recolte'))" th:text="${h.statutBassin.libelle}">—</span>
                                     </td>
                                     <td th:text="${h.utilisateur.nom + ' ' + (h.utilisateur.prenom != null ? h.utilisateur.prenom : '')}">—</td>
                                     <td class="motif-cell" th:text="${h.motif != null ? h.motif : '—'}">—</td>

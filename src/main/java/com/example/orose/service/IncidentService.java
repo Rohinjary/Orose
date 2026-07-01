@@ -71,10 +71,10 @@ public class IncidentService {
     }
 
     @Transactional
-    public void resoudreIncident(Integer id) {
+    public IncidentSanitaire resoudreIncident(Integer id) {
         IncidentSanitaire incident = incidentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Incident non trouvé"));
         incident.setEstResolu(true);
-        incidentRepository.save(incident);
+        return incidentRepository.save(incident);
     }
 }

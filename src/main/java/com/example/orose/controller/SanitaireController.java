@@ -19,7 +19,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
+import com.example.orose.model.IncidentSanitaire;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.math.BigDecimal;
@@ -67,7 +67,7 @@ public class SanitaireController {
                 .filter(assoc -> assoc.getBassin() != null && assoc.getBassin().getStatutActuel() != null)
                 .filter(assoc -> {
                     String code = assoc.getBassin().getStatutActuel().getCode();
-                    return "ACTIF".equalsIgnoreCase(code) || "EN_TRAITEMENT".equalsIgnoreCase(code);
+                    return "ACTIF".equalsIgnoreCase(code);
                 })
                 .toList());
         model.addAttribute("utilisateurs", utilisateurRepository.findAll());
@@ -87,7 +87,7 @@ public class SanitaireController {
                         .orElseThrow(() -> new IllegalArgumentException("Association introuvable"));
                 Long bassinId = assoc.getBassin().getId().longValue();
 
-                bassinService.changerStatutBassin(bassinId, "QUARANTAINE", "Incident déclaré", dto.getIdResponsable());
+                bassinService.changerStatutBassin(bassinId, "EN_TRAITEMENT", "Incident déclaré", dto.getIdResponsable());
 
                 redirectAttributes.addFlashAttribute("message", "Incident déclaré avec succès.");
                 return "redirect:/sanitaire/index";
@@ -172,8 +172,9 @@ public class SanitaireController {
     @PostMapping("/resoudre/{id}")
     @PreAuthorize("hasAnyRole('ADMIN','TECH','RS')")
     public String resoudreIncident(@PathVariable Integer id) {
-        incidentService.resoudreIncident(id);
-        bassinService.changerStatutBassin(id.longValue(), "ACTIF", "Incident résolu", 1L);
+        IncidentSanitaire incident = incidentService.resoudreIncident(id);
+        Long bassinId = incident.getCycleBassinAssoc().getBassin().getId().longValue();
+        bassinService.changerStatutBassin(bassinId, "ACTIF", "Incident résolu", 1L);
         return "redirect:/sanitaire/historique";
     }
 }

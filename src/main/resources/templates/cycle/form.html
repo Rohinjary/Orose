@@ -83,7 +83,7 @@
                             <div>
                                 <label class="form-label">Post-larves ensemencees</label>
                                 <input class="form-control" type="number" name="effectifInitial" id="pl-count"
-                                    placeholder="Ex: 150000" />
+                                    placeholder="Ex: 150000" required/>
                             </div>
                         </div>
 
@@ -91,7 +91,7 @@
                             <div>
                                 <label class="form-label">Cout post-larves (Ar)</label>
                                 <input class="form-control" type="number" name="coutPostLarves" step="0.01"
-                                    placeholder="0.00" />
+                                    placeholder="0.00" required />
                             </div>
                             <div>
                                 <label class="form-label">Densite calculee (PL/m²)</label>
@@ -101,14 +101,14 @@
 
                         <div>
                             <label class="form-label">Date de debut</label>
-                            <input class="form-control" type="date" name="dateDebut" id="start-date" />
+                            <input class="form-control" type="date" name="dateDebut" id="start-date" required />
                             <span id="date-debut-error" style="color: #e53e3e; font-size: 12px; display: none;">
                                 <i class="bi bi-exclamation-circle"></i> La date de début ne peut pas être après la date de fin.
                             </span>
                         </div>
                         <div>
                             <label class="form-label">Date de fin prevue</label>
-                            <input class="form-control" type="date" name="dateFinPrevue" id="end-date" />
+                            <input class="form-control" type="date" name="dateFinPrevue" id="end-date" required />
                             <span id="date-fin-error" style="color: #e53e3e; font-size: 12px; display: none;">
                                 <i class="bi bi-exclamation-circle"></i> La durée du cycle doit être d'au moins 4 mois.
                             </span>

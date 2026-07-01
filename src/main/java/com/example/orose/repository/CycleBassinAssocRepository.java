@@ -12,5 +12,4 @@ public interface CycleBassinAssocRepository extends JpaRepository<CycleBassinAss
     List<CycleBassinAssoc> findByCycleId(Long cycleId);
     List<CycleBassinAssoc> findByEstClotureFalse();
     long countByCycleId(Long cycleId);
-    Optional<CycleBassinAssoc> findById(Long id);
 }

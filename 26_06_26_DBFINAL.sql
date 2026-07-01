@@ -52,7 +52,7 @@ CREATE TABLE bassin (
     id SERIAL PRIMARY KEY,
     code VARCHAR(20) NOT NULL UNIQUE,  -- B01 ... B09
     surface_m2 DECIMAL(10,2) NOT NULL,
-    profondeur_metre DECIMAL(4,2) NOT NULL,
+    profondeur_metre DECIMAL(10,2) NOT NULL,
     notes TEXT,
     id_statut_actuel INTEGER NOT NULL REFERENCES statut_bassin(id),
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP

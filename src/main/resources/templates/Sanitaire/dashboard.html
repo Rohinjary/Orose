@@ -246,11 +246,6 @@
                 <span class="kpi-value" th:text="${dashboard.nbBassinsEnTraitement}">0</span>
                 <span class="kpi-sub">Pathologies mineures</span>
             </div>
-            <div class="kpi-card quarantaine">
-                <span class="kpi-label">Quarantaine</span>
-                <span class="kpi-value" th:text="${dashboard.nbBassinsQuarantaine}">0</span>
-                <span class="kpi-sub">Bassins isolés</span>
-            </div>
             <div class="kpi-card incidents">
                 <span class="kpi-label">Incidents Actifs</span>
                 <span class="kpi-value" th:text="${dashboard.nbIncidentsActifs}">0</span>
@@ -308,8 +303,7 @@
                                     </td>
                                     <td th:text="${#temporals.format(inc.dateDetection, 'dd/MM/yyyy')}">--</td>
                                     <td>
-                                        <span th:if="${inc.statutTraitement == 'QUARANTAINE'}"><i class="bi bi-shield-lock"></i> Quarantaine</span>
-                                        <span th:if="${inc.statutTraitement != 'QUARANTAINE'}" th:text="${inc.statutTraitement}">--</span>
+                                        <span th:text="${inc.statutTraitement}">--</span>
                                     </td>
                                 </tr>
                             </tbody>

@@ -31,6 +31,6 @@ public class Bassin {
     @JoinColumn(name = "id_statut_actuel", nullable = false)
     private StatutBassin statutActuel;
 
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 }

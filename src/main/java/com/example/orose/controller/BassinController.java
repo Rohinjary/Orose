@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.format.annotation.DateTimeFormat;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import com.example.orose.model.HistoStatutBassin;
 
@@ -34,7 +36,6 @@ public class BassinController {
         model.addAttribute("breadcrumbCurrent", breadcrumbCurrent);
     }
 
-    // Liste de tous les bassins
     @GetMapping("/liste")
     public String lister(Model model) {
         preparerLayoutBassins(model, "Liste des bassins", "liste");
@@ -42,7 +43,6 @@ public class BassinController {
         return "bassin/liste";
     }
 
-    // Affiche le formulaire vide de création
     @GetMapping("/nouveau")
     @PreAuthorize("hasRole('ADMIN')")
     public String formulaireCreation(Model model) {
@@ -68,7 +68,6 @@ public class BassinController {
         }
     }
 
-    // Affiche le formulaire pré-rempli de modification
     @GetMapping("/{id}/modifier")
     @PreAuthorize("hasRole('ADMIN')")
     public String formulaireModification(@PathVariable Long id, Model model) {
@@ -80,6 +79,7 @@ public class BassinController {
         dto.setSurface_m2(bassin.getSurfaceM2());
         dto.setProfondeur_metre(bassin.getProfondeurMetre());
         dto.setNotes(bassin.getNotes());
+        dto.setDateCreation(bassin.getCreatedAt().toLocalDate());
 
         model.addAttribute("bassinDTO", dto);
         model.addAttribute("idBassin", id);
@@ -87,7 +87,6 @@ public class BassinController {
         return "bassin/form";
     }
 
-    // Traite la soumission du formulaire de modification
     @PostMapping("/{id}/modifier")
     @PreAuthorize("hasRole('ADMIN')")
     public String modifier(@PathVariable Long id, @ModelAttribute BassinDTO bassinDTO, Model model) {
@@ -144,13 +143,15 @@ public class BassinController {
     @GetMapping("/historique")
     public String historiqueGlobal(
             @RequestParam(required = false)
-            @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm") LocalDateTime debut,
+            @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate debut,
             @RequestParam(required = false)
-            @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm") LocalDateTime fin,
+            @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fin,
             @RequestParam(required = false) String typeEtat,
             Model model) {
         preparerLayoutBassins(model, "Historique global", "historique");
-        model.addAttribute("historique", bassinService.getHistoriqueGlobal(debut, fin, typeEtat));
+        LocalDateTime debutDT = debut != null ? debut.atStartOfDay() : null;
+        LocalDateTime finDT   = fin   != null ? fin.atTime(23, 59, 59) : null;
+        model.addAttribute("historique", bassinService.getHistoriqueGlobal(debutDT, finDT, typeEtat));
         model.addAttribute("debut", debut);
         model.addAttribute("fin", fin);
         model.addAttribute("typeEtat", typeEtat);

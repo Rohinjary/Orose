@@ -43,7 +43,7 @@
                     <strong th:text="${alerte.cycleBassinAssoc.bassin.code} + ' · ' + ${alerte.cycleBassinAssoc.cycle.codeUniqueCycle}">—</strong>
                 </div>
                 <div class="alerte-meta">
-                    Date : <span th:text="${#temporals.format(alerte.dateCreation, 'dd/MM/yyyy HH:mm')}">—</span>
+                    Date : <span th:text="${#temporals.format(alerte.dateCreation, 'dd/MM/yyyy')}">—</span>
                 </div>
             </div>
             <div class="alerte-footer">
