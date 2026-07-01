@@ -4,7 +4,7 @@ TEST CODE:
         -ajouter 'voir mdp'
 
 
-    2-bassin:
+    2-bassin:OK
         -tsy mandeha ny supprimer(Whitelabel Error Page) ok
         -surface bassin -> 700 fa tsy <100 ok
         -update -> tsy mandeha ny update date de creation  ok
@@ -17,7 +17,7 @@ TEST CODE:
         -tsy afaka atao RECOLTE raha tsy mahatratra anle objecti(tokony alana zany le RECOLTE fa via SUIVI BIOLOGIQUE ihany) ok
     
 
-    3-cycle:
+    3-cycle:OK
         ?? : raha mi demarrer cycle de date > aujourd'hui, tokony tode miova actif ve sa miandry date vo actif?
 
         -rehefa avy mampiditra cycle, dia mi recharge page liste des cycles fa tsy liste des bassins ok

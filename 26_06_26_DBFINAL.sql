@@ -52,7 +52,7 @@ CREATE TABLE bassin (
     id SERIAL PRIMARY KEY,
     code VARCHAR(20) NOT NULL UNIQUE,  -- B01 ... B09
     surface_m2 DECIMAL(10,2) NOT NULL,
-    profondeur_metre DECIMAL(10,2) NOT NULL,
+    profondeur_metre DECIMAL(4,2) NOT NULL,
     notes TEXT,
     id_statut_actuel INTEGER NOT NULL REFERENCES statut_bassin(id),
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -451,6 +451,7 @@ INSERT INTO statut_bassin (code, libelle) VALUES
 ('EN_TRAITEMENT','En traitement'),
 ('RECOLTE',      'Récolté'),
 ('QUARANTAINE',  'Quarantaine');
+INSERT INTO statut_bassin (code, libelle) VALUES ('INACTIF', 'Inactif');
 
 INSERT INTO creneau_horaire (libelle, ordre) VALUES
 ('MATIN', 1), ('MIDI', 2), ('SOIR', 3), ('NUIT', 4);

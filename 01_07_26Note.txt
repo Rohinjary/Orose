@@ -1,0 +1,9 @@
+    01 JUILLET 2026:
+        1-bassin:
+            -message d'erreur rehefa tsy mety supprime-na
+            -liste des bassins ->
+                *filtre par colonne ilay tableau
+                *recherche multicriteres
+                *ordre croissant nom code bassins
+
+            -status_bassin : asina code couleur 
