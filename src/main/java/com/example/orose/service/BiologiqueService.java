@@ -31,6 +31,7 @@ public class BiologiqueService {
     private static final BigDecimal SEUIL_POIDS_RECOLTE = new BigDecimal("20");
     private static final BigDecimal SEUIL_SURVIE_CRITIQUE = new BigDecimal("40");
     private static final BigDecimal FACTEUR_RETARD = new BigDecimal("0.9");
+    private static final BigDecimal SEUIL_TAILLE_RECOLTE = new BigDecimal("100");
 
     private final CycleBassinAssocRepository cycleBassinAssocRepository;
     private final SuiviHebdoBassinRepository suiviHebdoBassinRepository;
@@ -48,7 +49,6 @@ public class BiologiqueService {
         this.alerteRepository = alerteRepository;
         this.evolutionHebdoEspeceRepository = evolutionHebdoEspeceRepository;
         this.bassinService = bassinService;
-<<<<<<< HEAD
     }
 
     /**
@@ -75,8 +75,7 @@ public class BiologiqueService {
         }
 
         bassinService.changerStatutBassin(assoc.getBassin().getId().longValue(), "RECOLTE", motif, idUtilisateur);
-=======
->>>>>>> origin/modif_final
+
     }
 
     public List<BassinSuiviDTO> getBassinsSuivi() {
