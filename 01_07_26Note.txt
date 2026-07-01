@@ -7,5 +7,7 @@
                 *ordre croissant nom code bassins
 
             -status_bassin : asina code couleur 
+            -historique bassin ->
+                -rehefa misy filtre dia lasa tsy mety ilay export
         2-dashboard d'accueil:
             -   tsy mbola misy ninin

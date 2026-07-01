@@ -157,7 +157,7 @@ public class BassinController {
         preparerLayoutBassins(model, "Historique global", "historique");
         LocalDateTime debutDT = debut != null ? debut.atStartOfDay() : null;
         LocalDateTime finDT   = fin   != null ? fin.atTime(23, 59, 59) : null;
-        model.addAttribute("historique", bassinService.getHistoriqueGlobal(debutDT, finDT, typeEtat));
+        model.addAttribute("historique", bassinService.getHistoriqueGlobal(debutDT, finDT, typeEtat, q));
         model.addAttribute("debut", debut);
         model.addAttribute("fin", fin);
         model.addAttribute("typeEtat", typeEtat);
