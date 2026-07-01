@@ -7,3 +7,5 @@
                 *ordre croissant nom code bassins
 
             -status_bassin : asina code couleur 
+        2-dashboard d'accueil:
+            -   tsy mbola misy ninin
