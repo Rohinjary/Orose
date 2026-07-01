@@ -21,6 +21,7 @@ import com.example.orose.repository.StatutBassinRepository;
 import com.example.orose.repository.CycleRepository;
 import com.example.orose.repository.HistoStatutBassinRepository;
 import com.example.orose.repository.UtilisateurRepository;
+import com.example.orose.repository.SuiviHebdoBassinRepository;
 import com.example.orose.repository.stock.LotCrevetteRepository;
 import java.util.stream.Collectors;
 
@@ -33,6 +34,7 @@ public class BassinService {
     private final HistoStatutBassinRepository histoStatutBassinRepository;
     private final UtilisateurRepository utilisateurRepository;
     private final LotCrevetteRepository lotCrevetteRepository;
+    private final SuiviHebdoBassinRepository suiviHebdoBassinRepository;
 
     public BassinService(BassinRepository bassinRepository,
             StatutBassinRepository statutBassinRepository,
@@ -40,7 +42,8 @@ public class BassinService {
             StatutBassinService statutBassinService,
             HistoStatutBassinRepository histoStatutBassinRepository,
             UtilisateurRepository utilisateurRepository,
-            LotCrevetteRepository lotCrevetteRepository) {
+            LotCrevetteRepository lotCrevetteRepository,
+            SuiviHebdoBassinRepository suiviHebdoBassinRepository) {
         this.bassinRepository = bassinRepository;
         this.statutBassinRepository = statutBassinRepository;
         this.cycleBassinAssocRepository = cycleBassinAssocRepository;
@@ -48,6 +51,7 @@ public class BassinService {
         this.histoStatutBassinRepository = histoStatutBassinRepository;
         this.utilisateurRepository = utilisateurRepository;
         this.lotCrevetteRepository = lotCrevetteRepository;
+        this.suiviHebdoBassinRepository = suiviHebdoBassinRepository;
     }
 
     public Bassin creerBassin(BassinDTO dto) {
@@ -162,18 +166,28 @@ public class BassinService {
                 .filter(a -> a.getBassin().getId().equals(bassin.getId()))
                 .findFirst().orElse(null);
 
-        if (assoc == null) {
+        if (assoc == null || assoc.getEffectifInitial() == null || assoc.getEffectifInitial() <= 0) {
             return;
         }
 
         String numeroLot = String.format("LOT-%s-%tY%<tm%<td-%03d",
                 bassin.getCode(), LocalDate.now(), new Random().nextInt(1000));
 
-        java.math.BigDecimal poidsMoyen = assoc.getPoidsMoyenActuel() != null
-                ? assoc.getPoidsMoyenActuel() : java.math.BigDecimal.ZERO;
+        java.math.BigDecimal poidsMoyen = (assoc.getPoidsMoyenActuel() != null
+                && assoc.getPoidsMoyenActuel().compareTo(java.math.BigDecimal.ZERO) > 0)
+                ? assoc.getPoidsMoyenActuel()
+                : suiviHebdoBassinRepository.findTopByCycleBassinAssocIdOrderByDateSuiviDesc(assoc.getId())
+                        .map(s -> s.getPoidsMoyenGramme())
+                        .orElse(java.math.BigDecimal.valueOf(20));
+
         java.math.BigDecimal biomasse = java.math.BigDecimal.valueOf(assoc.getEffectifInitial())
                 .multiply(poidsMoyen)
                 .divide(java.math.BigDecimal.valueOf(1000), 2, java.math.RoundingMode.HALF_UP);
+
+        java.math.BigDecimal tailleMoyenne = suiviHebdoBassinRepository
+                .findTopByCycleBassinAssocIdOrderByDateSuiviDesc(assoc.getId())
+                .map(s -> s.getTailleMoyenneMm() != null ? s.getTailleMoyenneMm() : java.math.BigDecimal.ZERO)
+                .orElse(java.math.BigDecimal.ZERO);
 
         LotCrevette lot = new LotCrevette();
         lot.setNumeroLotUnique(numeroLot);
@@ -181,7 +195,7 @@ public class BassinService {
         lot.setBiomasseTotaleKg(biomasse);
         lot.setBiomasseActuelleKg(biomasse);
         lot.setPoidsMoyenFinalG(poidsMoyen);
-        lot.setTailleMoyenneFinaleMm(java.math.BigDecimal.ZERO);
+        lot.setTailleMoyenneFinaleMm(tailleMoyenne);
         lot.setDateRecolte(LocalDate.now());
         lot.setResponsable(utilisateur);
         lotCrevetteRepository.save(lot);
