@@ -3,6 +3,7 @@ package com.example.orose.controller;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -32,6 +33,8 @@ import jakarta.servlet.http.HttpServletResponse;
 @Controller
 @RequestMapping("/bassins")
 public class BassinExportController {
+
+    private static final DateTimeFormatter DATE_EXPORT = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     private final BassinService bassinService;
 
@@ -73,7 +76,7 @@ public class BassinExportController {
                                   @RequestParam(required = false) String typeEtat,
                                   @RequestParam(required = false) String q,
                                   HttpServletResponse response) throws Exception {
-        List<HistoStatutBassin> source = bassinService.getHistoriqueGlobal(debut, fin, typeEtat);
+        List<HistoStatutBassin> source = bassinService.getHistoriqueGlobal(debut, fin, typeEtat, q);
         List<HistoRow> data = new ArrayList<>();
         for (HistoStatutBassin h : source) {
             String utilisateur = "";
@@ -84,17 +87,14 @@ public class BassinExportController {
             data.add(new HistoRow(
                     h.getBassin() != null ? h.getBassin().getCode() : "",
                     h.getStatutBassin() != null ? h.getStatutBassin().getLibelle() : "",
-                    h.getDateChangement(),
+                    h.getDateChangement() != null ? h.getDateChangement().format(DATE_EXPORT) : "",
                     utilisateur,
                     h.getMotif()));
-        }
-        if (q != null && !q.isBlank()) {
-            data = GenericFilterUtil.filtrer(data, new GenericFilter().contains("bassin", q));
         }
         LinkedHashMap<String, String> cols = new LinkedHashMap<>();
         cols.put("bassin", "Bassin");
         cols.put("statut", "Statut");
-        cols.put("dateChangement", "Date & heure");
+        cols.put("dateChangement", "Date");
         cols.put("utilisateur", "Utilisateur");
         cols.put("motif", "Motif");
         ecrire(response, data, "historique-bassins", format, "Historique des transitions de bassins", cols);
@@ -150,17 +150,17 @@ public class BassinExportController {
     public static class HistoRow {
         private String bassin;
         private String statut;
-        private LocalDateTime dateChangement;
+        private String dateChangement;
         private String utilisateur;
         private String motif;
 
-        public HistoRow(String b, String s, LocalDateTime d, String u, String m) {
+        public HistoRow(String b, String s, String d, String u, String m) {
             this.bassin = b; this.statut = s;
             this.dateChangement = d; this.utilisateur = u; this.motif = m;
         }
         public String getBassin() { return bassin; }
         public String getStatut() { return statut; }
-        public LocalDateTime getDateChangement() { return dateChangement; }
+        public String getDateChangement() { return dateChangement; }
         public String getUtilisateur() { return utilisateur; }
         public String getMotif() { return motif; }
     }

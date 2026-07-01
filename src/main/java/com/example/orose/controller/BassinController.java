@@ -134,6 +134,11 @@ public class BassinController {
                                 RedirectAttributes redirectAttributes) {
         Long idUtilisateur = 1L; // à remplacer plus tard par l'utilisateur connecté
         try {
+            // EN_TRAITEMENT (déclaré par un traitement sanitaire) et RECOLTE (déclarée par le
+            // suivi biologique une fois le calibre atteint) ne sont jamais des transitions manuelles.
+            if (!bassinService.getTransitionsAutorisees(id).contains(nouveauStatut)) {
+                throw new IllegalStateException("Ce changement de statut n'est pas autorisé manuellement.");
+            }
             bassinService.changerStatutBassin(id, nouveauStatut, motif, idUtilisateur);
         } catch (IllegalStateException e) {
             redirectAttributes.addFlashAttribute("erreur", e.getMessage());
@@ -148,12 +153,14 @@ public class BassinController {
             @RequestParam(required = false)
             @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm") LocalDateTime fin,
             @RequestParam(required = false) String typeEtat,
+            @RequestParam(required = false) String q,
             Model model) {
         preparerLayoutBassins(model, "Historique global", "historique");
-        model.addAttribute("historique", bassinService.getHistoriqueGlobal(debut, fin, typeEtat));
+        model.addAttribute("historique", bassinService.getHistoriqueGlobal(debut, fin, typeEtat, q));
         model.addAttribute("debut", debut);
         model.addAttribute("fin", fin);
         model.addAttribute("typeEtat", typeEtat);
+        model.addAttribute("q", q);
         return "bassin/historique";
     }
 }

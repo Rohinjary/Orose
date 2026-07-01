@@ -155,8 +155,17 @@
 
         <!-- Estimation et prévisions de récolte -->
         <section class="recolte-card">
-            <div th:if="${detail.calibreAtteint}" style="display: flex; align-items: center; gap: 8px; font-weight: 700;">
-                <i class="bi bi-check-circle-fill" style="font-size: 16px;"></i> Calibre de récolte atteint ! Les critères de production optimaux sont validés.
+            <div th:if="${detail.calibreAtteint}">
+                <div style="display: flex; align-items: center; gap: 8px; font-weight: 700; margin-bottom: 12px;">
+                    <i class="bi bi-check-circle-fill" style="font-size: 16px;"></i> Calibre de récolte atteint ! Les critères de production optimaux sont validés.
+                </div>
+                <form th:action="@{/biologique/{id}/recolte(id=${detail.idCycleBassinAssoc})}" method="post"
+                      style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;"
+                      onsubmit="return confirm('Confirmer la récolte du bassin ' + '[[${detail.codeBassin}]]' + ' ? Cette action clôture le cycle en cours.');">
+                    <input type="text" name="motif" placeholder="Motif de la récolte..." required
+                           style="flex: 1; min-width: 200px; padding: 8px 12px; border: 1px solid var(--mg-outline); border-radius: var(--radius); font-family: var(--font-main); font-size: 13px;" />
+                    <button type="submit" class="btn-mg btn-mg-primary"><i class="bi bi-basket"></i> Déclarer la récolte</button>
+                </form>
             </div>
             <div th:unless="${detail.calibreAtteint}">
                 <p>

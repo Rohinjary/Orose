@@ -90,7 +90,7 @@
                             </thead>
                             <tbody>
                                 <tr th:each="h : ${historique}">
-                                    <td class="date-cell" th:text="${#temporals.format(h.dateChangement, 'dd MMM yyyy | HH:mm')}">—</td>
+                                    <td class="date-cell" th:text="${#temporals.format(h.dateChangement, 'dd MMM yyyy')}">—</td>
                                     <td>
                                         <span class="badge" th:classappend="${h.statutBassin.code == 'ACTIF'} ? 'badge-actif' : (${h.statutBassin.code == 'PREPARATION'} ? 'badge-preparation' : (${h.statutBassin.code == 'QUARANTAINE'} ? 'badge-quarantaine' : (${h.statutBassin.code == 'EN_TRAITEMENT'} ? 'badge-traitement' : (${h.statutBassin.code == 'RECOLTE'} ? 'badge-recolte' : 'badge-vide'))))" th:text="${h.statutBassin.libelle}">—</span>
                                     </td>
