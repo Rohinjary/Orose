@@ -19,7 +19,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
+import com.example.orose.model.IncidentSanitaire;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.math.BigDecimal;
@@ -172,8 +172,9 @@ public class SanitaireController {
     @PostMapping("/resoudre/{id}")
     @PreAuthorize("hasAnyRole('ADMIN','TECH','RS')")
     public String resoudreIncident(@PathVariable Integer id) {
-        incidentService.resoudreIncident(id);
-        bassinService.changerStatutBassin(id.longValue(), "ACTIF", "Incident résolu", 1L);
+        IncidentSanitaire incident = incidentService.resoudreIncident(id);
+        Long bassinId = incident.getCycleBassinAssoc().getBassin().getId().longValue();
+        bassinService.changerStatutBassin(bassinId, "ACTIF", "Incident résolu", 1L);
         return "redirect:/sanitaire/historique";
     }
 }

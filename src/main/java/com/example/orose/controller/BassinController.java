@@ -36,7 +36,6 @@ public class BassinController {
         model.addAttribute("breadcrumbCurrent", breadcrumbCurrent);
     }
 
-    // Liste de tous les bassins
     @GetMapping("/liste")
     public String lister(Model model) {
         preparerLayoutBassins(model, "Liste des bassins", "liste");
@@ -44,7 +43,6 @@ public class BassinController {
         return "bassin/liste";
     }
 
-    // Affiche le formulaire vide de création
     @GetMapping("/nouveau")
     @PreAuthorize("hasRole('ADMIN')")
     public String formulaireCreation(Model model) {
@@ -70,7 +68,6 @@ public class BassinController {
         }
     }
 
-    // Affiche le formulaire pré-rempli de modification
     @GetMapping("/{id}/modifier")
     @PreAuthorize("hasRole('ADMIN')")
     public String formulaireModification(@PathVariable Long id, Model model) {
@@ -90,7 +87,6 @@ public class BassinController {
         return "bassin/form";
     }
 
-    // Traite la soumission du formulaire de modification
     @PostMapping("/{id}/modifier")
     @PreAuthorize("hasRole('ADMIN')")
     public String modifier(@PathVariable Long id, @ModelAttribute BassinDTO bassinDTO, Model model) {
