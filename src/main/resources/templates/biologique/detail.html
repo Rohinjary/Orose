@@ -75,6 +75,8 @@
             .btn-mg-primary:hover { opacity: 0.9; }
             .btn-mg-secondary { background: white; color: var(--mg-secondary); border-color: var(--mg-outline); }
             .btn-mg-secondary:hover { background: #f8fafc; color: var(--mg-primary); }
+            .btn-mg-success { background: #16a34a; color: white; border-color: #16a34a; }
+            .btn-mg-success:hover { background: #15803d; border-color: #15803d; }
             .btn-mg-danger-outline { background: white; color: #dc2626; border-color: #fca5a5; }
             .btn-mg-danger-outline:hover { background: #fee2e2; }
             
@@ -155,8 +157,21 @@
 
         <!-- Estimation et prévisions de récolte -->
         <section class="recolte-card">
-            <div th:if="${detail.calibreAtteint}" style="display: flex; align-items: center; gap: 8px; font-weight: 700;">
-                <i class="bi bi-check-circle-fill" style="font-size: 16px;"></i> Calibre de récolte atteint ! Les critères de production optimaux sont validés.
+            <div th:if="${detail.calibreAtteint}" style="display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;">
+                <div style="display: flex; align-items: center; gap: 8px; font-weight: 700;">
+                    <i class="bi bi-check-circle-fill" style="font-size: 16px;"></i> Calibre de récolte atteint ! Une pesée de l'historique est supérieure ou égale à 20 g.
+                </div>
+                <form th:if="${detail.statutBassinCode != 'RECOLTE'}"
+                      th:action="@{/biologique/{id}/recolter(id=${detail.idCycleBassinAssoc})}"
+                      method="post">
+                    <button type="submit" class="btn-mg btn-mg-success"
+                            onclick="return confirm('Confirmer la récolte de ce bassin ? Son statut passera en RECOLTE.');">
+                        <i class="bi bi-basket2-fill"></i> Récolter
+                    </button>
+                </form>
+                <span th:if="${detail.statutBassinCode == 'RECOLTE'}" class="btn-mg btn-mg-success" style="cursor: default;">
+                    <i class="bi bi-check2-circle"></i> Statut RECOLTE
+                </span>
             </div>
             <div th:unless="${detail.calibreAtteint}">
                 <p>

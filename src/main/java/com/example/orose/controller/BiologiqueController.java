@@ -194,6 +194,19 @@ public class BiologiqueController {
 
     // ── Détail ────────────────────────────────────────────────────────────────
 
+    @PostMapping("/{id}/recolter")
+    @PreAuthorize("hasAnyRole('ADMIN','TECH','RS')")
+    public String recolter(@PathVariable("id") Integer id, RedirectAttributes ra) {
+        Long idUtilisateur = 1L; // TODO: session
+        try {
+            biologiqueService.recolterSiCalibreAtteint(id, idUtilisateur);
+            ra.addFlashAttribute("succes", "Bassin passe en statut RECOLTE avec succes");
+        } catch (IllegalArgumentException | IllegalStateException | EntityNotFoundException e) {
+            ra.addFlashAttribute("erreur", e.getMessage());
+        }
+        return "redirect:/biologique/" + id + "/detail";
+    }
+
     @GetMapping("/{id}/detail")
     public String detail(@PathVariable("id") Integer id, Model model) {
         preparerLayoutBiologique(model, "Détail du bassin", "detail-bassin");

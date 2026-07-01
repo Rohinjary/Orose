@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.orose.dto.BassinSuiviDTO;
 import com.example.orose.dto.CourbeCroissanceDTO;
@@ -28,7 +29,6 @@ import jakarta.persistence.EntityNotFoundException;
 public class BiologiqueService {
 
     private static final BigDecimal SEUIL_POIDS_RECOLTE = new BigDecimal("20");
-    private static final BigDecimal SEUIL_TAILLE_RECOLTE = new BigDecimal("110");
     private static final BigDecimal SEUIL_SURVIE_CRITIQUE = new BigDecimal("40");
     private static final BigDecimal FACTEUR_RETARD = new BigDecimal("0.9");
 
@@ -36,15 +36,18 @@ public class BiologiqueService {
     private final SuiviHebdoBassinRepository suiviHebdoBassinRepository;
     private final AlerteRepository alerteRepository;
     private final EvolutionHebdoEspeceRepository evolutionHebdoEspeceRepository;
+    private final BassinService bassinService;
 
     public BiologiqueService(CycleBassinAssocRepository cycleBassinAssocRepository,
                              SuiviHebdoBassinRepository suiviHebdoBassinRepository,
                              AlerteRepository alerteRepository,
-                             EvolutionHebdoEspeceRepository evolutionHebdoEspeceRepository) {
+                             EvolutionHebdoEspeceRepository evolutionHebdoEspeceRepository,
+                             BassinService bassinService) {
         this.cycleBassinAssocRepository = cycleBassinAssocRepository;
         this.suiviHebdoBassinRepository = suiviHebdoBassinRepository;
         this.alerteRepository = alerteRepository;
         this.evolutionHebdoEspeceRepository = evolutionHebdoEspeceRepository;
+        this.bassinService = bassinService;
     }
 
     public List<BassinSuiviDTO> getBassinsSuivi() {
@@ -104,6 +107,10 @@ public class BiologiqueService {
         dto.setIdCycleBassinAssoc(assoc.getId());
         dto.setCodeUniqueCycle(cycle.getCodeUniqueCycle());
         dto.setCodeBassin(assoc.getBassin().getCode());
+        if (assoc.getBassin().getStatutActuel() != null) {
+            dto.setStatutBassinCode(assoc.getBassin().getStatutActuel().getCode());
+            dto.setStatutBassinLibelle(assoc.getBassin().getStatutActuel().getLibelle());
+        }
         dto.setNomEspece(cycle.getEspece().getNomCourant());
         dto.setDateDebut(cycle.getDateDebut());
         dto.setDateFinPrevue(cycle.getDateFinPrevue());
@@ -124,15 +131,13 @@ public class BiologiqueService {
                         .divide(BigDecimal.valueOf(assoc.getEffectifInitial()), 2, RoundingMode.HALF_UP));
             }
 
-            boolean calibreAtteint = pesee.getPoidsMoyenGramme().compareTo(SEUIL_POIDS_RECOLTE) >= 0
-                    && pesee.getTailleMoyenneMm().compareTo(SEUIL_TAILLE_RECOLTE) >= 0;
-            dto.setCalibreAtteint(calibreAtteint);
-
             dto.setBiomasseRecoltableEstimee(
                     BigDecimal.valueOf(pesee.getNbVivants())
                             .multiply(SEUIL_POIDS_RECOLTE)
                             .divide(BigDecimal.valueOf(1000), 2, RoundingMode.HALF_UP));
         }
+
+        dto.setCalibreAtteint(estRecoltableParPoids(pesees));
 
         List<EvolutionHebdoEspece> courbeStandardData = evolutionHebdoEspeceRepository
                 .findByEspeceIdOrderBySemaineAsc(cycle.getEspece().getId());
@@ -161,6 +166,35 @@ public class BiologiqueService {
                 }).collect(Collectors.toList()));
 
         return dto;
+    }
+
+    @Transactional
+    public void recolterSiCalibreAtteint(Integer idCycleBassinAssoc, Long idUtilisateur) {
+        CycleBassinAssoc assoc = cycleBassinAssocRepository.findById(idCycleBassinAssoc.longValue())
+                .orElseThrow(() -> new EntityNotFoundException("Association cycle-bassin introuvable : " + idCycleBassinAssoc));
+
+        if (assoc.getBassin().getStatutActuel() != null
+                && "RECOLTE".equals(assoc.getBassin().getStatutActuel().getCode())) {
+            throw new IllegalStateException("Ce bassin est deja en statut RECOLTE");
+        }
+
+        List<SuiviHebdoBassin> pesees = suiviHebdoBassinRepository
+                .findByCycleBassinAssocIdOrderByDateSuiviAsc(idCycleBassinAssoc);
+        if (!estRecoltableParPoids(pesees)) {
+            throw new IllegalStateException("La recolte est autorisee uniquement si une pesee atteint au moins 20 g");
+        }
+
+        bassinService.changerStatutBassin(
+                assoc.getBassin().getId().longValue(),
+                "RECOLTE",
+                "Recolte declenchee depuis le suivi biologique (poids moyen >= 20 g)",
+                idUtilisateur);
+    }
+
+    private boolean estRecoltableParPoids(List<SuiviHebdoBassin> pesees) {
+        return pesees.stream()
+                .anyMatch(p -> p.getPoidsMoyenGramme() != null
+                        && p.getPoidsMoyenGramme().compareTo(SEUIL_POIDS_RECOLTE) >= 0);
     }
 
     private String calculerStatutCroissance(BigDecimal tauxSurvie, BigDecimal poidsMoyenActuel,
