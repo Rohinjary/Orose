@@ -234,6 +234,17 @@ public class StockService {
         List<ProduitStockDTO> produits = new ArrayList<>();
         produits.addAll(buildProduitsAliment());
         produits.addAll(buildProduitsMedicament());
+        produits.addAll(buildProduitsCrevette());
+        return produits;
+    }
+
+    private List<ProduitStockDTO> buildProduitsCrevette() {
+        List<ProduitStockDTO> produits = new ArrayList<>();
+        BigDecimal biomasse = lotCrevetteRepository.sumBiomasseDisponible();
+        Float stockF = biomasse != null ? biomasse.floatValue() : 0f;
+        String statut = stockF <= 0f ? "Rupture" : "Disponible";
+        String css = stockF <= 0f ? "danger" : "success";
+        produits.add(new ProduitStockDTO(0, "Crevette (tous lots)", "CREVETTE", stockF, 0f, statut, css));
         return produits;
     }
 
@@ -342,13 +353,23 @@ public class StockService {
     // ────────────────────── Historique mouvements ──────────────────────
 
     public List<MouvementStockDTO> getHistoriqueMouvements() {
+        return getHistoriqueMouvements(null);
+    }
+
+    public List<MouvementStockDTO> getHistoriqueMouvements(String categorie) {
         List<MouvementStockDTO> mouvements = new ArrayList<>();
-        mouvements.addAll(buildSortiesAliment());
-        mouvements.addAll(buildSortiesMedicament());
-        mouvements.addAll(buildSortiesCrevette());
-        mouvements.addAll(buildEntreesAliment());
-        mouvements.addAll(buildEntreesMedicament());
-        mouvements.addAll(buildEntreesCrevette());
+        if (categorie == null || "ALIMENT".equals(categorie)) {
+            mouvements.addAll(buildSortiesAliment());
+            mouvements.addAll(buildEntreesAliment());
+        }
+        if (categorie == null || "MEDICAMENT".equals(categorie)) {
+            mouvements.addAll(buildSortiesMedicament());
+            mouvements.addAll(buildEntreesMedicament());
+        }
+        if (categorie == null || "CREVETTE".equals(categorie)) {
+            mouvements.addAll(buildSortiesCrevette());
+            mouvements.addAll(buildEntreesCrevette());
+        }
         mouvements.sort((a, b) -> b.getDateMouvement().compareTo(a.getDateMouvement()));
         return mouvements;
     }
@@ -364,6 +385,7 @@ public class StockService {
             dto.setMotif(m.getTypeMouvement());
             dto.setSource("Manuel");
             dto.setResponsable(m.getUtilisateur().getNom());
+            dto.setCategorie("ALIMENT");
             list.add(dto);
         }
         return list;
@@ -380,6 +402,7 @@ public class StockService {
             dto.setMotif(m.getTypeMouvement());
             dto.setSource("Manuel");
             dto.setResponsable(m.getResponsable().getNom());
+            dto.setCategorie("MEDICAMENT");
             list.add(dto);
         }
         return list;
@@ -396,6 +419,7 @@ public class StockService {
             dto.setMotif(m.getTypeMouvement());
             dto.setSource("Manuel");
             dto.setResponsable(m.getUtilisateur().getNom());
+            dto.setCategorie("CREVETTE");
             list.add(dto);
         }
         return list;
@@ -412,6 +436,7 @@ public class StockService {
             dto.setMotif("Réception fournisseur");
             dto.setSource(e.getPrixTotalAr().compareTo(BigDecimal.ZERO) > 0 ? "Achat" : "Manuel");
             dto.setResponsable(e.getResponsable().getNom());
+            dto.setCategorie("ALIMENT");
             list.add(dto);
         }
         return list;
@@ -428,6 +453,7 @@ public class StockService {
             dto.setMotif("Réception fournisseur");
             dto.setSource(e.getPrixTotalAr().compareTo(BigDecimal.ZERO) > 0 ? "Achat" : "Manuel");
             dto.setResponsable(e.getResponsable().getNom());
+            dto.setCategorie("MEDICAMENT");
             list.add(dto);
         }
         return list;
@@ -446,6 +472,7 @@ public class StockService {
             String bassin = l.getCycleBassinAssoc() != null && l.getCycleBassinAssoc().getBassin() != null
                     ? l.getCycleBassinAssoc().getBassin().getCode() : "N/A";
             dto.setResponsable(bassin);
+            dto.setCategorie("CREVETTE");
             list.add(dto);
         }
         return list;
