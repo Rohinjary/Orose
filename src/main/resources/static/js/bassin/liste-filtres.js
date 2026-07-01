@@ -20,7 +20,9 @@ document.addEventListener("DOMContentLoaded", function () {
         );
     }
 
-    let currentSort = { key: "code", type: "text", dir: "asc" };
+    // Pas de clé initiale : le premier appel à sortRows() ne doit pas être
+    // interprété comme un clic de bascule, sinon il inverse le sens du tri.
+    let currentSort = { key: null, type: null, dir: "asc" };
 
     function normalize(str) {
         return (str || "")
