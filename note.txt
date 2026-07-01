@@ -4,25 +4,25 @@ TEST CODE:
         -ajouter 'voir mdp'
 
 
-    2-bassin:
-        -tsy mandeha ny supprimer(Whitelabel Error Page)
-        -surface bassin -> 700 fa tsy <100
-        -update -> tsy mandeha ny update date de creation
-        -create -> tsisy heure
+    2-bassin:OK
+        -tsy mandeha ny supprimer(Whitelabel Error Page) ok
+        -surface bassin -> 700 fa tsy <100 ok
+        -update -> tsy mandeha ny update date de creation  ok
+        -create -> tsisy heure ok
         -historique de modification -> 
             recherche filtree -> 
-                -alana ny heure:minute fa date fotsiny
+                -alana ny heure:minute fa date fotsiny ok
                 -manao recherche B01 fotsiny dia ny export nefa izy rehetra ihany
-        -tokony tsy afaka mamadika status EN_TRAITEMENT fa VIDE,ACTIF,RECOLTE ihany
-        -tsy afaka atao RECOLTE raha tsy mahatratra anle objecti(tokony alana zany le RECOLTE fa via SUIVI BIOLOGIQUE ihany)
+        -tokony tsy afaka mamadika status EN_TRAITEMENT fa VIDE,ACTIF,RECOLTE ihany ok
+        -tsy afaka atao RECOLTE raha tsy mahatratra anle objecti(tokony alana zany le RECOLTE fa via SUIVI BIOLOGIQUE ihany) ok
     
 
-    3-cycle:
+    3-cycle:OK
         ?? : raha mi demarrer cycle de date > aujourd'hui, tokony tode miova actif ve sa miandry date vo actif?
 
-        -rehefa avy mampiditra cycle, dia mi recharge page liste des cycles fa tsy liste des bassins
+        -rehefa avy mampiditra cycle, dia mi recharge page liste des cycles fa tsy liste des bassins ok
         - detail du cycle ->
-            -amle tableau, tsy affiche akory ny densite(tsy tafiditra base surement)
+            -amle tableau, tsy affiche akory ny densite(tsy tafiditra base surement) ok
         -gestion d'erreur:
             -asina kely hoe "veuillez remplir nanani nanana" Whitelabel Error Page
 

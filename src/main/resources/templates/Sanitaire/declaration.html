@@ -191,7 +191,7 @@
                             <select class="form-control" th:field="*{idCycleBassinAssoc}" required>
                                 <option value="">Sélectionner un bassin</option>
                                 <option th:if="${#lists.isEmpty(cycleBassinAssocs)}" value="" disabled>
-                                    Aucun bassin ACTIF ou EN_TRAITEMENT disponible en cycle — vérifiez le statut des bassins
+                                    Aucun bassin ACTIF disponible en cycle — vérifiez le statut des bassins
                                 </option>
                                 <option th:each="assoc : ${cycleBassinAssocs}"
                                         th:value="${assoc.id}"

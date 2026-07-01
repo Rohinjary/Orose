@@ -13,6 +13,7 @@ import com.example.orose.dto.stock.EntreeStockIntrantDTO;
 import com.example.orose.dto.stock.SortieStockIntrantDTO;
 import com.example.orose.repository.UtilisateurRepository;
 import com.example.orose.service.stock.StockService;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @RequestMapping("/stock")
@@ -98,9 +99,16 @@ public String formulaireEntree(Model model) {
     }
 
     @GetMapping("/mouvements")
-    public String historiqueMouvements(Model model) {
-        preparerLayout(model, "Historique des mouvements", "stock-mouvements");
-        model.addAttribute("mouvements", stockService.getHistoriqueMouvements());
+    public String historiqueMouvements(@RequestParam(required = false) String categorie, Model model) {
+        String titre = "Historique des mouvements";
+        String page = "stock-mouvements";
+        if (categorie != null) {
+            titre += " — " + categorie;
+            page = "stock-mouvements-" + categorie.toLowerCase();
+        }
+        preparerLayout(model, titre, page);
+        model.addAttribute("categorie", categorie);
+        model.addAttribute("mouvements", stockService.getHistoriqueMouvements(categorie));
         return "stock/historique";
     }
 

@@ -451,6 +451,7 @@ INSERT INTO statut_bassin (code, libelle) VALUES
 ('EN_TRAITEMENT','En traitement'),
 ('RECOLTE',      'Récolté'),
 ('QUARANTAINE',  'Quarantaine');
+INSERT INTO statut_bassin (code, libelle) VALUES ('INACTIF', 'Inactif');
 
 INSERT INTO creneau_horaire (libelle, ordre) VALUES
 ('MATIN', 1), ('MIDI', 2), ('SOIR', 3), ('NUIT', 4);

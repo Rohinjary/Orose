@@ -42,11 +42,11 @@
                 <div class="filter-grid">
                     <div class="filter-group">
                         <label class="filter-label">Du</label>
-                        <input class="filter-input" type="datetime-local" name="debut" th:value="${debut}" />
+                        <input class="filter-input" type="date" name="debut" th:value="${debut}" />
                     </div>
                     <div class="filter-group">
                         <label class="filter-label">Au</label>
-                        <input class="filter-input" type="datetime-local" name="fin" th:value="${fin}" />
+                        <input class="filter-input" type="date" name="fin" th:value="${fin}" />
                     </div>
                     <div class="filter-group">
                         <label class="filter-label">Type d'etat</label>
@@ -57,7 +57,6 @@
                             <option value="ACTIF" th:selected="${typeEtat == 'ACTIF'}">ACTIF</option>
                             <option value="EN_TRAITEMENT" th:selected="${typeEtat == 'EN_TRAITEMENT'}">EN TRAITEMENT</option>
                             <option value="RECOLTE" th:selected="${typeEtat == 'RECOLTE'}">RECOLTE</option>
-                            <option value="QUARANTAINE" th:selected="${typeEtat == 'QUARANTAINE'}">QUARANTAINE</option>
                         </select>
                     </div>
                     <button class="btn btn-primary" type="submit" style="height: 40px;"><i class="bi bi-funnel"></i> Filtrer</button>
@@ -81,7 +80,7 @@
                         <tr>
                             <th>Bassin</th>
                             <th>Etat</th>
-                            <th>Date et heure</th>
+                            <th>Date</th>
                             <th>Utilisateur</th>
                             <th>Motif</th>
                         </tr>
@@ -97,7 +96,15 @@
                         </tr>
                         <tr th:each="h : ${historique}">
                             <td><span class="bassin-tag" th:text="${h.bassin.code}">—</span></td>
-                            <td><span class="badge" th:classappend="${h.statutBassin.code == 'ACTIF'} ? 'badge-actif' : (${h.statutBassin.code == 'PREPARATION'} ? 'badge-preparation' : (${h.statutBassin.code == 'QUARANTAINE'} ? 'badge-quarantaine' : (${h.statutBassin.code == 'EN_TRAITEMENT'} ? 'badge-traitement' : (${h.statutBassin.code == 'RECOLTE'} ? 'badge-recolte' : 'badge-vide'))))" th:text="${h.statutBassin.libelle}">—</span></td>
+                            <td>
+                                <span class="badge"
+                                    th:classappend="${h.statutBassin.code == 'ACTIF'} ? 'badge-actif' :
+                                        (h.statutBassin.code == 'PREPARATION' ? 'badge-preparation' :
+                                        (h.statutBassin.code == 'QUARANTAINE' ? 'badge-quarantaine' :
+                                        (h.statutBassin.code == 'EN_TRAITEMENT' ? 'badge-traitement' :
+                                        (h.statutBassin.code == 'RECOLTE' ? 'badge-recolte' : 'badge-vide'))))"
+                                    th:text="${h.statutBassin.libelle}">—</span>
+                            </td>
                             <td class="date-cell" th:text="${#temporals.format(h.dateChangement, 'dd MMM yyyy')}">—</td>
                             <td th:text="${h.utilisateur.nom + ' ' + (h.utilisateur.prenom != null ? h.utilisateur.prenom : '')}">—</td>
                             <td class="motif-cell" th:text="${h.motif != null ? h.motif : '—'}">—</td>
