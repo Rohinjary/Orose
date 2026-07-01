@@ -1,0 +1,146 @@
+            .page-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 24px;
+            }
+
+            .action-group {
+                display: flex;
+                gap: 12px;
+                align-items: center;
+            }
+
+            /* Boutons personnalisés */
+            .btn-mg {
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                padding: 8px 16px;
+                border-radius: var(--radius);
+                font-size: 13px;
+                font-weight: 600;
+                text-decoration: none;
+                cursor: pointer;
+                transition: all 0.2s;
+                border: 1px solid transparent;
+            }
+
+            .btn-mg-primary {
+                background: var(--mg-primary);
+                color: white;
+            }
+
+            .btn-mg-primary:hover {
+                opacity: 0.9;
+            }
+
+            .btn-mg-secondary {
+                background: var(--mg-surface-bright);
+                color: var(--mg-secondary);
+                border-color: var(--mg-outline);
+            }
+
+            .btn-mg-secondary:hover {
+                background: var(--mg-surface-container);
+                color: var(--mg-primary);
+            }
+
+            .btn-mg-danger {
+                background: transparent;
+                color: var(--mg-danger);
+                border-color: transparent;
+                padding: 6px 12px;
+            }
+
+            .btn-mg-danger:hover {
+                background: #fee2e2;
+                border-radius: var(--radius);
+            }
+
+            /* Tableaux modernes style Move Gasy */
+            .table-container {
+                background: var(--mg-surface-bright);
+                border: 1px solid var(--mg-outline);
+                border-radius: var(--radius);
+                overflow: hidden;
+                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+            }
+
+            .mg-table {
+                width: 100%;
+                border-collapse: collapse;
+                text-align: left;
+                font-size: 13px;
+            }
+
+            .mg-table th {
+                background: #f8fafc;
+                color: var(--mg-text-light);
+                font-weight: 700;
+                text-transform: uppercase;
+                font-size: 11px;
+                letter-spacing: 0.05em;
+                padding: 14px 20px;
+                border-bottom: 1px solid var(--mg-outline);
+            }
+
+            .mg-table td {
+                padding: 14px 20px;
+                border-bottom: 1px solid #f1f5f9;
+                color: var(--mg-secondary);
+                vertical-align: middle;
+            }
+
+            .mg-table tr:last-child td {
+                border-bottom: none;
+            }
+
+            .mg-table tr:hover td {
+                background: #fcfdfe;
+            }
+
+            /* Badge Statut dynamique */
+            .status-badge {
+                display: inline-flex;
+                padding: 4px 8px;
+                border-radius: 4px;
+                font-size: 11px;
+                font-weight: 700;
+                text-transform: uppercase;
+            }
+
+            /* Classes utilitaires de fallback pour les statuts */
+            .status-active {
+                background: #d1fae5;
+                color: #065f46;
+            }
+
+            .status-maintenance {
+                background: #fef3c7;
+                color: #92400e;
+            }
+
+            .status-empty {
+                background: #e2e8f0;
+                color: #475569;
+            }
+
+            /* Actions de ligne */
+            .row-actions {
+                display: flex;
+                gap: 8px;
+                align-items: center;
+            }
+
+            .row-link {
+                color: var(--mg-primary);
+                text-decoration: none;
+                font-weight: 600;
+                padding: 6px 12px;
+            }
+
+            .row-link:hover {
+                background: var(--mg-surface-container);
+                border-radius: var(--radius);
+            }

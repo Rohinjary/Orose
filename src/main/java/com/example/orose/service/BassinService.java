@@ -125,7 +125,7 @@ public class BassinService {
     }
 
     public List<Bassin> listerBassins() {
-        return bassinRepository.findAll();
+        return bassinRepository.findAllByOrderByCodeAsc();
     }
 
     public Bassin getBassinById(Long id) {

@@ -14,6 +14,7 @@ public interface BassinRepository extends JpaRepository<Bassin, Long> {
     boolean existsByCode(String code);
     boolean existsByCodeAndIdNot(String code, Long id);
     Optional<Bassin> findById(Integer id);
+    List<Bassin> findAllByOrderByCodeAsc();
 
     @NonNull
     List<Bassin> findByStatutActuel_CodeIn(List<String> codes);
