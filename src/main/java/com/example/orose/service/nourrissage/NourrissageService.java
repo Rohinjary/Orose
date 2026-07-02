@@ -1,9 +1,11 @@
 package com.example.orose.service.nourrissage;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -13,6 +15,7 @@ import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.orose.dto.nourrissage.FcrDTO;
 import com.example.orose.dto.nourrissage.JournalDTO;
 import com.example.orose.model.Aliment;
 import com.example.orose.model.DistributionNourriture;
@@ -77,8 +80,7 @@ public class NourrissageService {
             throw new RuntimeException(message);
         }
 
-        enregistrerMouvementsAliment(idDistribution, idUtilisateur);
-    }
+ }
 
     private void enregistrerMouvementsAliment(Integer idDistribution, Integer idUtilisateur) {
         entityManager.clear();
@@ -214,7 +216,11 @@ public class NourrissageService {
 
     // 2. Historique filtré (version DTO)
     public List<JournalDTO> getHistoriqueFiltreDTO(LocalDate date, String bassinCode, Long cycleId, Long creneauId) {
-        return repository.findByFilters(date, bassinCode, cycleId, creneauId).stream()
+        List<DistributionNourriture> distributions = (date == null)
+                ? repository.findByFiltersSansDate(bassinCode, cycleId, creneauId)
+                : repository.findByFilters(date, bassinCode, cycleId, creneauId);
+
+        return distributions.stream()
                 .map(this::mapToJournalDTO)
                 .collect(Collectors.toList());
     }
@@ -235,6 +241,71 @@ public class NourrissageService {
 
     public List<DistributionNourriture> getJournalComplet() {
         return repository.findAllJournalComplet();
+    }
+
+    public FcrDTO calculerFcrParCycle(Long cycleId) {
+        if (cycleId == null) {
+            return null;
+        }
+
+        List<FcrDTO> lignes = calculerFcrParBassins(cycleId, null);
+        if (lignes.isEmpty()) {
+            return null;
+        }
+
+        BigDecimal totalAlimentsKg = lignes.stream()
+                .map(FcrDTO::getTotalAlimentsKg)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal biomasseProduiteKg = lignes.stream()
+                .map(FcrDTO::getBiomasseProduiteKg)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        List<BigDecimal> fcrCalculables = lignes.stream()
+                .filter(ligne -> ligne.getBiomasseProduiteKg().compareTo(BigDecimal.ZERO) > 0)
+                .map(FcrDTO::getFcrReel)
+                .collect(Collectors.toList());
+
+        if (fcrCalculables.isEmpty()) {
+            return new FcrDTO(lignes.get(0).getCodeCycle(), "Moyenne cycle", totalAlimentsKg, biomasseProduiteKg);
+        }
+
+        BigDecimal sommeFcr = fcrCalculables.stream().reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal moyenneFcr = sommeFcr.divide(BigDecimal.valueOf(fcrCalculables.size()), 2, RoundingMode.HALF_UP);
+        return new FcrDTO(lignes.get(0).getCodeCycle(), "Moyenne cycle", totalAlimentsKg, biomasseProduiteKg,
+                moyenneFcr);
+    }
+
+    public List<FcrDTO> calculerFcrParBassins(Long cycleId, String bassinCode) {
+        if (cycleId == null) {
+            return List.of();
+        }
+
+        String codeBassinFiltre = (bassinCode == null || bassinCode.isBlank()) ? null : bassinCode;
+        List<Object[]> rows = repository.findFcrParBassins(cycleId, codeBassinFiltre);
+        List<FcrDTO> resultats = new ArrayList<>();
+
+        for (Object[] row : rows) {
+            resultats.add(new FcrDTO(
+                    (String) row[0],
+                    (String) row[1],
+                    toBigDecimal(row[2]),
+                    toBigDecimal(row[3])));
+        }
+
+        return resultats;
+    }
+
+    private BigDecimal toBigDecimal(Object value) {
+        if (value == null) {
+            return BigDecimal.ZERO;
+        }
+        if (value instanceof BigDecimal decimal) {
+            return decimal;
+        }
+        if (value instanceof Number number) {
+            return BigDecimal.valueOf(number.doubleValue());
+        }
+        return new BigDecimal(value.toString());
     }
 
     // 4. Moteur de transformation (Le cœur du nettoyage)
