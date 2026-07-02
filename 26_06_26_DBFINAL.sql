@@ -963,3 +963,16 @@ VALUES
 (102, 1, 200.00, 200.00, '2026-12-31'::DATE,200,1),  -- Reçu 200kg, il reste 200kg (Expire en 2e)
 (103, 1, 150.00, 150.00, '2027-03-15'::DATE,200,1);  -- Reçu 150kg, il reste 150kg (Expire en dernier)
 
+UPDATE cycle_bassin_assoc cba
+SET
+    poids_moyen_actuel = derniere.poids_moyen_gramme,
+    semaine_actuelle    = derniere.semaine_actuelle
+FROM (
+    SELECT DISTINCT ON (id_cycle_bassin_assoc)
+        id_cycle_bassin_assoc,
+        poids_moyen_gramme,
+        semaine_actuelle
+    FROM suivi_hebdo_bassin
+    ORDER BY id_cycle_bassin_assoc, date_suivi DESC, id DESC
+) AS derniere
+WHERE cba.id = derniere.id_cycle_bassin_assoc;

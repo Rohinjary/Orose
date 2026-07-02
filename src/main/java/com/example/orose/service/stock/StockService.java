@@ -29,6 +29,8 @@ public class StockService {
     private final UtilisateurRepository utilisateurRepository;
     private final AlerteRepository alerteRepository;
 
+    private static final BigDecimal PRIX_CREVETTE_PAR_KG = BigDecimal.valueOf(40000);
+
     public StockService(AlimentRepository alimentRepository,
             MedicamentRepository medicamentRepository,
             EntreeStockAlimentRepository entreeAlimentRepository,
@@ -87,7 +89,7 @@ public class StockService {
     private void remplirStockCrevette(StockDashboardDTO dto) {
         BigDecimal biomasse = lotCrevetteRepository.sumBiomasseDisponible();
         dto.setStockCrevetteKg(toFloat(biomasse));
-        dto.setValeurCrevetteAr(toFloat(biomasse.multiply(BigDecimal.valueOf(30000))));
+        dto.setValeurCrevetteAr(toFloat(biomasse.multiply(PRIX_CREVETTE_PAR_KG)));
     }
 
     private void remplirStockAliment(StockDashboardDTO dto) {
