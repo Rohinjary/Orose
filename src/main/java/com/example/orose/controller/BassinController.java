@@ -1,13 +1,11 @@
 package com.example.orose.controller;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.example.orose.dto.BassinDTO;
-import com.example.orose.model.Bassin;
-import com.example.orose.service.BassinService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,11 +14,13 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import com.example.orose.dto.BassinDTO;
+import com.example.orose.model.Bassin;
 import com.example.orose.model.HistoStatutBassin;
+import com.example.orose.service.BassinService;
 
 @Controller
 @RequestMapping("/bassins")
@@ -157,11 +157,12 @@ public class BassinController {
         preparerLayoutBassins(model, "Historique global", "historique");
         LocalDateTime debutDT = debut != null ? debut.atStartOfDay() : null;
         LocalDateTime finDT   = fin   != null ? fin.atTime(23, 59, 59) : null;
-        model.addAttribute("historique", bassinService.getHistoriqueGlobal(debutDT, finDT, typeEtat));
+        model.addAttribute("historique", bassinService.getHistoriqueGlobal(debutDT, finDT, typeEtat, q));
         model.addAttribute("debut", debut);
         model.addAttribute("fin", fin);
         model.addAttribute("typeEtat", typeEtat);
         model.addAttribute("q", q);
         return "bassin/historique";
     }
+
 }

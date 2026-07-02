@@ -93,8 +93,13 @@
                                 <tr th:each="h : ${historique}">
                                     <td class="date-cell" th:text="${#temporals.format(h.dateChangement, 'dd MMM yyyy')}">—</td>
                                     <td>
-                                        <span class="badge" th:classappend="${bassin.statutActuel.code == 'ACTIF'} ? 'badge-actif' : (bassin.statutActuel.code == 'PREPARATION' ? 'badge-preparation' :
-                         (bassin.statutActuel.code == 'EN_TRAITEMENT' ? 'badge-traitement' : 'badge-recolte'))" th:text="${h.statutBassin.libelle}">—</span>
+                                        <span class="badge"
+                                            th:classappend="${h.statutBassin.code == 'ACTIF'} ? 'badge-actif' :
+                                                (h.statutBassin.code == 'PREPARATION' ? 'badge-preparation' :
+                                                (h.statutBassin.code == 'EN_TRAITEMENT' ? 'badge-traitement' :
+                                                (h.statutBassin.code == 'RECOLTE' ? 'badge-recolte' :
+                                                (h.statutBassin.code == 'QUARANTAINE' ? 'badge-quarantaine' : 'badge-vide'))))"
+                                            th:text="${h.statutBassin.libelle}">—</span>
                                     </td>
                                     <td th:text="${h.utilisateur.nom + ' ' + (h.utilisateur.prenom != null ? h.utilisateur.prenom : '')}">—</td>
                                     <td class="motif-cell" th:text="${h.motif != null ? h.motif : '—'}">—</td>
