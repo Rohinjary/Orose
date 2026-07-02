@@ -173,7 +173,8 @@ public class StockService {
                             "Rupture de stock: " + a.getLibelle(), 0f));
                 } else if (stock.compareTo(a.getSeuilMinimumKg()) <= 0) {
                     alertes.add(new StockAlerteDTO("STOCK_FAIBLE", "ORANGE",
-                            "Stock faible: " + a.getLibelle() + " (" + stock.floatValue() + " kg)", stock.floatValue()));
+                            "Stock faible: " + a.getLibelle() + " (" + stock.floatValue() + " kg)",
+                            stock.floatValue()));
                 }
             }
         }
@@ -184,7 +185,8 @@ public class StockService {
                         "Rupture de stock: " + m.getLibelle(), 0f));
             } else if (stock.compareTo(m.getSeuilMinimum()) <= 0) {
                 alertes.add(new StockAlerteDTO("STOCK_FAIBLE", "ORANGE",
-                        "Stock faible: " + m.getLibelle() + " (" + stock.floatValue() + " " + m.getUnite() + ")", stock.floatValue()));
+                        "Stock faible: " + m.getLibelle() + " (" + stock.floatValue() + " " + m.getUnite() + ")",
+                        stock.floatValue()));
             }
         }
         return alertes;
@@ -202,7 +204,8 @@ public class StockService {
                         e.getQuantiteRestanteKg().floatValue()));
             } else if (e.getDateExpiration().isBefore(seuilExpiration)) {
                 alertes.add(new StockAlerteDTO("EXPIRATION_PROCHAINE", "ORANGE",
-                        "Expiration proche: " + e.getAliment().getLibelle() + " (expire le " + e.getDateExpiration() + ")",
+                        "Expiration proche: " + e.getAliment().getLibelle() + " (expire le " + e.getDateExpiration()
+                                + ")",
                         e.getQuantiteRestanteKg().floatValue()));
             }
         }
@@ -214,7 +217,8 @@ public class StockService {
                         e.getQuantiteRestante().floatValue()));
             } else if (e.getDateExpiration().isBefore(seuilExpiration)) {
                 alertes.add(new StockAlerteDTO("EXPIRATION_PROCHAINE", "ORANGE",
-                        "Expiration proche: " + e.getMedicament().getLibelle() + " (expire le " + e.getDateExpiration() + ")",
+                        "Expiration proche: " + e.getMedicament().getLibelle() + " (expire le " + e.getDateExpiration()
+                                + ")",
                         e.getQuantiteRestante().floatValue()));
             }
         }
@@ -293,7 +297,8 @@ public class StockService {
         entree.setQuantiteRestante(BigDecimal.valueOf(dto.getQuantite()));
         entree.setPrixTotalAr(BigDecimal.valueOf(dto.getPrixTotalAr() != null ? dto.getPrixTotalAr() : 0));
         entree.setDateReception(dto.getDateReception() != null ? dto.getDateReception() : LocalDate.now());
-        entree.setDateExpiration(dto.getDateExpiration() != null ? dto.getDateExpiration() : LocalDate.now().plusMonths(6));
+        entree.setDateExpiration(
+                dto.getDateExpiration() != null ? dto.getDateExpiration() : LocalDate.now().plusMonths(6));
         entreeMedicamentRepository.save(entree);
     }
 
@@ -331,8 +336,10 @@ public class StockService {
     private BigDecimal retirerStockFIFO(List<EntreeStockMedicament> lots, BigDecimal aRetirer,
             String motif, Utilisateur resp) {
         for (EntreeStockMedicament lot : lots) {
-            if (aRetirer.compareTo(BigDecimal.ZERO) <= 0) break;
-            if (lot.getQuantiteRestante().compareTo(BigDecimal.ZERO) <= 0) continue;
+            if (aRetirer.compareTo(BigDecimal.ZERO) <= 0)
+                break;
+            if (lot.getQuantiteRestante().compareTo(BigDecimal.ZERO) <= 0)
+                continue;
 
             BigDecimal retire = lot.getQuantiteRestante().min(aRetirer);
             lot.setQuantiteRestante(lot.getQuantiteRestante().subtract(retire));
@@ -472,7 +479,8 @@ public class StockService {
             dto.setMotif("Récolte - Lot " + l.getNumeroLotUnique());
             dto.setSource("Automatique");
             String bassin = l.getCycleBassinAssoc() != null && l.getCycleBassinAssoc().getBassin() != null
-                    ? l.getCycleBassinAssoc().getBassin().getCode() : "N/A";
+                    ? l.getCycleBassinAssoc().getBassin().getCode()
+                    : "N/A";
             dto.setResponsable(bassin);
             dto.setCategorie("CREVETTE");
             list.add(dto);
@@ -502,5 +510,32 @@ public class StockService {
 
     public List<Medicament> getMedicaments() {
         return medicamentRepository.findAll();
+    }
+
+    @Transactional
+    public void enregistrerEntreeAliment(EntreeStockAlimentDTO dto) {
+        try {
+            entreeAlimentRepository.enregistrerDistributionManuelle(dto.getId_aliment(), dto.getQuantite_kg(),
+                    dto.getPrix_unitaire(), dto.getDate_reception(), dto.getDate_expiration(), dto.getId_utilisateur());
+        } catch (Exception e) {
+            Throwable root = e;
+            while (root.getCause() != null) {
+                root = root.getCause();
+            }
+            String message = root.getMessage();
+            if (message != null) {
+                message = message.replace("&nbsp;", " ");
+                int idx = message.indexOf("Où");
+                if (idx > -1) {
+                    message = message.substring(0, idx).trim();
+                }
+                idx = message.indexOf("Where:");
+                if (idx > -1) {
+                    message = message.substring(0, idx).trim();
+                }
+                message = message.replace("ERROR:", "").trim();
+            }
+            throw new RuntimeException(message);
+        }
     }
 }
