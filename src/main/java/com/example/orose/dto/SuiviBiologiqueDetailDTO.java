@@ -12,6 +12,8 @@ public class SuiviBiologiqueDetailDTO {
     private Integer idCycleBassinAssoc;
     private String codeUniqueCycle;
     private String codeBassin;
+    private String statutBassinCode;
+    private String statutBassinLibelle;
     private String nomEspece;
     private LocalDate dateDebut;
     private LocalDate dateFinPrevue;
