@@ -105,14 +105,73 @@ public interface DistributionNourritureRepository extends JpaRepository<Distribu
         @Query("SELECT d FROM DistributionNourriture d " +
                         "JOIN d.cycleBassinAssoc cba " +
                         "JOIN cba.bassin b " +
-                        "WHERE (:date IS NULL OR d.dateDistribution = CAST(:date AS date)) " +
-                        "AND (:bassinCode IS NULL OR b.code = CAST(:bassinCode AS text)) " +
-                        "AND (:cycleId IS NULL OR cba.cycle.id = CAST(:cycleId AS long)) " +
-                        "AND (:creneauId IS NULL OR d.creneau.id = CAST(:creneauId AS long))")
+                        "WHERE d.dateDistribution = :date " +
+                        "AND (:bassinCode IS NULL OR b.code = :bassinCode) " +
+                        "AND (:cycleId IS NULL OR cba.cycle.id = :cycleId) " +
+                        "AND (:creneauId IS NULL OR d.creneau.id = :creneauId) " +
+                        "ORDER BY d.dateDistribution DESC, d.heureNourrissage DESC")
         List<DistributionNourriture> findByFilters(@Param("date") LocalDate date,
                         @Param("bassinCode") String bassinCode,
                         @Param("cycleId") Long cycleId,
                         @Param("creneauId") Long creneauId);
+
+        @Query("SELECT d FROM DistributionNourriture d " +
+                        "JOIN d.cycleBassinAssoc cba " +
+                        "JOIN cba.bassin b " +
+                        "WHERE (:bassinCode IS NULL OR b.code = :bassinCode) " +
+                        "AND (:cycleId IS NULL OR cba.cycle.id = :cycleId) " +
+                        "AND (:creneauId IS NULL OR d.creneau.id = :creneauId) " +
+                        "ORDER BY d.dateDistribution DESC, d.heureNourrissage DESC")
+        List<DistributionNourriture> findByFiltersSansDate(@Param("bassinCode") String bassinCode,
+                        @Param("cycleId") Long cycleId,
+                        @Param("creneauId") Long creneauId);
+
+        @Query(value = """
+                        SELECT COALESCE(SUM(dn.quantite_donnee_kg), 0)
+                        FROM distribution_nourriture dn
+                        JOIN cycle_bassin_assoc cba ON cba.id = dn.id_cycle_bassin_assoc
+                        WHERE cba.id_cycle = :cycleId
+                          AND dn.statut = 'NOURRI'
+                        """, nativeQuery = true)
+        BigDecimal sumAlimentsDistribuesByCycle(@Param("cycleId") Long cycleId);
+
+        @Query(value = """
+                        SELECT COALESCE(SUM(dernier_suivi.biomasse_calculee_kg), 0)
+                        FROM cycle_bassin_assoc cba
+                        LEFT JOIN LATERAL (
+                            SELECT sh.biomasse_calculee_kg
+                            FROM suivi_hebdo_bassin sh
+                            WHERE sh.id_cycle_bassin_assoc = cba.id
+                            ORDER BY sh.date_suivi DESC, sh.id DESC
+                            LIMIT 1
+                        ) dernier_suivi ON TRUE
+                        WHERE cba.id_cycle = :cycleId
+                        """, nativeQuery = true)
+        BigDecimal sumDerniereBiomasseByCycle(@Param("cycleId") Long cycleId);
+
+        @Query(value = """
+                        SELECT
+                            c.code_unique_cycle AS cycle_code,
+                            b.code AS bassin_code,
+                            COALESCE(SUM(CASE WHEN dn.statut = 'NOURRI' THEN dn.quantite_donnee_kg ELSE 0 END), 0) AS total_aliments,
+                            COALESCE(dernier_suivi.biomasse_calculee_kg, 0) AS biomasse
+                        FROM cycle_bassin_assoc cba
+                        JOIN cycle c ON c.id = cba.id_cycle
+                        JOIN bassin b ON b.id = cba.id_bassin
+                        LEFT JOIN distribution_nourriture dn ON dn.id_cycle_bassin_assoc = cba.id
+                        LEFT JOIN LATERAL (
+                            SELECT sh.biomasse_calculee_kg
+                            FROM suivi_hebdo_bassin sh
+                            WHERE sh.id_cycle_bassin_assoc = cba.id
+                            ORDER BY sh.date_suivi DESC, sh.id DESC
+                            LIMIT 1
+                        ) dernier_suivi ON TRUE
+                        WHERE cba.id_cycle = :cycleId
+                          AND (:bassinCode IS NULL OR b.code = :bassinCode)
+                        GROUP BY c.code_unique_cycle, b.code, dernier_suivi.biomasse_calculee_kg
+                        ORDER BY b.code
+                        """, nativeQuery = true)
+        List<Object[]> findFcrParBassins(@Param("cycleId") Long cycleId, @Param("bassinCode") String bassinCode);
 
         @Query("SELECT d FROM DistributionNourriture d " +
                         "JOIN FETCH d.cycleBassinAssoc cba " +

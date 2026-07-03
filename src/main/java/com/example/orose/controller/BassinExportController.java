@@ -71,12 +71,14 @@ public class BassinExportController {
 
     @GetMapping("/historique/export")
     public void exportHistorique(@RequestParam(defaultValue = "excel") String format,
-                                  @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm") LocalDateTime debut,
-                                  @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm") LocalDateTime fin,
+                                  @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") java.time.LocalDate debut,
+                                  @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") java.time.LocalDate fin,
                                   @RequestParam(required = false) String typeEtat,
                                   @RequestParam(required = false) String q,
                                   HttpServletResponse response) throws Exception {
-        List<HistoStatutBassin> source = bassinService.getHistoriqueGlobal(debut, fin, typeEtat, q);
+        LocalDateTime debutDT = debut != null ? debut.atStartOfDay() : null;
+        LocalDateTime finDT   = fin   != null ? fin.atTime(23, 59, 59) : null;
+        List<HistoStatutBassin> source = bassinService.getHistoriqueGlobal(debutDT, finDT, typeEtat, q);
         List<HistoRow> data = new ArrayList<>();
         for (HistoStatutBassin h : source) {
             String utilisateur = "";

@@ -9,39 +9,100 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/css/login.css}">
-    <link rel="stylesheet" th:href="@{/css/responsive.css}">
 </head>
 
 <body>
-    <div class="login-card">
-        <div class="brand-header">
-            <div class="brand-logo"><i class="bi bi-water"></i></div>
-            <span class="brand-name">MOVE GASY</span>
-            <span class="brand-sub">Administration &amp; Sécurité</span>
-        </div>
+    <main class="login-shell">
+        <div class="login-grid">
 
-        <div class="alert-error" th:if="${param.error}">
-            Identifiants invalides. Veuillez réessayer.
-        </div>
-        <div class="alert alert-success" th:if="${param.logout}"
-            style="background:#dcfce7;color:#166534;padding:10px;border-radius:4px;margin-bottom:16px;">
-            Vous avez été déconnecté avec succès.
-        </div>
+            <!-- Colonne illustration -->
+            <aside class="login-hero">
+                <img class="login-hero-img" th:src="@{/images/login-hero.jpg}"
+                    alt="Vue aérienne stylisée de bassins d'aquaculture Move Gasy" />
+                <div class="login-hero-overlay"></div>
 
-        <form th:action="@{/login}" method="post">
-            <div class="mb-3">
-                <label class="form-label" for="email">Email Professionnel</label>
-                <input type="email" id="email" name="email" class="form-control" placeholder="nom@movegasy.mg" required
-                    autofocus />
-            </div>
-            <div class="mb-4">
-                <label class="form-label" for="password">Mot de passe</label>
-                <input type="password" id="password" name="password" class="form-control" placeholder="••••••••"
-                    required />
-            </div>
-            <button type="submit" class="btn btn-primary w-100">SE CONNECTER</button>
-        </form>
-    </div>
+                <div class="login-hero-content">
+                    <div class="login-hero-brand">
+                        <div class="brand-logo-sm"><i class="bi bi-water"></i></div>
+                        <div class="brand-text">
+                            <span class="brand-name">MOVE GASY</span>
+                            <span class="brand-tag">Aquaculture · Madagascar</span>
+                        </div>
+                    </div>
+
+                    <div class="login-hero-pitch">
+                        <p class="eyebrow">Plateforme opérationnelle</p>
+                        <h1>Piloter la filière aquacole avec précision et transparence.</h1>
+                        <p class="hero-desc">Suivi des bassins, données biologiques, sanitaire et exports —
+                            centralisés pour les équipes autorisées.</p>
+                    </div>
+
+                    <div class="login-hero-secure">
+                        <i class="bi bi-shield-check"></i>
+                        <span>Accès restreint — connexion chiffrée</span>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Colonne formulaire -->
+            <section class="login-form-panel">
+                <div class="login-form-wrap">
+
+                    <div class="brand-header-mobile">
+                        <div class="brand-logo"><i class="bi bi-water"></i></div>
+                        <div class="brand-text">
+                            <span class="brand-name">MOVE GASY</span>
+                            <span class="brand-sub">Administration &amp; Sécurité</span>
+                        </div>
+                    </div>
+
+                    <div class="login-form-heading">
+                        <p class="eyebrow">Espace administration</p>
+                        <h2>Connexion sécurisée</h2>
+                        <p class="text-muted-sm">Utilisez votre email professionnel pour accéder au tableau de bord.
+                        </p>
+                    </div>
+
+                    <div class="alert-error" th:if="${param.error}">
+                        <i class="bi bi-exclamation-circle"></i>
+                        <span>Identifiants invalides. Veuillez réessayer.</span>
+                    </div>
+                    <div class="alert-success" th:if="${param.logout}">
+                        <i class="bi bi-check-circle"></i>
+                        <span>Vous avez été déconnecté avec succès.</span>
+                    </div>
+
+                    <form th:action="@{/login}" method="post" class="login-form">
+                        <div class="form-group">
+                            <label class="form-label" for="email">Email professionnel</label>
+                            <div class="input-icon-wrap">
+                                <i class="bi bi-envelope input-icon"></i>
+                                <input type="email" id="email" name="email" class="form-control input-with-icon"
+                                    placeholder="nom@movegasy.mg" required autofocus autocomplete="email" />
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="form-label-row">
+                                <label class="form-label" for="password">Mot de passe</label>
+                                <a href="#" class="link-help">Aide accès</a>
+                            </div>
+                            <div class="input-icon-wrap">
+                                <i class="bi bi-lock input-icon"></i>
+                                <input type="password" id="password" name="password" class="form-control input-with-icon"
+                                    placeholder="••••••••" required autocomplete="current-password" />
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn login-submit w-100">SE CONNECTER</button>
+                    </form>
+
+                    <p class="login-footer">© MOVE GASY · Administration &amp; Sécurité</p>
+                </div>
+            </section>
+
+        </div>
+    </main>
 </body>
 
 </html>

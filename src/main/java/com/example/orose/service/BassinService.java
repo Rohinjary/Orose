@@ -4,7 +4,9 @@ import com.example.orose.dto.BassinDTO;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 
 import org.springframework.stereotype.Service;
@@ -100,13 +102,30 @@ public class BassinService {
         Bassin bassin = bassinRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Bassin introuvable"));
 
-        // Vérifier que le code est unique si modifié
         if (bassinRepository.existsByCodeAndIdNot(dto.getCode(), id)) {
-            throw new IllegalArgumentException("Le code du bassin doit être unique");
+                throw new IllegalArgumentException("Le code du bassin doit être unique");
         }
 
         Utilisateur utilisateur = utilisateurRepository.findById(1L)
                 .orElseThrow(() -> new IllegalArgumentException("Utilisateur introuvable"));
+
+        List<String> changements = new ArrayList<>();
+
+        if (!bassin.getCode().equals(dto.getCode())) {
+                changements.add("code : " + bassin.getCode() + " → " + dto.getCode());
+        }
+        if (bassin.getSurfaceM2().compareTo(dto.getSurface_m2()) != 0) {
+                changements.add("surface : " + bassin.getSurfaceM2() + " m² → " + dto.getSurface_m2() + " m²");
+        }
+        if (bassin.getProfondeurMetre().compareTo(dto.getProfondeur_metre()) != 0) {
+                changements.add("profondeur : " + bassin.getProfondeurMetre() + " m → " + dto.getProfondeur_metre() + " m");
+        }
+        if (!Objects.equals(bassin.getNotes(), dto.getNotes())) {
+                changements.add("notes modifiées");
+        }
+        if (!bassin.getCreatedAt().toLocalDate().equals(dto.getDateCreation())) {
+                changements.add("date de création : " + bassin.getCreatedAt().toLocalDate() + " → " + dto.getDateCreation());
+        }
 
         bassin.setCode(dto.getCode());
         bassin.setSurfaceM2(dto.getSurface_m2());
@@ -114,18 +133,26 @@ public class BassinService {
         bassin.setNotes(dto.getNotes());
         bassin.setCreatedAt(dto.getDateCreation().atStartOfDay());
 
-        HistoStatutBassin histo = new HistoStatutBassin();
-        histo.setBassin(bassin);
-        histo.setUtilisateur(utilisateur);
-        histo.setStatutBassin(bassin.getStatutActuel());
-        histo.setMotif("Modification des informations du bassin");
-        histoStatutBassinRepository.save(histo);
+        if (!changements.isEmpty()) {
+                String motif = "Modification : " + String.join(" ; ", changements);
+
+                HistoStatutBassin histo = new HistoStatutBassin();
+                histo.setBassin(bassin);
+                histo.setUtilisateur(utilisateur);
+                histo.setStatutBassin(bassin.getStatutActuel());
+                histo.setMotif(motif);
+                histoStatutBassinRepository.save(histo);
+        }
 
         return bassinRepository.save(bassin);
-    }
+        }
 
     public List<Bassin> listerBassins() {
-        return bassinRepository.findAll();
+        List<Bassin> bassins = bassinRepository.findAllByOrderByCodeAsc();
+
+        bassins.forEach(b -> System.out.println(b.getCode()));
+
+        return bassins;
     }
 
     public Bassin getBassinById(Long id) {

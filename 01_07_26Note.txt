@@ -1,12 +1,12 @@
     01 JUILLET 2026:
         1-bassin:
-            -message d'erreur rehefa tsy mety supprime-na
+            -message d'erreur rehefa tsy mety supprime-na ok
             -liste des bassins ->
-                *filtre par colonne ilay tableau
-                *recherche multicriteres
-                *ordre croissant nom code bassins
+                *filtre par colonne ilay tableau ok
+                *recherche multicriteres ok
+                *ordre croissant nom code bassins ok
 
-            -status_bassin : asina code couleur 
+            -status_bassin : asina code couleur ok
             -historique bassin ->
                 -rehefa misy filtre dia lasa tsy mety ilay export
         2-dashboard d'accueil:
