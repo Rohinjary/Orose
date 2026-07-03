@@ -197,27 +197,29 @@ public class BassinService {
             return;
         }
 
-        String numeroLot = String.format("LOT-%s-%tY%<tm%<td-%03d",
-                bassin.getCode(), LocalDate.now(), new Random().nextInt(1000));
+        var dernierePesee = suiviHebdoBassinRepository
+                .findTopByCycleBassinAssocIdOrderByDateSuiviDesc(assoc.getId());
 
         java.math.BigDecimal poidsMoyen = (assoc.getPoidsMoyenActuel() != null
                 && assoc.getPoidsMoyenActuel().compareTo(java.math.BigDecimal.ZERO) > 0)
                 ? assoc.getPoidsMoyenActuel()
-                : suiviHebdoBassinRepository.findTopByCycleBassinAssocIdOrderByDateSuiviDesc(assoc.getId())
-                        .map(s -> s.getPoidsMoyenGramme())
+                : dernierePesee.map(s -> s.getPoidsMoyenGramme())
                         .orElse(java.math.BigDecimal.valueOf(20));
 
-        java.math.BigDecimal biomasse = java.math.BigDecimal.valueOf(assoc.getEffectifInitial())
+        Integer population = dernierePesee.map(s -> s.getNbVivants())
+                .orElse(assoc.getEffectifInitial());
+
+        java.math.BigDecimal biomasse = java.math.BigDecimal.valueOf(population)
                 .multiply(poidsMoyen)
                 .divide(java.math.BigDecimal.valueOf(1000), 2, java.math.RoundingMode.HALF_UP);
 
-        java.math.BigDecimal tailleMoyenne = suiviHebdoBassinRepository
-                .findTopByCycleBassinAssocIdOrderByDateSuiviDesc(assoc.getId())
+        java.math.BigDecimal tailleMoyenne = dernierePesee
                 .map(s -> s.getTailleMoyenneMm() != null ? s.getTailleMoyenneMm() : java.math.BigDecimal.ZERO)
                 .orElse(java.math.BigDecimal.ZERO);
 
         LotCrevette lot = new LotCrevette();
-        lot.setNumeroLotUnique(numeroLot);
+        lot.setNumeroLotUnique(String.format("LOT-%s-%tY%<tm%<td-%03d",
+                bassin.getCode(), LocalDate.now(), new Random().nextInt(1000)));
         lot.setCycleBassinAssoc(assoc);
         lot.setBiomasseTotaleKg(biomasse);
         lot.setBiomasseActuelleKg(biomasse);

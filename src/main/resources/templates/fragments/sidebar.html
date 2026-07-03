@@ -156,46 +156,94 @@
                     th:href="@{/stock/dashboard}">
                     Tableau de bord
                 </a>
-                <a class="nav-item" th:classappend="${currentPage == 'stock-produits'} ? 'active' : ''"
-                    th:href="@{/stock/produits}">
-                    Stock actuel
-                </a>
-                <div class="nav-sub-label">Crevette</div>
-                <a class="nav-item" th:classappend="${currentPage == 'stock-lots'} ? 'active' : ''"
-                    th:href="@{/stock/lots-crevettes}">
-                    Lots crevettes
-                </a>
-                <a class="nav-item" th:classappend="${currentPage == 'stock-mouvements-crevette'} ? 'active' : ''"
-                    th:href="@{/stock/mouvements(categorie='CREVETTE')}">
-                    Historique
-                </a>
-                <div class="nav-sub-label">Aliment</div>
-                <a class="nav-item" th:classappend="${currentPage == 'stock-entree-aliment'} ? 'active' : ''"
-                    th:href="@{/stock/entree/aliment}">
-                    Aliment
-                </a>
-                <a class="nav-item" th:classappend="${currentPage == 'stock-mouvements-aliment'} ? 'active' : ''"
-                    th:href="@{/stock/mouvements(categorie='ALIMENT')}">
-                    Historique
-                </a>
-                <div class="nav-sub-label">Médicament</div>
-                <a class="nav-item" th:classappend="${currentPage == 'stock-entree'} ? 'active' : ''"
-                    th:href="@{/stock/entree}">
-                    Entrée
-                </a>
-                <a class="nav-item" th:classappend="${currentPage == 'stock-sortie'} ? 'active' : ''"
-                    th:href="@{/stock/sortie}">
-                    Sortie
-                </a>
-                <a class="nav-item" th:classappend="${currentPage == 'stock-mouvements-medicament'} ? 'active' : ''"
-                    th:href="@{/stock/mouvements(categorie='MEDICAMENT')}">
-                    Historique
-                </a>
-                <div class="nav-sub-label">Général</div>
-                <a class="nav-item" th:classappend="${currentPage == 'stock-mouvements'} ? 'active' : ''"
-                    th:href="@{/stock/mouvements}">
-                    Historique mouvements
-                </a>
+                <div class="nav-sub-group"
+                    th:classappend="${currentPage == 'stock-produits-crevette' or currentPage == 'stock-pertes-crevettes' or currentPage == 'stock-mouvements-crevette'} ? 'open' : ''">
+                    <a class="nav-sub-header" onclick="toggleSubGroup(this)">
+                        <span class="cat-label">Crevette</span>
+                        <span class="sub-chevron"><i class="bi bi-chevron-right"></i></span>
+                    </a>
+                    <div class="sub-submenu">
+                        <a class="nav-item" th:classappend="${currentPage == 'stock-produits-crevette'} ? 'active' : ''"
+                            th:href="@{/stock/produits(categorie='CREVETTE')}">
+                            État stock
+                        </a>
+                        <a class="nav-item" th:classappend="${currentPage == 'stock-pertes-crevettes'} ? 'active' : ''"
+                            th:href="@{/stock/pertes-crevettes}">
+                            Registre perte
+                        </a>
+                        <a class="nav-item" th:classappend="${currentPage == 'stock-mouvements-crevette'} ? 'active' : ''"
+                            th:href="@{/stock/mouvements(categorie='CREVETTE')}">
+                            Historique
+                        </a>
+                    </div>
+                </div>
+                <div class="nav-sub-group"
+                    th:classappend="${currentPage == 'stock-produits-aliment' or currentPage == 'stock-entree-aliment' or currentPage == 'stock-mouvements-aliment'} ? 'open' : ''">
+                    <a class="nav-sub-header" onclick="toggleSubGroup(this)">
+                        <span class="cat-label">Aliment</span>
+                        <span class="sub-chevron"><i class="bi bi-chevron-right"></i></span>
+                    </a>
+                    <div class="sub-submenu">
+                        <a class="nav-item" th:classappend="${currentPage == 'stock-produits-aliment'} ? 'active' : ''"
+                            th:href="@{/stock/produits(categorie='ALIMENT')}">
+                            État stock
+                        </a>
+                        <a class="nav-item" th:classappend="${currentPage == 'stock-entree-aliment'} ? 'active' : ''"
+                            th:href="@{/stock/entree/aliment}">
+                            Réception aliment
+                        </a>
+                        <a class="nav-item" th:classappend="${currentPage == 'stock-mouvements-aliment'} ? 'active' : ''"
+                            th:href="@{/stock/mouvements(categorie='ALIMENT')}">
+                            Historique
+                        </a>
+                    </div>
+                </div>
+                <div class="nav-sub-group"
+                    th:classappend="${currentPage == 'stock-produits-medicament' or currentPage == 'stock-entree' or currentPage == 'stock-sortie' or currentPage == 'stock-mouvements-medicament'} ? 'open' : ''">
+                    <a class="nav-sub-header" onclick="toggleSubGroup(this)">
+                        <span class="cat-label">Médicament</span>
+                        <span class="sub-chevron"><i class="bi bi-chevron-right"></i></span>
+                    </a>
+                    <div class="sub-submenu">
+                        <a class="nav-item" th:classappend="${currentPage == 'stock-produits-medicament'} ? 'active' : ''"
+                            th:href="@{/stock/produits(categorie='MEDICAMENT')}">
+                            État stock
+                        </a>
+                        <a class="nav-item" th:classappend="${currentPage == 'stock-entree'} ? 'active' : ''"
+                            th:href="@{/stock/entree}">
+                            Réception médicament
+                        </a>
+                        <a class="nav-item" th:classappend="${currentPage == 'stock-sortie'} ? 'active' : ''"
+                            th:href="@{/stock/sortie}">
+                            Sortie médicament
+                        </a>
+                        <a class="nav-item" th:classappend="${currentPage == 'stock-mouvements-medicament'} ? 'active' : ''"
+                            th:href="@{/stock/mouvements(categorie='MEDICAMENT')}">
+                            Historique
+                        </a>
+                    </div>
+                </div>
+                <div class="nav-sub-group"
+                    th:classappend="${currentPage == 'stock-produits' or currentPage == 'stock-lots' or currentPage == 'stock-mouvements'} ? 'open' : ''">
+                    <a class="nav-sub-header" onclick="toggleSubGroup(this)">
+                        <span class="cat-label">Général</span>
+                        <span class="sub-chevron"><i class="bi bi-chevron-right"></i></span>
+                    </a>
+                    <div class="sub-submenu">
+                        <a class="nav-item" th:classappend="${currentPage == 'stock-produits'} ? 'active' : ''"
+                            th:href="@{/stock/produits}">
+                            Stock actuel
+                        </a>
+                        <a class="nav-item" th:classappend="${currentPage == 'stock-lots'} ? 'active' : ''"
+                            th:href="@{/stock/lots-crevettes}">
+                            Lots crevettes
+                        </a>
+                        <a class="nav-item" th:classappend="${currentPage == 'stock-mouvements'} ? 'active' : ''"
+                            th:href="@{/stock/mouvements}">
+                            Journal complet
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
