@@ -4,7 +4,10 @@
         <div class="brand-name">MOVE GASY</div>
     </div>
     <div class="nav-container">
-       
+        <div class="nav-label">Principal</div>
+        <a class="nav-item" th:href="@{/}">
+          <span class="nav-icon"><i class="bi bi-speedometer2"></i></span> Dashboard
+        </a>
 
         <div class="nav-label">Terrain</div>
 
@@ -78,12 +81,12 @@
                     th:classappend="${currentPage == 'nouvelle-pesee'} ? 'active' : ''">
                     Nouvelle pesée
                 </a>
-                
+
                 <a th:if="${currentPage == 'alertes-biologiques'}" class="nav-item"
                     th:classappend="${currentPage == 'alertes-biologiques'} ? 'active' : ''">
                     Alertes biologiques
                 </a>
-                
+
 
             </div>
         </div>
@@ -125,20 +128,21 @@
             </a>
             <div class="submenu">
                 <a class="nav-item" th:classappend="${currentPage == 'planning'} ? 'active' : ''"
-                   th:href="@{/nourrissage/planning}">
+                    th:href="@{/nourrissage/planning}">
                     Tableau de bord
                 </a>
                 <a class="nav-item" th:classappend="${currentPage == 'distribution'} ? 'active' : ''"
-                   th:href="@{/nourrissage/distribution}">
+                    th:href="@{/nourrissage/distribution}">
                     Saisie distribution
                 </a>
-                <a class="nav-item" th:classappend="${currentPage == 'nourrissage-stock'} ? 'active' : ''"
-                   th:href="@{/nourrissage/stock}">
-                    Stock aliment
-                </a>
+            
                 <a class="nav-item" th:classappend="${currentPage == 'nourrissage-historique'} ? 'active' : ''"
-                   th:href="@{/nourrissage/historique}">
+                    th:href="@{/nourrissage/historique}">
                     Historique
+                </a>
+                <a class="nav-item" th:classappend="${currentPage == 'nourrissage-fcr'} ? 'active' : ''"
+                    th:href="@{/nourrissage/fcr}">
+                    FCR
                 </a>
             </div>
         </div>
@@ -169,6 +173,10 @@
                     Historique
                 </a>
                 <div class="nav-sub-label">Aliment</div>
+                <a class="nav-item" th:classappend="${currentPage == 'stock-entree-aliment'} ? 'active' : ''"
+                    th:href="@{/stock/entree/aliment}">
+                    Aliment
+                </a>
                 <a class="nav-item" th:classappend="${currentPage == 'stock-mouvements-aliment'} ? 'active' : ''"
                     th:href="@{/stock/mouvements(categorie='ALIMENT')}">
                     Historique

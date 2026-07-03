@@ -11,6 +11,7 @@
             .badge-quarantaine { background: #fee2e2; color: #991b1b; }
             .badge-traitement  { background: #e0f2fe; color: #075985; }
             .badge-recolte     { background: #f3e8ff; color: #6b21a8; }
+            .badge-inactif     { background: #e5e7eb; color: #374151; }
             .arrow-col { width: 32px; text-align: center; color: var(--mg-secondary); }
             .date-cell { font-size: 13px; color: var(--mg-secondary); white-space: nowrap; }
             .motif-cell { max-width: 240px; font-size: 13px; color: var(--mg-secondary); }
@@ -56,7 +57,9 @@
                             <option value="PREPARATION" th:selected="${typeEtat == 'PREPARATION'}">PREPARATION</option>
                             <option value="ACTIF" th:selected="${typeEtat == 'ACTIF'}">ACTIF</option>
                             <option value="EN_TRAITEMENT" th:selected="${typeEtat == 'EN_TRAITEMENT'}">EN TRAITEMENT</option>
+                            <option value="QUARANTAINE" th:selected="${typeEtat == 'QUARANTAINE'}">QUARANTAINE</option>
                             <option value="RECOLTE" th:selected="${typeEtat == 'RECOLTE'}">RECOLTE</option>
+                            <option value="INACTIF" th:selected="${typeEtat == 'INACTIF'}">INACTIF</option>
                         </select>
                     </div>
                     <button class="btn btn-primary" type="submit" style="height: 40px;"><i class="bi bi-funnel"></i> Filtrer</button>
@@ -99,10 +102,11 @@
                             <td>
                                 <span class="badge"
                                     th:classappend="${h.statutBassin.code == 'ACTIF'} ? 'badge-actif' :
-                                        (h.statutBassin.code == 'PREPARATION' ? 'badge-preparation' :
-                                        (h.statutBassin.code == 'QUARANTAINE' ? 'badge-quarantaine' :
-                                        (h.statutBassin.code == 'EN_TRAITEMENT' ? 'badge-traitement' :
-                                        (h.statutBassin.code == 'RECOLTE' ? 'badge-recolte' : 'badge-vide'))))"
+                                        (${h.statutBassin.code == 'PREPARATION'} ? 'badge-preparation' :
+                                        (${h.statutBassin.code == 'EN_TRAITEMENT'} ? 'badge-traitement' :
+                                        (${h.statutBassin.code == 'QUARANTAINE'} ? 'badge-quarantaine' :
+                                        (${h.statutBassin.code == 'RECOLTE'} ? 'badge-recolte' :
+                                        (${h.statutBassin.code == 'INACTIF'} ? 'badge-inactif' : 'badge-vide')))))"
                                     th:text="${h.statutBassin.libelle}">—</span>
                             </td>
                             <td class="date-cell" th:text="${#temporals.format(h.dateChangement, 'dd MMM yyyy')}">—</td>

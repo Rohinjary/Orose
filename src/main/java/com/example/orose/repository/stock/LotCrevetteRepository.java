@@ -3,6 +3,7 @@ package com.example.orose.repository.stock;
 import com.example.orose.model.LotCrevette;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
@@ -17,4 +18,7 @@ public interface LotCrevetteRepository extends JpaRepository<LotCrevette, Intege
 
     @Query("SELECT COALESCE(SUM(l.biomasseActuelleKg), 0) FROM LotCrevette l WHERE l.biomasseActuelleKg > 0")
     BigDecimal sumBiomasseDisponible();
+
+    @Query("SELECT COALESCE(SUM(l.biomasseTotaleKg), 0) FROM LotCrevette l WHERE YEAR(l.dateRecolte) = :annee")
+    float totaleProductionAnnuelle(@Param("annee") int annee);
 }

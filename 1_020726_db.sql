@@ -1,7 +1,16 @@
 -- ============================================================
--- db_v3_mise_a_jour.sql — Schéma final consolidé OROSE CORRIGÉ
--- Intègre : Gestion multi-lots pour l'alimentation et la santé
+-- db_v3_mise_a_jour_corrige.sql — Schéma final consolidé OROSE
+-- Version corrigée :
+--   1) Encodage UTF-8 propre (plus d'erreur 0x90 / WIN1252)
+--   2) Ajout des INSERT manquants pour cycle / cycle_bassin_assoc
+--      AVANT les pesées hebdomadaires (résout les erreurs de FK)
+--   3) Ordre d'exécution sécurisé (aliment avant stock, etc.)
 -- ============================================================
+
+-- Important : assurez-vous que le client psql utilise l'encodage UTF8
+-- (la base "orose" doit aussi avoir été créée avec ENCODING 'UTF8').
+-- Si vous éditez ce fichier sous Windows, enregistrez-le en UTF-8 (sans BOM),
+-- pas en ANSI/Windows-1252 : c'est l'origine de l'erreur 0x90.
 
 -- ------------------------------------------------------------
 -- MODULE 0 : UTILISATEURS & RÔLES
@@ -148,7 +157,7 @@ FROM suivi_hebdo_bassin s
 JOIN cycle_bassin_assoc cba ON cba.id = s.id_cycle_bassin_assoc;
 
 -- ------------------------------------------------------------
--- MODULE 5 : NOURRISSAGE (MIS À JOUR MULTI-LOTS)
+-- MODULE 5 : NOURRISSAGE (MULTI-LOTS)
 -- ------------------------------------------------------------
 
 CREATE TABLE creneau_horaire (
@@ -169,7 +178,6 @@ CREATE TABLE entree_stock_aliment (
     quantite_kg DECIMAL(10,2) NOT NULL CHECK (quantite_kg > 0),
     quantite_restante_kg DECIMAL(10,2) NOT NULL CHECK (quantite_restante_kg >= 0),
     prix_unitaire_ar DECIMAL(15,2) NOT NULL CHECK (prix_unitaire_ar >= 0),
-    -- Utilisation d'une colonne générée pour éviter les incohérences de calcul
     prix_total_ar DECIMAL(15,2) GENERATED ALWAYS AS (quantite_kg * prix_unitaire_ar) STORED,
     date_reception DATE NOT NULL DEFAULT CURRENT_DATE,
     date_expiration DATE NOT NULL,
@@ -183,16 +191,15 @@ CREATE TABLE distribution_nourriture (
     id_aliment INTEGER NOT NULL REFERENCES aliment(id),
     id_creneau INTEGER NOT NULL REFERENCES creneau_horaire(id),
     date_distribution DATE NOT NULL DEFAULT CURRENT_DATE,
-    heure_nourrissage TIME, -- Heure effective ou planifiée du nourrissage
+    heure_nourrissage TIME,
     quantite_prevue_kg DECIMAL(10,2) NOT NULL CHECK (quantite_prevue_kg >= 0),
     quantite_donnee_kg DECIMAL(10,2) NOT NULL DEFAULT 0 CHECK (quantite_donnee_kg >= 0),
     id_responsable INTEGER NOT NULL REFERENCES utilisateur(id),
-    statut VARCHAR(20) NOT NULL DEFAULT 'EN_ATTENTE' 
+    statut VARCHAR(20) NOT NULL DEFAULT 'EN_ATTENTE'
         CHECK (statut IN ('EN_ATTENTE', 'NOURRI', 'RETARD', 'RUPTURE')),
     est_valide BOOLEAN NOT NULL DEFAULT FALSE,
     UNIQUE(id_cycle_bassin_assoc, date_distribution, id_creneau)
 );
-
 
 -- TABLE INTERMÉDIAIRE : Associe un repas à 1 ou plusieurs lots de nourriture
 CREATE TABLE distribution_nourriture_lot (
@@ -214,7 +221,7 @@ CREATE TABLE mouvement_stock_aliment (
 );
 
 -- ------------------------------------------------------------
--- MODULE 6 : SANITAIRE (MIS À JOUR MULTI-LOTS)
+-- MODULE 6 : SANITAIRE (MULTI-LOTS)
 -- ------------------------------------------------------------
 
 CREATE TABLE medicament (
@@ -252,7 +259,7 @@ CREATE TABLE incident_sanitaire (
 CREATE TABLE traitement (
     id SERIAL PRIMARY KEY,
     id_incident INTEGER NOT NULL REFERENCES incident_sanitaire(id) ON DELETE CASCADE,
-    id_medicament INTEGER NOT NULL REFERENCES medicament(id), -- Quel médicament global est prescrit
+    id_medicament INTEGER NOT NULL REFERENCES medicament(id),
     dosage VARCHAR(100) NOT NULL,
     duree_jours INTEGER NOT NULL CHECK (duree_jours > 0),
     date_debut DATE NOT NULL,
@@ -330,7 +337,7 @@ CREATE TABLE inventaire (
 
 CREATE TABLE alerte (
     id SERIAL PRIMARY KEY,
-    type_alerte VARCHAR(50) NOT NULL,  -- MORTALITE_ANORMALE, PESEE_MANQUANTE, STOCK_CRITIQUE, etc.
+    type_alerte VARCHAR(50) NOT NULL,
     niveau VARCHAR(10) NOT NULL,  -- ORANGE, ROUGE
     module_source VARCHAR(30) NOT NULL,
     id_cycle_bassin_assoc INTEGER REFERENCES cycle_bassin_assoc(id),
@@ -342,10 +349,9 @@ CREATE TABLE alerte (
 );
 
 -- ------------------------------------------------------------
--- TRIGGERS (MIS À JOUR POUR LES TABLES INTERMÉDIAIRES)
+-- TRIGGERS
 -- ------------------------------------------------------------
 
--- Décrémente le stock d'aliment à partir de la table de composition par lot
 CREATE OR REPLACE FUNCTION fn_decrement_stock_aliment()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -366,8 +372,6 @@ CREATE TRIGGER trg_decrement_stock_aliment
     FOR EACH ROW
     EXECUTE FUNCTION fn_decrement_stock_aliment();
 
-
--- Décrémente le stock de médicament à partir de la table de composition par lot
 CREATE OR REPLACE FUNCTION fn_decrement_stock_medicament()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -388,8 +392,6 @@ CREATE TRIGGER trg_decrement_stock_medicament
     FOR EACH ROW
     EXECUTE FUNCTION fn_decrement_stock_medicament();
 
-
--- Décrémente le stock crevette après un mouvement (Inchangé)
 CREATE OR REPLACE FUNCTION fn_decrement_stock_crevette()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -410,8 +412,6 @@ CREATE TRIGGER trg_decrement_stock_crevette
     FOR EACH ROW
     EXECUTE FUNCTION fn_decrement_stock_crevette();
 
-
--- Mise en quarantaine automatique si incident CRITIQUE (Inchangé)
 CREATE OR REPLACE FUNCTION fn_quarantaine_auto()
 RETURNS TRIGGER AS $$
 DECLARE
@@ -451,7 +451,6 @@ INSERT INTO statut_bassin (code, libelle) VALUES
 ('EN_TRAITEMENT','En traitement'),
 ('RECOLTE',      'Récolté'),
 ('QUARANTAINE',  'Quarantaine');
-INSERT INTO statut_bassin (code, libelle) VALUES ('INACTIF', 'Inactif');
 
 INSERT INTO creneau_horaire (libelle, ordre) VALUES
 ('MATIN', 1), ('MIDI', 2), ('SOIR', 3), ('NUIT', 4);
@@ -482,14 +481,10 @@ CROSS JOIN (VALUES
 ) AS v(semaine, poids, taille)
 WHERE e.nom_courant = 'Crevette blanche';
 
--- INSERT INTO utilisateur (nom, prenom, email, mot_de_passe, statut) VALUES
+-- ------------------------------------------------------------
+-- AUTHENTIFICATION
+-- ------------------------------------------------------------
 
--- ('Admin', 'OROSE', 'admin@baovola.mg', 'a_remplacer_par_hash_bcrypt', 'ACTIF');
-
--- INSERT INTO role VALUES (1, 'TECH', 'TECH');
--- INSERT INTO utilisateur_role VALUES(1,1);
-
-------------authentification
 INSERT INTO role (code, libelle) VALUES
 ('ADMIN', 'Administrateur'),
 ('DIR', 'Directeur'),
@@ -508,19 +503,9 @@ JOIN role r ON r.code = 'ADMIN'
 WHERE u.email = 'admin@baovola.mg'
 ON CONFLICT DO NOTHING;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+-- ------------------------------------------------------------
+-- PROCÉDURES
+-- ------------------------------------------------------------
 
 CREATE OR REPLACE PROCEDURE pr_valider_nourrissage_direct(
     p_id_distribution INT,
@@ -537,22 +522,18 @@ DECLARE
     v_stock_global_dispo DECIMAL(10,2);
     v_lot_rec RECORD;
     v_quantite_piquee DECIMAL(10,2);
-    
-    -- Variables pour la vérification de l'heure
     v_creneau_libelle VARCHAR(20);
     v_heure_actuelle TIME;
     v_heure_valide BOOLEAN := FALSE;
-    
-    -- Variable pour la vérification du retard bloquant
     v_creneau_retard_bloquant VARCHAR(20);
 BEGIN
     v_heure_actuelle := CURRENT_TIME;
 
     -- 1. Récupérer les infos du repas ciblé ainsi que l'ordre de son créneau et sa date
-    SELECT 
+    SELECT
         dn.id_cycle_bassin_assoc, dn.date_distribution, dn.id_creneau, ch.ordre,
-        dn.id_aliment, dn.quantite_prevue_kg, ch.libelle 
-    INTO 
+        dn.id_aliment, dn.quantite_prevue_kg, ch.libelle
+    INTO
         v_id_cycle_bassin_assoc, v_date_distribution, v_id_creneau, v_creneau_ordre,
         v_id_aliment, v_quantite_prevue, v_creneau_libelle
     FROM distribution_nourriture dn
@@ -563,11 +544,7 @@ BEGIN
         RAISE EXCEPTION 'Distribution introuvable, déjà validée ou non éligible (ID: %)', p_id_distribution;
     END IF;
 
-    -- =========================================================================
-    -- NOUVELLE RÈGLE MÉTIER : SÉCURITÉ DE CHRONOLOGIE (MÊME JOURNÉE UNIQUEMENT)
-    -- =========================================================================
-    -- On cherche s'il existe un autre repas non validé pour ce bassin, le MÊME JOUR, 
-    -- mais sur un créneau antérieur (ordre inférieur) au repas qu'on essaie de valider.
+    -- RÈGLE MÉTIER : sécurité de chronologie (même journée uniquement)
     SELECT ch_sub.libelle INTO v_creneau_retard_bloquant
     FROM distribution_nourriture dn_sub
     JOIN creneau_horaire ch_sub ON ch_sub.id = dn_sub.id_creneau
@@ -579,12 +556,11 @@ BEGIN
     LIMIT 1;
 
     IF v_creneau_retard_bloquant IS NOT NULL THEN
-        RAISE EXCEPTION 'Action refusée : Impossible de valider le repas du % car le repas précédent du % n''a pas encore été validé pour ce bassin aujourd''hui.', 
+        RAISE EXCEPTION 'Action refusée : Impossible de valider le repas du % car le repas précédent du % n''a pas encore été validé pour ce bassin aujourd''hui.',
             v_creneau_libelle, v_creneau_retard_bloquant;
     END IF;
-    -- =========================================================================
 
-    -- 2. VÉRIFICATION DE LA PLAGE HORAIRE DE DÉBUT
+    -- 2. Vérification de la plage horaire de début
     CASE v_creneau_libelle
         WHEN 'MATIN' THEN
             IF v_heure_actuelle >= '06:00:00'::TIME THEN v_heure_valide := TRUE; END IF;
@@ -597,35 +573,35 @@ BEGIN
     END CASE;
 
     IF NOT v_heure_valide THEN
-        RAISE EXCEPTION 'Action refusée : Impossible de valider le repas du % de manière anticipée. Heure actuelle : %', 
+        RAISE EXCEPTION 'Action refusée : Impossible de valider le repas du % de manière anticipée. Heure actuelle : %',
             v_creneau_libelle, TO_CHAR(v_heure_actuelle, 'HH24:MI');
     END IF;
 
-    -- 3. VÉRIFICATION STRICTE DU STOCK GLOBAL DISPONIBLE
+    -- 3. Vérification stricte du stock global disponible
     SELECT COALESCE(SUM(quantite_restante_kg), 0) INTO v_stock_global_dispo
     FROM entree_stock_aliment
     WHERE id_aliment = v_id_aliment AND quantite_restante_kg > 0;
 
     IF v_stock_global_dispo < v_quantite_prevue THEN
-        RAISE EXCEPTION 'Action impossible : Stock insuffisant pour cet aliment. Requis : % kg, Disponible : % kg.', 
+        RAISE EXCEPTION 'Action impossible : Stock insuffisant pour cet aliment. Requis : % kg, Disponible : % kg.',
             v_quantite_prevue, v_stock_global_dispo;
     END IF;
 
     -- 4. Mettre à jour l'entête
     UPDATE distribution_nourriture
-    SET 
+    SET
         quantite_donnee_kg = v_quantite_prevue,
-        heure_nourrissage = v_heure_actuelle, 
+        heure_nourrissage = v_heure_actuelle,
         statut = 'NOURRI',
         est_valide = TRUE,
         id_responsable = p_id_utilisateur
     WHERE id = p_id_distribution;
 
-    -- 5. Déstockage Multi-Lots (FEFO)
+    -- 5. Déstockage multi-lots (FEFO)
     v_quantite_a_retirer := v_quantite_prevue;
 
-    FOR v_lot_rec IN 
-        SELECT id, quantite_restante_kg 
+    FOR v_lot_rec IN
+        SELECT id, quantite_restante_kg
         FROM entree_stock_aliment
         WHERE id_aliment = v_id_aliment AND quantite_restante_kg > 0
         ORDER BY date_expiration ASC, id ASC
@@ -646,20 +622,6 @@ BEGIN
 
 END;
 $$ LANGUAGE plpgsql;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 CREATE OR REPLACE FUNCTION fn_obtenir_ou_creer_planning_du_jour(id_utilisateur_connecte INT)
 RETURNS TABLE (
@@ -748,7 +710,11 @@ BEGIN
         END IF;
     END LOOP;
 
-    -- 2. SÉLECTION, CALCUL DU CHANGEMENT DE JOUR ET FILTRAGE STRICT
+    -- 2. SÉLECTION, CALCUL ET LOGIQUE DE BRIDAGE DES HORAIRES
+    -- Principe : heure_theorique = heure_reelle_precedente + decalage
+    --            puis on borne strictement heure_theorique dans [borne_min, borne_max] du CRENEAU COURANT.
+    -- On travaille en INTERVAL (pas TIME) pour la NUIT afin d'éviter le bug de rebouclage à minuit :
+    --   Nuit va de 22:00:00 à 25:00:00 (= 01:00:00 le lendemain, exprimé sans wraparound).
     RETURN QUERY
     WITH planning_brut AS (
         SELECT 
@@ -758,12 +724,28 @@ BEGIN
             dn.heure_nourrissage AS dn_heure_reelle,
             dn.quantite_prevue_kg AS dn_prevu, dn.quantite_donnee_kg AS dn_donne,
             dn.statut AS dn_statut, dn.est_valide AS dn_valide,
+            -- Décalage ajouté à l'heure réelle du créneau précédent pour obtenir l'heure théorique du créneau courant
             CASE ch.libelle
                 WHEN 'MATIN' THEN '00:00:00'::INTERVAL
                 WHEN 'MIDI'  THEN '05:00:00'::INTERVAL
                 WHEN 'SOIR'  THEN '06:00:00'::INTERVAL
                 WHEN 'NUIT'  THEN '05:00:00'::INTERVAL
             END AS decalage,
+            -- Borne basse du créneau courant (= heure par défaut si aucun créneau précédent validé)
+            CASE ch.libelle
+                WHEN 'MATIN' THEN '06:00:00'::INTERVAL
+                WHEN 'MIDI'  THEN '11:00:00'::INTERVAL
+                WHEN 'SOIR'  THEN '17:00:00'::INTERVAL
+                WHEN 'NUIT'  THEN '22:00:00'::INTERVAL
+            END AS borne_min,
+            -- Borne haute du créneau courant (dernière heure possible du créneau)
+            -- NUIT = 25:00:00 (soit 01:00:00 le lendemain) pour éviter le rebouclage à minuit
+            CASE ch.libelle
+                WHEN 'MATIN' THEN '10:00:00'::INTERVAL
+                WHEN 'MIDI'  THEN '14:00:00'::INTERVAL
+                WHEN 'SOIR'  THEN '20:00:00'::INTERVAL
+                WHEN 'NUIT'  THEN '25:00:00'::INTERVAL
+            END AS borne_max,
             LAG(dn.heure_nourrissage) OVER (PARTITION BY b.id ORDER BY ch.ordre) AS heure_reelle_precedente,
             LAG(dn.date_distribution) OVER (PARTITION BY b.id ORDER BY ch.ordre) AS date_reelle_precedente
         FROM bassin b
@@ -778,18 +760,34 @@ BEGIN
     planning_avec_dates_calculees AS (
         SELECT 
             p.b_id, p.b_code, p.b_notes, p.ch_id, p.ch_libelle, p.ch_ordre, p.dn_id,
+            COALESCE(p.date_reelle_precedente, p.dn_date) AS date_base,
+            -- Intervalle cible (borné), SANS cast en TIME : on garde la valeur brute (peut aller jusqu'à 25h pour NUIT)
+            -- afin de ne perdre aucune information de débordement sur le jour suivant.
             CASE 
-                WHEN p.ch_libelle = 'MATIN' THEN (p.dn_date + '06:00:00'::TIME)::TIMESTAMP
-                WHEN p.heure_reelle_precedente IS NOT NULL THEN (COALESCE(p.date_reelle_precedente, p.dn_date) + p.heure_reelle_precedente + p.decalage)::TIMESTAMP
-                ELSE 
-                    CASE p.ch_libelle
-                        WHEN 'MIDI' THEN (p.dn_date + '11:00:00'::TIME)::TIMESTAMP
-                        WHEN 'SOIR' THEN (p.dn_date + '17:00:00'::TIME)::TIMESTAMP
-                        WHEN 'NUIT' THEN (p.dn_date + '22:00:00'::TIME)::TIMESTAMP
-                    END
-            END AS ts_calcule,
+                WHEN p.ch_libelle = 'MATIN' THEN p.borne_min
+                WHEN p.heure_reelle_precedente IS NOT NULL THEN 
+                    LEAST(
+                        GREATEST(p.heure_reelle_precedente::INTERVAL + p.decalage, p.borne_min),
+                        p.borne_max
+                    )
+                ELSE p.borne_min
+            END AS interval_cible,
             p.dn_heure_reelle, p.dn_prevu, p.dn_donne, p.dn_statut, p.dn_valide
         FROM planning_brut p
+    ),
+    planning_final AS (
+        SELECT
+            pc.*,
+            -- ts_calcule : pour l'AFFICHAGE. On garde volontairement la même date calendaire
+            -- (date_base + heure seule, sans jour supplémentaire) car la ligne NUIT doit rester
+            -- rattachée visuellement à la date du jour, même si l'heure réelle est après minuit.
+            (pc.date_base + pc.interval_cible::TIME)::TIMESTAMP AS ts_calcule,
+            -- ts_reel_cible : pour le calcul du RETARD. Ici on NE tronque PAS l'intervalle en TIME :
+            -- si interval_cible = 25:00:00 (NUIT), le timestamp déborde correctement sur le lendemain.
+            -- Ça évite le bug où toute heure entre 00:00 et 01:00 était marquée RETARD par erreur,
+            -- même quand le créneau NUIT du jour n'avait pas encore commencé.
+            (pc.date_base::TIMESTAMP + pc.interval_cible) AS ts_reel_cible
+        FROM planning_avec_dates_calculees pc
     )
     SELECT 
         b_id, b_code, b_notes, ch_id, ch_libelle, dn_id,
@@ -797,30 +795,15 @@ BEGIN
         (ts_calcule)::TIME AS heure_prevue,
         dn_heure_reelle, dn_prevu, dn_donne,
         CASE 
-            WHEN dn_statut = 'EN_ATTENTE' AND ch_libelle = 'NUIT' AND (CURRENT_TIME > (ts_calcule)::TIME OR CURRENT_TIME <= '01:00:00'::TIME) THEN 'RETARD'
-            WHEN dn_statut = 'EN_ATTENTE' AND ch_libelle != 'NUIT' AND CURRENT_TIME > (ts_calcule)::TIME THEN 'RETARD'
+            WHEN dn_statut = 'EN_ATTENTE' AND LOCALTIMESTAMP > ts_reel_cible THEN 'RETARD'
             ELSE dn_statut
         END AS statut_distribution,
         dn_valide
-    FROM planning_avec_dates_calculees
-    -- Filtre : On ne retourne QUE les repas calculés pour aujourd'hui
+    FROM planning_final
     WHERE (ts_calcule)::DATE = CURRENT_DATE
     ORDER BY b_code, ch_ordre;
 END;
 $$ LANGUAGE plpgsql;
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 CREATE OR REPLACE PROCEDURE pr_enregistrer_entree_stock(
@@ -828,11 +811,10 @@ CREATE OR REPLACE PROCEDURE pr_enregistrer_entree_stock(
     p_quantite_kg DECIMAL(10,2),
     p_prix_unitaire_ar DECIMAL(15,2),
     p_date_reception DATE,
-    p_date_expiration DATE, -- Requis par les contraintes de votre table db_v3
+    p_date_expiration DATE,
     p_id_utilisateur INT
 ) AS $$
 BEGIN
-    -- 1. Vérifications basiques de sécurité sur les données du formulaire
     IF p_quantite_kg <= 0 THEN
         RAISE EXCEPTION 'La quantité reçue doit être strictement supérieure à 0 kg.';
     END IF;
@@ -842,15 +824,14 @@ BEGIN
     END IF;
 
     IF p_date_expiration < p_date_reception THEN
-        RAISE EXCEPTION 'La date d''expiration (%) ne peut pas être antérieure à la date de réception (%).', 
+        RAISE EXCEPTION 'La date d''expiration (%) ne peut pas être antérieure à la date de réception (%).',
             TO_CHAR(p_date_expiration, 'DD/MM/YYYY'), TO_CHAR(p_date_reception, 'DD/MM/YYYY');
     END IF;
 
-    -- 2. Insertion en base de données
     INSERT INTO entree_stock_aliment (
         id_aliment,
         quantite_kg,
-        quantite_restante_kg, -- Initialement égale à la quantité reçue
+        quantite_restante_kg,
         prix_unitaire_ar,
         date_reception,
         date_expiration,
@@ -858,7 +839,7 @@ BEGIN
     ) VALUES (
         p_id_aliment,
         p_quantite_kg,
-        p_quantite_kg, 
+        p_quantite_kg,
         p_prix_unitaire_ar,
         p_date_reception,
         p_date_expiration,
@@ -867,18 +848,6 @@ BEGIN
 
 END;
 $$ LANGUAGE plpgsql;
-
-
-
-
-
-
-
-
-
-
-
-
 
 CREATE OR REPLACE PROCEDURE pr_enregistrer_distribution_manuelle(
     p_code_bassin VARCHAR(20),
@@ -894,7 +863,6 @@ DECLARE
     v_statut_actuel VARCHAR(20);
     v_creneau_libelle VARCHAR(20);
 BEGIN
-    -- 1. Récupérer le cycle actif pour le bassin ciblé
     SELECT cba.id INTO v_id_cycle_bassin_assoc
     FROM cycle_bassin_assoc cba
     JOIN bassin b ON b.id = cba.id_bassin
@@ -904,9 +872,7 @@ BEGIN
         RAISE EXCEPTION 'Impossible d''enregistrer : Aucun cycle actif trouvé pour le bassin %.', p_code_bassin;
     END IF;
 
-    -- 2. RECHERCHE DIRECTE DU CRÉNEAU LE PLUS PROCHE
-    -- On trie par la différence absolue en valeur absolue entre l'heure reçue et l'heure théorique du créneau
-    SELECT dn.id, dn.statut, ch.libelle 
+    SELECT dn.id, dn.statut, ch.libelle
     INTO v_id_distribution, v_statut_actuel, v_creneau_libelle
     FROM distribution_nourriture dn
     JOIN creneau_horaire ch ON dn.id_creneau = ch.id
@@ -925,16 +891,13 @@ BEGIN
     ) ASC
     LIMIT 1;
 
-    -- 3. APPLICATION DES RÈGLES MÉTIER
     IF v_id_distribution IS NOT NULL THEN
-        -- Si la ligne la plus proche trouvée est déjà validée
         IF v_statut_actuel = 'NOURRI' THEN
-            RAISE EXCEPTION 'Erreur : Le repas identifié (%) a déjà été validé et distribué sur le terrain. Modification interdite.', 
+            RAISE EXCEPTION 'Erreur : Le repas identifié (%) a déjà été validé et distribué sur le terrain. Modification interdite.',
                 v_creneau_libelle;
         ELSE
-            -- Si elle est 'EN_ATTENTE' ou 'RETARD' (cas de votre MIDI), on applique l'UPDATE
             UPDATE distribution_nourriture
-            SET 
+            SET
                 id_aliment = p_id_aliment,
                 quantite_prevue_kg = p_quantite_kg,
                 id_responsable = p_id_utilisateur
@@ -947,21 +910,200 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+-- ============================================================
+-- DONNÉES DE TEST
+-- Cycles : C01 (30/06→30/10/2026), C02 (30/09/2026→30/01/2027), C03 (30/07→30/11/2026)
+-- Répartition : C01=B01,B02,B03 / C02=B04,B05,B06 / C03=B07,B08,B09
+-- ============================================================
 
--- 1. Insertion de l'aliment
-INSERT INTO aliment (id, libelle) 
-VALUES (1, 'Granulés Croissance Élevée')
-ON CONFLICT (id) DO UPDATE SET libelle = EXCLUDED.libelle;
+-- 1. Aliment de référence
+INSERT INTO aliment (libelle, seuil_minimum_kg)
+VALUES ('Granules Croissance Elevee', 50.00)
+ON CONFLICT DO NOTHING;
 
--- 2. Nettoyage des anciens stocks de test pour cet aliment
-DELETE FROM entree_stock_aliment WHERE id_aliment = 1;
+-- 2. Bassins B01 à B09
+INSERT INTO bassin (code, surface_m2, profondeur_metre, notes, id_statut_actuel)
+SELECT v.code, v.surface, v.profondeur, NULL,
+       (SELECT id FROM statut_bassin WHERE code = 'ACTIF')
+FROM (VALUES
+    ('B01', 1000.00, 1.50),
+    ('B02', 1000.00, 1.50),
+    ('B03', 1000.00, 1.50),
+    ('B04', 1200.00, 1.60),
+    ('B05', 1200.00, 1.60),
+    ('B06', 1200.00, 1.60),
+    ('B07',  900.00, 1.40),
+    ('B08',  900.00, 1.40),
+    ('B09',  900.00, 1.40)
+) AS v(code, surface, profondeur)
+ON CONFLICT (code) DO NOTHING;
 
--- 3. Insertion des lots avec la colonne 'quantite_kg' complétée
-INSERT INTO entree_stock_aliment (id, id_aliment, quantite_kg, quantite_restante_kg, date_expiration, prix_unitaire_ar, id_responsable)
-VALUES 
-(101, 1, 100.00, 100.00,  '2026-09-01'::DATE, 200, 1),  -- Reçu 100kg, il reste 50kg (Expire en 1er)
-(102, 1, 200.00, 200.00, '2026-12-31'::DATE,200,1),  -- Reçu 200kg, il reste 200kg (Expire en 2e)
-(103, 1, 150.00, 150.00, '2027-03-15'::DATE,200,1);  -- Reçu 150kg, il reste 150kg (Expire en dernier)
+-- 3. Cycles C01, C02, C03
+INSERT INTO cycle (code_unique_cycle, id_espece, id_technicien, date_debut, date_fin_prevue, est_cloture)
+SELECT v.code, (SELECT id FROM espece_crevette WHERE nom_courant = 'Crevette blanche'),
+       (SELECT id FROM utilisateur WHERE email = 'admin@baovola.mg'),
+       v.date_debut::DATE, v.date_fin::DATE, FALSE
+FROM (VALUES
+    ('C01', '2026-06-30', '2026-10-30'),
+    ('C02', '2026-09-30', '2027-01-30'),
+    ('C03', '2026-07-30', '2026-11-30')
+) AS v(code, date_debut, date_fin)
+ON CONFLICT (code_unique_cycle) DO NOTHING;
+
+-- 4. Associations cycle <-> bassin (cycle_bassin_assoc)
+INSERT INTO cycle_bassin_assoc (id_cycle, id_bassin, effectif_initial, densite_m2, cout_post_larves)
+SELECT (SELECT id FROM cycle WHERE code_unique_cycle = v.cycle),
+       (SELECT id FROM bassin WHERE code = v.bassin),
+       v.effectif, v.densite, v.cout
+FROM (VALUES
+    ('C01', 'B01', 50000, 50.00, 1500000.00),
+    ('C01', 'B02', 50000, 50.00, 1500000.00),
+    ('C01', 'B03', 45000, 45.00, 1350000.00),
+    ('C02', 'B04', 45000, 37.50, 1350000.00),
+    ('C02', 'B05', 60000, 50.00, 1800000.00),
+    ('C02', 'B06', 60000, 50.00, 1800000.00),
+    ('C03', 'B07', 40000, 44.44, 1200000.00),
+    ('C03', 'B08', 40000, 44.44, 1200000.00),
+    ('C03', 'B09', 40000, 44.44, 1200000.00)
+) AS v(cycle, bassin, effectif, densite, cout)
+ON CONFLICT (id_cycle, id_bassin) DO NOTHING;
+
+-- ------------------------------------------------------------
+-- VÉRIFICATION : récupère les vrais id_cycle_bassin_assoc avant de continuer
+-- ------------------------------------------------------------
+
+SELECT cba.id AS id_cycle_bassin_assoc, b.code AS bassin, c.code_unique_cycle AS cycle,
+       cba.effectif_initial, c.date_debut, c.date_fin_prevue
+FROM cycle_bassin_assoc cba
+JOIN bassin b ON b.id = cba.id_bassin
+JOIN cycle c ON c.id = cba.id_cycle
+ORDER BY c.code_unique_cycle, b.code;
+
+-- ------------------------------------------------------------
+-- MODULE 2 — PESÉES (dates recalées sur C01 : début 30/06/2026)
+-- NB : on récupère les id_cycle_bassin_assoc dynamiquement par code bassin,
+-- ce qui évite de dépendre de numéros fixes (1,2,3...) qui pouvaient ne pas exister.
+-- ------------------------------------------------------------
+
+-- --- Bassin B01 — cycle C01 ---
+INSERT INTO suivi_hebdo_bassin
+    (id_cycle_bassin_assoc, date_suivi, semaine_actuelle, poids_moyen_gramme, taille_moyenne_mm, nb_vivants, nb_morts, id_technicien, notes)
+SELECT cba.id, v.date_suivi::DATE, v.semaine, v.poids, v.taille, v.vivants, v.morts, 1, v.notes
+FROM cycle_bassin_assoc cba
+JOIN bassin b ON b.id = cba.id_bassin
+CROSS JOIN (VALUES
+    ('2026-07-07', 1,  0.5,   8.0,  49800,  200, 'Pesee S1'),
+    ('2026-07-28', 4,  2.8,  25.0,  49200,  600, 'Pesee S4'),
+    ('2026-08-25', 8,  8.5,  55.0,  48500,  700, 'Pesee S8'),
+    ('2026-09-22', 12, 14.5, 85.0,  47800,  700, 'Pesee S12'),
+    ('2026-10-20', 16, 20.0, 120.0, 47000,  800, 'Pesee S16 - calibre commercial atteint')
+) AS v(date_suivi, semaine, poids, taille, vivants, morts, notes)
+WHERE b.code = 'B01';
+
+-- --- Bassin B02 — cycle C01 ---
+INSERT INTO suivi_hebdo_bassin
+    (id_cycle_bassin_assoc, date_suivi, semaine_actuelle, poids_moyen_gramme, taille_moyenne_mm, nb_vivants, nb_morts, id_technicien, notes)
+SELECT cba.id, v.date_suivi::DATE, v.semaine, v.poids, v.taille, v.vivants, v.morts, 1, v.notes
+FROM cycle_bassin_assoc cba
+JOIN bassin b ON b.id = cba.id_bassin
+CROSS JOIN (VALUES
+    ('2026-07-07', 1,  0.5,  8.0,  49700, 300, 'Pesee S1'),
+    ('2026-08-11', 6,  5.5,  40.0, 48900, 800, 'Pesee S6'),
+    ('2026-09-08', 10, 11.5, 70.0, 48200, 700, 'Pesee S10'),
+    ('2026-10-06', 14, 17.5, 105.0,47500, 700, 'Pesee S14')
+) AS v(date_suivi, semaine, poids, taille, vivants, morts, notes)
+WHERE b.code = 'B02';
+
+-- --- Bassin B03 — cycle C01, bassin test quarantaine ---
+INSERT INTO suivi_hebdo_bassin
+    (id_cycle_bassin_assoc, date_suivi, semaine_actuelle, poids_moyen_gramme, taille_moyenne_mm, nb_vivants, nb_morts, id_technicien, notes)
+SELECT cba.id, v.date_suivi::DATE, v.semaine, v.poids, v.taille, v.vivants, v.morts, 1, v.notes
+FROM cycle_bassin_assoc cba
+JOIN bassin b ON b.id = cba.id_bassin
+CROSS JOIN (VALUES
+    ('2026-07-07', 1, 0.5, 8.0,  44800, 200,  'Pesee S1'),
+    ('2026-08-04', 5, 4.0, 32.0, 43000, 1800, 'Pesee S5 - mortalite elevee constatee')
+) AS v(date_suivi, semaine, poids, taille, vivants, morts, notes)
+WHERE b.code = 'B03';
+
+-- --- Bassin B04 — cycle C02 (début 30/09/2026) ---
+INSERT INTO suivi_hebdo_bassin
+    (id_cycle_bassin_assoc, date_suivi, semaine_actuelle, poids_moyen_gramme, taille_moyenne_mm, nb_vivants, nb_morts, id_technicien, notes)
+SELECT cba.id, v.date_suivi::DATE, v.semaine, v.poids, v.taille, v.vivants, v.morts, 1, v.notes
+FROM cycle_bassin_assoc cba
+JOIN bassin b ON b.id = cba.id_bassin
+CROSS JOIN (VALUES
+    ('2026-10-07', 1,  0.5,  8.0,   44700, 300, 'Pesee S1'),
+    ('2026-10-28', 4,  2.8,  25.0,  44100, 600, 'Pesee S4'),
+    ('2026-11-25', 8,  8.5,  55.0,  43500, 600, 'Pesee S8'),
+    ('2026-12-23', 12, 14.5, 85.0,  42900, 600, 'Pesee S12'),
+    ('2027-01-20', 16, 20.0, 120.0, 42200, 700, 'Pesee S16 - calibre commercial atteint')
+) AS v(date_suivi, semaine, poids, taille, vivants, morts, notes)
+WHERE b.code = 'B04';
+
+-- --- Bassin B05 — cycle C02, bassin test EN_TRAITEMENT ---
+INSERT INTO suivi_hebdo_bassin
+    (id_cycle_bassin_assoc, date_suivi, semaine_actuelle, poids_moyen_gramme, taille_moyenne_mm, nb_vivants, nb_morts, id_technicien, notes)
+SELECT cba.id, v.date_suivi::DATE, v.semaine, v.poids, v.taille, v.vivants, v.morts, 1, v.notes
+FROM cycle_bassin_assoc cba
+JOIN bassin b ON b.id = cba.id_bassin
+CROSS JOIN (VALUES
+    ('2026-10-07', 1,  0.5,  8.0,  59700, 300, 'Pesee S1'),
+    ('2026-11-11', 6,  5.5,  40.0, 58800, 900, 'Pesee S6')
+) AS v(date_suivi, semaine, poids, taille, vivants, morts, notes)
+WHERE b.code = 'B05';
+-- -> place le bassin B05 en EN_TRAITEMENT entre S6 et S10 via l'interface (test manuel),
+--    puis relance l'INSERT ci-dessous pour S10 une fois repassé en ACTIF :
+-- INSERT INTO suivi_hebdo_bassin
+--     (id_cycle_bassin_assoc, date_suivi, semaine_actuelle, poids_moyen_gramme, taille_moyenne_mm, nb_vivants, nb_morts, id_technicien, notes)
+-- SELECT cba.id, '2026-12-09', 10, 11.5, 70.0, 58000, 800, 1, 'Pesee S10 - reprise apres traitement'
+-- FROM cycle_bassin_assoc cba JOIN bassin b ON b.id = cba.id_bassin WHERE b.code = 'B05';
+
+-- --- Bassin B06 — cycle C02 ---
+INSERT INTO suivi_hebdo_bassin
+    (id_cycle_bassin_assoc, date_suivi, semaine_actuelle, poids_moyen_gramme, taille_moyenne_mm, nb_vivants, nb_morts, id_technicien, notes)
+SELECT cba.id, v.date_suivi::DATE, v.semaine, v.poids, v.taille, v.vivants, v.morts, 1, v.notes
+FROM cycle_bassin_assoc cba
+JOIN bassin b ON b.id = cba.id_bassin
+CROSS JOIN (VALUES
+    ('2026-10-07', 1,  0.5,  8.0,   59800, 200,  'Pesee S1'),
+    ('2026-11-25', 8,  8.5,  55.0,  58600, 1200, 'Pesee S8'),
+    ('2026-12-30', 14, 17.5, 105.0, 57800, 800,  'Pesee S14'),
+    ('2027-01-13', 16, 20.0, 120.0, 57500, 300,  'Pesee S16 - calibre commercial atteint')
+) AS v(date_suivi, semaine, poids, taille, vivants, morts, notes)
+WHERE b.code = 'B06';
+
+-- Vérification rapide : biomasse calculée auto + taux survie/mortalité via la vue
+SELECT id_cycle_bassin_assoc, date_suivi, semaine_actuelle, poids_moyen_gramme,
+       biomasse_calculee_kg, taux_survie_calcule, taux_mortalite_calcule
+FROM v_suivi_hebdo_bassin
+ORDER BY id_cycle_bassin_assoc, date_suivi;
+
+-- ------------------------------------------------------------
+-- ALIMENT + STOCK MULTI-LOTS
+-- ------------------------------------------------------------
+
+INSERT INTO entree_stock_aliment
+    (id_aliment, quantite_kg, quantite_restante_kg, prix_unitaire_ar, date_reception, date_expiration, id_responsable)
+VALUES
+    -- Lot 1 : reçu le premier, expire le plus tôt -> doit être consommé en premier (FEFO)
+    ((SELECT id FROM aliment WHERE libelle = 'Granules Croissance Elevee'),
+     500.00, 500.00, 2200.00, '2026-07-02', '2027-01-01', 1),
+
+    -- Lot 2 : reçu ensuite, expire après le lot 1
+    ((SELECT id FROM aliment WHERE libelle = 'Granules Croissance Elevee'),
+     800.00, 800.00, 2100.00, '2026-08-01', '2027-04-01', 1),
+
+    -- Lot 3 : reçu en dernier, mais expire le plus tard
+    ((SELECT id FROM aliment WHERE libelle = 'Granules Croissance Elevee'),
+     600.00, 600.00, 2300.00, '2026-09-01', '2027-09-15', 1);
+
+-- Vérification stock global + ordre FEFO attendu
+SELECT id, quantite_kg, quantite_restante_kg, prix_unitaire_ar, date_reception, date_expiration
+FROM entree_stock_aliment
+WHERE id_aliment = (SELECT id FROM aliment WHERE libelle = 'Granules Croissance Elevee')
+ORDER BY date_expiration ASC;
+
 
 UPDATE cycle_bassin_assoc cba
 SET
@@ -976,3 +1118,14 @@ FROM (
     ORDER BY id_cycle_bassin_assoc, date_suivi DESC, id DESC
 ) AS derniere
 WHERE cba.id = derniere.id_cycle_bassin_assoc;
+
+-- ── Vérification ──────────────────────────────────────────────
+SELECT
+    b.code AS bassin,
+    c.code_unique_cycle AS cycle,
+    cba.semaine_actuelle,
+    cba.poids_moyen_actuel
+FROM cycle_bassin_assoc cba
+JOIN bassin b ON b.id = cba.id_bassin
+JOIN cycle c  ON c.id = cba.id_cycle
+ORDER BY c.code_unique_cycle, b.code;

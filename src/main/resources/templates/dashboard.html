@@ -13,8 +13,8 @@
         <div class="page active" id="pg-dashboard">
           <div class="dash-banner">
             <div>
-              <h2 class="banner-title">Bienvenue </i></h2>
-              <p class="banner-sub">Lundi 9 juin 2026</p>
+              <h2 class="banner-title">Bienvenue <span sec:authentication="name"></span> </i></h2>
+              <p class="banner-sub"> <span th:text="${date}"></span></p>
             </div>
             <div class="status-pill">● Système opérationnel</div>
           </div>
@@ -45,27 +45,27 @@
 
           <div class="kpi-grid">
             <div class="kpi-card">
-              <div class="kpi-label">Production annuelle (YTD)</div>
-              <div class="kpi-value">12.8 T</div>
+              <div class="kpi-label">Production annuelle</div>
+              <div class="kpi-value"><span th:text="${productionAnnuelle}"></span> kg </div>
               <div class="kpi-sub">Objectif : 25 T (51.2%)</div>
             </div>
             <div class="kpi-card">
-              <div class="kpi-label">CA total (Payé)</div>
-              <div class="kpi-value">50.4M Ar</div>
-              <div class="kpi-sub">Prévu : 58.2M Ar</div>
+              <div class="kpi-label">Stock crevettes</div>
+              <div class="kpi-value"> <span th:text="${situationStock.stockCrevetteKg}"></span> kg</div>
+              <div class="kpi-sub">Valeur : <span th:text="${situationStock.valeurCrevetteAr}"></span> Ar</div>
             </div>
             <div class="kpi-card">
-              <div class="kpi-label">Profit actuel</div>
-              <div class="kpi-value">+14.9M Ar</div>
-              <div class="kpi-sub">Marge nette : 29.5%</div>
+              <div class="kpi-label">Stock aliments</div>
+              <div class="kpi-value"> <span th:text="${situationStock.stockAlimentKg}"></span> kg</div>
+              <div class="kpi-sub">Autonomie: <span th:text="${situationStock.autonomieAlimentJours}"></span> jours </div>
             </div>
-            <div class="kpi-card">
+            <!-- <div class="kpi-card">
               <div class="kpi-label">ROI Actuel</div>
               <div class="kpi-value">29.7%</div>
               <div class="progress-container" style="margin: 8px 0 0;">
                 <div class="progress-bar" style="width:29.7%"></div>
               </div>
-            </div>
+            </div> -->
           </div>
           <div class="dashboard-row">
 
@@ -73,7 +73,7 @@
 
           
             <!-- KPI PRODUCTION (WOW) -->
-            <!-- <div class="card">
+            <div class="card">
               <div class="card-header">
                 <h3 class="card-title">Production mensuelle (kg) vs Objectif</h3>
               </div>
@@ -105,7 +105,7 @@
                 <span class="">Total depuis le 1er janvier : <strong>12 840 kg</strong></span>
                 <span style="color: var(--mg-success)" class=""><i class="bi bi-arrow-up"></i> +12% vs 2025</span>
               </div>
-            </div> -->
+            </div>
 
             
             <!-- SALES & FINANCE KPI -->

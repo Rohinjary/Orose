@@ -18,7 +18,7 @@
         </button>
         <div class="user-profile" sec:authorize="isAuthenticated()">
             <div class="user-info">
-                <div class="user-name" sec:authentication="name">utilisateur@orose.mg</div>
+                <div class="user-name" sec:authentication="name"></div>
                 <div class="user-role">
                     <span sec:authorize="hasRole('ADMIN')">Administrateur</span>
                     <span sec:authorize="hasRole('DIR')">Directeur</span>
