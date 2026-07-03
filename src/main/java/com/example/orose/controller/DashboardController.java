@@ -19,6 +19,7 @@ public class DashboardController {
     @GetMapping("/")
     public String index(Model model) {
         model.addAttribute("bassinsActifs", accueilService.etatsTousBassinsActifs());
+        model.addAttribute("situationStock", accueilService.getSituationStock());
         return "dashboard";
     }
 }

@@ -6,9 +6,9 @@ integration
 - production annuelle de cette année 
   
 - etat des bassins actifs [ok]
-- situation stock 
+- situation stock [ok]
 - alertes 
 
 
 
-- side bar = principal - dashboard 
+- side bar = principal - dashboard [ok]

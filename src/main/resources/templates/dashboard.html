@@ -50,22 +50,22 @@
               <div class="kpi-sub">Objectif : 25 T (51.2%)</div>
             </div>
             <div class="kpi-card">
-              <div class="kpi-label">CA total (Payé)</div>
-              <div class="kpi-value">50.4M Ar</div>
-              <div class="kpi-sub">Prévu : 58.2M Ar</div>
+              <div class="kpi-label">Stock crevettes</div>
+              <div class="kpi-value"> <span th:text="${situationStock.stockCrevetteKg}"></span> kg</div>
+              <div class="kpi-sub">Valeur : <span th:text="${situationStock.valeurCrevetteAr}"></span> Ar</div>
             </div>
             <div class="kpi-card">
-              <div class="kpi-label">Profit actuel</div>
-              <div class="kpi-value">+14.9M Ar</div>
-              <div class="kpi-sub">Marge nette : 29.5%</div>
+              <div class="kpi-label">Stock aliments</div>
+              <div class="kpi-value"> <span th:text="${situationStock.stockAlimentKg}"></span> kg</div>
+              <div class="kpi-sub">Autonomie: <span th:text="${situationStock.autonomieAlimentJours}"></span> jours </div>
             </div>
-            <div class="kpi-card">
+            <!-- <div class="kpi-card">
               <div class="kpi-label">ROI Actuel</div>
               <div class="kpi-value">29.7%</div>
               <div class="progress-container" style="margin: 8px 0 0;">
                 <div class="progress-bar" style="width:29.7%"></div>
               </div>
-            </div>
+            </div> -->
           </div>
           <div class="dashboard-row">
 
