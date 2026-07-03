@@ -4,6 +4,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import com.example.orose.service.AccueilService;
+
+import java.time.LocalDate;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Controller
@@ -18,8 +21,10 @@ public class DashboardController {
 
     @GetMapping("/")
     public String index(Model model) {
+        model.addAttribute("date", LocalDate.now());
         model.addAttribute("bassinsActifs", accueilService.etatsTousBassinsActifs());
         model.addAttribute("situationStock", accueilService.getSituationStock());
+        model.addAttribute("productionAnnuelle", accueilService.getProductionAnnuelle());
         return "dashboard";
     }
 }

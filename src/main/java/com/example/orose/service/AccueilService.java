@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.Year;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -106,7 +107,7 @@ public class AccueilService {
         dto.setAutonomieAlimentJours(autonomie != null ? Math.max(0f, autonomie) : 0f);
     }
 
-    public Float estimerAutonomieAliment() {
+    public float estimerAutonomieAliment() {
         BigDecimal stockTotal = entreeAlimentRepository.sumQuantiteRestante();
         if (stockTotal == null || stockTotal.compareTo(BigDecimal.ZERO) <= 0) {
             return 0f;
@@ -117,4 +118,11 @@ public class AccueilService {
         return conso != null && conso.compareTo(BigDecimal.ZERO) > 0
                 ? (stockTotal.floatValue() / conso.floatValue()) * 7f : 30f;
     }
+
+    public float getProductionAnnuelle() {
+        // filtrable plus tard
+        int anneeActuelle = Year.now().getValue();
+       return Math.max(0f, lotCrevetteRepository.totaleProductionAnnuelle(anneeActuelle));
+    }
+
 }
