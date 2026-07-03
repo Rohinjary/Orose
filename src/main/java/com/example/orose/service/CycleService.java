@@ -3,6 +3,7 @@ package com.example.orose.service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -90,6 +91,8 @@ public class CycleService {
             : "Demarrage cycle " + savedCycle.getCodeUniqueCycle();
 
         // Creer 1 CycleBassinAssoc par bassin
+        int semaineActuelle = calculerSemaineActuelle(dto.getDateDebut());
+        
         for (Long idBassin : idBassins) {
             Bassin bassin = bassinRepository.findById(idBassin).get();
 
@@ -97,6 +100,7 @@ public class CycleService {
             assoc.setCycle(savedCycle);
             assoc.setBassin(bassin);
             assoc.setDensiteM2(densiteM2);
+            assoc.setSemaineActuelle(semaineActuelle);
             assoc.setEffectifInitial(dto.getEffectifInitial().intValue());
             assoc.setCoutPostLarves(dto.getCoutPostLarves());
             assoc.setEstCloture(false);
@@ -105,6 +109,14 @@ public class CycleService {
 
             bassinService.changerStatutBassin(idBassin, statutCible, motif, 1L);
         }
+    }
+
+    public int calculerSemaineActuelle(LocalDate dateDebut) {
+        long joursEcoules = ChronoUnit.DAYS.between(dateDebut, LocalDate.now());
+        if (joursEcoules < 0) {
+            return 0; // cycle pas encore démarré
+        }
+        return (int) (joursEcoules / 7); 
     }
 
     private String genererCodeUniqueCycle() {
