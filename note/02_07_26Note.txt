@@ -5,3 +5,4 @@
 5)tokony alana ilay taux de survie anatry suivi biologique raha hoe am farany ihany vo atsofoka sa?
 6) na en traitement aza ve ilay bassin dia mbola afaka manao pesee? sa aona?
     nefa izy misakafo foana ihany an
+7)suivi bio: dans cycleBassinAssoc : tokony miova automatiquement ny semaine_actuelle, dia ny pesee tode pret-rempli 
