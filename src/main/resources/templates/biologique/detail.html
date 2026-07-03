@@ -157,7 +157,6 @@
 
         <!-- Estimation et prévisions de récolte -->
         <section class="recolte-card">
-<<<<<<< HEAD
             <div th:if="${detail.calibreAtteint}">
                 <div style="display: flex; align-items: center; gap: 8px; font-weight: 700; margin-bottom: 12px;">
                     <i class="bi bi-check-circle-fill" style="font-size: 16px;"></i> Calibre de récolte atteint ! Les critères de production optimaux sont validés.
@@ -169,23 +168,6 @@
                            style="flex: 1; min-width: 200px; padding: 8px 12px; border: 1px solid var(--mg-outline); border-radius: var(--radius); font-family: var(--font-main); font-size: 13px;" />
                     <button type="submit" class="btn-mg btn-mg-primary"><i class="bi bi-basket"></i> Déclarer la récolte</button>
                 </form>
-=======
-            <div th:if="${detail.calibreAtteint}" style="display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;">
-                <div style="display: flex; align-items: center; gap: 8px; font-weight: 700;">
-                    <i class="bi bi-check-circle-fill" style="font-size: 16px;"></i> Calibre de récolte atteint ! Une pesée de l'historique est supérieure ou égale à 20 g.
-                </div>
-                <form th:if="${detail.statutBassinCode != 'RECOLTE'}"
-                      th:action="@{/biologique/{id}/recolter(id=${detail.idCycleBassinAssoc})}"
-                      method="post">
-                    <button type="submit" class="btn-mg btn-mg-success"
-                            onclick="return confirm('Confirmer la récolte de ce bassin ? Son statut passera en RECOLTE.');">
-                        <i class="bi bi-basket2-fill"></i> Récolter
-                    </button>
-                </form>
-                <span th:if="${detail.statutBassinCode == 'RECOLTE'}" class="btn-mg btn-mg-success" style="cursor: default;">
-                    <i class="bi bi-check2-circle"></i> Statut RECOLTE
-                </span>
->>>>>>> origin/modif_final
             </div>
             <div th:unless="${detail.calibreAtteint}">
                 <p>
@@ -268,7 +250,12 @@
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <script th:inline="javascript">
             const courbeReelle = /*[[${detail.courbeReelle}]]*/ [];
-            const courbeStandard = /*[[${detail.courbeStandard}]]*/ [];
+            let courbeStandard = /*[[${detail.courbeStandard}]]*/ [];
+
+            // Garantit que la courbe standard démarre toujours à S0 = 0g
+            if (!courbeStandard.some(p => p.semaine === 0)) {
+                courbeStandard = [{ semaine: 0, poidsMoyenG: 0 }, ...courbeStandard];
+            }
 
             const semainesReelles = courbeReelle.map(p => 'S' + p.semaine);
             const poidsReels = courbeReelle.map(p => p.poidsMoyenG);
