@@ -52,7 +52,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
         if (rowCount) {
             rowCount.textContent = cards.length > 0
-                ? visibleCount + " bassin(s) affiche(s) sur " + cards.length
+                ? visibleCount + " bassin(s) affiché(s) sur " + cards.length
                 : "";
         }
     }
