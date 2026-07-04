@@ -1,9 +1,9 @@
 /* ═══════════════════════════════════════════════
-   DESIGN SYSTEM : MOVE GASY
+   DESIGN SYSTEM : OROSE
    Theme: LIGHT | Font: INTER | Roundness: ROUND_FOUR (4px)
 ═══════════════════════════════════════════════ */
 :root {
-    /* Colors from Move Gasy Design System */
+    /* Colors from OROSE Design System */
     --mg-surface: #f7f9fb;
     --mg-surface-dim: #d8dadc;
     --mg-surface-bright: #ffffff;
@@ -159,7 +159,7 @@ body {
 }
 
 /* ═══════════════════════════════════════════════
-   SIDEBAR (MOVE GASY SIDEBAR STYLE)
+   SIDEBAR (OROSE SIDEBAR STYLE)
 ═══════════════════════════════════════════════ */
 .sidebar {
     width: var(--sidebar-w);
