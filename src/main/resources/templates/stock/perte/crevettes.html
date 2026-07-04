@@ -48,7 +48,7 @@
                             <label class="form-label">Lot crevette</label>
                             <select class="form-control" th:field="*{idLot}" required>
                                 <option value="">Sélectionner un lot</option>
-                                <option th:each="lot : ${lots}" th:value="${lot.id}" th:text="${lot.numeroLotUnique} + ' (' + ${#numbers.formatDecimal(lot.biomasseActuelleKg, 1, 2)} + ' kg)'">--</option>
+                                <option th:each="lot : ${lots}" th:value="${lot.id}" th:text="${lot.numeroLotUnique} + ' (' + (${lot.recolteDeclaration != null ? #numbers.formatDecimal(lot.recolteDeclaration.recolteReelleKg, 1, 2) : '0.00'}) + ' kg)'">--</option>
                             </select>
                         </div>
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">

@@ -101,12 +101,9 @@ public class BiologiqueService {
             if (dernierePesee.isPresent()) {
                 SuiviHebdoBassin pesee = dernierePesee.get();
                 dto.setDateDernierePesee(pesee.getDateSuivi());
-                if (assoc.getEffectifInitial() != null && assoc.getEffectifInitial() > 0) {
-                    tauxSurvie = BigDecimal.valueOf(pesee.getNbVivants())
-                            .multiply(BigDecimal.valueOf(100))
-                            .divide(BigDecimal.valueOf(assoc.getEffectifInitial()), 2, RoundingMode.HALF_UP);
-                    dto.setTauxSurvie(tauxSurvie);
-                }
+                // REMARQUE: Le taux de survie n'est plus calculé pendant le suivi hebdo.
+                // Il est maintenant déterminé lors de la déclaration de récolte (recolte_declaration.taux_survie_percent).
+                // Les colonnes nb_vivants et nb_morts ont été supprimées de suivi_hebdo_bassin.
             }
 
             Integer idEspece = assoc.getCycle().getEspece().getId();
@@ -149,20 +146,20 @@ public class BiologiqueService {
 
         if (dernierePesee.isPresent()) {
             SuiviHebdoBassin pesee = dernierePesee.get();
-            dto.setBiomassActuelleKg(pesee.getBiomasseCalculeeKg());
+            // NOTE: getBiomasseCalculeeKg() n'existe plus - supprimé avec nb_vivants et nb_morts
+            // dto.setBiomassActuelleKg(pesee.getBiomasseCalculeeKg());
             dto.setPoidsMoyen(pesee.getPoidsMoyenGramme());
             dto.setTailleMoyenne(pesee.getTailleMoyenneMm());
 
-            if (assoc.getEffectifInitial() != null && assoc.getEffectifInitial() > 0) {
-                dto.setTauxSurvie(BigDecimal.valueOf(pesee.getNbVivants())
-                        .multiply(BigDecimal.valueOf(100))
-                        .divide(BigDecimal.valueOf(assoc.getEffectifInitial()), 2, RoundingMode.HALF_UP));
-            }
+            // NOTE: Le taux de survie n'est plus calculé pendant le suivi.
+            // Il sera déterminé lors de la déclaration de récolte.
+            // if (assoc.getEffectifInitial() != null && assoc.getEffectifInitial() > 0) {
+            //     dto.setTauxSurvie(BigDecimal.valueOf(pesee.getNbVivants())...);
+            // }
 
-            dto.setBiomasseRecoltableEstimee(
-                    BigDecimal.valueOf(pesee.getNbVivants())
-                            .multiply(SEUIL_POIDS_RECOLTE)
-                            .divide(BigDecimal.valueOf(1000), 2, RoundingMode.HALF_UP));
+            // NOTE: La biomasse recoltable estimée ne peut plus être calculée
+            // car le nombre de vivants n'est plus enregistré.
+            // dto.setBiomasseRecoltableEstimee(...);
         }
 
         dto.setCalibreAtteint(estRecoltableParPoids(pesees));

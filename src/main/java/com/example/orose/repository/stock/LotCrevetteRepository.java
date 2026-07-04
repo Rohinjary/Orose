@@ -12,9 +12,19 @@ import java.util.List;
 public interface LotCrevetteRepository extends JpaRepository<LotCrevette, Integer> {
     List<LotCrevette> findAllByOrderByDateRecolteDesc();
 
-    @Query("SELECT COALESCE(SUM(l.biomasseActuelleKg), 0) FROM LotCrevette l")
-    BigDecimal sumBiomasseActuelle();
+    /**
+     * DÉSACTIVÉ : La biomasse actuelle n'est plus une colonne de LotCrevette.
+     * Elle est maintenant calculée dynamiquement à partir de :
+     * 1. RecolteDeclaration.recolteReelleKg (biomasse totale)
+     * 2. MouvementStockCrevette (pertes/mouvements)
+     *
+     * Pour obtenir la biomasse actuelle d'un lot, il faut :
+     * - Charger les mouvements du lot
+     * - Soustraire les pertes à recolteReelleKg
+     */
+    // @Query("SELECT COALESCE(SUM(l.biomasseActuelleKg), 0) FROM LotCrevette l")
+    // BigDecimal sumBiomasseActuelle();
 
-    @Query("SELECT COALESCE(SUM(l.biomasseActuelleKg), 0) FROM LotCrevette l WHERE l.biomasseActuelleKg > 0")
-    BigDecimal sumBiomasseDisponible();
+    // @Query("SELECT COALESCE(SUM(l.biomasseActuelleKg), 0) FROM LotCrevette l WHERE l.biomasseActuelleKg > 0")
+    // BigDecimal sumBiomasseDisponible();
 }
