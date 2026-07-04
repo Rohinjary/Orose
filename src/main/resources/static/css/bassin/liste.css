@@ -46,101 +46,216 @@
                 color: var(--mg-primary);
             }
 
-            .btn-mg-danger {
-                background: transparent;
-                color: var(--mg-danger);
-                border-color: transparent;
-                padding: 6px 12px;
-            }
-
-            .btn-mg-danger:hover {
-                background: #fee2e2;
-                border-radius: var(--radius);
-            }
-
-            /* Tableaux modernes style OROSE */
-            .table-container {
-                background: var(--mg-surface-bright);
+            /* ── Barre de filtres ──────────────────────────────────────────── */
+            .filters-section {
+                background: var(--mg-surface-bright, white);
                 border: 1px solid var(--mg-outline);
                 border-radius: var(--radius);
-                overflow: hidden;
-                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+                padding: 16px 24px;
+                margin-bottom: 24px;
+                display: flex;
+                align-items: flex-end;
+                gap: 20px;
+                flex-wrap: wrap;
             }
 
-            .mg-table {
-                width: 100%;
-                border-collapse: collapse;
-                text-align: left;
-                font-size: 13px;
+            .filter-group {
+                display: flex;
+                flex-direction: column;
+                gap: 6px;
             }
 
-            .mg-table th {
-                background: #f8fafc;
-                color: var(--mg-text-light);
+            .filter-label {
+                font-size: 11px;
                 font-weight: 700;
                 text-transform: uppercase;
-                font-size: 11px;
-                letter-spacing: 0.05em;
-                padding: 14px 20px;
-                border-bottom: 1px solid var(--mg-outline);
-            }
-
-            .mg-table td {
-                padding: 14px 20px;
-                border-bottom: 1px solid #f1f5f9;
                 color: var(--mg-secondary);
-                vertical-align: middle;
+                letter-spacing: 0.03em;
             }
 
-            .mg-table tr:last-child td {
-                border-bottom: none;
+            .filter-input {
+                height: 36px;
+                padding: 0 12px;
+                border: 1px solid var(--mg-outline);
+                border-radius: var(--radius);
+                font-size: 13px;
+                font-family: var(--font-main);
+                background: var(--mg-surface, #f7f9fb);
+                color: var(--mg-primary);
+                outline: none;
             }
 
-            .mg-table tr:hover td {
-                background: #fcfdfe;
+            .filter-input:focus {
+                border-color: var(--mg-primary);
             }
 
-            /* Badge Statut dynamique */
-            .status-badge {
+            select.filter-input {
+                cursor: pointer;
+                appearance: none;
+                background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' fill='%234a4a4a' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
+                background-repeat: no-repeat;
+                background-position: right 10px center;
+                padding-right: 32px;
+                min-width: 160px;
+            }
+
+            .btn-reset-filters {
+                height: 36px;
+                margin-left: auto;
+            }
+
+            #row-count { font-size: 13px; color: var(--mg-secondary); margin-bottom: 12px; }
+
+            /* ── Grille de cartes ──────────────────────────────────────────── */
+            .bassin-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+                gap: 20px;
+            }
+
+            .bassin-card {
+                background: var(--mg-surface-bright, white);
+                border: 1px solid var(--mg-outline);
+                border-radius: var(--radius);
+                padding: 20px;
+                display: flex;
+                flex-direction: column;
+                transition: box-shadow 0.2s, transform 0.2s, border-color 0.2s;
+            }
+
+            .bassin-card:hover {
+                border-color: var(--mg-primary);
+                box-shadow: 0 4px 14px rgba(0,0,0,0.07);
+                transform: translateY(-2px);
+            }
+
+            .bassin-id {
+                font-weight: 700;
+                font-size: 15px;
+                margin-bottom: 12px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .bassin-stat-row {
+                display: flex;
+                justify-content: space-between;
+                font-size: 12px;
+                color: var(--mg-secondary);
+                margin-bottom: 4px;
+                gap: 8px;
+            }
+
+            .progress-container {
+                height: 6px;
+                background: var(--mg-surface-container, #eceef0);
+                border-radius: 3px;
+                margin: 12px 0;
+                overflow: hidden;
+            }
+
+            .progress-bar {
+                height: 100%;
+                background: var(--mg-primary);
+                transition: width 1s ease;
+            }
+
+            .bassin-footer {
+                border-top: 1px solid var(--mg-surface-container, #eceef0);
+                margin-top: 16px;
+                padding-top: 16px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .footer-stat {
+                display: flex;
+                flex-direction: column;
+                gap: 2px;
+            }
+
+            .footer-label {
+                font-size: 10px;
+                text-transform: uppercase;
+                color: var(--mg-secondary);
+                font-weight: 700;
+            }
+
+            .footer-val {
+                font-size: 13px;
+                font-weight: 700;
+                color: var(--mg-primary);
+            }
+
+            .btn-card {
+                height: 32px;
+                padding: 0 14px;
+                border: 1px solid var(--mg-outline);
+                border-radius: var(--radius);
+                background: transparent;
+                font-size: 11px;
+                font-weight: 700;
+                font-family: var(--font-main);
+                text-transform: uppercase;
+                letter-spacing: 0.04em;
+                color: var(--mg-primary);
+                cursor: pointer;
+                text-decoration: none;
                 display: inline-flex;
-                padding: 4px 8px;
+                align-items: center;
+                justify-content: center;
+                gap: 6px;
+                transition: background 0.2s, color 0.2s;
+            }
+
+            .btn-card:hover {
+                background: var(--mg-primary);
+                border-color: var(--mg-primary);
+                color: white;
+            }
+
+            .harvest-alert {
+                color: #166534;
+                font-weight: 700;
+                display: flex;
+                align-items: center;
+                gap: 4px;
+            }
+
+            /* Badge Statut (mêmes couleurs que la fiche détail du bassin) */
+            .badge-statut {
+                display: inline-block;
+                padding: 3px 9px;
                 border-radius: 4px;
                 font-size: 11px;
                 font-weight: 700;
                 text-transform: uppercase;
+                letter-spacing: 0.03em;
+                white-space: nowrap;
             }
+            .badge-vide         { background: #f1f5f9; color: #475569; }
+            .badge-preparation  { background: #fef9c3; color: #854d0e; }
+            .badge-actif        { background: #dcfce7; color: #166534; }
+            .badge-quarantaine  { background: #fee2e2; color: #991b1b; }
+            .badge-traitement   { background: #e0f2fe; color: #075985; }
+            .badge-recolte      { background: #f3e8ff; color: #6b21a8; }
+            .badge-inactif      { background: #e5e7eb; color: #374151; }
 
-            /* Classes utilitaires de fallback pour les statuts */
-            .status-active {
-                background: #d1fae5;
-                color: #065f46;
+            /* Carte vide */
+            .empty-state {
+                grid-column: 1 / -1;
+                text-align: center;
+                padding: 64px 24px;
+                color: var(--mg-secondary);
             }
+            .empty-state i { font-size: 40px; display: block; margin-bottom: 12px; opacity: 0.4; }
+            .empty-state p { font-size: 14px; margin: 0; }
 
-            .status-maintenance {
-                background: #fef3c7;
-                color: #92400e;
-            }
-
-            .status-empty {
-                background: #e2e8f0;
-                color: #475569;
-            }
-
-            /* Actions de ligne */
-            .row-actions {
-                display: flex;
-                gap: 8px;
-                align-items: center;
-            }
-
-            .row-link {
-                color: var(--mg-primary);
-                text-decoration: none;
-                font-weight: 600;
-                padding: 6px 12px;
-            }
-
-            .row-link:hover {
-                background: var(--mg-surface-container);
-                border-radius: var(--radius);
+            /* Responsive */
+            @media (max-width: 640px) {
+                .filters-section { gap: 12px; }
+                .filter-group { flex: 1 1 100%; }
+                .btn-reset-filters { width: 100%; margin-left: 0; }
             }
