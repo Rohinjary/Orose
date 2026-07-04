@@ -226,7 +226,7 @@
     <div layout:fragment="content">
         <header class="header-section">
             <h2 class="header-title">Historique Sanitaire</h2>
-            <p class="header-sub">Journal complet des incidents, diagnostics et traitements terminés.</p>
+            <p class="header-sub">Journal complet des incidents sanitaires et de leur résolution.</p>
         </header>
 
         <div class="kpi-row">
@@ -292,9 +292,7 @@
                             <th>Bassin</th>
                             <th>Type</th>
                             <th>Description</th>
-                            <th>Traitement</th>
                             <th>Date</th>
-                            <th>Durée</th>
                             <th>Responsable</th>
                             <th>Statut</th>
                         </tr>
@@ -304,12 +302,7 @@
                             <td><strong th:text="${inc.cycleBassinAssoc.bassin.code}">--</strong></td>
                             <td th:text="${inc.typeIncident}">--</td>
                             <td th:text="${#strings.abbreviate(inc.description, 40)}">--</td>
-                            <td>
-                                <span th:if="${traitementsParIncident[inc.id] != null && !traitementsParIncident[inc.id].isEmpty()}"
-                                      th:text="${traitementsParIncident[inc.id][0].entreeMedicament.medicament.libelle}">--</span>
-                            </td>
                             <td th:text="${#temporals.format(inc.dateDetection, 'dd/MM/yyyy')}">--</td>
-                            <td th:text="${traitementsParIncident[inc.id] != null and !traitementsParIncident[inc.id].isEmpty() ? traitementsParIncident[inc.id][0].dureeJours + ' j' : '-'}">-</td>
                             <td th:text="${inc.responsable.nom} + ' ' + ${inc.responsable.prenom}">--</td>
                             <td>
                                 <span th:if="${inc.estResolu}" class="badge badge-success">Résolu</span>

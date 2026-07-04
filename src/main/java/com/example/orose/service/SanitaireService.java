@@ -4,13 +4,10 @@ import com.example.orose.dto.BassinEtatDTO;
 import com.example.orose.dto.IncidentActifDTO;
 import com.example.orose.dto.SanitaireDashboardDTO;
 import com.example.orose.dto.SanitaireHistoriqueStatsDTO;
-import com.example.orose.dto.IncidentDetailDTO;
 import com.example.orose.model.Bassin;
 import com.example.orose.model.IncidentSanitaire;
-import com.example.orose.model.Traitement;
 import com.example.orose.repository.BassinRepository;
 import com.example.orose.repository.IncidentSanitaireRepository;
-import com.example.orose.repository.TraitementRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -19,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,33 +27,24 @@ public class SanitaireService {
     private BassinRepository bassinRepository;
     @Autowired
     private IncidentSanitaireRepository incidentRepository;
-    @Autowired
-    private TraitementRepository traitementRepository;
 
     public SanitaireDashboardDTO getDashboardSanitaire() {
         List<Bassin> bassins = bassinRepository.findAll();
 
         long nbSains = 0;
-        long nbEnTraitement = 0;
         long nbQuarantaine = 0;
 
         List<BassinEtatDTO> bassinsEtat = bassins.stream().map(b -> {
             BassinEtatDTO etat = new BassinEtatDTO();
             etat.setCode(b.getCode());
             String code = b.getStatutActuel().getCode();
-            if ("EN_TRAITEMENT".equalsIgnoreCase(code)) {
-                etat.setStatutDotClass("traitement");
-            } else {
-                etat.setStatutDotClass("sain");
-            }
+            etat.setStatutDotClass("ACTIF".equalsIgnoreCase(code) ? "sain" : "alerte");
             return etat;
         }).collect(Collectors.toList());
 
         for (Bassin b : bassins) {
             String code = b.getStatutActuel().getCode();
-            if ("EN_TRAITEMENT".equalsIgnoreCase(code)) {
-                nbEnTraitement++;
-            } else {
+            if ("ACTIF".equalsIgnoreCase(code)) {
                 nbSains++;
             }
         }
@@ -68,18 +57,12 @@ public class SanitaireService {
             dto.setTypeIncident(inc.getTypeIncident());
             dto.setGravite(inc.getNiveauGravite());
             dto.setDateDetection(inc.getDateDetection());
-            List<Traitement> traitements = traitementRepository.findByIncidentId(inc.getId());
-            if (traitements.isEmpty()) {
-                dto.setStatutTraitement("AUCUN");
-            } else {
-                dto.setStatutTraitement("EN_COURS");
-            }
+            dto.setStatutTraitement(Boolean.TRUE.equals(inc.getEstResolu()) ? "Résolu" : "En cours");
             return dto;
         }).collect(Collectors.toList());
 
         SanitaireDashboardDTO dash = new SanitaireDashboardDTO();
         dash.setNbBassinsSains(nbSains);
-        dash.setNbBassinsEnTraitement(nbEnTraitement);
         dash.setNbBassinsQuarantaine(nbQuarantaine);
         dash.setNbIncidentsActifs(incidentsActifs.size());
         dash.setTotalBassins(bassins.size());
@@ -119,9 +102,9 @@ public class SanitaireService {
         int end = Math.min(start + pageable.getPageSize(), filtered.size());
 
         if (start > filtered.size()) {
-            return new PageImpl<>(List.of(), pageable, filtered.size());
+            return new PageImpl<>(new ArrayList<>(), pageable, filtered.size());
         }
-        return new PageImpl<>(filtered.subList(start, end), pageable, filtered.size());
+        return new PageImpl<>(new ArrayList<>(filtered.subList(start, end)), pageable, filtered.size());
     }
 
     public SanitaireHistoriqueStatsDTO getHistoriqueStats() {
@@ -132,7 +115,7 @@ public class SanitaireService {
                 .filter(inc -> inc.getCreatedAt().isAfter(thirtyDaysAgo))
                 .count();
 
-        long resolved = all.stream().filter(IncidentSanitaire::getEstResolu).count();
+        long resolved = all.stream().filter(inc -> Boolean.TRUE.equals(inc.getEstResolu())).count();
         double tauxGuerison = all.isEmpty() ? 0.0 : (resolved * 100.0 / all.size());
 
         SanitaireHistoriqueStatsDTO stats = new SanitaireHistoriqueStatsDTO();
@@ -150,15 +133,4 @@ public class SanitaireService {
         return stats;
     }
 
-    public IncidentDetailDTO getIncidentDetail(Integer idIncident) {
-        IncidentSanitaire incident = incidentRepository.findById(idIncident).orElse(null);
-        if (incident == null) {
-            return null;
-        }
-        List<Traitement> traitements = traitementRepository.findByIncidentId(idIncident);
-        IncidentDetailDTO dto = new IncidentDetailDTO();
-        dto.setIncident(incident);
-        dto.setTraitements(traitements);
-        return dto;
-    }
 }
