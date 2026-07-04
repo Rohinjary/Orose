@@ -111,11 +111,6 @@
                     th:href="@{/sanitaire/historique}">
                     Historique global
                 </a>
-
-                <a th:if="${currentPage == 'traitement'}" class="nav-item"
-                    th:classappend="${currentPage == 'traitement'} ? 'active' : ''">
-                    Gestion traitement
-                </a>
             </div>
         </div>
         <div class="nav-dropdown" th:classappend="${currentGroup == 'nourrissage'} ? 'open' : ''">

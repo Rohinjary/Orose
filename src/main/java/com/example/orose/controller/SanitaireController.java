@@ -1,17 +1,12 @@
 package com.example.orose.controller;
 
 import com.example.orose.dto.IncidentDTO;
-import com.example.orose.dto.TraitementDTO;
-import com.example.orose.model.CycleBassinAssoc;
 import com.example.orose.service.IncidentService;
 import com.example.orose.service.SanitaireService;
-import com.example.orose.service.TraitementService;
-import com.example.orose.repository.CycleBassinAssocRepository;
 import com.example.orose.repository.BassinRepository;
 import com.example.orose.repository.UtilisateurRepository;
-import com.example.orose.repository.EntreeStockMedicamentRepository;
 import com.example.orose.service.BassinService;
-import com.example.orose.repository.TraitementRepository;
+import com.example.orose.repository.CycleBassinAssocRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -22,7 +17,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.example.orose.model.IncidentSanitaire;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.math.BigDecimal;
 
 @Controller
 @RequestMapping("/sanitaire")
@@ -31,11 +25,7 @@ public class SanitaireController {
     @Autowired
     private IncidentService incidentService;
     @Autowired
-    private TraitementService traitementService;
-    @Autowired
     private SanitaireService sanitaireService;
-    @Autowired
-    private TraitementRepository traitementRepository;
     @Autowired
     private BassinService bassinService;
 
@@ -45,8 +35,6 @@ public class SanitaireController {
     private BassinRepository bassinRepository;
     @Autowired
     private UtilisateurRepository utilisateurRepository;
-    @Autowired
-    private EntreeStockMedicamentRepository entreeStockMedicamentRepository;
 
     @GetMapping("/index")
     public String index(Model model) {
@@ -83,11 +71,6 @@ public class SanitaireController {
         public String declarerIncident(@ModelAttribute IncidentDTO dto, RedirectAttributes redirectAttributes) {
             try {
                 incidentService.declarerIncident(dto);
-                CycleBassinAssoc assoc = cycleBassinAssocRepository.findById(dto.getIdCycleBassinAssoc().longValue())
-                        .orElseThrow(() -> new IllegalArgumentException("Association introuvable"));
-                Long bassinId = assoc.getBassin().getId().longValue();
-
-                bassinService.changerStatutBassin(bassinId, "EN_TRAITEMENT", "Incident déclaré", dto.getIdResponsable());
 
                 redirectAttributes.addFlashAttribute("message", "Incident déclaré avec succès.");
                 return "redirect:/sanitaire/index";
@@ -96,29 +79,6 @@ public class SanitaireController {
                 return "redirect:/sanitaire/declaration";
             }
         }
-
-    @GetMapping("/traitement")
-    public String afficherFormulaireTraitement(@RequestParam("incidentId") Integer incidentId, Model model) {
-        TraitementDTO traitementDTO = new TraitementDTO();
-        traitementDTO.setIdIncident(incidentId);
-        model.addAttribute("traitementDTO", traitementDTO);
-        model.addAttribute("medicaments",
-                entreeStockMedicamentRepository.findByQuantiteRestanteGreaterThan(BigDecimal.ZERO));
-        model.addAttribute("utilisateurs", utilisateurRepository.findAll());
-        model.addAttribute("currentGroup", "sanitaire");
-        model.addAttribute("currentPage", "traitement");
-        model.addAttribute("breadcrumbParent", "Module Sanitaire");
-        model.addAttribute("breadcrumbCurrent", "Saisie de Traitement");
-        return "Sanitaire/traitement";
-    }
-
-    @PostMapping("/traitement")
-    @PreAuthorize("hasAnyRole('ADMIN','TECH','RS')")
-    public String enregistrerTraitement(@ModelAttribute TraitementDTO dto, RedirectAttributes redirectAttributes) {
-        traitementService.enregistrerTraitement(dto);
-        redirectAttributes.addFlashAttribute("message", "Traitement enregistré avec succès.");
-        return "redirect:/sanitaire/historique";
-    }
 
     @GetMapping("/dashboard")
     public String dashboard(Model model) {
@@ -155,8 +115,6 @@ public class SanitaireController {
                         PageRequest.of(page, size)));
         model.addAttribute("stats", sanitaireService.getHistoriqueStats());
         model.addAttribute("bassins", bassinRepository.findAll());
-        model.addAttribute("traitementsParIncident", traitementRepository.findAll().stream()
-                .collect(java.util.stream.Collectors.groupingBy(t -> t.getIncident().getId())));
         model.addAttribute("filtreBassin", idBassin);
         model.addAttribute("filtreType", type);
         model.addAttribute("filtreDebut", debut);

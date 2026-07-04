@@ -19,7 +19,7 @@ public class StatutBassinService {
                 .orElseThrow(() -> new IllegalArgumentException("StatutBassin introuvable"));
     }
 
-    // EN_TRAITEMENT est déclenché automatiquement par TraitementService.
+    // EN_TRAITEMENT est déclenché automatiquement par le workflow sanitaire.
     // RECOLTE est déclenché uniquement par BiologiqueService (calibre atteint via Suivi biologique).
     // Ces deux statuts ne sont jamais proposés comme transitions manuelles.
     private static final Map<String, List<String>> TRANSITIONS_AUTORISEES = Map.of(

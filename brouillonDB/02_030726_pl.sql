@@ -17,7 +17,6 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-DROP TRIGGER IF EXISTS trg_decrement_stock_aliment ON distribution_nourriture_lot;
 CREATE TRIGGER trg_decrement_stock_aliment
     AFTER INSERT ON distribution_nourriture_lot
     FOR EACH ROW
@@ -39,27 +38,15 @@ END;
 $$ LANGUAGE plpgsql;
 
 
-DROP TRIGGER IF EXISTS trg_decrement_stock_medicament ON traitement_medicament_lot;
-CREATE TRIGGER trg_decrement_stock_medicament
-    AFTER INSERT ON traitement_medicament_lot
-    FOR EACH ROW
-    EXECUTE FUNCTION fn_decrement_stock_medicament();
-
 CREATE OR REPLACE FUNCTION fn_decrement_stock_crevette()
 RETURNS TRIGGER AS $$
 BEGIN
-    -- Fusion des garde-fous du script 02_030726 : on conserve la logique actuelle
-    -- du module stock crevette, mais on valide l'intégrité du mouvement avant insertion.
-    IF NEW.quantite_kg IS NULL OR NEW.quantite_kg <= 0 THEN
-        RAISE EXCEPTION 'La quantité de mouvement crevette doit être strictement positive';
-    END IF;
+    UPDATE lot_crevette
+    SET biomasse_actuelle_kg = biomasse_actuelle_kg - NEW.quantite_kg
+    WHERE id = NEW.id_lot_crevette;
 
-    IF NOT EXISTS (
-        SELECT 1
-        FROM lot_crevette
-        WHERE id = NEW.id_lot_crevette
-    ) THEN
-        RAISE EXCEPTION 'Lot de crevette introuvable pour le mouvement ID %', NEW.id;
+    IF (SELECT biomasse_actuelle_kg FROM lot_crevette WHERE id = NEW.id_lot_crevette) < 0 THEN
+        RAISE EXCEPTION 'Stock crevette insuffisant pour ce mouvement';
     END IF;
 
     RETURN NEW;
@@ -68,7 +55,6 @@ $$ LANGUAGE plpgsql;
 
 
 
-DROP TRIGGER IF EXISTS trg_decrement_stock_crevette ON mouvement_stock_crevette;
 CREATE TRIGGER trg_decrement_stock_crevette
     AFTER INSERT ON mouvement_stock_crevette
     FOR EACH ROW
@@ -97,7 +83,6 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-DROP TRIGGER IF EXISTS trg_quarantaine_auto ON incident_sanitaire;
 CREATE TRIGGER trg_quarantaine_auto
     AFTER INSERT ON incident_sanitaire
     FOR EACH ROW
@@ -286,15 +271,10 @@ BEGIN
               AND dn_check.date_distribution = CURRENT_DATE
         ) THEN
             
-            SELECT COALESCE(
-                (sh.poids_moyen_gramme * cba.effectif_initial / 1000),
-                0
-            ) INTO ration_totale_bassin_kg
+            SELECT COALESCE(sh.biomasse_calculee_kg, 0) INTO ration_totale_bassin_kg
             FROM suivi_hebdo_bassin sh
-            JOIN cycle_bassin_assoc cba ON cba.id = sh.id_cycle_bassin_assoc
             WHERE sh.id_cycle_bassin_assoc = bassin_rec.id_cycle_bassin_assoc
-            ORDER BY sh.date_suivi DESC, sh.id DESC
-            LIMIT 1;
+            ORDER BY sh.date_suivi DESC, sh.id DESC LIMIT 1;
 
             IF ration_totale_bassin_kg > 0 THEN
                 ration_totale_bassin_kg := ration_totale_bassin_kg * 0.03;

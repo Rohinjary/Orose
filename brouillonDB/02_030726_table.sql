@@ -1,17 +1,19 @@
 -- ============================================================
--- BASE JAONA : Schéma final consolidé OROSE (VERSION MODIFIÉE)
--- Modifications principales :
---   1) Suppression de nb_vivants et nb_morts de suivi_hebdo_bassin
---   2) Création table recolte_declaration pour déclaration récolte
---   3) Intégration calcul automatique taux survie et perte
+-- db_v3_mise_a_jour_corrige.sql — Schéma final consolidé OROSE
+-- Version nettoyée :
+--   1) Schéma conservé pour tous les modules hors traitement clinique
+--   2) Suppression des tables liées à l'action de traitement sanitaire
+--   3) Conservation des statuts bassin, y compris EN_TRAITEMENT
 -- ============================================================
 
 -- Important : assurez-vous que le client psql utilise l'encodage UTF8
 -- (la base "orose" doit aussi avoir été créée avec ENCODING 'UTF8').
+-- Si vous éditez ce fichier sous Windows, enregistrez-le en UTF-8 (sans BOM),
+-- pas en ANSI/Windows-1252 : c'est l'origine de l'erreur 0x90.
 
--- ============================================================
+-- ------------------------------------------------------------
 -- MODULE 0 : UTILISATEURS & RÔLES
--- ============================================================
+-- ------------------------------------------------------------
 
 CREATE TABLE role (
     id SERIAL PRIMARY KEY,
@@ -45,9 +47,9 @@ CREATE TABLE journal_action (
 );
 
 
--- ============================================================
+-- ------------------------------------------------------------
 -- MODULE 1 : BASSINS
--- ============================================================
+-- ------------------------------------------------------------
 
 CREATE TABLE statut_bassin (
     id SERIAL PRIMARY KEY,
@@ -73,11 +75,9 @@ CREATE TABLE histo_statut_bassin (
     motif TEXT,
     date_changement TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
-
-
--- ============================================================
+-- ------------------------------------------------------------
 -- MODULE 2 : ESPÈCES
--- ============================================================
+-- ------------------------------------------------------------
 
 CREATE TABLE espece_crevette (
     id SERIAL PRIMARY KEY,
@@ -94,9 +94,9 @@ CREATE TABLE evolution_hebdo_espece (
     UNIQUE(id_espece, semaine)
 );
 
--- ============================================================
+-- ------------------------------------------------------------
 -- MODULE 3 : CYCLE & ASSOCIATIONS BASSINS
--- ============================================================
+-- ------------------------------------------------------------
 
 CREATE TABLE cycle (
     id SERIAL PRIMARY KEY,
@@ -127,11 +127,9 @@ CREATE UNIQUE INDEX idx_bassin_unique_cycle_actif
     ON cycle_bassin_assoc(id_bassin) WHERE est_cloture = FALSE;
 
 
--- ============================================================
--- MODULE 4 : SUIVI HEBDOMADAIRE (MODIFIÉ)
--- ============================================================
--- MODIFICATION : Suppression de nb_vivants, nb_morts et biomasse_calculee_kg
--- Ces données sont maintenant collectées uniquement à la récolte
+-- ------------------------------------------------------------
+-- MODULE 4 : SUIVI HEBDOMADAIRE
+-- ------------------------------------------------------------
 
 CREATE TABLE suivi_hebdo_bassin (
     id SERIAL PRIMARY KEY,
@@ -140,55 +138,27 @@ CREATE TABLE suivi_hebdo_bassin (
     semaine_actuelle INTEGER NOT NULL,
     poids_moyen_gramme DECIMAL(6,2) NOT NULL,
     taille_moyenne_mm DECIMAL(10,2) NOT NULL,
+    nb_vivants INTEGER NOT NULL,
+    nb_morts INTEGER NOT NULL DEFAULT 0,
+    biomasse_calculee_kg DECIMAL(10,2)
+        GENERATED ALWAYS AS ((nb_vivants * poids_moyen_gramme / 1000)) STORED,
     id_technicien INTEGER NOT NULL REFERENCES utilisateur(id),
     notes TEXT
 );
-
--- Vue modifiée sans calcul de taux survie (à déplacer à recolte_declaration)
 CREATE OR REPLACE VIEW v_suivi_hebdo_bassin AS
 SELECT
     s.*,
     cba.id_bassin,
     cba.id_cycle,
-    cba.effectif_initial
+    ROUND((s.nb_vivants::DECIMAL / cba.effectif_initial * 100), 2) AS taux_survie_calcule,
+    ROUND((s.nb_morts::DECIMAL  / cba.effectif_initial * 100), 2) AS taux_mortalite_calcule
 FROM suivi_hebdo_bassin s
 JOIN cycle_bassin_assoc cba ON cba.id = s.id_cycle_bassin_assoc;
 
 
--- ============================================================
--- MODULE 5 : RÉCOLTE & DÉCLARATION (NOUVEAU)
--- ============================================================
--- Nouvelle table pour capturer la récolte et calculer les indicateurs
--- RÈGLES DE CALCUL :
---   - recolte_estimee_kg = effectif_initial * 0.020 (20g par post-larve)
---   - perte_kg = recolte_estimee_kg - recolte_reelle_kg
---   - taux_survie_percent = (recolte_reelle_kg / recolte_estimee_kg) * 100
-
--- ============================================================
--- MODULE 5 : RÉCOLTE & DÉCLARATION (CORRIGÉ)
--- ============================================================
-
-
-CREATE TABLE recolte_declaration (
-    id SERIAL PRIMARY KEY,
-    id_cycle_bassin_assoc INTEGER NOT NULL REFERENCES cycle_bassin_assoc(id),
-    recolte_estimee_kg DECIMAL(10,2) NOT NULL,
-    recolte_reelle_kg DECIMAL(10,2) NOT NULL,
-    perte_kg DECIMAL(10,2) GENERATED ALWAYS AS (recolte_estimee_kg - recolte_reelle_kg) STORED,
-    taux_survie_percent DECIMAL(5,2) GENERATED ALWAYS AS (
-        CASE WHEN recolte_estimee_kg > 0 THEN (recolte_reelle_kg * 100 / recolte_estimee_kg) ELSE 0 END
-    ) STORED,
-    date_declaration DATE NOT NULL DEFAULT CURRENT_DATE,
-    id_responsable INTEGER NOT NULL REFERENCES utilisateur(id),
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE INDEX idx_recolte_cycle_bassin ON recolte_declaration(id_cycle_bassin_assoc);
-
-
--- ============================================================
--- MODULE 6 : NOURRISSAGE (MULTI-LOTS)
--- ============================================================
+-- ------------------------------------------------------------
+-- MODULE 5 : NOURRISSAGE (MULTI-LOTS)
+-- ------------------------------------------------------------
 
 CREATE TABLE creneau_horaire (
     id SERIAL PRIMARY KEY,
@@ -214,7 +184,6 @@ CREATE TABLE entree_stock_aliment (
     id_responsable INTEGER NOT NULL REFERENCES utilisateur(id),
     CONSTRAINT check_dates_aliment CHECK (date_expiration >= date_reception)
 );
-
 CREATE TABLE distribution_nourriture (
     id SERIAL PRIMARY KEY,
     id_cycle_bassin_assoc INTEGER NOT NULL REFERENCES cycle_bassin_assoc(id) ON DELETE CASCADE,
@@ -231,6 +200,7 @@ CREATE TABLE distribution_nourriture (
     UNIQUE(id_cycle_bassin_assoc, date_distribution, id_creneau)
 );
 
+-- TABLE INTERMÉDIAIRE : Associe un repas à 1 ou plusieurs lots de nourriture
 CREATE TABLE distribution_nourriture_lot (
     id SERIAL PRIMARY KEY,
     id_distribution INTEGER NOT NULL REFERENCES distribution_nourriture(id) ON DELETE CASCADE,
@@ -248,11 +218,9 @@ CREATE TABLE mouvement_stock_aliment (
     date_mouvement TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     id_utilisateur INTEGER NOT NULL REFERENCES utilisateur(id)
 );
-
-
--- ============================================================
--- MODULE 7 : SANITAIRE (MULTI-LOTS)
--- ============================================================
+-- ------------------------------------------------------------
+-- MODULE 6 : SANITAIRE (SANS ACTION DE TRAITEMENT)
+-- ------------------------------------------------------------
 
 CREATE TABLE medicament (
     id SERIAL PRIMARY KEY,
@@ -285,26 +253,6 @@ CREATE TABLE incident_sanitaire (
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE traitement (
-    id SERIAL PRIMARY KEY,
-    id_incident INTEGER NOT NULL REFERENCES incident_sanitaire(id) ON DELETE CASCADE,
-    id_medicament INTEGER NOT NULL REFERENCES medicament(id),
-    dosage VARCHAR(100) NOT NULL,
-    duree_jours INTEGER NOT NULL CHECK (duree_jours > 0),
-    date_debut DATE NOT NULL,
-    quantite_utilisee DECIMAL(10,2) NOT NULL DEFAULT 0 CHECK (quantite_utilisee >= 0),
-    id_responsable INTEGER NOT NULL REFERENCES utilisateur(id),
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE traitement_medicament_lot (
-    id SERIAL PRIMARY KEY,
-    id_traitement INTEGER NOT NULL REFERENCES traitement(id) ON DELETE CASCADE,
-    id_entree_medicament INTEGER NOT NULL REFERENCES entree_stock_medicament(id),
-    quantite_piquee DECIMAL(10,2) NOT NULL CHECK (quantite_piquee > 0),
-    UNIQUE(id_traitement, id_entree_medicament)
-);
-
 CREATE TABLE mouvement_stock_medicament (
     id SERIAL PRIMARY KEY,
     id_entree_medicament INTEGER NOT NULL REFERENCES entree_stock_medicament(id) ON DELETE CASCADE,
@@ -315,17 +263,18 @@ CREATE TABLE mouvement_stock_medicament (
     id_responsable INTEGER NOT NULL REFERENCES utilisateur(id)
 );
 
-
--- ============================================================
--- MODULE 8 : STOCK CREVETTES (RÉCOLTE) & INVENTAIRE
--- ============================================================
+-- ------------------------------------------------------------
+-- MODULE 7 : STOCK CREVETTES (RÉCOLTE) & INVENTAIRE
+-- ------------------------------------------------------------
 
 CREATE TABLE lot_crevette (
     id SERIAL PRIMARY KEY,
-    numero_lot_unique VARCHAR(50) NOT NULL UNIQUE,
-    id_recolte_declaration INTEGER NOT NULL REFERENCES recolte_declaration(id),
-    poids_moyen_final_g DECIMAL(10,2) NOT NULL DEFAULT 0,
-    taille_moyenne_finale_mm DECIMAL(10,2) NOT NULL DEFAULT 0,
+    numero_lot_unique VARCHAR(50) NOT NULL UNIQUE,  -- ex: LOT-B01-2026
+    id_cycle_bassin_assoc INTEGER NOT NULL REFERENCES cycle_bassin_assoc(id),
+    biomasse_totale_kg DECIMAL(10,2) NOT NULL,
+    biomasse_actuelle_kg DECIMAL(10,2) NOT NULL,
+    poids_moyen_final_g DECIMAL(10,2) NOT NULL,
+    taille_moyenne_finale_mm DECIMAL(10,2) NOT NULL,
     date_recolte DATE NOT NULL DEFAULT CURRENT_DATE,
     id_responsable INTEGER NOT NULL REFERENCES utilisateur(id)
 );
@@ -339,12 +288,6 @@ CREATE TABLE mouvement_stock_crevette (
     date_mouvement TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     id_utilisateur INTEGER NOT NULL REFERENCES utilisateur(id)
 );
-
-CREATE INDEX idx_lot_crevette_recolte_declaration
-    ON lot_crevette(id_recolte_declaration);
-
-CREATE INDEX idx_mouvement_stock_crevette_lot
-    ON mouvement_stock_crevette(id_lot_crevette);
 
 CREATE TABLE inventaire (
     id SERIAL PRIMARY KEY,
@@ -364,10 +307,9 @@ CREATE TABLE inventaire (
     )
 );
 
-
--- ============================================================
--- MODULE 9 : ALERTES CONSOLIDÉES
--- ============================================================
+-- ------------------------------------------------------------
+-- MODULE 8 : ALERTES CONSOLIDÉES
+-- ------------------------------------------------------------
 
 CREATE TABLE alerte (
     id SERIAL PRIMARY KEY,
@@ -382,11 +324,6 @@ CREATE TABLE alerte (
     id_resolu_par INTEGER REFERENCES utilisateur(id)
 );
 
--- ============================================================
--- TRIGGERS ET MISES À JOUR AUTOMATIQUES
--- ============================================================
-
--- Mise à jour de cycle_bassin_assoc après nouvelle pesée
 UPDATE cycle_bassin_assoc cba
 SET
     poids_moyen_actuel = derniere.poids_moyen_gramme,

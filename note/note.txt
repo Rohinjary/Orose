@@ -63,3 +63,12 @@ TEST CODE:
     REMARQUE:
     stock->liste deroulante:(crevette,aliment,medicament)-> liste deroulante entre/sortie/vue stock actuel/historique can
     stock->tableau de bord: stock crevette, stock aliment,stock medicament,alerte niveau,lot permies
+
+
+
+
+
+REMARQUE & PROBLEME:
+Gestion d'erreur dans la gestion des cycle
+insert via terminal ireo medicament
+

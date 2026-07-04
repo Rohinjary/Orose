@@ -1,8 +1,8 @@
 
 -- ============================================================
--- DONNÉES DE TEST
--- Cycles : C01 (30/06→30/10/2026), C02 (30/09/2026→30/01/2027), C03 (30/07→30/11/2026)
--- Répartition : C01=B01,B02,B03 / C02=B04,B05,B06 / C03=B07,B08,B09
+-- DONNÉES DE TEST RÉALISTES
+-- Scénario : 3 cycles de production avec pesées hebdomadaires,
+-- puis déclaration de récolte, création de lot et mouvement de stock.
 -- ============================================================
 
 -- 1. Référentiels de base
@@ -46,6 +46,12 @@ INSERT INTO aliment (libelle, seuil_minimum_kg)
 SELECT 'Granules Croissance Elevee', 50.00
 WHERE NOT EXISTS (
     SELECT 1 FROM aliment WHERE libelle = 'Granules Croissance Elevee'
+);
+
+INSERT INTO aliment (libelle, seuil_minimum_kg)
+SELECT 'Granules finition', 20.00
+WHERE NOT EXISTS (
+    SELECT 1 FROM aliment WHERE libelle = 'Granules finition'
 );
 
 -- 3. Bassins B01 à B09
@@ -113,85 +119,85 @@ ORDER BY c.code_unique_cycle, b.code;
 -- MODULE 2 — PESÉES
 -- ------------------------------------------------------------
 
--- --- Bassin B01 — cycle C01 ---
+-- --- Bassin B01 — cycle C01 : croissance régulière jusqu'à calibre commercial ---
 INSERT INTO suivi_hebdo_bassin
     (id_cycle_bassin_assoc, date_suivi, semaine_actuelle, poids_moyen_gramme, taille_moyenne_mm, id_technicien, notes)
 SELECT cba.id, v.date_suivi::DATE, v.semaine, v.poids, v.taille, 1, v.notes
 FROM cycle_bassin_assoc cba
 JOIN bassin b ON b.id = cba.id_bassin
 CROSS JOIN (VALUES
-    ('2026-07-07', 1, 0.5, 8.0, 'Pesee S1'),
-    ('2026-07-28', 4, 2.8, 25.0, 'Pesee S4'),
-    ('2026-08-25', 8, 8.5, 55.0, 'Pesee S8'),
-    ('2026-09-22', 12, 14.5, 85.0, 'Pesee S12'),
-    ('2026-10-20', 16, 20.0, 120.0, 'Pesee S16 - calibre commercial atteint')
+    ('2026-07-07', 1, 0.6, 9.5, 'Début de cycle et adaptation'),
+    ('2026-07-28', 4, 2.8, 24.5, 'Croissance normale'),
+    ('2026-08-25', 8, 8.4, 54.0, 'Bon développement'),
+    ('2026-09-22', 12, 14.2, 84.0, 'Stade de croissance avancé'),
+    ('2026-10-20', 16, 20.3, 121.5, 'Calibre commercial atteint')
 ) AS v(date_suivi, semaine, poids, taille, notes)
 WHERE b.code = 'B01';
 
--- --- Bassin B02 — cycle C01 ---
+-- --- Bassin B02 — cycle C01 : croissance légèrement plus lente ---
 INSERT INTO suivi_hebdo_bassin
     (id_cycle_bassin_assoc, date_suivi, semaine_actuelle, poids_moyen_gramme, taille_moyenne_mm, id_technicien, notes)
 SELECT cba.id, v.date_suivi::DATE, v.semaine, v.poids, v.taille, 1, v.notes
 FROM cycle_bassin_assoc cba
 JOIN bassin b ON b.id = cba.id_bassin
 CROSS JOIN (VALUES
-    ('2026-07-07', 1, 0.5, 8.0, 'Pesee S1'),
-    ('2026-08-11', 6, 5.5, 40.0, 'Pesee S6'),
-    ('2026-09-08', 10, 11.5, 70.0, 'Pesee S10'),
-    ('2026-10-06', 14, 17.5, 105.0, 'Pesee S14')
+    ('2026-07-07', 1, 0.5, 8.0, 'Installation du lot'),
+    ('2026-08-11', 6, 5.2, 39.0, 'Croissance correcte'),
+    ('2026-09-08', 10, 11.0, 68.0, 'Développement stable'),
+    ('2026-10-06', 14, 17.0, 103.0, 'En attente de validation commerciale')
 ) AS v(date_suivi, semaine, poids, taille, notes)
 WHERE b.code = 'B02';
 
--- --- Bassin B03 — cycle C01, bassin test quarantaine ---
+-- --- Bassin B03 — cycle C01 : incidence sanitaire détectée ---
 INSERT INTO suivi_hebdo_bassin
     (id_cycle_bassin_assoc, date_suivi, semaine_actuelle, poids_moyen_gramme, taille_moyenne_mm, id_technicien, notes)
 SELECT cba.id, v.date_suivi::DATE, v.semaine, v.poids, v.taille, 1, v.notes
 FROM cycle_bassin_assoc cba
 JOIN bassin b ON b.id = cba.id_bassin
 CROSS JOIN (VALUES
-    ('2026-07-07', 1, 0.5, 8.0, 'Pesee S1'),
-    ('2026-08-04', 5, 4.0, 32.0, 'Pesee S5 - mortalite elevee constatee')
+    ('2026-07-07', 1, 0.6, 8.8, 'Début de cycle'),
+    ('2026-08-04', 5, 3.8, 31.0, 'Performance réduite après incident sanitaire')
 ) AS v(date_suivi, semaine, poids, taille, notes)
 WHERE b.code = 'B03';
 
--- --- Bassin B04 — cycle C02 ---
+-- --- Bassin B04 — cycle C02 : croissance régulière ---
 INSERT INTO suivi_hebdo_bassin
     (id_cycle_bassin_assoc, date_suivi, semaine_actuelle, poids_moyen_gramme, taille_moyenne_mm, id_technicien, notes)
 SELECT cba.id, v.date_suivi::DATE, v.semaine, v.poids, v.taille, 1, v.notes
 FROM cycle_bassin_assoc cba
 JOIN bassin b ON b.id = cba.id_bassin
 CROSS JOIN (VALUES
-    ('2026-10-07', 1, 0.5, 8.0, 'Pesee S1'),
-    ('2026-10-28', 4, 2.8, 25.0, 'Pesee S4'),
-    ('2026-11-25', 8, 8.5, 55.0, 'Pesee S8'),
-    ('2026-12-23', 12, 14.5, 85.0, 'Pesee S12'),
-    ('2027-01-20', 16, 20.0, 120.0, 'Pesee S16 - calibre commercial atteint')
+    ('2026-10-07', 1, 0.7, 9.0, 'Démarrage du cycle'),
+    ('2026-10-28', 4, 3.0, 24.8, 'Bon démarrage'),
+    ('2026-11-25', 8, 8.8, 56.5, 'Croissance conforme'),
+    ('2026-12-23', 12, 14.8, 86.0, 'Stage intermédiaire'),
+    ('2027-01-20', 16, 20.4, 122.0, 'Calibre commercial atteint')
 ) AS v(date_suivi, semaine, poids, taille, notes)
 WHERE b.code = 'B04';
 
--- --- Bassin B05 — cycle C02 ---
+-- --- Bassin B05 — cycle C02 : suivi incomplet avant ajustement ---
 INSERT INTO suivi_hebdo_bassin
     (id_cycle_bassin_assoc, date_suivi, semaine_actuelle, poids_moyen_gramme, taille_moyenne_mm, id_technicien, notes)
 SELECT cba.id, v.date_suivi::DATE, v.semaine, v.poids, v.taille, 1, v.notes
 FROM cycle_bassin_assoc cba
 JOIN bassin b ON b.id = cba.id_bassin
 CROSS JOIN (VALUES
-    ('2026-10-07', 1, 0.5, 8.0, 'Pesee S1'),
-    ('2026-11-11', 6, 5.5, 40.0, 'Pesee S6')
+    ('2026-10-07', 1, 0.6, 8.4, 'Démarrage du cycle'),
+    ('2026-11-11', 6, 5.4, 39.5, 'Suivi intermédiaire')
 ) AS v(date_suivi, semaine, poids, taille, notes)
 WHERE b.code = 'B05';
 
--- --- Bassin B06 — cycle C02 ---
+-- --- Bassin B06 — cycle C02 : cycle plus avancé et proche de la récolte ---
 INSERT INTO suivi_hebdo_bassin
     (id_cycle_bassin_assoc, date_suivi, semaine_actuelle, poids_moyen_gramme, taille_moyenne_mm, id_technicien, notes)
 SELECT cba.id, v.date_suivi::DATE, v.semaine, v.poids, v.taille, 1, v.notes
 FROM cycle_bassin_assoc cba
 JOIN bassin b ON b.id = cba.id_bassin
 CROSS JOIN (VALUES
-    ('2026-10-07', 1, 0.5, 8.0, 'Pesee S1'),
-    ('2026-11-25', 8, 8.5, 55.0, 'Pesee S8'),
-    ('2026-12-30', 14, 17.5, 105.0, 'Pesee S14'),
-    ('2027-01-13', 16, 20.0, 120.0, 'Pesee S16 - calibre commercial atteint')
+    ('2026-10-07', 1, 0.7, 8.8, 'Début du cycle'),
+    ('2026-11-25', 8, 8.7, 55.0, 'Bon développement'),
+    ('2026-12-30', 14, 17.6, 105.5, 'Près du calibre de récolte'),
+    ('2027-01-13', 16, 20.2, 121.0, 'Calibre commercial atteint')
 ) AS v(date_suivi, semaine, poids, taille, notes)
 WHERE b.code = 'B06';
 
@@ -204,7 +210,7 @@ ORDER BY id_cycle_bassin_assoc, date_suivi;
 -- RÉCOLTE & STOCK CREVETTES
 -- ------------------------------------------------------------
 INSERT INTO recolte_declaration (id_cycle_bassin_assoc, recolte_estimee_kg, recolte_reelle_kg, date_declaration, id_responsable)
-SELECT cba.id, 1000.00, 950.00, CURRENT_DATE, 1
+SELECT cba.id, 980.00, 915.00, CURRENT_DATE - 2, 1
 FROM cycle_bassin_assoc cba
 JOIN bassin b ON b.id = cba.id_bassin
 WHERE b.code = 'B01'
@@ -213,19 +219,19 @@ WHERE b.code = 'B01'
   );
 
 INSERT INTO lot_crevette (numero_lot_unique, id_recolte_declaration, poids_moyen_final_g, taille_moyenne_finale_mm, date_recolte, id_responsable)
-SELECT 'LOT-B01-TEST', rd.id, 20.00, 120.00, CURRENT_DATE, 1
+SELECT 'LOT-B01-2026-01', rd.id, 20.30, 121.50, CURRENT_DATE - 2, 1
 FROM recolte_declaration rd
 JOIN cycle_bassin_assoc cba ON cba.id = rd.id_cycle_bassin_assoc
 JOIN bassin b ON b.id = cba.id_bassin
 WHERE b.code = 'B01'
   AND NOT EXISTS (
-      SELECT 1 FROM lot_crevette lc WHERE lc.numero_lot_unique = 'LOT-B01-TEST'
+      SELECT 1 FROM lot_crevette lc WHERE lc.numero_lot_unique = 'LOT-B01-2026-01'
   );
 
 INSERT INTO mouvement_stock_crevette (id_lot_crevette, type_mouvement, quantite_kg, motif, date_mouvement, id_utilisateur)
-SELECT lc.id, 'PERTE', 50.00, 'Mortalité de test', CURRENT_TIMESTAMP, 1
+SELECT lc.id, 'PERTE', 32.00, 'Perte liée à une manipulation de tri', CURRENT_TIMESTAMP - INTERVAL '1 day', 1
 FROM lot_crevette lc
-WHERE lc.numero_lot_unique = 'LOT-B01-TEST'
+WHERE lc.numero_lot_unique = 'LOT-B01-2026-01'
   AND NOT EXISTS (
       SELECT 1 FROM mouvement_stock_crevette msc WHERE msc.id_lot_crevette = lc.id
   );
@@ -236,9 +242,9 @@ WHERE lc.numero_lot_unique = 'LOT-B01-TEST'
 INSERT INTO entree_stock_aliment
     (id_aliment, quantite_kg, quantite_restante_kg, prix_unitaire_ar, date_reception, date_expiration, id_responsable)
 VALUES
-    ((SELECT id FROM aliment WHERE libelle = 'Granules Croissance Elevee'), 500.00, 500.00, 2200.00, '2026-07-02', '2027-01-01', 1),
-    ((SELECT id FROM aliment WHERE libelle = 'Granules Croissance Elevee'), 800.00, 800.00, 2100.00, '2026-08-01', '2027-04-01', 1),
-    ((SELECT id FROM aliment WHERE libelle = 'Granules Croissance Elevee'), 600.00, 600.00, 2300.00, '2026-09-01', '2027-09-15', 1);
+    ((SELECT id FROM aliment WHERE libelle = 'Granules Croissance Elevee'), 450.00, 450.00, 2200.00, CURRENT_DATE - 25, CURRENT_DATE + 180, 1),
+    ((SELECT id FROM aliment WHERE libelle = 'Granules Croissance Elevee'), 700.00, 700.00, 2100.00, CURRENT_DATE - 10, CURRENT_DATE + 300, 1),
+    ((SELECT id FROM aliment WHERE libelle = 'Granules finition'), 180.00, 180.00, 2400.00, CURRENT_DATE - 5, CURRENT_DATE + 120, 1);
 
 -- Vérification stock global + ordre FEFO attendu
 SELECT id, quantite_kg, quantite_restante_kg, prix_unitaire_ar, date_reception, date_expiration
