@@ -96,7 +96,8 @@
                             (${bassin.statutActuel.code == 'PREPARATION'} ? 'badge-preparation' :
                             (${bassin.statutActuel.code == 'EN_TRAITEMENT'} ? 'badge-traitement' :
                             (${bassin.statutActuel.code == 'QUARANTAINE'} ? 'badge-quarantaine' :
-                            (${bassin.statutActuel.code == 'RECOLTE'} ? 'badge-recolte' : 'badge-vide'))))"
+                            (${bassin.statutActuel.code == 'RECOLTE'} ? 'badge-recolte' :
+                            (${bassin.statutActuel.code == 'INACTIF'} ? 'badge-inactif' : 'badge-vide')))))"
                         th:text="${bassin.statutActuel.libelle}">Actif</span>
                 </div>
 
