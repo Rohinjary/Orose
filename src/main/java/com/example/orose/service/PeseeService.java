@@ -73,8 +73,6 @@ public class PeseeService {
         pesee.setSemaineActuelle(semaineActuelle);
         pesee.setPoidsMoyenGramme(dto.getPoidsMoyenGramme());
         pesee.setTailleMoyenneMm(dto.getTailleMoyenneMm());
-        pesee.setNbVivants(dto.getNbVivants());
-        pesee.setNbMorts(dto.getNbMorts() != null ? dto.getNbMorts() : 0);
         pesee.setTechnicien(technicien);
         pesee.setNotes(dto.getNotes());
 
@@ -125,8 +123,6 @@ public class PeseeService {
         pesee.setSemaineActuelle(semaineActuelle);
         pesee.setPoidsMoyenGramme(dto.getPoidsMoyenGramme());
         pesee.setTailleMoyenneMm(dto.getTailleMoyenneMm());
-        pesee.setNbVivants(dto.getNbVivants());
-        pesee.setNbMorts(dto.getNbMorts() != null ? dto.getNbMorts() : 0);
         pesee.setTechnicien(technicien);
         pesee.setNotes(dto.getNotes());
 
@@ -223,11 +219,7 @@ public class PeseeService {
         if (dto.getTailleMoyenneMm() == null || dto.getTailleMoyenneMm().compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("La taille moyenne doit être supérieure à 0");
         }
-        if (dto.getNbVivants() != null && assoc.getEffectifInitial() != null
-                && dto.getNbVivants() > assoc.getEffectifInitial()) {
-            throw new IllegalArgumentException("Le nombre de vivants ne peut pas dépasser l'effectif initial ("
-                    + assoc.getEffectifInitial() + ")");
-        }
+
     }
 
     private void verifierAlerteRecolte(PeseeDTO dto, CycleBassinAssoc assoc) {
@@ -238,20 +230,12 @@ public class PeseeService {
     }
 
     /**
-     * Compare la biomasse de la nouvelle pesée avec celle de la pesée précédente.
-     * Délègue la création d'alerte à {@link AlerteService#verifierVariationBiomasse}.
-     *
-     * La biomasse est lue depuis {@link SuiviHebdoBassin#getBiomasseCalculeeKg()}
-     * qui est calculée automatiquement à partir du poids moyen et du nombre de vivants.
+     * Vérification de biomasse désactivée.
+     * La biomasse est maintenant calculée uniquement à la récolte via le taux de survie.
      */
     private void verifierAlerteBiomasse(CycleBassinAssoc assoc,
                                         Optional<SuiviHebdoBassin> peseePrecedenteOpt,
                                         SuiviHebdoBassin nouvellesPesee) {
-        if (peseePrecedenteOpt.isEmpty()) {
-            return; // première pesée : pas de comparaison possible
-        }
-        BigDecimal biomassePrec     = peseePrecedenteOpt.get().getBiomasseCalculeeKg();
-        BigDecimal biomasseNouvelle = nouvellesPesee.getBiomasseCalculeeKg();
-        alerteService.verifierVariationBiomasse(assoc, biomassePrec, biomasseNouvelle);
+        // Vérification désactivée : la biomasse est maintenant gérée via recolte_declaration
     }
 }

@@ -87,7 +87,33 @@ public class BiologiqueService {
 
         List<BassinSuiviDTO> result = new ArrayList<>();
         for (CycleBassinAssoc assoc : assocs) {
-            result.add(construireSuiviDTO(assoc));
+            BassinSuiviDTO dto = new BassinSuiviDTO();
+            dto.setIdBassin(assoc.getBassin().getId());
+            dto.setCodeBassin(assoc.getBassin().getCode());
+            dto.setCodeUniqueCycle(assoc.getCycle().getCodeUniqueCycle());
+            dto.setIdCycleBassinAssoc(assoc.getId());
+            dto.setSemaine(assoc.getSemaineActuelle());
+
+            Optional<SuiviHebdoBassin> dernierePesee = suiviHebdoBassinRepository
+                    .findTopByCycleBassinAssocIdOrderByDateSuiviDesc(assoc.getId());
+            dto.setPoidsMoyenActuel(determinerPoidsMoyenActuel(assoc, dernierePesee));
+
+            BigDecimal tauxSurvie = null;
+            if (dernierePesee.isPresent()) {
+                SuiviHebdoBassin pesee = dernierePesee.get();
+                dto.setDateDernierePesee(pesee.getDateSuivi());
+                // REMARQUE: Le taux de survie n'est plus calculé pendant le suivi hebdo.
+                // Il est maintenant déterminé lors de la déclaration de récolte (recolte_declaration.taux_survie_percent).
+                // Les colonnes nb_vivants et nb_morts ont été supprimées de suivi_hebdo_bassin.
+            }
+
+            Integer idEspece = assoc.getCycle().getEspece().getId();
+            Integer semaine = assoc.getSemaineActuelle() != null ? assoc.getSemaineActuelle() : 0;
+            Optional<EvolutionHebdoEspece> evolution = evolutionHebdoEspeceRepository
+                    .findByEspeceIdAndSemaine(idEspece, semaine);
+
+            dto.setStatutCroissance(calculerStatutCroissance(tauxSurvie, assoc.getPoidsMoyenActuel(), evolution));
+            result.add(dto);
         }
         return result;
     }
@@ -107,7 +133,7 @@ public class BiologiqueService {
         dto.setCodeUniqueCycle(assoc.getCycle().getCodeUniqueCycle());
         dto.setIdCycleBassinAssoc(assoc.getId());
         dto.setSemaine(assoc.getSemaineActuelle());
-        dto.setPoidsMoyenActuel(assoc.getPoidsMoyenActuel());
+
         dto.setDateFinPrevue(assoc.getCycle().getDateFinPrevue());
 
         LocalDate aujourdhui = LocalDate.now();
@@ -130,12 +156,12 @@ public class BiologiqueService {
         if (dernierePesee.isPresent()) {
             SuiviHebdoBassin pesee = dernierePesee.get();
             dto.setDateDernierePesee(pesee.getDateSuivi());
-            if (assoc.getEffectifInitial() != null && assoc.getEffectifInitial() > 0) {
-                tauxSurvie = BigDecimal.valueOf(pesee.getNbVivants())
-                        .multiply(BigDecimal.valueOf(100))
-                        .divide(BigDecimal.valueOf(assoc.getEffectifInitial()), 2, RoundingMode.HALF_UP);
-                dto.setTauxSurvie(tauxSurvie);
-            }
+            dto.setPoidsMoyenActuel(determinerPoidsMoyenActuel(assoc, dernierePesee));
+            // NOTE: Le taux de survie n'est plus calculé pendant le suivi (nb_vivants supprimé).
+            // Il sera déterminé lors de la déclaration de récolte via recolte_declaration.taux_survie_percent
+            tauxSurvie = null;
+        } else {
+            dto.setPoidsMoyenActuel(assoc.getPoidsMoyenActuel());
         }
 
         Integer idEspece = assoc.getCycle().getEspece().getId();
@@ -183,20 +209,20 @@ public class BiologiqueService {
 
         if (dernierePesee.isPresent()) {
             SuiviHebdoBassin pesee = dernierePesee.get();
-            dto.setBiomassActuelleKg(pesee.getBiomasseCalculeeKg());
-            dto.setPoidsMoyen(pesee.getPoidsMoyenGramme());
+            // NOTE: getBiomasseCalculeeKg() n'existe plus - supprimé avec nb_vivants et nb_morts
+            // dto.setBiomassActuelleKg(pesee.getBiomasseCalculeeKg());
+            dto.setPoidsMoyen(determinerPoidsMoyenActuel(assoc, Optional.of(pesee)));
             dto.setTailleMoyenne(pesee.getTailleMoyenneMm());
 
-            if (assoc.getEffectifInitial() != null && assoc.getEffectifInitial() > 0) {
-                dto.setTauxSurvie(BigDecimal.valueOf(pesee.getNbVivants())
-                        .multiply(BigDecimal.valueOf(100))
-                        .divide(BigDecimal.valueOf(assoc.getEffectifInitial()), 2, RoundingMode.HALF_UP));
-            }
+            // NOTE: Le taux de survie n'est plus calculé pendant le suivi.
+            // Il sera déterminé lors de la déclaration de récolte.
+            // if (assoc.getEffectifInitial() != null && assoc.getEffectifInitial() > 0) {
+            //     dto.setTauxSurvie(BigDecimal.valueOf(pesee.getNbVivants())...);
+            // }
 
-            dto.setBiomasseRecoltableEstimee(
-                    BigDecimal.valueOf(pesee.getNbVivants())
-                            .multiply(SEUIL_POIDS_RECOLTE)
-                            .divide(BigDecimal.valueOf(1000), 2, RoundingMode.HALF_UP));
+            // NOTE: La biomasse recoltable estimée ne peut plus être calculée
+            // car le nombre de vivants n'est plus enregistré.
+            // dto.setBiomasseRecoltableEstimee(...);
         }
 
         dto.setCalibreAtteint(estRecoltableParPoids(pesees));
@@ -257,6 +283,13 @@ public class BiologiqueService {
         return pesees.stream()
                 .anyMatch(p -> p.getPoidsMoyenGramme() != null
                         && p.getPoidsMoyenGramme().compareTo(SEUIL_POIDS_RECOLTE) >= 0);
+    }
+
+    private BigDecimal determinerPoidsMoyenActuel(CycleBassinAssoc assoc, Optional<SuiviHebdoBassin> dernierePesee) {
+        if (dernierePesee.isPresent() && dernierePesee.get().getPoidsMoyenGramme() != null) {
+            return dernierePesee.get().getPoidsMoyenGramme();
+        }
+        return assoc.getPoidsMoyenActuel();
     }
 
     private String calculerStatutCroissance(BigDecimal tauxSurvie, BigDecimal poidsMoyenActuel,

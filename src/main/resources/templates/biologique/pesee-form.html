@@ -154,45 +154,6 @@
                         <input type="number" step="0.01" min="0.01" class="form-input" id="tailleMoyenne" th:field="*{tailleMoyenneMm}" required />
                     </div>
 
-                    <!-- ===== VIVANTS ===== -->
-                    <div class="form-group">
-                        <label class="form-label">Nombre de vivants</label>
-                        <input type="number" min="0" class="form-input" id="nbVivants"
-                               th:field="*{nbVivants}" required />
-                        <span class="field-hint" id="hintVivants">Saisir → les morts se calculent automatiquement</span>
-                        <span class="field-error" id="errVivants"></span>
-                    </div>
-
-                    <!-- ===== MORTS (calculé automatiquement) ===== -->
-                    <div class="form-group">
-                        <label class="form-label">Nombre de morts</label>
-                        <input type="number" min="0" class="form-input" id="nbMorts"
-                               th:field="*{nbMorts}" />
-                        <span class="field-hint" id="hintMorts">Calculé automatiquement · modifiable si besoin</span>
-                        <span class="field-error" id="errMorts"></span>
-                    </div>
-
-                    <!-- ===== RECAP EFFECTIF ===== -->
-                    <div class="col-full" id="recapBlock" style="display:none;">
-                        <div class="recap-effectif">
-                            <div class="recap-item">
-                                <i class="bi bi-people"></i>
-                                Effectif initial : <strong id="recapInitial">—</strong>
-                            </div>
-                            <div class="recap-item" style="color:#166534;">
-                                <i class="bi bi-check-circle"></i>
-                                Vivants : <strong id="recapVivants">—</strong>
-                            </div>
-                            <div class="recap-item" style="color:#991b1b;">
-                                <i class="bi bi-x-circle"></i>
-                                Morts : <strong id="recapMorts">—</strong>
-                            </div>
-                            <div class="recap-item" id="recapEcartWrap" style="display:none; color:#92400e;">
-                                <i class="bi bi-exclamation-triangle"></i>
-                                Écart non expliqué : <strong id="recapEcart">—</strong>
-                            </div>
-                        </div>
-                    </div>
 
                     <div class="form-group col-full">
                         <label class="form-label">Notes / Remarques</label>

@@ -84,9 +84,9 @@ public class StockService {
     }
 
     private void remplirStockCrevette(StockDashboardDTO dto) {
-        BigDecimal biomasse = lotCrevetteRepository.sumBiomasseDisponible();
-        dto.setStockCrevetteKg(toFloat(biomasse));
-        dto.setValeurCrevetteAr(toFloat(biomasse.multiply(PRIX_CREVETTE_PAR_KG)));
+        BigDecimal stockCrevette = calculerStockCrevetteDisponibleTotalKg();
+        dto.setStockCrevetteKg(stockCrevette.floatValue());
+        dto.setValeurCrevetteAr(stockCrevette.multiply(PRIX_CREVETTE_PAR_KG).floatValue());
     }
 
     private void remplirStockAliment(StockDashboardDTO dto) {
@@ -233,10 +233,13 @@ public class StockService {
     }
 
     private void ajouterAlerteCrevette(List<StockAlerteDTO> alertes) {
-        BigDecimal biomasseDispo = lotCrevetteRepository.sumBiomasseDisponible();
-        if (biomasseDispo == null || biomasseDispo.compareTo(BigDecimal.ZERO) <= 0) {
-            alertes.add(new StockAlerteDTO("RUPTURE_CREVETTE", "ROUGE",
-                    "Rupture stock crevette — aucun stock disponible", 0f, "CREVETTE"));
+        BigDecimal stock = calculerStockCrevetteDisponibleTotalKg();
+        if (stock.compareTo(BigDecimal.ZERO) <= 0) {
+            alertes.add(new StockAlerteDTO("RUPTURE", "ROUGE",
+                    "Rupture de stock crevette", 0f, "CREVETTE"));
+        } else {
+            alertes.add(new StockAlerteDTO("STOCK_OK", "VERT",
+                    "Stock crevette disponible : " + stock.stripTrailingZeros().toPlainString() + " kg", stock.floatValue(), "CREVETTE"));
         }
     }
 
@@ -262,9 +265,9 @@ public class StockService {
 
     private List<ProduitStockDTO> buildProduitsCrevette() {
         List<ProduitStockDTO> produits = new ArrayList<>();
-        BigDecimal biomasse = lotCrevetteRepository.sumBiomasseDisponible();
-        Float stockF = biomasse != null ? biomasse.floatValue() : 0f;
-        String statut = stockF <= 0f ? "Rupture" : "Disponible";
+        BigDecimal stock = calculerStockCrevetteDisponibleTotalKg();
+        Float stockF = stock.floatValue();
+        String statut = stockF <= 0f ? "Rupture" : "Optimal";
         String css = stockF <= 0f ? "danger" : "success";
         produits.add(new ProduitStockDTO(0, "Crevette (tous lots)", "CREVETTE", stockF, 0f, statut, css));
         return produits;
@@ -491,11 +494,20 @@ public class StockService {
             dto.setDateMouvement(l.getDateRecolte().atStartOfDay());
             dto.setProduit("Crevette (calibre ≥ 20g)");
             dto.setType("ENTRÉE");
-            dto.setQuantite(l.getBiomasseTotaleKg().floatValue());
+            
+            // La biomasse est maintenant stockée dans RecolteDeclaration.recolteReelleKg
+            BigDecimal biomasse = l.getRecolteDeclaration() != null 
+                ? l.getRecolteDeclaration().getRecolteReelleKg() 
+                : BigDecimal.ZERO;
+            dto.setQuantite(biomasse.floatValue());
             dto.setMotif("Récolte - Lot " + l.getNumeroLotUnique());
             dto.setSource("Automatique");
-            String bassin = l.getCycleBassinAssoc() != null && l.getCycleBassinAssoc().getBassin() != null
-                    ? l.getCycleBassinAssoc().getBassin().getCode()
+            
+            // Le bassin est accessible via RecolteDeclaration -> CycleBassinAssoc -> Bassin
+            String bassin = (l.getRecolteDeclaration() != null 
+                    && l.getRecolteDeclaration().getCycleBassinAssoc() != null 
+                    && l.getRecolteDeclaration().getCycleBassinAssoc().getBassin() != null)
+                    ? l.getRecolteDeclaration().getCycleBassinAssoc().getBassin().getCode()
                     : "N/A";
             dto.setResponsable(bassin);
             dto.setCategorie("CREVETTE");
@@ -530,6 +542,32 @@ public class StockService {
 
     // ────────────────────── Pertes Crevette ──────────────────────
 
+    public BigDecimal calculerStockDisponiblePourLot(LotCrevette lot) {
+        if (lot == null || lot.getId() == null) {
+            return BigDecimal.ZERO;
+        }
+
+        BigDecimal stockInitial = BigDecimal.ZERO;
+        if (lot.getRecolteDeclaration() != null && lot.getRecolteDeclaration().getRecolteReelleKg() != null) {
+            stockInitial = lot.getRecolteDeclaration().getRecolteReelleKg();
+        }
+
+        BigDecimal totalSorties = mouvementCrevetteRepository.findByLotCrevetteIdOrderByDateMouvementDesc(lot.getId())
+                .stream()
+                .map(MouvementStockCrevette::getQuantiteKg)
+                .filter(q -> q != null)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        return stockInitial.subtract(totalSorties).max(BigDecimal.ZERO);
+    }
+
+    private BigDecimal calculerStockCrevetteDisponibleTotalKg() {
+        return lotCrevetteRepository.findAllByOrderByDateRecolteDesc()
+                .stream()
+                .map(this::calculerStockDisponiblePourLot)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
     @Transactional
     public void enregistrerPerteCrevette(EnregistrerPerteCrevetteDTO dto, Integer userId) {
         LotCrevette lot = lotCrevetteRepository.findById(dto.getIdLot())
@@ -537,20 +575,33 @@ public class StockService {
         Utilisateur user = utilisateurRepository.findById(userId.longValue())
                 .orElseThrow(() -> new RuntimeException("Utilisateur introuvable"));
 
+        BigDecimal quantite = BigDecimal.valueOf(dto.getQuantiteKg());
+        if (quantite.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new RuntimeException("La quantité de perte doit être supérieure à 0");
+        }
+
+        BigDecimal stockDisponible = calculerStockDisponiblePourLot(lot);
+        if (stockDisponible.compareTo(quantite) < 0) {
+            throw new RuntimeException("Quantité de perte supérieure au stock disponible du lot");
+        }
+
         MouvementStockCrevette mv = new MouvementStockCrevette();
         mv.setLotCrevette(lot);
         mv.setTypeMouvement("PERTE");
-        mv.setQuantiteKg(BigDecimal.valueOf(dto.getQuantiteKg()));
+        mv.setQuantiteKg(quantite);
         mv.setMotif(dto.getMotif());
         mv.setDateMouvement(LocalDateTime.now());
         mv.setUtilisateur(user);
         mouvementCrevetteRepository.save(mv);
 
-        lot.setBiomasseActuelleKg(lot.getBiomasseActuelleKg().subtract(mv.getQuantiteKg()));
-        if (lot.getBiomasseActuelleKg().compareTo(BigDecimal.ZERO) < 0) {
-            lot.setBiomasseActuelleKg(BigDecimal.ZERO);
-        }
-        lotCrevetteRepository.save(lot);
+        // NOTE: La colonne biomasseActuelleKg a été supprimée de LotCrevette.
+        // Les pertes sont maintenant tracées uniquement via MouvementStockCrevette.
+        // Le calcul de biomasse actuelle se fait via les mouvements.
+        // lot.setBiomasseActuelleKg(lot.getBiomasseActuelleKg().subtract(mv.getQuantiteKg()));
+        // if (lot.getBiomasseActuelleKg().compareTo(BigDecimal.ZERO) < 0) {
+        //     lot.setBiomasseActuelleKg(BigDecimal.ZERO);
+        // }
+        // lotCrevetteRepository.save(lot);
     }
 
     public List<PerteCrevetteDTO> getPertesCrevettes() {
