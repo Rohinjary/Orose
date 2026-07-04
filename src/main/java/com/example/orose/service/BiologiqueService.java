@@ -3,6 +3,7 @@ package com.example.orose.service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -86,38 +87,71 @@ public class BiologiqueService {
 
         List<BassinSuiviDTO> result = new ArrayList<>();
         for (CycleBassinAssoc assoc : assocs) {
-            BassinSuiviDTO dto = new BassinSuiviDTO();
-            dto.setIdBassin(assoc.getBassin().getId());
-            dto.setCodeBassin(assoc.getBassin().getCode());
-            dto.setCodeUniqueCycle(assoc.getCycle().getCodeUniqueCycle());
-            dto.setIdCycleBassinAssoc(assoc.getId());
-            dto.setSemaine(assoc.getSemaineActuelle());
-            dto.setPoidsMoyenActuel(assoc.getPoidsMoyenActuel());
-
-            Optional<SuiviHebdoBassin> dernierePesee = suiviHebdoBassinRepository
-                    .findTopByCycleBassinAssocIdOrderByDateSuiviDesc(assoc.getId());
-
-            BigDecimal tauxSurvie = null;
-            if (dernierePesee.isPresent()) {
-                SuiviHebdoBassin pesee = dernierePesee.get();
-                dto.setDateDernierePesee(pesee.getDateSuivi());
-                if (assoc.getEffectifInitial() != null && assoc.getEffectifInitial() > 0) {
-                    tauxSurvie = BigDecimal.valueOf(pesee.getNbVivants())
-                            .multiply(BigDecimal.valueOf(100))
-                            .divide(BigDecimal.valueOf(assoc.getEffectifInitial()), 2, RoundingMode.HALF_UP);
-                    dto.setTauxSurvie(tauxSurvie);
-                }
-            }
-
-            Integer idEspece = assoc.getCycle().getEspece().getId();
-            Integer semaine = assoc.getSemaineActuelle() != null ? assoc.getSemaineActuelle() : 0;
-            Optional<EvolutionHebdoEspece> evolution = evolutionHebdoEspeceRepository
-                    .findByEspeceIdAndSemaine(idEspece, semaine);
-
-            dto.setStatutCroissance(calculerStatutCroissance(tauxSurvie, assoc.getPoidsMoyenActuel(), evolution));
-            result.add(dto);
+            result.add(construireSuiviDTO(assoc));
         }
         return result;
+    }
+
+    /**
+     * Suivi biologique du cycle actif d'un bassin donné, utilisé par la fiche détail du bassin.
+     */
+    public Optional<BassinSuiviDTO> getSuiviActifPourBassin(Long idBassin) {
+        return cycleBassinAssocRepository.findByBassinIdAndEstClotureFalse(idBassin)
+                .map(this::construireSuiviDTO);
+    }
+
+    private BassinSuiviDTO construireSuiviDTO(CycleBassinAssoc assoc) {
+        BassinSuiviDTO dto = new BassinSuiviDTO();
+        dto.setIdBassin(assoc.getBassin().getId());
+        dto.setCodeBassin(assoc.getBassin().getCode());
+        dto.setCodeUniqueCycle(assoc.getCycle().getCodeUniqueCycle());
+        dto.setIdCycleBassinAssoc(assoc.getId());
+        dto.setSemaine(assoc.getSemaineActuelle());
+        dto.setPoidsMoyenActuel(assoc.getPoidsMoyenActuel());
+        dto.setDateFinPrevue(assoc.getCycle().getDateFinPrevue());
+
+        LocalDate aujourdhui = LocalDate.now();
+        LocalDate dateDebut = assoc.getCycle().getDateDebut();
+        LocalDate dateFinPrevue = assoc.getCycle().getDateFinPrevue();
+        if (dateFinPrevue != null) {
+            dto.setJoursRestants(Math.max(0, ChronoUnit.DAYS.between(aujourdhui, dateFinPrevue)));
+        }
+        if (dateDebut != null && dateFinPrevue != null && dateFinPrevue.isAfter(dateDebut)) {
+            long dureeTotaleJours = ChronoUnit.DAYS.between(dateDebut, dateFinPrevue);
+            long joursEcoules = ChronoUnit.DAYS.between(dateDebut, aujourdhui);
+            int avancement = (int) Math.round(Math.min(100.0, Math.max(0.0, joursEcoules * 100.0 / dureeTotaleJours)));
+            dto.setTauxAvancement(avancement);
+        }
+
+        Optional<SuiviHebdoBassin> dernierePesee = suiviHebdoBassinRepository
+                .findTopByCycleBassinAssocIdOrderByDateSuiviDesc(assoc.getId());
+
+        BigDecimal tauxSurvie = null;
+        if (dernierePesee.isPresent()) {
+            SuiviHebdoBassin pesee = dernierePesee.get();
+            dto.setDateDernierePesee(pesee.getDateSuivi());
+            if (assoc.getEffectifInitial() != null && assoc.getEffectifInitial() > 0) {
+                tauxSurvie = BigDecimal.valueOf(pesee.getNbVivants())
+                        .multiply(BigDecimal.valueOf(100))
+                        .divide(BigDecimal.valueOf(assoc.getEffectifInitial()), 2, RoundingMode.HALF_UP);
+                dto.setTauxSurvie(tauxSurvie);
+            }
+        }
+
+        Integer idEspece = assoc.getCycle().getEspece().getId();
+        Integer semaine = assoc.getSemaineActuelle() != null ? assoc.getSemaineActuelle() : 0;
+        Optional<EvolutionHebdoEspece> evolution = evolutionHebdoEspeceRepository
+                .findByEspeceIdAndSemaine(idEspece, semaine);
+
+        dto.setStatutCroissance(calculerStatutCroissance(tauxSurvie, assoc.getPoidsMoyenActuel(), evolution));
+
+        BigDecimal poidsMoyenActuel = assoc.getPoidsMoyenActuel();
+        BigDecimal seuilProche = SEUIL_POIDS_RECOLTE.multiply(new BigDecimal("0.8"));
+        dto.setRecolteProche(poidsMoyenActuel != null
+                && poidsMoyenActuel.compareTo(seuilProche) >= 0
+                && poidsMoyenActuel.compareTo(SEUIL_POIDS_RECOLTE) < 0);
+
+        return dto;
     }
 
     public SuiviBiologiqueDetailDTO getDetailBiologique(Integer idCycleBassinAssoc) {

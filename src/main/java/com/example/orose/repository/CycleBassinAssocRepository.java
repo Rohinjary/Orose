@@ -9,6 +9,7 @@ import java.util.Optional;
 @Repository
 public interface CycleBassinAssocRepository extends JpaRepository<CycleBassinAssoc, Long> {
     boolean existsByBassinIdAndEstClotureFalse(Long bassinId);
+    Optional<CycleBassinAssoc> findByBassinIdAndEstClotureFalse(Long bassinId);
     List<CycleBassinAssoc> findByCycleId(Long cycleId);
     List<CycleBassinAssoc> findByEstClotureFalse();
     long countByCycleId(Long cycleId);
