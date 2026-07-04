@@ -117,12 +117,13 @@
                     
                     <div class="form-group">
                         <label class="form-label">Date du suivi</label>
-                        <input type="date" class="form-input" th:field="*{dateSuivi}"
+                        <!-- <input type="date" class="form-input" th:field="*{dateSuivi}"
                                th:min="${dateDernierePesee != null}
                                    ? ${#temporals.format(dateDernierePesee.plusDays(1), 'yyyy-MM-dd')}
                                    : ${#temporals.format(assoc.cycle.dateDebut, 'yyyy-MM-dd')}"
                                th:max="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}"
-                               required />
+                               required /> -->
+                        <input type="date" class="form-input" th:field="*{dateSuivi}" required />
                         <span class="field-hint" th:if="${dateDernierePesee != null}">
                             Doit être après le
                             <strong th:text="${#temporals.format(dateDernierePesee, 'dd/MM/yyyy')}">—</strong>

@@ -3,7 +3,6 @@ package com.example.orose.service;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,6 +17,7 @@ import com.example.orose.model.Utilisateur;
 import com.example.orose.repository.CycleBassinAssocRepository;
 import com.example.orose.repository.SuiviHebdoBassinRepository;
 import com.example.orose.repository.UtilisateurRepository;
+import com.example.orose.util.SemaineUtils;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -62,7 +62,7 @@ public class PeseeService {
         validerDonneesPesee(dto, assoc, peseePrecedenteOpt);
 
         Cycle cycle = assoc.getCycle();
-        int semaineActuelle = calculerSemaine(cycle.getDateDebut(), dto.getDateSuivi());
+        int semaineActuelle = SemaineUtils.calculer(cycle.getDateDebut(), dto.getDateSuivi());
 
         Utilisateur technicien = utilisateurRepository.findById(dto.getIdTechnicien())
                 .orElseThrow(() -> new EntityNotFoundException("Technicien introuvable"));
@@ -82,7 +82,6 @@ public class PeseeService {
 
         // ── Mise à jour de l'association ───────────────────────────────────
         assoc.setPoidsMoyenActuel(dto.getPoidsMoyenGramme());
-        assoc.setSemaineActuelle(semaineActuelle);
         cycleBassinAssocRepository.save(assoc);
 
         // ── Alertes ────────────────────────────────────────────────────────
@@ -117,7 +116,7 @@ public class PeseeService {
         validerDonneesPesee(dto, assoc, peseePrecedenteOpt);
 
         Cycle cycle = assoc.getCycle();
-        int semaineActuelle = calculerSemaine(cycle.getDateDebut(), dto.getDateSuivi());
+        int semaineActuelle = SemaineUtils.calculer(cycle.getDateDebut(), dto.getDateSuivi());
 
         Utilisateur technicien = utilisateurRepository.findById(dto.getIdTechnicien())
                 .orElseThrow(() -> new EntityNotFoundException("Technicien introuvable"));
@@ -180,22 +179,6 @@ public class PeseeService {
     // ─────────────────────────────────────────────────────────────────────────
     // MÉTHODES PRIVÉES
     // ─────────────────────────────────────────────────────────────────────────
-
-    /**
-     * Calcule le numéro de semaine du cycle à partir de la date de début.
-     * Jour J0 (dateDebut) = S1. Jamais inférieur à 1.
-     * Formule : floor(jours écoulés / 7) + 1, borné à 1 minimum.
-     *
-     * Exemples :
-     *   dateDebut=23/06, dateSuivi=23/06 → 0 jours → S1
-     *   dateDebut=23/06, dateSuivi=25/06 → 2 jours → S1
-     *   dateDebut=23/06, dateSuivi=30/06 → 7 jours → S2
-     */
-    private int calculerSemaine(LocalDate dateDebut, LocalDate dateSuivi) {
-        long joursEcoules = ChronoUnit.DAYS.between(dateDebut, dateSuivi);
-        int semaine = (int) (joursEcoules / 7) + 1;
-        return Math.max(semaine, 1);
-    }
 
     private void validerEtatAssoc(CycleBassinAssoc assoc) {
         if (Boolean.TRUE.equals(assoc.getEstCloture())) {
