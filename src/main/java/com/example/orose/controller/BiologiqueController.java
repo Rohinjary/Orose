@@ -1,15 +1,19 @@
 package com.example.orose.controller;
 
 import com.example.orose.dto.PeseeDTO;
+import com.example.orose.dto.DeclarRecolteFormDTO;
 import com.example.orose.model.CycleBassinAssoc;
 import com.example.orose.model.SuiviHebdoBassin;
+import com.example.orose.model.Utilisateur;
 import com.example.orose.repository.CycleBassinAssocRepository;
 import com.example.orose.repository.UtilisateurRepository;
 import com.example.orose.service.AlerteService;
 import com.example.orose.service.BiologiqueService;
+import com.example.orose.service.BiologiqueRecolteService;
 import com.example.orose.service.PeseeService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
@@ -29,17 +34,20 @@ import java.util.List;
 public class BiologiqueController {
 
     private final BiologiqueService biologiqueService;
+    private final BiologiqueRecolteService recolteService;
     private final PeseeService peseeService;
     private final AlerteService alerteService;
     private final CycleBassinAssocRepository cycleBassinAssocRepository;
     private final UtilisateurRepository utilisateurRepository;
 
     public BiologiqueController(BiologiqueService biologiqueService,
+                                BiologiqueRecolteService recolteService,
                                 PeseeService peseeService,
                                 AlerteService alerteService,
                                 CycleBassinAssocRepository cycleBassinAssocRepository,
                                 UtilisateurRepository utilisateurRepository) {
         this.biologiqueService = biologiqueService;
+        this.recolteService = recolteService;
         this.peseeService = peseeService;
         this.alerteService = alerteService;
         this.cycleBassinAssocRepository = cycleBassinAssocRepository;
@@ -143,8 +151,6 @@ public class BiologiqueController {
         dto.setDateSuivi(pesee.getDateSuivi());
         dto.setPoidsMoyenGramme(pesee.getPoidsMoyenGramme());
         dto.setTailleMoyenneMm(pesee.getTailleMoyenneMm());
-        dto.setNbVivants(pesee.getNbVivants());
-        dto.setNbMorts(pesee.getNbMorts());
         dto.setIdTechnicien(pesee.getTechnicien().getId().longValue());
         dto.setNotes(pesee.getNotes());
 
@@ -193,7 +199,45 @@ public class BiologiqueController {
         return "redirect:/biologique/" + idCba + "/detail";
     }
 
-    // ── Déclaration de récolte ───────────────────────────────────────────────
+    // ── RÉCOLTE : Formulaire de déclaration ────────────────────────────────────
+
+    @GetMapping("/{id}/recolte/declarer")
+    @PreAuthorize("hasAnyRole('ADMIN','TECH','RS')")
+    public String formulaireDeclareRecolte(@PathVariable("id") Integer id, Model model) {
+        try {
+            DeclarRecolteFormDTO formulaire = recolteService.prepareFormulairDeclaration(id);
+            preparerLayoutBiologique(model, "Déclaration de récolte", "declare-recolte");
+            model.addAttribute("formulaire", formulaire);
+            return "biologique/declare-recolte";
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("erreur", e.getMessage());
+            return "error";
+        }
+    }
+
+    @PostMapping("/{id}/recolte/valider")
+    @PreAuthorize("hasAnyRole('ADMIN','TECH','RS')")
+    public String validerDeclarationRecolte(@PathVariable("id") Integer id,
+                                            @RequestParam BigDecimal recolteReelleKg,
+                                            Authentication authentication,
+                                            RedirectAttributes ra) {
+        try {
+            // TODO: Récupérer l'utilisateur depuis la session/authentification
+            Utilisateur responsable = utilisateurRepository.findById(1L)
+                    .orElseThrow(() -> new IllegalArgumentException("Utilisateur introuvable"));
+
+            recolteService.validerDeclarationRecolte(id, recolteReelleKg, responsable);
+
+            ra.addFlashAttribute("succes", "Récolte validée avec succès. " +
+                    "La quantité a été enregistrée dans le stock de crevettes.");
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            ra.addFlashAttribute("erreur", e.getMessage());
+            return "redirect:/biologique/" + id + "/recolte/declarer";
+        }
+        return "redirect:/biologique";
+    }
+
+    // ── Déclaration de récolte (ancien endpoint - peut être supprimé) ────────
 
     @PostMapping("/{id}/recolte")
     @PreAuthorize("hasAnyRole('ADMIN','TECH','RS')")

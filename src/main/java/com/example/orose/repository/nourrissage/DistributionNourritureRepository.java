@@ -139,7 +139,7 @@ public interface DistributionNourritureRepository extends JpaRepository<Distribu
                         SELECT COALESCE(SUM(dernier_suivi.biomasse_calculee_kg), 0)
                         FROM cycle_bassin_assoc cba
                         LEFT JOIN LATERAL (
-                            SELECT sh.biomasse_calculee_kg
+                            SELECT (sh.poids_moyen_gramme * cba.effectif_initial / 1000) AS biomasse_calculee_kg
                             FROM suivi_hebdo_bassin sh
                             WHERE sh.id_cycle_bassin_assoc = cba.id
                             ORDER BY sh.date_suivi DESC, sh.id DESC
@@ -160,7 +160,7 @@ public interface DistributionNourritureRepository extends JpaRepository<Distribu
                         JOIN bassin b ON b.id = cba.id_bassin
                         LEFT JOIN distribution_nourriture dn ON dn.id_cycle_bassin_assoc = cba.id
                         LEFT JOIN LATERAL (
-                            SELECT sh.biomasse_calculee_kg
+                            SELECT (sh.poids_moyen_gramme * cba.effectif_initial / 1000) AS biomasse_calculee_kg
                             FROM suivi_hebdo_bassin sh
                             WHERE sh.id_cycle_bassin_assoc = cba.id
                             ORDER BY sh.date_suivi DESC, sh.id DESC

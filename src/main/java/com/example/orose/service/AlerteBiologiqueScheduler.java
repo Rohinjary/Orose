@@ -88,23 +88,13 @@ public class AlerteBiologiqueScheduler {
         }
     }
 
+    /**
+     * DÉSACTIVÉ : Le taux de survie n'est plus calculé sur les pesées hebdomadaires.
+     * Cette métrique est maintenant gérée uniquement lors de la déclaration de récolte.
+     * Les colonnes nb_vivants et nb_morts ont été supprimées de suivi_hebdo_bassin.
+     */
     private void verifierSurvieCritique(CycleBassinAssoc assoc) {
-        Optional<SuiviHebdoBassin> dernierePesee = suiviHebdoBassinRepository
-                .findTopByCycleBassinAssocIdOrderByDateSuiviDesc(assoc.getId());
-
-        if (dernierePesee.isEmpty() || assoc.getEffectifInitial() == null || assoc.getEffectifInitial() == 0) {
-            return;
-        }
-
-        BigDecimal tauxSurvie = BigDecimal.valueOf(dernierePesee.get().getNbVivants())
-                .multiply(BigDecimal.valueOf(100))
-                .divide(BigDecimal.valueOf(assoc.getEffectifInitial()), 2, RoundingMode.HALF_UP);
-
-        if (tauxSurvie.compareTo(SEUIL_SURVIE_CRITIQUE) < 0) {
-            alerteService.creerAlerteSiAbsente(assoc.getId(), "SURVIE_CRITIQUE", "ROUGE",
-                    "Taux de survie critique : " + tauxSurvie.setScale(1, RoundingMode.HALF_UP)
-                            + "% pour bassin " + assoc.getBassin().getCode());
-        }
+        // Vérification désactivée - la survie se calcule à la récolte
     }
 
     private void verifierRecoltePossible(CycleBassinAssoc assoc) {
@@ -120,12 +110,13 @@ public class AlerteBiologiqueScheduler {
         }
     }
 
+    /**
+     * DÉSACTIVÉ : Le calcul de mortalité hebdomadaire n'est plus applicable.
+     * Les colonnes nb_vivants et nb_morts ont été supprimées de suivi_hebdo_bassin.
+     * La mortalité est maintenant intégrée dans le calcul du taux de survie à la récolte.
+     */
     public BigDecimal calculerMortaliteHebdo(SuiviHebdoBassin peseeActuelle, SuiviHebdoBassin peseePrecedente) {
-        if (peseePrecedente == null || peseePrecedente.getNbVivants() == 0) {
-            return BigDecimal.ZERO;
-        }
-        return BigDecimal.valueOf(peseeActuelle.getNbMorts())
-                .divide(BigDecimal.valueOf(peseePrecedente.getNbVivants()), 4, RoundingMode.HALF_UP)
-                .multiply(BigDecimal.valueOf(100));
+        // Calcul désactivé - les données nb_vivants et nb_morts n'existent plus
+        return BigDecimal.ZERO;
     }
 }

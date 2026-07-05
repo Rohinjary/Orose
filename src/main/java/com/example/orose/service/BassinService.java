@@ -182,11 +182,20 @@ public class BassinService {
         histo.setMotif(motif);
         histoStatutBassinRepository.save(histo);
 
-        if ("RECOLTE".equals(nouveauStatut)) {
-            creerLotCrevettePourRecolte(bassin, utilisateur);
-        }
+        // NOTE: Création de lots déplacée vers BiologiqueRecolteService
+        // Celle-ci crée automatiquement un LotCrevette lié à RecolteDeclaration
+        // lors de la validation d'une déclaration de récolte.
+        // if ("RECOLTE".equals(nouveauStatut)) {
+        //     creerLotCrevettePourRecolte(bassin, utilisateur);
+        // }
     }
 
+    /**
+     * DÉSACTIVÉ : Cette méthode appartient à l'ancien workflow.
+     * La création de lots se fait maintenant via BiologiqueRecolteService.crierLotCrevette()
+     * lors de la validation d'une déclaration de récolte (recolte_declaration).
+     */
+    @Deprecated
     private void creerLotCrevettePourRecolte(Bassin bassin, Utilisateur utilisateur) {
         List<CycleBassinAssoc> actifs = cycleBassinAssocRepository.findByEstClotureFalse();
         CycleBassinAssoc assoc = actifs.stream()
@@ -197,30 +206,33 @@ public class BassinService {
             return;
         }
 
-        String numeroLot = String.format("LOT-%s-%tY%<tm%<td-%03d",
-                bassin.getCode(), LocalDate.now(), new Random().nextInt(1000));
+        var dernierePesee = suiviHebdoBassinRepository
+                .findTopByCycleBassinAssocIdOrderByDateSuiviDesc(assoc.getId());
 
         java.math.BigDecimal poidsMoyen = (assoc.getPoidsMoyenActuel() != null
                 && assoc.getPoidsMoyenActuel().compareTo(java.math.BigDecimal.ZERO) > 0)
                 ? assoc.getPoidsMoyenActuel()
-                : suiviHebdoBassinRepository.findTopByCycleBassinAssocIdOrderByDateSuiviDesc(assoc.getId())
-                        .map(s -> s.getPoidsMoyenGramme())
+                : dernierePesee.map(s -> s.getPoidsMoyenGramme())
                         .orElse(java.math.BigDecimal.valueOf(20));
 
-        java.math.BigDecimal biomasse = java.math.BigDecimal.valueOf(assoc.getEffectifInitial())
+        // NOTE: nb_vivants a été supprimé de suivi_hebdo_bassin.
+        // On utilise l'effectif initial comme référence de population.
+        Integer population = assoc.getEffectifInitial();
+
+        java.math.BigDecimal biomasse = java.math.BigDecimal.valueOf(population)
                 .multiply(poidsMoyen)
                 .divide(java.math.BigDecimal.valueOf(1000), 2, java.math.RoundingMode.HALF_UP);
 
-        java.math.BigDecimal tailleMoyenne = suiviHebdoBassinRepository
-                .findTopByCycleBassinAssocIdOrderByDateSuiviDesc(assoc.getId())
+        java.math.BigDecimal tailleMoyenne = dernierePesee
                 .map(s -> s.getTailleMoyenneMm() != null ? s.getTailleMoyenneMm() : java.math.BigDecimal.ZERO)
                 .orElse(java.math.BigDecimal.ZERO);
 
         LotCrevette lot = new LotCrevette();
-        lot.setNumeroLotUnique(numeroLot);
-        lot.setCycleBassinAssoc(assoc);
-        lot.setBiomasseTotaleKg(biomasse);
-        lot.setBiomasseActuelleKg(biomasse);
+        lot.setNumeroLotUnique(String.format("LOT-%s-%tY%<tm%<td-%03d",
+                bassin.getCode(), LocalDate.now(), new Random().nextInt(1000)));
+        // lot.setCycleBassinAssoc(assoc);  // SUPPRIMÉ : utiliser recolteDeclaration maintenant
+        // lot.setBiomasseTotaleKg(biomasse);  // SUPPRIMÉ : calculée depuis recolteDeclaration.recolteReelleKg
+        // lot.setBiomasseActuelleKg(biomasse);  // SUPPRIMÉ : calculée depuis mouvements
         lot.setPoidsMoyenFinalG(poidsMoyen);
         lot.setTailleMoyenneFinaleMm(tailleMoyenne);
         lot.setDateRecolte(LocalDate.now());

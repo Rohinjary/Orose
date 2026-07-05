@@ -3,7 +3,7 @@
 <head th:fragment="head">
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title layout:fragment="page-title">Move Gasy</title>
+    <title layout:fragment="page-title">OROSE</title>
     <link href="https://fonts.googleapis.com" rel="preconnect" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet" />
@@ -91,6 +91,21 @@
         }
         .nav-dropdown.open .submenu { max-height: 600px; }
         .nav-dropdown.open .chevron-icon { transform: rotate(90deg); }
+        .nav-sub-group { display: flex; flex-direction: column; }
+        .nav-sub-header {
+            display: flex; align-items: center; gap: 12px; padding: 10px 12px;
+            cursor: pointer; font-size: 14px; font-weight: 500; color: var(--mg-secondary);
+            text-decoration: none; transition: all 0.2s; border-radius: var(--radius);
+            margin-bottom: 2px;
+        }
+        .nav-sub-header:hover { background: var(--mg-surface-container); color: var(--mg-primary); }
+        .sub-submenu {
+            max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out;
+            padding-left: 40px; display: flex; flex-direction: column; gap: 2px;
+        }
+        .nav-sub-group.open .sub-submenu { max-height: 300px; }
+        .sub-chevron { margin-left: auto; transition: transform 0.2s; font-size: 10px; }
+        .nav-sub-group.open .sub-chevron { transform: rotate(90deg); }
         .sub-nav-item {
             display: flex; align-items: center; padding: 8px 12px;
             color: var(--mg-text-muted); text-decoration: none;
