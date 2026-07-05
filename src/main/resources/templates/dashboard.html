@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="fr" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/default}">
-<head>
+  <head>
     <title>Dashboard</title>
     <th:block layout:fragment="page-styles">
-        <link href="/css/dashboard.css" rel="stylesheet" />
+      <link href="/css/dashboard.css" rel="stylesheet" />
     </th:block>
 </head>
 
@@ -16,7 +16,6 @@
               <h2 class="banner-title">Bienvenue <span sec:authentication="name"></span> </i></h2>
               <p class="banner-sub"> <span th:text="${date}"></span></p>
             </div>
-            <div class="status-pill">● Système opérationnel</div>
           </div>
 
              <!-- bassins actifs  -->
@@ -44,10 +43,19 @@
           <!-- TOP KPI GRID -->
 
           <div class="kpi-grid">
-            <div class="kpi-card">
+            <div class="kpi-card" style="grid-column: span 2; position: relative;">
+              <div style="position: absolute; right: 16px; top: 16px;">
+                <form onsubmit="return false;">
+                  <select name="annee" id="annee" onchange="changerAnnee()" style="padding: 4px 8px; border-radius: 6px; border: 1px solid var(--mg-outline); font-family: inherit;">
+                    <option value="2026" th:selected="${annee == 2026}">2026</option>
+                    <option value="2025" th:selected="${annee == 2025}">2025</option>
+                    <option value="2024" th:selected="${annee == 2024}">2024</option>
+                  </select>
+                </form>
+              </div>
               <div class="kpi-label">Production annuelle</div>
-              <div class="kpi-value"><span th:text="${productionAnnuelle}"></span> kg </div>
-              <div class="kpi-sub">Objectif : 25 T (51.2%)</div>
+              <div class="kpi-value"><span id="prodAnnuelle"></span> kg </div>
+              <div class="kpi-sub">Objectif : <span id="objectifAnnuel"></span></div>
             </div>
             <div class="kpi-card">
               <div class="kpi-label">Stock crevettes</div>
@@ -73,7 +81,7 @@
 
           
             <!-- KPI PRODUCTION (WOW) -->
-            <div class="card">
+            <!-- <div class="card">
               <div class="card-header">
                 <h3 class="card-title">Production mensuelle (kg) vs Objectif</h3>
               </div>
@@ -105,7 +113,7 @@
                 <span class="">Total depuis le 1er janvier : <strong>12 840 kg</strong></span>
                 <span style="color: var(--mg-success)" class=""><i class="bi bi-arrow-up"></i> +12% vs 2025</span>
               </div>
-            </div>
+            </div> -->
 
             
             <!-- SALES & FINANCE KPI -->
@@ -219,5 +227,130 @@
           </div> -->
         </div>
     </div>
+
+    <!-- KPI PRODUCTION (WOW) -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Vue de la production annuelle </h3>
+          </div>
+          <div style="position: relative;">
+            <div class="chart-target-line" style="top: 40px;"></div>
+            <!-- <div class="chart-container"> -->
+               <script src="/js/chart.js"></script>
+
+              <canvas id="salesChart"></canvas>
+            <!-- </div> -->
+          </div>
+          <!-- <div class="kpi-sub"
+            style="margin-top: 16px; border-top: 1px solid var(--mg-outline); padding-top: 12px; display: flex; justify-content: space-between;">
+            <span class="">Total depuis le 1er janvier : <strong>12 840 kg</strong></span>
+            <span style="color: var(--mg-success)" class=""><i class="bi bi-arrow-up"></i> +12% vs 2025</span>
+          </div> -->
+        </div>
+
+
+<!--  Script  js chart -->
+<script th:inline="javascript">
+
+    const ctx = document.getElementById('salesChart');
+
+    let dataset = [];
+    
+
+    const chart = new Chart(ctx, {
+        type: 'bar', //pie
+        data: {
+            labels: [
+                'Janvier',
+                'Février',
+                'Mars',
+                'Avril',
+                'Mai',
+                'Juin', 
+                'Juillet',
+                'Aout', 
+                'Septembre', 
+                'Octobre',
+                'Novembre',
+                'Décembre'
+            ],
+            datasets: [
+                // {
+                //     label: 'Objectif Annuel',
+                //     data: [],
+                //     type: 'line',
+                //     borderColor: '#e74c3c',
+                //     borderDash: [5, 5],
+                //     borderWidth: 2,
+                //     fill: false,
+                //     pointRadius: 0,
+                //     order: 1
+                // },
+                {
+                label: 'Crevettes',
+                data: dataset,
+                backgroundColor: [
+                    '#3498db'//,
+                    // '#2ecc71',
+                    // '#f39c12',
+                    // '#9b59b6',
+                    // '#e74c3c',
+                    // '#1abc9c'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: true
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+    async function changerAnnee() {
+        try {
+            const annee = document.getElementById("annee").value;
+            const response = await fetch("/api/production-stats?annee=" + annee);
+            if (!response.ok) throw new Error("Erreur serveur lors de la récupération des données");
+            const data = await response.json();
+            
+            const objVal = data.objectifAnnuel;
+            // chart.data.datasets[0].data = Array(12).fill(objVal);
+            chart.data.datasets[0].data = data.mensuelle;
+            chart.update();
+
+            const kpiValeur = data.annuelle;
+            let pourcentage = "0.0";
+            if (kpiValeur > 0 && objVal > 0) {
+                pourcentage = ((kpiValeur / objVal) * 100).toFixed(1);
+            }
+            
+            if (kpiValeur === undefined || kpiValeur === null || kpiValeur === 0) {
+                document.getElementById('prodAnnuelle').innerText = "Pas de données";
+            } else {
+                document.getElementById('prodAnnuelle').innerText = kpiValeur;
+            }
+
+            document.getElementById('objectifAnnuel').innerHTML = objVal + " kg (<span style='color: var(--mg-success); font-weight: bold;'>" + pourcentage + "%</span>)";
+        } catch (error) {
+            console.error(error);
+            document.getElementById('prodAnnuelle').innerText = "Pas de données";
+        }
+    }
+    
+    document.addEventListener("DOMContentLoaded", function() {
+        changerAnnee();
+    });
+    
+
+</script>
 </body>
 </html>

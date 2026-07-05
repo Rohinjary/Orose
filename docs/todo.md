@@ -1,7 +1,7 @@
 integration 
 
-- nom du user (session)
-- date d'aujourd'hui
+- nom du user (session) [ok]
+- date d'aujourd'hui [ok]
   
 - production annuelle de cette année 
   
@@ -12,3 +12,7 @@ integration
 
 
 - side bar = principal - dashboard [ok]
+- relier les cards de bassins aux fiches de details des basins ?
+  
+- installer le script js 
+``` wget https://cdn.jsdelivr.net/npm/chart.js ```
