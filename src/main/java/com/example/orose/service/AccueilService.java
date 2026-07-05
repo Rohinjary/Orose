@@ -119,10 +119,27 @@ public class AccueilService {
                 ? (stockTotal.floatValue() / conso.floatValue()) * 7f : 30f;
     }
 
-    public float getProductionAnnuelle() {
-        // filtrable plus tard
-        int anneeActuelle = Year.now().getValue();
-       return Math.max(0f, lotCrevetteRepository.totaleProductionAnnuelle(anneeActuelle));
+    public float getProductionAnnuelle(int annee) {
+        Float total = lotCrevetteRepository.totaleProductionAnnuelle(annee);
+        return total != null ? Math.max(0f, total) : 0f;
+    }
+
+    public float[] getProductionMensuelle(int annee) {
+        float[] production = new float[12];
+        for (int mois = 1; mois <= 12; mois ++ ) {
+            Float prod = lotCrevetteRepository.getProductionMensuelle(annee, mois);
+            production[mois-1]  = (prod != null) ? prod : 0f;
+        }
+        return production;
+    }
+
+    public float getObjectifAnnuel(){
+        // en dur mais à redifinir dans ne table de parametres 
+        int cycleParAn = 3;
+        int bassinParCycle = 3; 
+        float poidsCibleGr = 0.02f;
+        int plInitial = 25000;
+        return cycleParAn * bassinParCycle * poidsCibleGr * plInitial;
     }
 
 }
