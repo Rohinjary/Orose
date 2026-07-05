@@ -90,12 +90,12 @@ public class AccueilService {
 
     // fonctions de rovatiana
      public void remplirStockCrevette(StockDashboardDTO dto) {
-        BigDecimal biomasse = lotCrevetteRepository.sumBiomasseDisponible();
-        float biomasseVal = biomasse != null ? Math.max(0f, biomasse.floatValue()) : 0f;
-        dto.setStockCrevetteKg(biomasseVal);
-        // encore en dur mais il faut metre en parametre
+        // BigDecimal biomasse = lotCrevetteRepository.sumBiomasseDisponible();
+        // float biomasseVal = biomasse != null ? Math.max(0f, biomasse.floatValue()) : 0f;
+        // dto.setStockCrevetteKg(biomasseVal);
+        // // encore en dur mais il faut metre en parametre
         
-        dto.setValeurCrevetteAr(biomasseVal * 40000f);
+        // dto.setValeurCrevetteAr(biomasseVal * 40000f);
     }
 
     public void remplirStockAliment(StockDashboardDTO dto) {

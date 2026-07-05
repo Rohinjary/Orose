@@ -33,7 +33,7 @@ public interface LotCrevetteRepository extends JpaRepository<LotCrevette, Intege
 
     @Query("SELECT COALESCE(SUM(l.biomasseTotaleKg), 0) from LotCrevette l WHERE YEAR(l.dateRecolte) = :annee AND MONTH(l.dateRecolte) = :mois")
     float getProductionMensuelle(@Param("annee") int annee, @Param("mois") int mois);
-    
+
     // @Query("SELECT COALESCE(SUM(l.biomasseActuelleKg), 0) FROM LotCrevette l WHERE l.biomasseActuelleKg > 0")
     // BigDecimal sumBiomasseDisponible();
 }
