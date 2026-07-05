@@ -496,14 +496,29 @@
         }
     </style>
     <link rel="stylesheet" href="../css/responsive.css">
+    <link rel="stylesheet" href="/css/common/import-modal.css">
 </head>
 
 <body>
 
     <div class="sidebar-overlay"></div>
     <div class="col-4">
+        <div th:if="${success}" class="badge badge-success" style="display:block; padding:12px 16px; margin-bottom:16px; font-size:13px; text-transform:none;">
+            <span th:text="${success}"></span>
+        </div>
+        <div th:if="${error}" class="badge badge-danger" style="display:block; padding:12px 16px; margin-bottom:16px; font-size:13px; text-transform:none;">
+            <span th:text="${error}"></span>
+        </div>
+
+        <div th:replace="~{fragments/import-modal :: modal('import-stock-aliment', 'Entrées de stock — Aliments', @{/stock/import}, 'idAliment, idResponsable, quantiteKg, prixUnitaire, dateReception (AAAA-MM-JJ), dateExpiration (AAAA-MM-JJ)')}"></div>
+
         <section class="card">
-            <h3 class="card-title" style="margin-bottom: 20px;">Entrée de Stock</h3>
+            <div class="card-header">
+                <h3 class="card-title" style="margin-bottom: 0;">Entrée de Stock</h3>
+                <button type="button" class="btn btn-outline btn-sm" onclick="ouvrirModalImport('import-stock-aliment')">
+                    <i class="bi bi-upload"></i> Importer un fichier
+                </button>
+            </div>
             <form th:action="@{/stock/enregistrer}" th:object="${entreeStockDTO}" method="post">
                 <div class="form-group">
                     <label class="form-label">Type d'Aliment</label>
@@ -620,3 +635,4 @@
         initCalculTotal('quantite', 'prixUnitaire', 'totalGeneral');
     });
 </script>
+<script src="/js/common/import-modal.js"></script>

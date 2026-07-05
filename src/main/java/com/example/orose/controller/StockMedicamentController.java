@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,8 +14,10 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.example.orose.common.io.ImportService;
 import com.example.orose.dto.EntreeStockMedicamentDTO;
 import com.example.orose.model.EntreeStockMedicament;
 import com.example.orose.repository.MedicamentRepository;
@@ -60,6 +63,22 @@ public class StockMedicamentController {
 
         stockService.enregistrerEntreeMedicament(dto);
         redirectAttributes.addFlashAttribute("message", "Entrée de médicament enregistrée avec succès.");
+        return "redirect:/stock/medicament/liste";
+    }
+
+    @PostMapping("/liste/import")
+    @PreAuthorize("hasAnyRole('ADMIN','TECH','RS')")
+    @Transactional
+    public String importer(@RequestParam("fichier") MultipartFile fichier, RedirectAttributes ra) {
+        try {
+            List<EntreeStockMedicamentDTO> dtos = ImportService.importerFichier(EntreeStockMedicamentDTO.class, fichier);
+            for (EntreeStockMedicamentDTO dto : dtos) {
+                stockService.enregistrerEntreeMedicament(dto);
+            }
+            ra.addFlashAttribute("message", dtos.size() + " entrée(s) de stock importée(s) avec succès");
+        } catch (Exception e) {
+            ra.addFlashAttribute("errorMessage", "Import échoué : " + e.getMessage());
+        }
         return "redirect:/stock/medicament/liste";
     }
 

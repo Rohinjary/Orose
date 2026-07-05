@@ -1,6 +1,8 @@
 package com.example.orose.controller;
 
+import com.example.orose.common.io.ImportService;
 import com.example.orose.dto.CycleDemarrageDTO;
+import com.example.orose.dto.CycleImportDTO;
 import com.example.orose.repository.EspeceCrevetteRepository;
 import com.example.orose.service.BassinService;
 import com.example.orose.service.CycleService;
@@ -8,6 +10,7 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -15,6 +18,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.List;
 
@@ -77,6 +81,29 @@ public class CycleController {
         } catch (IllegalStateException e) {
             redirectAttributes.addFlashAttribute("erreur", e.getMessage());
             return "redirect:/cycles/nouveau";
+        }
+        return "redirect:/cycles/liste";
+    }
+
+    @PostMapping("/liste/import")
+    @PreAuthorize("hasRole('ADMIN')")
+    @Transactional
+    public String importer(@RequestParam("fichier") MultipartFile fichier, RedirectAttributes ra) {
+        try {
+            List<CycleImportDTO> lignes = ImportService.importerFichier(CycleImportDTO.class, fichier);
+            for (CycleImportDTO ligne : lignes) {
+                CycleDemarrageDTO dto = new CycleDemarrageDTO();
+                dto.setIdEspece(ligne.getIdEspece());
+                dto.setEffectifInitial(ligne.getEffectifInitial());
+                dto.setCoutPostLarves(ligne.getCoutPostLarves());
+                dto.setDateDebut(ligne.getDateDebut());
+                dto.setDateFinPrevue(ligne.getDateFinPrevue());
+                List<Long> idBassins = List.of(ligne.getIdBassin1(), ligne.getIdBassin2(), ligne.getIdBassin3());
+                cycleService.demarrerCycle(idBassins, dto);
+            }
+            ra.addFlashAttribute("succes", lignes.size() + " cycle(s) importé(s) avec succès");
+        } catch (Exception e) {
+            ra.addFlashAttribute("erreur", "Import échoué : " + e.getMessage());
         }
         return "redirect:/cycles/liste";
     }

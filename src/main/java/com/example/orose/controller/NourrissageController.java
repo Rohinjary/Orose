@@ -1,6 +1,8 @@
 package com.example.orose.controller;
 
+import com.example.orose.common.io.ImportService;
 import com.example.orose.dto.nourrissage.DashboardDTO;
+import com.example.orose.dto.nourrissage.DistributionImportDTO;
 import com.example.orose.dto.nourrissage.FcrDTO;
 import com.example.orose.dto.nourrissage.JournalDTO;
 import com.example.orose.repository.CreneauRepository;
@@ -17,12 +19,14 @@ import java.util.List;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
@@ -116,6 +120,28 @@ public class NourrissageController {
         }
 
         return "redirect:/nourrissage/planning";
+    }
+
+    @PostMapping("/distribution/import")
+    @PreAuthorize("hasAnyRole('ADMIN','TECH','RS')")
+    @Transactional
+    public String importerDistributions(@RequestParam("fichier") MultipartFile fichier, RedirectAttributes redirectAttributes) {
+        try {
+            List<DistributionImportDTO> dtos = ImportService.importerFichier(DistributionImportDTO.class, fichier);
+            for (DistributionImportDTO dto : dtos) {
+                nourrissageService.enregistrer(
+                        dto.getCodeBassin(),
+                        dto.getIdAliment(),
+                        dto.getQuantiteKg(),
+                        1,
+                        dto.getDateDistribution(),
+                        dto.getHeure());
+            }
+            redirectAttributes.addFlashAttribute("success", dtos.size() + " distribution(s) importée(s) avec succès.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Import échoué : " + e.getMessage());
+        }
+        return "redirect:/nourrissage/distribution";
     }
 
     @GetMapping("/distribution")

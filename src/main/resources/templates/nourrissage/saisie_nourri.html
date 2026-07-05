@@ -5,6 +5,7 @@
 <head>
     <title layout:fragment="page-title">Enregistrement Nourrissage — Move Gasy</title>
     <th:block layout:fragment="page-styles">
+        <link href="/css/common/import-modal.css" rel="stylesheet" />
         <style>
             /* Spécificités du formulaire alignées avec le Design System */
             .grid-detail {
@@ -111,10 +112,17 @@
             Swal.fire({ icon: 'success', title: 'Succès', text: '[[${success}]]' });
         </script>
 
-        <div class="header-section" style="margin-bottom: 32px;">
-            <h2 class="header-title" style="font-size: 24px; font-weight: 700; margin-bottom: 4px;">Formulaire de distribution</h2>
-            <p class="header-sub" style="color: var(--mg-secondary); font-size: 14px;">Enregistrement quotidien du nourrissage par bassin</p>
+        <div class="header-section" style="margin-bottom: 32px; display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:12px;">
+            <div>
+                <h2 class="header-title" style="font-size: 24px; font-weight: 700; margin-bottom: 4px;">Formulaire de distribution</h2>
+                <p class="header-sub" style="color: var(--mg-secondary); font-size: 14px;">Enregistrement quotidien du nourrissage par bassin</p>
+            </div>
+            <button type="button" class="btn-outline" onclick="ouvrirModalImport('import-distributions')">
+                <i class="bi bi-upload"></i> Importer un fichier
+            </button>
         </div>
+
+        <div th:replace="~{fragments/import-modal :: modal('import-distributions', 'Distributions de nourriture', @{/nourrissage/distribution/import}, 'codeBassin, idAliment, quantiteKg, dateDistribution (AAAA-MM-JJ), heure (HH:mm)')}"></div>
 
         <div class="grid-detail">
             <!-- Colonne principale du formulaire -->
@@ -186,6 +194,7 @@
                 }
             });
         </script>
+        <script th:src="@{/js/common/import-modal.js}"></script>
     </th:block>
 </body>
 

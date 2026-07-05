@@ -4,14 +4,18 @@ import java.util.List;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute; // Nouveau DTO pour le stock
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.example.orose.common.io.ImportService;
 import com.example.orose.dto.EntreeStockDTO;
 import com.example.orose.dto.nourrissage.JournalDTO;
 import com.example.orose.repository.AlimentRepository;
@@ -82,6 +86,22 @@ public class StockAlimentController {
             redirectAttributes.addFlashAttribute("error", "Erreur : " + e.getMessage());
             return "redirect:/nourrissage/stock_form";
         }
+    }
+
+    @PostMapping("/import")
+    @PreAuthorize("hasAnyRole('ADMIN','TECH','RS')")
+    @Transactional
+    public String importer(@RequestParam("fichier") MultipartFile fichier, RedirectAttributes ra) {
+        try {
+            List<EntreeStockDTO> dtos = ImportService.importerFichier(EntreeStockDTO.class, fichier);
+            for (EntreeStockDTO dto : dtos) {
+                stockAlimentService.enregistrerEntree(dto);
+            }
+            ra.addFlashAttribute("success", dtos.size() + " entrée(s) de stock importée(s) avec succès.");
+        } catch (Exception e) {
+            ra.addFlashAttribute("error", "Import échoué : " + e.getMessage());
+        }
+        return "redirect:/stock/formulaire";
     }
 
     @GetMapping("/historique")

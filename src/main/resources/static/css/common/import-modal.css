@@ -1,0 +1,83 @@
+.import-modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+}
+
+.import-modal-overlay.open {
+    display: flex;
+}
+
+.import-modal-box {
+    background: var(--mg-surface-bright, white);
+    border-radius: var(--radius, 4px);
+    width: 100%;
+    max-width: 440px;
+    margin: 16px;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
+}
+
+.import-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 22px;
+    border-bottom: 1px solid var(--mg-outline);
+}
+
+.import-modal-header h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.import-modal-close {
+    background: transparent;
+    border: none;
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+    color: var(--mg-secondary);
+    padding: 2px 6px;
+}
+
+.import-modal-close:hover {
+    color: var(--mg-primary);
+}
+
+.import-modal-body {
+    padding: 20px 22px;
+}
+
+.import-modal-hint {
+    font-size: 12px;
+    color: var(--mg-secondary);
+    margin: 0 0 14px;
+    line-height: 1.5;
+}
+
+.import-modal-hint strong {
+    color: var(--mg-primary);
+}
+
+.import-modal-file {
+    width: 100%;
+    padding: 8px;
+    border: 1px dashed var(--mg-outline);
+    border-radius: var(--radius, 4px);
+    font-size: 13px;
+    font-family: var(--font-main);
+    background: var(--mg-surface, #f7f9fb);
+}
+
+.import-modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 16px 22px;
+    border-top: 1px solid var(--mg-outline);
+}

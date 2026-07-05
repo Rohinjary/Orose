@@ -1,5 +1,6 @@
 package com.example.orose.controller;
 
+import com.example.orose.common.io.ImportService;
 import com.example.orose.dto.IncidentDTO;
 import com.example.orose.dto.TraitementDTO;
 import com.example.orose.model.CycleBassinAssoc;
@@ -16,13 +17,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.example.orose.model.IncidentSanitaire;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.math.BigDecimal;
+import java.util.List;
 
 @Controller
 @RequestMapping("/sanitaire")
@@ -96,6 +100,26 @@ public class SanitaireController {
                 return "redirect:/sanitaire/declaration";
             }
         }
+
+    @PostMapping("/index/import")
+    @PreAuthorize("hasAnyRole('ADMIN','TECH','RS')")
+    @Transactional
+    public String importerIncidents(@RequestParam("fichier") MultipartFile fichier, RedirectAttributes ra) {
+        try {
+            List<IncidentDTO> dtos = ImportService.importerFichier(IncidentDTO.class, fichier);
+            for (IncidentDTO dto : dtos) {
+                incidentService.declarerIncident(dto);
+                CycleBassinAssoc assoc = cycleBassinAssocRepository.findById(dto.getIdCycleBassinAssoc().longValue())
+                        .orElseThrow(() -> new IllegalArgumentException("Association introuvable"));
+                Long bassinId = assoc.getBassin().getId().longValue();
+                bassinService.changerStatutBassin(bassinId, "EN_TRAITEMENT", "Incident déclaré (import)", dto.getIdResponsable());
+            }
+            ra.addFlashAttribute("message", dtos.size() + " incident(s) importé(s) avec succès");
+        } catch (Exception e) {
+            ra.addFlashAttribute("errorMessage", "Import échoué : " + e.getMessage());
+        }
+        return "redirect:/sanitaire/index";
+    }
 
     @GetMapping("/traitement")
     public String afficherFormulaireTraitement(@RequestParam("incidentId") Integer incidentId, Model model) {

@@ -3,6 +3,7 @@ package com.example.orose.common.io;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
@@ -18,6 +19,10 @@ public final class Converter {
             DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"),
             DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"),
             DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
+
+    private static final List<DateTimeFormatter> TIME_FORMATS = List.of(
+            DateTimeFormatter.ofPattern("HH:mm:ss"),
+            DateTimeFormatter.ofPattern("HH:mm"));
 
     private Converter() {}
 
@@ -37,6 +42,7 @@ public final class Converter {
         if (typeCible == BigDecimal.class) return new BigDecimal(valeur.replace(',', '.'));
         if (typeCible == LocalDate.class) return parseDate(valeur);
         if (typeCible == LocalDateTime.class) return parseDateTime(valeur);
+        if (typeCible == LocalTime.class) return parseTime(valeur);
         if (typeCible.isEnum()) return Enum.valueOf((Class<Enum>) typeCible, valeur.toUpperCase());
 
         return valeur;
@@ -60,5 +66,12 @@ public final class Converter {
         }
         try { return LocalDate.parse(v, DateTimeFormatter.ISO_DATE).atStartOfDay(); } catch (Exception ignored) {}
         throw new IllegalArgumentException("DateTime non reconnu : " + v);
+    }
+
+    private static LocalTime parseTime(String v) {
+        for (DateTimeFormatter f : TIME_FORMATS) {
+            try { return LocalTime.parse(v, f); } catch (Exception ignored) {}
+        }
+        throw new IllegalArgumentException("Heure non reconnue : " + v);
     }
 }

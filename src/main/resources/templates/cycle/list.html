@@ -126,15 +126,30 @@
                 border-radius: var(--radius);
             }
         </style>
+        <link href="/css/common/import-modal.css" rel="stylesheet" />
     </th:block>
 </head>
 
 <body>
     <th:block layout:fragment="page-scripts">
         <script th:src="@{/js/list-filter.js}"></script>
+        <script th:src="@{/js/common/import-modal.js}"></script>
     </th:block>
     <div layout:fragment="content">
-        
+
+        <div th:if="${erreur}" class="alert alert-danger" style="
+            background:#fee2e2; color:#991b1b; border:1px solid #fca5a5;
+            padding:12px; margin-bottom:20px; border-radius:6px;">
+            <span th:text="${erreur}"></span>
+        </div>
+        <div th:if="${succes}" class="alert alert-success" style="
+            background:#dcfce7; color:#166534; border:1px solid #86efac;
+            padding:12px; margin-bottom:20px; border-radius:6px;">
+            <span th:text="${succes}"></span>
+        </div>
+
+        <div th:replace="~{fragments/import-modal :: modal('import-cycles', 'Cycles', @{/cycles/liste/import}, 'idEspece, effectifInitial, coutPostLarves, dateDebut (AAAA-MM-JJ), dateFinPrevue (AAAA-MM-JJ), idBassin1, idBassin2, idBassin3 (les 3 bassins doivent être VIDE)')}"></div>
+
         <div class="page-header">
             <h1 class="section-title" style="font-size: 22px;">Cycles Actifs</h1>
 
@@ -144,6 +159,9 @@
                 <a class="btn-mg" style="background:transparent;border:1px solid var(--mg-outline);color:var(--mg-primary);" th:href="@{/cycles/liste/export(format='excel')}"><i class="bi bi-file-earmark-excel"></i> Excel</a>
                 <a class="btn-mg" style="background:transparent;border:1px solid var(--mg-outline);color:var(--mg-primary);" th:href="@{/cycles/liste/export(format='pdf')}"><i class="bi bi-file-earmark-pdf"></i> PDF</a>
                 <a class="btn-mg" style="background:transparent;border:1px solid var(--mg-outline);color:var(--mg-primary);" th:href="@{/cycles/liste/export(format='csv')}"><i class="bi bi-filetype-csv"></i> CSV</a>
+                <button type="button" class="btn-mg" style="background:transparent;border:1px solid var(--mg-outline);color:var(--mg-primary);" onclick="ouvrirModalImport('import-cycles')" sec:authorize="hasRole('ADMIN')">
+                    <i class="bi bi-upload"></i> Importer
+                </button>
                 <a th:href="@{/cycles/nouveau}" class="btn-mg btn-mg-primary" sec:authorize="hasRole('ADMIN')">
                     <i class="bi bi-plus-lg"></i> Nouveau cycle
                 </a>
