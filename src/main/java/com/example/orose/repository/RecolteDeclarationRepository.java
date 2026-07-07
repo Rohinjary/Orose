@@ -29,4 +29,11 @@ public interface RecolteDeclarationRepository extends JpaRepository<RecolteDecla
      */
     @Query("select case when count(r) > 0 then true else false end from RecolteDeclaration r where r.cycleBassinAssoc.id = :idCycleBassinAssoc")
     boolean existsByIdCycleBassinAssocId(@Param("idCycleBassinAssoc") Integer idCycleBassinAssoc);
+
+    // fonctions pour le dashboard
+    @Query("SELECT COALESCE(SUM(recolte.recolteReelleKg), 0) FROM RecolteDeclaration recolte WHERE YEAR(recolte.dateDeclaration) = :annee")
+    float totaleProductionAnnuelle(@Param("annee") int annee);
+
+    @Query("SELECT COALESCE(SUM(recolte.recolteReelleKg), 0) from RecolteDeclaration recolte WHERE YEAR(recolte.dateDeclaration) = :annee AND MONTH(l.dateRecolte) = :mois")
+    float getProductionMensuelle(@Param("annee") int annee, @Param("mois") int mois);
 }

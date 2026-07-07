@@ -6,7 +6,7 @@ import com.example.orose.model.LotCrevette;
 import com.example.orose.repository.BassinRepository;
 import com.example.orose.repository.CycleBassinAssocRepository;
 import com.example.orose.repository.EntreeStockAlimentRepository;
-import com.example.orose.repository.stock.LotCrevetteRepository;
+import com.example.orose.repository.RecolteDeclarationRepository;
 import com.example.orose.service.stock.StockService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +31,7 @@ public class AccueilService {
     private BassinRepository bassinRepository;
 
     @Autowired
-    private LotCrevetteRepository lotCrevetteRepository;
+    private RecolteDeclarationRepository recolteDeclarationRepository;
     
     @Autowired
     private EntreeStockAlimentRepository entreeAlimentRepository;
@@ -120,14 +120,14 @@ public class AccueilService {
     }
 
     public float getProductionAnnuelle(int annee) {
-        Float total = lotCrevetteRepository.totaleProductionAnnuelle(annee);
+        Float total = recolteDeclarationRepository.totaleProductionAnnuelle(annee);
         return total != null ? Math.max(0f, total) : 0f;
     }
 
     public float[] getProductionMensuelle(int annee) {
         float[] production = new float[12];
         for (int mois = 1; mois <= 12; mois ++ ) {
-            Float prod = lotCrevetteRepository.getProductionMensuelle(annee, mois);
+            Float prod = recolteDeclarationRepository.getProductionMensuelle(annee, mois);
             production[mois-1]  = (prod != null) ? prod : 0f;
         }
         return production;
