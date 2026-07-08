@@ -22,8 +22,8 @@ on valide et on se trouve dans la page d'accueil avec un dashboard representant 
     et meme si 1 bassin dans 1 cycle a deja atteint l'objectif et que les 2 qutres bassins ne le sont pas encore, le cycle ne s'arrete toujours pas
     donc ici,il est possible qu'un bassin appartient a 2 cycle different en parallele
     On voit aussi une courbe de croissance,biomasse actelle ,poids moyen, taille moyenne
-    Une fois la recolte fait, ca remplit automatiquement le stock crevtte avec nb postlarve*20g=valeur en kg lot crevettes
-    1 bassin = 1 lot crevettes
+    Une fois la recolte fait, genre on clique sur recolte, une page saffiche ou l'on insere la quantite exacte et reelle recoltee, puis on valide et ca rentre dans stock et fait le calcul
+    de taux de survie a partir de biomasse estimme - quantite reelle
 
 
 5)Cote sanitaire, dashboard bassin sains, en traitement, incidents actifs, la on voit les etats sanitaires de chaque bassins
@@ -32,15 +32,21 @@ on valide et on se trouve dans la page d'accueil avec un dashboard representant 
     et une fois les test passes et traitement fini, on clique juste sur resolu et EN_TRAITEMENT devient ACTIF
     seul dans la partie sanitaire qu'on peut changer leur etat ACTIF->EN_TRAITEMENT->ACTIF
     il y a aussi les historique d'incient + filtre + export comme d'hab
+    et on ne gere pas le traitement, ce sont les personnels qui en pensent, l'app ne fait que marquer et informer si c'est deja fini ou passes
+    et quand ils ont besoin de medicament, il entre juste les medicaments sortie avec quantite et responsable 
+    afin de gerer le stock de medicament
+    on a prefere laisser le traitement car c'est un sujet tres delicat pour etre mis dans une application
 
-6)cote nourrissage, on cree au debut les 
+6)cote nourrissage, on cree au debut les les distributions, genre du matin midi soir etc, c'est genre un planning
+puis le responsableregarde juste quoi faire ou nourrir a cette heure ci et quel bassin
+apres quand on valide un nourrissage, ca soustrait dans le stock aliment, et aucune validation en dehors de l'horaire ecrit peut se faire, sauf si c'est en retard 
+du coup il recoit "en retard"
 
 
 
-7) une fois recolte, le stock se remplit avec le lot crevtte de nb postlarve*20kg
-    puis pour les pertes, on a eu une estimation et recolte reelle du coup on soustrait juste pour savoir combien
-    on a reellemnt et la perte 
-    stock medicament on entre et ca sort automatiquement quand on traite les crevttes avec les medicaments
-    de meme pour aliment
+7) une fois recolte, le stock se remplit avec le lot crevtte de recolte reelle, 
+    puis pour les pertes, le calcul est fait par l'application
+    stock medicament on entre et ca sort manuellement
+    pour aliment, entree manuelle et sortie automatique
     on a une dashboard d;etat stock actuel
     avec alerte rupture de stock crevettes et derniers mouvements + historique mouvements

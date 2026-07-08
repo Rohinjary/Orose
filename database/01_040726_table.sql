@@ -1,17 +1,3 @@
--- ============================================================
--- BASE JAONA : Schéma final consolidé OROSE (VERSION MODIFIÉE)
--- Modifications principales :
---   1) Suppression de nb_vivants et nb_morts de suivi_hebdo_bassin
---   2) Création table recolte_declaration pour déclaration récolte
---   3) Intégration calcul automatique taux survie et perte
--- ============================================================
-
--- Important : assurez-vous que le client psql utilise l'encodage UTF8
--- (la base "orose" doit aussi avoir été créée avec ENCODING 'UTF8').
-
--- ============================================================
--- MODULE 0 : UTILISATEURS & RÔLES
--- ============================================================
 
 CREATE TABLE role (
     id SERIAL PRIMARY KEY,

@@ -10,36 +10,36 @@ INSERT INTO role (code, libelle)
 VALUES ('ADMIN', 'Administrateur')
 ON CONFLICT (code) DO NOTHING;
 
-INSERT INTO statut_bassin (code, libelle)
-VALUES
-    ('VIDE', 'Vide'),
-    ('PREPARATION', 'Préparation'),
-    ('ACTIF', 'Actif'),
-    ('EN_TRAITEMENT', 'En traitement'),
-    ('RECOLTE', 'Récolte'),
-    ('QUARANTAINE', 'Quarantaine')
-ON CONFLICT (code) DO NOTHING;
+-- INSERT INTO statut_bassin (code, libelle)
+-- VALUES
+--     ('VIDE', 'Vide'),
+--     ('PREPARATION', 'Préparation'),
+--     ('ACTIF', 'Actif'),
+--     ('EN_TRAITEMENT', 'En traitement'),
+--     ('RECOLTE', 'Récolte'),
+--     ('QUARANTAINE', 'Quarantaine')
+-- ON CONFLICT (code) DO NOTHING;
 
-INSERT INTO espece_crevette (nom_scientifique, nom_courant)
-SELECT 'Litopenaeus vannamei', 'Crevette blanche'
-WHERE NOT EXISTS (
-    SELECT 1 FROM espece_crevette WHERE nom_courant = 'Crevette blanche'
-);
+-- INSERT INTO espece_crevette (nom_scientifique, nom_courant)
+-- SELECT 'Litopenaeus vannamei', 'Crevette blanche'
+-- WHERE NOT EXISTS (
+--     SELECT 1 FROM espece_crevette WHERE nom_courant = 'Crevette blanche'
+-- );
 
-INSERT INTO utilisateur (nom, prenom, email, mot_de_passe, statut)
-SELECT 'Admin', 'Système', 'admin@baovola.mg', 'password', 'ACTIF'
-WHERE NOT EXISTS (
-    SELECT 1 FROM utilisateur WHERE email = 'admin@baovola.mg'
-);
+-- INSERT INTO utilisateur (nom, prenom, email, mot_de_passe, statut)
+-- SELECT 'Admin', 'Système', 'admin@baovola.mg', 'password', 'ACTIF'
+-- WHERE NOT EXISTS (
+--     SELECT 1 FROM utilisateur WHERE email = 'admin@baovola.mg'
+-- );
 
-INSERT INTO utilisateur_role (id_utilisateur, id_role)
-SELECT u.id, r.id
-FROM utilisateur u
-JOIN role r ON r.code = 'ADMIN'
-WHERE u.email = 'admin@baovola.mg'
-  AND NOT EXISTS (
-      SELECT 1 FROM utilisateur_role ur WHERE ur.id_utilisateur = u.id AND ur.id_role = r.id
-  );
+-- INSERT INTO utilisateur_role (id_utilisateur, id_role)
+-- SELECT u.id, r.id
+-- FROM utilisateur u
+-- JOIN role r ON r.code = 'ADMIN'
+-- WHERE u.email = 'admin@baovola.mg'
+--   AND NOT EXISTS (
+--       SELECT 1 FROM utilisateur_role ur WHERE ur.id_utilisateur = u.id AND ur.id_role = r.id
+--   );
 
 -- 2. Aliment de référence
 INSERT INTO aliment (libelle, seuil_minimum_kg)
@@ -57,7 +57,7 @@ WHERE NOT EXISTS (
 -- 3. Bassins B01 à B09
 INSERT INTO bassin (code, surface_m2, profondeur_metre, notes, id_statut_actuel)
 SELECT v.code, v.surface, v.profondeur, NULL,
-       (SELECT id FROM statut_bassin WHERE code = 'ACTIF')
+       (SELECT id FROM statut_bassin WHERE code = 'VIDE')
 FROM (VALUES
     ('B01', 1000.00, 1.50),
     ('B02', 1000.00, 1.50),
@@ -85,25 +85,25 @@ FROM (VALUES
 ON CONFLICT (code_unique_cycle) DO NOTHING;
 
 -- 5. Associations cycle <-> bassin (cycle_bassin_assoc)
-INSERT INTO cycle_bassin_assoc (id_cycle, id_bassin, effectif_initial, densite_m2, cout_post_larves)
-SELECT c.id, b.id, v.effectif, v.densite, v.cout
-FROM (VALUES
-    ('C01', 'B01', 50000, 50.00, 1500000.00),
-    ('C01', 'B02', 50000, 50.00, 1500000.00),
-    ('C01', 'B03', 45000, 45.00, 1350000.00),
-    ('C02', 'B04', 45000, 37.50, 1350000.00),
-    ('C02', 'B05', 60000, 50.00, 1800000.00),
-    ('C02', 'B06', 60000, 50.00, 1800000.00),
-    ('C03', 'B07', 40000, 44.44, 1200000.00),
-    ('C03', 'B08', 40000, 44.44, 1200000.00),
-    ('C03', 'B09', 40000, 44.44, 1200000.00)
-) AS v(cycle, bassin, effectif, densite, cout)
-JOIN cycle c ON c.code_unique_cycle = v.cycle
-JOIN bassin b ON b.code = v.bassin
-WHERE NOT EXISTS (
-    SELECT 1 FROM cycle_bassin_assoc cba
-    WHERE cba.id_cycle = c.id AND cba.id_bassin = b.id
-);
+-- INSERT INTO cycle_bassin_assoc (id_cycle, id_bassin, effectif_initial, densite_m2, cout_post_larves)
+-- SELECT c.id, b.id, v.effectif, v.densite, v.cout
+-- FROM (VALUES
+--     ('C01', 'B01', 50000, 50.00, 1500000.00),
+--     ('C01', 'B02', 50000, 50.00, 1500000.00),
+--     ('C01', 'B03', 45000, 45.00, 1350000.00),
+--     ('C02', 'B04', 45000, 37.50, 1350000.00),
+--     ('C02', 'B05', 60000, 50.00, 1800000.00),
+--     ('C02', 'B06', 60000, 50.00, 1800000.00),
+--     ('C03', 'B07', 40000, 44.44, 1200000.00),
+--     ('C03', 'B08', 40000, 44.44, 1200000.00),
+--     ('C03', 'B09', 40000, 44.44, 1200000.00)
+-- ) AS v(cycle, bassin, effectif, densite, cout)
+-- JOIN cycle c ON c.code_unique_cycle = v.cycle
+-- JOIN bassin b ON b.code = v.bassin
+-- WHERE NOT EXISTS (
+--     SELECT 1 FROM cycle_bassin_assoc cba
+--     WHERE cba.id_cycle = c.id AND cba.id_bassin = b.id
+-- );
 
 -- ------------------------------------------------------------
 -- VÉRIFICATION : récupère les vrais id_cycle_bassin_assoc avant de continuer
