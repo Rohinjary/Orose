@@ -24,6 +24,8 @@ public class IncidentService {
     private CycleBassinAssocRepository cycleBassinAssocRepository;
     @Autowired
     private UtilisateurRepository utilisateurRepository;
+    @Autowired
+    private BassinService bassinService;
 
     @Transactional
     public IncidentSanitaire declarerIncident(IncidentDTO dto) {
@@ -52,7 +54,18 @@ public class IncidentService {
         incident.setEstResolu(false);
         incident.setCreatedAt(LocalDateTime.now());
 
-        return incidentRepository.save(incident);
+        IncidentSanitaire saved = incidentRepository.save(incident);
+
+        // Quand un incident est déclaré, le bassin concerné passe en EN_TRAITEMENT.
+        Long bassinId = assoc.getBassin().getId().longValue();
+        bassinService.changerStatutBassin(
+                bassinId,
+                "EN_TRAITEMENT",
+                "Incident déclaré — traitement sanitaire",
+                1L
+        );
+
+        return saved;
     }
 
     @Transactional

@@ -33,12 +33,27 @@ public class SanitaireService {
 
         long nbSains = 0;
         long nbQuarantaine = 0;
+        long nbEnTraitement = 0;
 
         List<BassinEtatDTO> bassinsEtat = bassins.stream().map(b -> {
             BassinEtatDTO etat = new BassinEtatDTO();
             etat.setCode(b.getCode());
-            String code = b.getStatutActuel().getCode();
-            etat.setStatutDotClass("ACTIF".equalsIgnoreCase(code) ? "sain" : "alerte");
+            String code = b.getStatutActuel() != null ? b.getStatutActuel().getCode() : null;
+
+            // Dot status pour dashboard sanitaire :
+            // - ACTIF => vert (sain)
+            // - EN_TRAITEMENT => orange (traitement)
+            // - QUARANTAINE => rouge (quarantaine)
+            // - autres => alerte (par défaut)
+            if ("ACTIF".equalsIgnoreCase(code)) {
+                etat.setStatutDotClass("sain");
+            } else if ("EN_TRAITEMENT".equalsIgnoreCase(code)) {
+                etat.setStatutDotClass("traitement");
+            } else if ("QUARANTAINE".equalsIgnoreCase(code)) {
+                etat.setStatutDotClass("quarantaine");
+            } else {
+                etat.setStatutDotClass("alerte");
+            }
             return etat;
         }).collect(Collectors.toList());
 
@@ -46,6 +61,10 @@ public class SanitaireService {
             String code = b.getStatutActuel().getCode();
             if ("ACTIF".equalsIgnoreCase(code)) {
                 nbSains++;
+            } else if ("EN_TRAITEMENT".equalsIgnoreCase(code)) {
+                nbEnTraitement++;
+            } else if ("QUARANTAINE".equalsIgnoreCase(code)) {
+                nbQuarantaine++;
             }
         }
 
@@ -63,6 +82,7 @@ public class SanitaireService {
 
         SanitaireDashboardDTO dash = new SanitaireDashboardDTO();
         dash.setNbBassinsSains(nbSains);
+        dash.setNbBassinsEnTraitement(nbEnTraitement);
         dash.setNbBassinsQuarantaine(nbQuarantaine);
         dash.setNbIncidentsActifs(incidentsActifs.size());
         dash.setTotalBassins(bassins.size());
