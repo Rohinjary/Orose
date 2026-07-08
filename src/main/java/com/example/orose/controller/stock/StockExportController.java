@@ -19,6 +19,7 @@ import com.example.orose.dto.stock.MouvementStockDTO;
 import com.example.orose.dto.stock.ProduitStockDTO;
 import com.example.orose.model.EntreeStockMedicament;
 import com.example.orose.model.LotCrevette;
+import com.example.orose.model.RecolteDeclaration;
 import com.example.orose.repository.EntreeStockMedicamentRepository;
 import com.example.orose.service.stock.StockService;
 
@@ -90,15 +91,33 @@ public class StockExportController {
                                      HttpServletResponse response) throws Exception {
         List<LotCrevetteExportRow> data = new ArrayList<>();
         for (LotCrevette l : stockService.getLotsCrevette()) {
-            String bassin = (l.getCycleBassinAssoc() != null && l.getCycleBassinAssoc().getBassin() != null)
-                    ? l.getCycleBassinAssoc().getBassin().getCode() : "N/A";
-            String cycle = (l.getCycleBassinAssoc() != null && l.getCycleBassinAssoc().getCycle() != null)
-                    ? l.getCycleBassinAssoc().getCycle().getCodeUniqueCycle() : "N/A";
+            String bassin = "N/A";
+            String cycle = "N/A";
+            Float biomasseTotale = 0f;
+            Float biomassActuelle = 0f;
+            
+            // Accéder aux données via RecolteDeclaration
+            if (l.getRecolteDeclaration() != null) {
+                RecolteDeclaration recolte = l.getRecolteDeclaration();
+                biomasseTotale = recolte.getRecolteReelleKg() != null ? recolte.getRecolteReelleKg().floatValue() : 0f;
+                // REMARQUE: biomassActuelle devrait être calculée à partir des mouvements de stock
+                biomassActuelle = biomasseTotale;  // À améliorer avec mouvements réels
+                
+                if (recolte.getCycleBassinAssoc() != null) {
+                    if (recolte.getCycleBassinAssoc().getBassin() != null) {
+                        bassin = recolte.getCycleBassinAssoc().getBassin().getCode();
+                    }
+                    if (recolte.getCycleBassinAssoc().getCycle() != null) {
+                        cycle = recolte.getCycleBassinAssoc().getCycle().getCodeUniqueCycle();
+                    }
+                }
+            }
+            
             data.add(new LotCrevetteExportRow(
                     l.getDateRecolte(),
                     l.getNumeroLotUnique(),
-                    l.getBiomasseTotaleKg() != null ? l.getBiomasseTotaleKg().floatValue() : 0f,
-                    l.getBiomasseActuelleKg() != null ? l.getBiomasseActuelleKg().floatValue() : 0f,
+                    biomasseTotale,
+                    biomassActuelle,
                     bassin,
                     cycle));
         }

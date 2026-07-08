@@ -1,4 +1,4 @@
-# MOVE GASY — Template HTML/CSS
+# OROSE — Template HTML/CSS
 > Documentation à destination des développeurs et intégrateurs du projet.
 
 ---
@@ -52,7 +52,7 @@ Toutes les pages (principales et sous-pages) doivent respecter **exactement** ce
   <aside class="sidebar">
     <div class="sidebar-brand">
       <div class="brand-logo"><i class="bi bi-water"></i></div>
-      <div class="brand-name">MOVE GASY</div>
+      <div class="brand-name">OROSE</div>
     </div>
     <div class="nav-container">
       <div class="nav-label">Principal</div>

@@ -5,7 +5,7 @@
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>Move Gasy — Historique des changements d'état</title>
+    <title>OROSE — Historique des changements d'état</title>
     <link href="https://fonts.googleapis.com" rel="preconnect" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap"
@@ -17,11 +17,11 @@
 <body>
     <div class="sidebar-overlay"></div>
     <div class="layout">
-        <!-- SIDEBAR (Move Gasy Sidebar Style) -->
+        <!-- SIDEBAR (OROSE Sidebar Style) -->
         <aside class="sidebar">
             <div class="sidebar-brand">
                 <div class="brand-logo"><i class="bi bi-water"></i></div>
-                <div class="brand-name">MOVE GASY</div>
+                <div class="brand-name">OROSE</div>
             </div>
             <div class="nav-container">
                 <div class="nav-label">Principal</div>
@@ -100,7 +100,7 @@
                         <p class="page-sub">Suivi complet des transitions d'états et des interventions opérationnelles
                             sur l'ensemble des bassins.</p>
                     </div>
-                    <button class="btn btn-primary" onclick="exporterCSV()">
+                    <button class="btn btn-primary">
                         <i class="bi bi-download"></i> EXPORTER CSV
                     </button>
                 </div>
@@ -109,34 +109,30 @@
                     <div class="filter-grid">
                         <div class="filter-group">
                             <label class="filter-label">Bassin concerné</label>
-                            <select id="filter-bassin" class="filter-select">
-                                <option value="">Tous les bassins</option>
-                                <option value="A-102">Bassin A-102</option>
-                                <option value="B-005">Bassin B-005</option>
-                                <option value="A-105">Bassin A-105</option>
-                                <option value="C-012">Bassin C-012</option>
-                                <option value="A-201">Bassin A-201</option>
+                            <select class="filter-select">
+                                <option>Tous les bassins</option>
+                                <option>Bassin A-102</option>
+                                <option>Bassin B-005</option>
                             </select>
                         </div>
                         <div class="filter-group">
                             <label class="filter-label">Période</label>
-                            <select id="filter-periode" class="filter-select">
-                                <option value="">Toutes les périodes</option>
-                                <option value="24h">Dernières 24 heures</option>
-                                <option value="7j">7 derniers jours</option>
-                                <option value="30j">30 derniers jours</option>
+                            <select class="filter-select">
+                                <option>Dernières 24 heures</option>
+                                <option>7 derniers jours</option>
+                                <option>30 derniers jours</option>
                             </select>
                         </div>
                         <div class="filter-group">
                             <label class="filter-label">Type d'état</label>
-                            <select id="filter-etat" class="filter-select">
-                                <option value="">Tous les types</option>
-                                <option value="actif">Actif</option>
-                                <option value="quarantaine">Quarantaine</option>
-                                <option value="repos">Repos</option>
+                            <select class="filter-select">
+                                <option>Tous les types</option>
+                                <option>Actif</option>
+                                <option>Quarantaine</option>
+                                <option>Repos</option>
                             </select>
                         </div>
-                        <button class="btn btn-secondary" style="height: 40px; justify-content: center;" onclick="appliquerFiltres()">
+                        <button class="btn btn-secondary" style="height: 40px; justify-content: center;">
                             APPLIQUER FILTRES
                         </button>
                     </div>
@@ -144,61 +140,66 @@
                 <!-- Main Table Content -->
                 <div class="card" style="padding: 0;">
                     <div class="table-container">
-                        <table id="histo-table">
+                        <table>
                             <thead>
                                 <tr>
                                     <th>Bassin concerné</th>
                                     <th>État avant</th>
                                     <th class="arrow-col"></th>
                                     <th>État après</th>
-                                    <th>Date</th>
+                                    <th>Date et heure</th>
                                     <th>Utilisateur responsable</th>
                                     <th>Motif</th>
                                 </tr>
                             </thead>
-                            <tbody id="histo-tbody">
-                                <tr data-bassin="A-102" data-etat="actif">
+                            <tbody>
+                                <!-- Row 1 -->
+                                <tr>
                                     <td><strong>Bassin A-102</strong></td>
                                     <td><span class="badge badge-repos">Repos</span></td>
                                     <td class="arrow-col"><i class="bi bi-arrow-right"></i></td>
                                     <td><span class="badge badge-actif">Actif</span></td>
-                                    <td class="date-cell">24 Oct 2023</td>
+                                    <td class="date-cell">24 Oct 2023 | 08:45</td>
                                     <td>M. Randria</td>
                                     <td class="motif-cell">Début du cycle de croissance Q4.</td>
                                 </tr>
-                                <tr data-bassin="B-005" data-etat="quarantaine">
+                                <!-- Row 2 -->
+                                <tr>
                                     <td><strong>Bassin B-005</strong></td>
                                     <td><span class="badge badge-actif">Actif</span></td>
                                     <td class="arrow-col"><i class="bi bi-arrow-right"></i></td>
                                     <td><span class="badge badge-quarantaine">Quarantaine</span></td>
-                                    <td class="date-cell">23 Oct 2023</td>
+                                    <td class="date-cell">23 Oct 2023 | 16:20</td>
                                     <td>S. Rakoto</td>
                                     <td class="motif-cell">Suspicion de pathogène viral, test PCR requis.</td>
                                 </tr>
-                                <tr data-bassin="A-105" data-etat="repos">
+                                <!-- Row 3 -->
+                                <tr>
                                     <td><strong>Bassin A-105</strong></td>
                                     <td><span class="badge badge-actif">Actif</span></td>
                                     <td class="arrow-col"><i class="bi bi-arrow-right"></i></td>
                                     <td><span class="badge badge-repos">Repos</span></td>
-                                    <td class="date-cell">22 Oct 2023</td>
+                                    <td class="date-cell">22 Oct 2023 | 09:12</td>
                                     <td>Admin Site</td>
                                     <td class="motif-cell">Récolte terminée, début nettoyage bassin.</td>
                                 </tr>
-                                <tr data-bassin="C-012" data-etat="actif">
+                                <!-- Row 4 -->
+                                <tr>
                                     <td><strong>Bassin C-012</strong></td>
                                     <td><span class="badge badge-quarantaine">Quarantaine</span></td>
                                     <td class="arrow-col"><i class="bi bi-arrow-right"></i></td>
                                     <td><span class="badge badge-actif">Actif</span></td>
-                                    <td class="date-cell">21 Oct 2023</td>
+                                    <td class="date-cell">21 Oct 2023 | 14:30</td>
                                     <td>S. Rakoto</td>
                                     <td class="motif-cell">Fin de quarantaine, résultats négatifs.</td>
                                 </tr>
-                                <tr data-bassin="A-201" data-etat="actif">
+                                <!-- Row 5 -->
+                                <tr>
                                     <td><strong>Bassin A-201</strong></td>
                                     <td><span class="badge badge-repos">Repos</span></td>
                                     <td class="arrow-col"><i class="bi bi-arrow-right"></i></td>
                                     <td><span class="badge badge-actif">Actif</span></td>
-                                    <td class="date-cell">20 Oct 2023</td>
+                                    <td class="date-cell">20 Oct 2023 | 07:00</td>
                                     <td>M. Randria</td>
                                     <td class="motif-cell">Nouveau chargement de post-larves.</td>
                                 </tr>
@@ -222,9 +223,6 @@
             </main>
         </div>
     </div>
-    <style>
-        .row-masquee { display: none !important; }
-    </style>
     <script>
         function toggleSidebar() {
             document.querySelector('.sidebar').classList.toggle('open');
@@ -235,65 +233,6 @@
                 document.querySelector('.sidebar').classList.remove('open');
                 document.querySelector('.sidebar-overlay').classList.remove('open');
             });
-
-        function appliquerFiltres() {
-            const bassin = document.getElementById('filter-bassin').value;
-            const etat   = document.getElementById('filter-etat').value;
-            const rows   = document.querySelectorAll('#histo-tbody tr');
-            let count = 0;
-
-            rows.forEach(function(row) {
-                var okBassin = !bassin || row.getAttribute('data-bassin') === bassin;
-                var okEtat   = !etat   || row.getAttribute('data-etat')   === etat;
-                if (okBassin && okEtat) {
-                    row.classList.remove('row-masquee');
-                    count++;
-                } else {
-                    row.classList.add('row-masquee');
-                }
-            });
-
-            var info = document.querySelector('.pagination-info');
-            if (info) {
-                info.textContent = count > 0
-                    ? 'Affichage 1\u20' + count + ' sur ' + count + ' entrée' + (count > 1 ? 's' : '')
-                    : 'Aucun résultat';
-            }
-        }
-
-        function exporterCSV() {
-            var rows    = document.querySelectorAll('#histo-tbody tr');
-            var headers = ['Bassin concerné', 'État avant', 'État après', 'Date', 'Utilisateur', 'Motif'];
-            var lignes  = [headers.join(';')];
-
-            rows.forEach(function(row) {
-                if (row.classList.contains('row-masquee')) return;
-                var cells = row.querySelectorAll('td');
-                // colonnes: 0=bassin 1=avant 2=flèche(skip) 3=après 4=date 5=user 6=motif
-                var ligne = [
-                    cells[0].textContent.trim(),
-                    cells[1].textContent.trim(),
-                    cells[3].textContent.trim(),
-                    cells[4].textContent.trim(),
-                    cells[5].textContent.trim(),
-                    cells[6].textContent.trim()
-                ];
-                lignes.push(ligne.map(function(v) {
-                    return '"' + v.replace(/"/g, '""') + '"';
-                }).join(';'));
-            });
-
-            var contenu = '﻿' + lignes.join('\r\n');
-            var blob    = new Blob([contenu], { type: 'text/csv;charset=utf-8;' });
-            var url     = URL.createObjectURL(blob);
-            var a       = document.createElement('a');
-            a.href      = url;
-            a.download  = 'historique_bassins.csv';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            setTimeout(function() { URL.revokeObjectURL(url); }, 1000);
-        }
     </script>
 
 </body>

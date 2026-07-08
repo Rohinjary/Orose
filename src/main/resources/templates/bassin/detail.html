@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/default}">
 <head>
-    <title layout:fragment="page-title" th:text="'Bassin ' + ${bassin.code} + ' — Move Gasy'">Bassin — Move Gasy</title>
+    <title layout:fragment="page-title" th:text="'Bassin ' + ${bassin.code} + ' — OROSE'">Bassin — OROSE</title>
     <th:block layout:fragment="page-styles">
         <link href="/css/bassin/detail.css" rel="stylesheet" />
         <style>
@@ -12,6 +12,30 @@
             .badge-traitement   { background: #e0f2fe; color: #075985; }
             .badge-recolte      { background: #f3e8ff; color: #6b21a8; }
             .badge-inactif      { background: #e5e7eb; color: #374151; }
+            .badge-croissance-normal   { background: #dcfce7; color: #166534; }
+            .badge-croissance-retard   { background: #fef3c7; color: #92400e; }
+            .badge-croissance-critique { background: #fee2e2; color: #991b1b; }
+            .suivi-stats {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+                gap: 12px;
+                margin: 16px 0;
+            }
+            .suivi-stats .stat-box {
+                background: var(--mg-surface, #f7f9fb);
+                border-radius: var(--radius);
+                padding: 10px 14px;
+            }
+            .suivi-stats .stat-label {
+                display: block;
+                font-size: 10px;
+                font-weight: 700;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+                color: var(--mg-secondary);
+                margin-bottom: 3px;
+            }
+            .suivi-stats .stat-value { font-size: 16px; font-weight: 700; color: var(--mg-primary); }
         </style>
     </th:block>
 </head>
@@ -57,6 +81,46 @@
                     <div class="action-bar">
                         <a th:href="@{/bassins/{id}/modifier(id=${bassin.id})}" class="btn btn-outline btn-sm"><i class="bi bi-pencil"></i> Modifier</a>
                         <a th:href="@{/bassins/liste}" class="btn btn-outline btn-sm"><i class="bi bi-arrow-left"></i> Retour</a>
+                    </div>
+                </section>
+
+                <section class="card" th:if="${suiviActif != null}">
+                    <div class="card-header">
+                        <h3 class="card-title">Suivi du cycle en cours</h3>
+                        <span class="badge"
+                            th:classappend="${suiviActif.statutCroissance == 'CRITIQUE'} ? 'badge-croissance-critique' :
+                                (${suiviActif.statutCroissance == 'RETARD'} ? 'badge-croissance-retard' : 'badge-croissance-normal')"
+                            th:text="${suiviActif.statutCroissance}"></span>
+                    </div>
+
+                    <div class="pond-meta" style="display:flex; justify-content:space-between; font-size:13px; color:var(--mg-secondary); margin-bottom:4px;">
+                        <span>Cycle</span>
+                        <strong style="color:var(--mg-primary);" th:text="${suiviActif.codeUniqueCycle}">—</strong>
+                    </div>
+
+                    <div class="suivi-stats">
+                        <div class="stat-box">
+                            <span class="stat-label">Semaine</span>
+                            <span class="stat-value" th:text="${suiviActif.semaine != null} ? ${suiviActif.semaine} : '—'">—</span>
+                        </div>
+                        <div class="stat-box">
+                            <span class="stat-label">Avancement</span>
+                            <span class="stat-value" th:text="${suiviActif.tauxAvancement != null} ? ${suiviActif.tauxAvancement} + '%' : '—'">—</span>
+                        </div>
+                        <div class="stat-box">
+                            <span class="stat-label">Poids moyen</span>
+                            <span class="stat-value" th:text="${suiviActif.poidsMoyenActuel != null and suiviActif.poidsMoyenActuel.doubleValue() > 0} ? ${suiviActif.poidsMoyenActuel} + ' g' : '—'">—</span>
+                        </div>
+                        <div class="stat-box">
+                            <span class="stat-label">Jours restants</span>
+                            <span class="stat-value" th:text="${suiviActif.joursRestants != null} ? ${suiviActif.joursRestants} + ' j' : '—'">—</span>
+                        </div>
+                    </div>
+
+                    <div class="action-bar">
+                        <a th:href="@{/biologique/{id}/detail(id=${suiviActif.idCycleBassinAssoc})}" class="btn btn-primary btn-sm">
+                            <i class="bi bi-graph-up"></i> Voir le suivi biologique
+                        </a>
                     </div>
                 </section>
 

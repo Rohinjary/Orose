@@ -1,6 +1,8 @@
 1)ary to tsisy import ???
 2)rehefa recolte daol ny bassin am cycle 1, dia inona ny status cycle?
 3)bassin RECOLTE dia aveo? tokony hoe mila ovaina manuellement ve hoe VIDE?
+    -affiche les cycles prevus a une date future 
+    -cycle prevu dans un mois= 0; ...=1
 4)ary raha ilay crevettes 20g fa tsy 110mm...inona ny mitranga? dia raha hiandry 119mm ve tsy maty antoka be?
 5)tokony alana ilay taux de survie anatry suivi biologique raha hoe am farany ihany vo atsofoka sa?
 6) na en traitement aza ve ilay bassin dia mbola afaka manao pesee? sa aona?

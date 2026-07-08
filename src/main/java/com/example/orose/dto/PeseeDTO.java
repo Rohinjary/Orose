@@ -10,8 +10,6 @@ public class PeseeDTO {
     private LocalDate dateSuivi;
     private BigDecimal poidsMoyenGramme;
     private BigDecimal tailleMoyenneMm;
-    private Integer nbVivants;
-    private Integer nbMorts;
     private Long idTechnicien;
     private String notes;
 }

@@ -30,15 +30,6 @@ public class SuiviHebdoBassin {
     @Column(name = "taille_moyenne_mm", nullable = false, precision = 10, scale = 2)
     private BigDecimal tailleMoyenneMm;
 
-    @Column(name = "nb_vivants", nullable = false)
-    private Integer nbVivants;
-
-    @Column(name = "nb_morts", nullable = false)
-    private Integer nbMorts;
-
-    @Column(name = "biomasse_calculee_kg", insertable = false, updatable = false, precision = 10, scale = 2)
-    private BigDecimal biomasseCalculeeKg;
-
     @ManyToOne
     @JoinColumn(name = "id_technicien", nullable = false)
     private Utilisateur technicien;

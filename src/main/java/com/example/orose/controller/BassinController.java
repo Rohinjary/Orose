@@ -2,7 +2,9 @@ package com.example.orose.controller;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -18,9 +20,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.orose.dto.BassinDTO;
+import com.example.orose.dto.BassinSuiviDTO;
 import com.example.orose.model.Bassin;
 import com.example.orose.model.HistoStatutBassin;
 import com.example.orose.service.BassinService;
+import com.example.orose.service.BiologiqueService;
 
 @Controller
 @RequestMapping("/bassins")
@@ -28,6 +32,9 @@ public class BassinController {
 
     @Autowired
     private BassinService bassinService;
+
+    @Autowired
+    private BiologiqueService biologiqueService;
 
     private void preparerLayoutBassins(Model model, String breadcrumbCurrent, String currentPage) {
         model.addAttribute("currentPage", currentPage);
@@ -39,7 +46,17 @@ public class BassinController {
     @GetMapping("/liste")
     public String lister(Model model) {
         preparerLayoutBassins(model, "Liste des bassins", "liste");
-        model.addAttribute("bassins", bassinService.listerBassins());
+        List<Bassin> bassins = bassinService.listerBassins();
+        model.addAttribute("bassins", bassins);
+
+        // Clé Integer (type réel de Bassin.id) pour que le lookup ${suivisParBassin.get(bassin.id)}
+        // fonctionne côté template ; HashMap.put accepte en plus les valeurs null
+        // (contrairement à Collectors.toMap/Map.merge), nécessaires pour les bassins sans cycle actif.
+        Map<Integer, BassinSuiviDTO> suivisParBassin = new HashMap<>();
+        for (Bassin b : bassins) {
+            suivisParBassin.put(b.getId(), biologiqueService.getSuiviActifPourBassin(b.getId().longValue()).orElse(null));
+        }
+        model.addAttribute("suivisParBassin", suivisParBassin);
         return "bassin/liste";
     }
 
@@ -123,6 +140,7 @@ public class BassinController {
         model.addAttribute("bassin", bassin);
         model.addAttribute("transitions", transitions);
         model.addAttribute("historique", historique);
+        model.addAttribute("suiviActif", biologiqueService.getSuiviActifPourBassin(id).orElse(null));
         return "bassin/detail";
     }
 

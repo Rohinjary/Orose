@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/default}">
 <head>
-    <title layout:fragment="page-title">Move Gasy — Lots Crevettes</title>
+    <title layout:fragment="page-title">OROSE — Lots Crevettes</title>
     <th:block layout:fragment="page-styles">
         <style>
             .header-section { margin-bottom: 32px; padding-bottom: 16px; border-bottom: 1px solid #e2e8f0; }
@@ -75,9 +75,9 @@
                             <td th:text="${#temporals.format(lot.dateRecolte, 'dd/MM/yyyy')}">--</td>
                             <td><span class="lot-number" th:text="${lot.numeroLotUnique}">--</span></td>
                             <td>Crevettes (calibre ≥ 20g)</td>
-                            <td class="val-positive" th:text="${#numbers.formatDecimal(lot.biomasseTotaleKg, 1, 2)}">--</td>
-                            <td th:text="${#numbers.formatDecimal(lot.biomasseActuelleKg, 1, 2)}">--</td>
-                            <td th:text="${lot.cycleBassinAssoc != null ? lot.cycleBassinAssoc.bassin.code + ' / Cycle ' + lot.cycleBassinAssoc.cycle.codeUniqueCycle : 'N/A'}">--</td>
+                            <td class="val-positive" th:text="${lot.recolteDeclaration != null ? #numbers.formatDecimal(lot.recolteDeclaration.recolteReelleKg, 1, 2) : '--'}">--</td>
+                            <td th:text="${lot.recolteDeclaration != null ? #numbers.formatDecimal(lot.recolteDeclaration.recolteReelleKg, 1, 2) : '--'}">--</td>
+                            <td th:text="${lot.recolteDeclaration != null && lot.recolteDeclaration.cycleBassinAssoc != null ? lot.recolteDeclaration.cycleBassinAssoc.bassin.code + ' / Cycle ' + lot.recolteDeclaration.cycleBassinAssoc.cycle.codeUniqueCycle : 'N/A'}">--</td>
                         </tr>
                         <tr th:if="${#lists.isEmpty(lots)}">
                             <td colspan="6" style="text-align: center; padding: 40px; color: var(--mg-text-muted);">Aucune récolte enregistrée</td>

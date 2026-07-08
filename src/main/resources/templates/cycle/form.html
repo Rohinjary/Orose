@@ -3,7 +3,7 @@
     layout:decorate="~{layouts/default}">
 
 <head>
-    <title th:text="${modeEdition} ? 'Move Gasy — Modifier Bassin' : 'Move Gasy — Nouveau Bassin'">Move Gasy — Bassin
+    <title th:text="${modeEdition} ? 'OROSE — Modifier Bassin' : 'OROSE — Nouveau Bassin'">OROSE — Bassin
     </title>
 </head>
 
@@ -73,7 +73,7 @@
                         <div class="form-grid">
                             <div>
                                 <label class="form-label">Espece</label>
-                                <select name="idEspece" class="form-control">
+                                <select name="idEspece" class="form-control" required>
                                     <option value="" disabled selected>-- Choisir une espece --</option>
                                     <option th:each="e : ${especes}" th:value="${e.id}"
                                         th:text="${e.nomCourant != null and !#strings.isEmpty(e.nomCourant) ? e.nomCourant : e.nomScientifique}">

@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.example.orose.dto.stock.EnregistrerPerteCrevetteDTO;
 import com.example.orose.dto.stock.EntreeStockAlimentDTO;
 import com.example.orose.dto.stock.EntreeStockIntrantDTO;
 import com.example.orose.dto.stock.SortieStockIntrantDTO;
@@ -39,15 +40,21 @@ public class StockController {
     public String dashboard(Model model) {
         preparerLayout(model, "Tableau de bord", "stock-dashboard");
         model.addAttribute("dashboard", stockService.getDashboard());
-        model.addAttribute("derniersMouvements", stockService.getDerniersMouvements(5));
         return "stock/dashboard";
     }
 
     @GetMapping("/produits")
-    public String listeProduits(Model model) {
-        preparerLayout(model, "Liste des produits", "stock-produits");
-        model.addAttribute("produits", stockService.getListeProduits());
-        model.addAttribute("alertes", stockService.getAlertes());
+    public String listeProduits(@RequestParam(required = false) String categorie, Model model) {
+        String titre = "Stock actuel";
+        String page = "stock-produits";
+        if (categorie != null) {
+            titre += " — " + categorie;
+            page = "stock-produits-" + categorie.toLowerCase();
+        }
+        preparerLayout(model, titre, page);
+        model.addAttribute("categorie", categorie);
+        model.addAttribute("produits", stockService.getListeProduits(categorie));
+        model.addAttribute("alertes", stockService.getAlertes(categorie));
         return "stock/index";
     }
 
@@ -150,5 +157,29 @@ public class StockController {
         preparerLayout(model, "Lots crevettes", "stock-lots");
         model.addAttribute("lots", stockService.getLotsCrevette());
         return "stock/lots_crevettes";
+    }
+
+    @GetMapping("/pertes-crevettes")
+    public String pertesCrevettes(Model model) {
+        preparerLayout(model, "Registre pertes crevettes", "stock-pertes-crevettes");
+        model.addAttribute("pertes", stockService.getPertesCrevettes());
+        model.addAttribute("lots", stockService.getLotsCrevette());
+        model.addAttribute("perteDTO", new EnregistrerPerteCrevetteDTO());
+        model.addAttribute("utilisateurs", utilisateurRepository.findAll());
+        return "stock/perte/crevettes";
+    }
+
+    @PostMapping("/pertes-crevettes")
+    @PreAuthorize("hasAnyRole('ADMIN','TECH','RS')")
+    public String enregistrerPerteCrevette(@ModelAttribute EnregistrerPerteCrevetteDTO dto,
+            @RequestParam Integer id_utilisateur,
+            RedirectAttributes redirectAttributes) {
+        try {
+            stockService.enregistrerPerteCrevette(dto, id_utilisateur);
+            redirectAttributes.addFlashAttribute("success", "Perte enregistrée avec succès.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Erreur: " + e.getMessage());
+        }
+        return "redirect:/stock/pertes-crevettes";
     }
 }
