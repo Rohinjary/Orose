@@ -83,7 +83,10 @@
                     th:classappend="${currentPage == 'alertes-biologiques'} ? 'active' : ''">
                     Alertes biologiques
                 </a>
-
+                <a class="nav-item" th:classappend="${currentPage == 'taux-survie'} ? 'active' : ''"
+                    th:href="@{/biologique/taux-survie}">
+                    Taux de survie
+                </a>
 
             </div>
         </div>

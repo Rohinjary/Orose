@@ -5,7 +5,9 @@ import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -15,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.example.orose.dto.BassinSuiviDTO;
 import com.example.orose.dto.CourbeCroissanceDTO;
 import com.example.orose.dto.SuiviBiologiqueDetailDTO;
+import com.example.orose.dto.SurvieBassinDTO;
 import com.example.orose.model.Cycle;
 import com.example.orose.model.CycleBassinAssoc;
 import com.example.orose.model.EvolutionHebdoEspece;
@@ -22,6 +25,7 @@ import com.example.orose.model.SuiviHebdoBassin;
 import com.example.orose.repository.AlerteRepository;
 import com.example.orose.repository.CycleBassinAssocRepository;
 import com.example.orose.repository.EvolutionHebdoEspeceRepository;
+import com.example.orose.repository.RecolteDeclarationRepository;
 import com.example.orose.repository.SuiviHebdoBassinRepository;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -38,17 +42,20 @@ public class BiologiqueService {
     private final SuiviHebdoBassinRepository suiviHebdoBassinRepository;
     private final AlerteRepository alerteRepository;
     private final EvolutionHebdoEspeceRepository evolutionHebdoEspeceRepository;
+    private final RecolteDeclarationRepository recolteDeclarationRepository;
     private final BassinService bassinService;
 
     public BiologiqueService(CycleBassinAssocRepository cycleBassinAssocRepository,
                              SuiviHebdoBassinRepository suiviHebdoBassinRepository,
                              AlerteRepository alerteRepository,
                              EvolutionHebdoEspeceRepository evolutionHebdoEspeceRepository,
+                             RecolteDeclarationRepository recolteDeclarationRepository,
                              BassinService bassinService) {
         this.cycleBassinAssocRepository = cycleBassinAssocRepository;
         this.suiviHebdoBassinRepository = suiviHebdoBassinRepository;
         this.alerteRepository = alerteRepository;
         this.evolutionHebdoEspeceRepository = evolutionHebdoEspeceRepository;
+        this.recolteDeclarationRepository = recolteDeclarationRepository;
         this.bassinService = bassinService;
     }
 
@@ -77,6 +84,94 @@ public class BiologiqueService {
 
         bassinService.changerStatutBassin(assoc.getBassin().getId().longValue(), "RECOLTE", motif, idUtilisateur);
 
+    }
+
+    public List<SurvieBassinDTO> getStatistiquesSurvieActifs() {
+        List<CycleBassinAssoc> assocs = cycleBassinAssocRepository.findAll();
+
+        List<SurvieBassinDTO> result = new ArrayList<>();
+        Map<String, BigDecimal> totalsParCycle = new HashMap<>();
+        Map<String, Integer> comptesParCycle = new HashMap<>();
+
+        for (CycleBassinAssoc assoc : assocs) {
+            SurvieBassinDTO dto = new SurvieBassinDTO();
+            dto.setCodeUniqueCycle(assoc.getCycle().getCodeUniqueCycle());
+            dto.setCodeBassin(assoc.getBassin().getCode());
+
+            var derniereRecolte = recolteDeclarationRepository
+                    .findByIdCycleBassinAssocIdOrderByIdDesc(assoc.getId());
+
+            BigDecimal tauxSurvie = BigDecimal.valueOf(100);
+            String etat = "ACTIF";
+            if (derniereRecolte.isPresent()) {
+                if (derniereRecolte.get().getTauxSurviePercent() != null) {
+                    tauxSurvie = derniereRecolte.get().getTauxSurviePercent();
+                }
+                etat = "RÉCOLTÉ";
+            }
+
+            dto.setTauxSurvieBassin(tauxSurvie.setScale(2, RoundingMode.HALF_UP));
+            dto.setEtatBassin(etat);
+            dto.setCouleur(couleurPourEtat(etat));
+            result.add(dto);
+
+            String cycleKey = assoc.getCycle().getCodeUniqueCycle();
+            totalsParCycle.merge(cycleKey, dto.getTauxSurvieBassin(), BigDecimal::add);
+            comptesParCycle.merge(cycleKey, 1, Integer::sum);
+        }
+
+        for (SurvieBassinDTO dto : result) {
+            String cycleKey = dto.getCodeUniqueCycle();
+            int count = comptesParCycle.getOrDefault(cycleKey, 1);
+            BigDecimal moyenneCycle = totalsParCycle.getOrDefault(cycleKey, BigDecimal.ZERO)
+                    .divide(BigDecimal.valueOf(count), 2, RoundingMode.HALF_UP);
+            dto.setTauxSurvieMoyenCycle(moyenneCycle);
+        }
+
+        result.sort((a, b) -> {
+            int cmp = a.getCodeUniqueCycle().compareToIgnoreCase(b.getCodeUniqueCycle());
+            if (cmp != 0) {
+                return cmp;
+            }
+            return a.getCodeBassin().compareToIgnoreCase(b.getCodeBassin());
+        });
+
+        Map<String, Integer> rowspansParCycle = new HashMap<>();
+        for (SurvieBassinDTO dto : result) {
+            rowspansParCycle.merge(dto.getCodeUniqueCycle(), 1, Integer::sum);
+        }
+
+        String cycleCourant = null;
+        for (SurvieBassinDTO dto : result) {
+            if (!java.util.Objects.equals(cycleCourant, dto.getCodeUniqueCycle())) {
+                dto.setRowspanCycle(rowspansParCycle.getOrDefault(dto.getCodeUniqueCycle(), 1));
+                cycleCourant = dto.getCodeUniqueCycle();
+            } else {
+                dto.setRowspanCycle(0);
+            }
+        }
+
+        return result;
+    }
+
+    public BigDecimal getTauxSurvieGeneral() {
+        List<SurvieBassinDTO> statistiques = getStatistiquesSurvieActifs();
+        if (statistiques.isEmpty()) {
+            return BigDecimal.valueOf(100);
+        }
+        BigDecimal total = statistiques.stream()
+                .map(SurvieBassinDTO::getTauxSurvieBassin)
+                .filter(java.util.Objects::nonNull)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        return total.divide(BigDecimal.valueOf(statistiques.size()), 2, RoundingMode.HALF_UP);
+    }
+
+    private String couleurPourEtat(String etat) {
+        return switch (etat) {
+            case "RÉCOLTÉ" -> "#7d8583";
+            case "ACTIF" -> "#8af8b2";
+            default -> "#64748b";
+        };
     }
 
     public List<BassinSuiviDTO> getBassinsSuivi() {
