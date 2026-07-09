@@ -76,7 +76,7 @@
                      th:text="${#numbers.formatDecimal(tauxSurvieGeneral, 1, 2)} + '%'">100%</div>
                 <div style="color: var(--mg-secondary);">Moyenne calculée sur tous les bassins du système</div>
             </div>
-            <div class="badge-etat" style="background: #0f766e; color: white;">Basé sur les déclarations de récolte</div>
+            <div class="badge-etat" style="background: #64748b; color: white;">Basé sur les déclarations de récolte</div>
         </div>
     </div>
 
@@ -129,12 +129,19 @@
     </div>
 </div>
 
+
 <th:block layout:fragment="page-scripts">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script th:inline="javascript">
         const rows = /*[[${statistiquesSurvie}]]*/ [];
         const labels = rows.map(r => r.codeBassin + ' (' + r.codeUniqueCycle + ')');
         const values = rows.map(r => Number(r.tauxSurvieBassin ?? 100));
+
+        // Génération d'une palette de gris alternée pour que les secteurs restent distincts
+        const grayPalette = rows.map((_, index) => {
+            const grays = ['#475569', '#64748b', '#94a3b8', '#cbd5e1', '#e2e8f0'];
+            return grays[index % grays.length];
+        });
 
         if (rows.length > 0) {
             const ctx = document.getElementById('survieChart');
@@ -144,8 +151,9 @@
                     labels: labels,
                     datasets: [{
                         data: values,
-                        backgroundColor: rows.map(r => r.couleur || '#0f766e'),
-                        borderWidth: 1
+                        backgroundColor: grayPalette, // Application de la palette de gris
+                        borderColor: '#ffffff',       // Ligne de séparation blanche pour le contraste
+                        borderWidth: 2
                     }]
                 },
                 options: {

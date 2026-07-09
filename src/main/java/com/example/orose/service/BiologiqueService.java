@@ -168,8 +168,8 @@ public class BiologiqueService {
 
     private String couleurPourEtat(String etat) {
         return switch (etat) {
-            case "RÉCOLTÉ" -> "#0f766e";
-            case "ACTIF" -> "#16a34a";
+            case "RÉCOLTÉ" -> "#7d8583";
+            case "ACTIF" -> "#8af8b2";
             default -> "#64748b";
         };
     }
