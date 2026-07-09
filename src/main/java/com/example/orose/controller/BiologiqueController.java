@@ -75,6 +75,14 @@ public class BiologiqueController {
         return "biologique/alertes";
     }
 
+    @GetMapping("/taux-survie")
+    public String tauxSurvie(Model model) {
+        preparerLayoutBiologique(model, "Taux de survie", "taux-survie");
+        model.addAttribute("statistiquesSurvie", biologiqueService.getStatistiquesSurvieActifs());
+        model.addAttribute("tauxSurvieGeneral", biologiqueService.getTauxSurvieGeneral());
+        return "biologique/taux-survie";
+    }
+
     @PostMapping("/alertes/{id}/resoudre")
     @PreAuthorize("hasAnyRole('ADMIN','TECH','RS')")
     public String resoudreAlerte(@PathVariable Long id, RedirectAttributes ra) {
