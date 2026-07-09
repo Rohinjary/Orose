@@ -74,35 +74,6 @@ CREATE TRIGGER trg_decrement_stock_crevette
     FOR EACH ROW
     EXECUTE FUNCTION fn_decrement_stock_crevette();
 
-CREATE OR REPLACE FUNCTION fn_quarantaine_auto()
-RETURNS TRIGGER AS $$
-DECLARE
-    id_statut_quarantaine INTEGER;
-    id_bassin_concerne INTEGER;
-BEGIN
-    IF NEW.niveau_gravite = 'CRITIQUE' THEN
-        SELECT id INTO id_statut_quarantaine FROM statut_bassin WHERE code = 'QUARANTAINE';
-        SELECT id_bassin INTO id_bassin_concerne
-            FROM cycle_bassin_assoc WHERE id = NEW.id_cycle_bassin_assoc;
-
-        UPDATE bassin
-        SET id_statut_actuel = id_statut_quarantaine
-        WHERE id = id_bassin_concerne;
-
-        INSERT INTO histo_statut_bassin (id_bassin, id_statut_bassin, id_utilisateur, motif)
-        VALUES (id_bassin_concerne, id_statut_quarantaine, NEW.id_responsable,
-                'Quarantaine automatique - incident critique #' || NEW.id);
-    END IF;
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
-DROP TRIGGER IF EXISTS trg_quarantaine_auto ON incident_sanitaire;
-CREATE TRIGGER trg_quarantaine_auto
-    AFTER INSERT ON incident_sanitaire
-    FOR EACH ROW
-    EXECUTE FUNCTION fn_quarantaine_auto();
-
 
 
 -- ------------------------------------------------------------

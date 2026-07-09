@@ -64,7 +64,11 @@ public class BassinController {
     @PreAuthorize("hasRole('ADMIN')")
     public String formulaireCreation(Model model) {
         preparerLayoutBassins(model, "Nouveau bassin", "nouveau");
-        model.addAttribute("bassinDTO", new BassinDTO());
+
+        BassinDTO bassinDTO = new BassinDTO();
+        bassinDTO.setDateCreation(LocalDate.now());
+
+        model.addAttribute("bassinDTO", bassinDTO);
         model.addAttribute("modeEdition", false);
         return "bassin/form";
     }

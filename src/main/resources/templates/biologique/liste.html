@@ -340,16 +340,16 @@
 
             <!-- Stats : survie + poids -->
             <div class="pond-stats">
-                <div th:class="${b.tauxSurvie != null and b.tauxSurvie.doubleValue() < 40} ? 'stat-box danger' : 'stat-box'">
-                    <span th:class="${b.tauxSurvie != null and b.tauxSurvie.doubleValue() < 40} ? 'stat-label danger' : 'stat-label'">Survie</span>
-                    <span th:class="${b.tauxSurvie != null and b.tauxSurvie.doubleValue() < 40} ? 'stat-value danger' : 'stat-value'"
-                          th:text="${b.tauxSurvie != null} ? ${b.tauxSurvie} + '%' : '—'">—</span>
+                <div class="stat-box">
+                    <span class="stat-label">Biomasse</span>
+                    <span class="stat-value"
+                        th:text="${b.biomassActuelleKg != null} ? ${b.biomassActuelleKg} + ' kg' : '—'">—</span>
                 </div>
                 <div class="stat-box">
                     <span class="stat-label">Poids</span>
                     <span class="stat-value"
-                          th:text="${b.poidsMoyenActuel != null and b.poidsMoyenActuel.doubleValue() > 0}
-                              ? ${b.poidsMoyenActuel} + 'g' : '—'">—</span>
+                        th:text="${b.poidsMoyenActuel != null and b.poidsMoyenActuel.doubleValue() > 0}
+                            ? ${b.poidsMoyenActuel} + 'g' : '—'">—</span>
                 </div>
             </div>
 

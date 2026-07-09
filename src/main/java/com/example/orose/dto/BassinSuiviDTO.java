@@ -19,4 +19,5 @@ public class BassinSuiviDTO {
     private Long joursRestants;
     private Integer tauxAvancement;
     private boolean recolteProche;
+    private BigDecimal biomassActuelleKg;
 }

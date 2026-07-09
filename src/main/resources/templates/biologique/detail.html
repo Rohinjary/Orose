@@ -128,30 +128,31 @@
         </div>
 
         <!-- Grille d'indicateurs clés (KPIs) -->
-        <div class="kpi-grid">
+        <div class="kpi-grid-bio" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px;">
             <div class="kpi-card">
                 <div class="kpi-icon"><i class="bi bi-speedometer2"></i></div>
                 <div class="kpi-label">Biomasse actuelle</div>
-                <div class="kpi-value" th:text="${detail.biomassActuelleKg != null} ? ${detail.biomassActuelleKg} + ' kg' : '—'">—</div>
+                <div class="kpi-value"
+                    th:text="${detail.biomassActuelleKg != null} ? ${detail.biomassActuelleKg} + ' kg' : '—'">
+                    —
+                </div>
             </div>
-            
-            <div class="kpi-card"
-                 th:classappend="${detail.tauxSurvie != null and detail.tauxSurvie.doubleValue() < 40} ? 'kpi-danger' : (${detail.tauxSurvie != null and detail.tauxSurvie.doubleValue() < 70} ? 'kpi-warning' : 'kpi-success')">
-                <div class="kpi-icon"><i class="bi bi-heart-pulse"></i></div>
-                <div class="kpi-label">Taux de survie</div>
-                <div class="kpi-value" th:text="${detail.tauxSurvie != null} ? ${detail.tauxSurvie} + ' %' : '—'">—</div>
-            </div>
-            
             <div class="kpi-card">
                 <div class="kpi-icon"><i class="bi bi-graph-up"></i></div>
                 <div class="kpi-label">Poids moyen</div>
-                <div class="kpi-value" th:text="${detail.poidsMoyen != null} ? ${detail.poidsMoyen} + ' g' : '—'">—</div>
+                <div class="kpi-value"
+                    th:text="${detail.poidsMoyen != null} ? ${detail.poidsMoyen} + ' g' : '—'">
+                    —
+                </div>
             </div>
-            
-            <div class="kpi-card" th:classappend="${detail.tailleMoyenne != null and detail.tailleMoyenne.doubleValue() >= 110} ? 'kpi-success' : ''">
+            <div class="kpi-card"
+                th:classappend="${detail.tailleMoyenne != null and detail.tailleMoyenne.doubleValue() >= 110} ? 'kpi-success' : ''">
                 <div class="kpi-icon"><i class="bi bi-rulers"></i></div>
                 <div class="kpi-label">Taille moyenne</div>
-                <div class="kpi-value" th:text="${detail.tailleMoyenne != null} ? ${detail.tailleMoyenne} + ' mm' : '—'">—</div>
+                <div class="kpi-value"
+                    th:text="${detail.tailleMoyenne != null} ? ${detail.tailleMoyenne} + ' mm' : '—'">
+                    —
+                </div>
             </div>
         </div>
 
@@ -222,7 +223,10 @@
                             <td th:text="${#temporals.format(p.dateSuivi, 'dd/MM/yyyy')}">—</td>
                             <td th:text="${p.poidsMoyenGramme} + ' g'">—</td>
                             <td th:text="${p.tailleMoyenneMm} + ' mm'">—</td>
-                            <td style="font-weight: 600;" th:text="${p.poidsMoyenGramme != null} ? ${#numbers.formatDecimal(p.poidsMoyenGramme / 1000, 1, 2)} + ' kg' : '—'">—</td>
+                            <td style="font-weight: 600;"
+                            th:text="${p.poidsMoyenGramme != null and detail.effectifInitial != null} 
+                                    ? ${#numbers.formatDecimal((p.poidsMoyenGramme * detail.effectifInitial) / 1000, 1, 2)} + ' kg' 
+                                    : '—'">—</td>
                             <td th:text="${p.technicien.nom + ' ' + (p.technicien.prenom != null ? p.technicien.prenom : '')}">—</td>
                             <td>
                                 <div class="action-group" style="justify-content: flex-end;">
