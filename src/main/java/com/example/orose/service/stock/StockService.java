@@ -137,17 +137,18 @@ public class StockService {
 
     // ────────────────────── Autonomie ──────────────────────
 
-    public Float estimerAutonomieAliment() {
+    public int estimerAutonomieAliment() {
         BigDecimal stockTotal = entreeAlimentRepository.sumQuantiteRestante();
         if (stockTotal == null || stockTotal.compareTo(BigDecimal.ZERO) <= 0) {
-            return 0f;
+            return 0;
         }
 
         LocalDate dateSeuil = LocalDate.now().minusDays(7);
         BigDecimal conso = entreeAlimentRepository.sumEntreesDepuis(dateSeuil);
-        return conso != null && conso.compareTo(BigDecimal.ZERO) > 0
-                ? (stockTotal.floatValue() / conso.floatValue()) * 7f
-                : 30f;
+        double autonomie = conso != null && conso.compareTo(BigDecimal.ZERO) > 0
+                ? (stockTotal.doubleValue() / conso.doubleValue()) * 7d
+                : 30d;
+        return (int) Math.floor(autonomie);
     }
 
     // ────────────────────── Alertes ──────────────────────

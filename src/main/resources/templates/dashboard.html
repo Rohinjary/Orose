@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/default}">
+  <head>
+    <title>Dashboard</title>
+    <th:block layout:fragment="page-styles">
+      <link href="/css/dashboard.css" rel="stylesheet" />
+    </th:block>
+</head>
+
+<body>
+    <div layout:fragment="content">
+        <!-- PAGE: DASHBOARD -->
+        <div class="page active" id="pg-dashboard">
+          <div class="dash-banner">
+            <div>
+              <h2 class="banner-title">Bienvenue <span sec:authentication="name"></span> </i></h2>
+              <p class="banner-sub"> <span th:text="${date}"></span></p>
+            </div>
+          </div>
+
+             <!-- bassins actifs  -->
+
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">État détaillé des bassins actifs</h3>
+            </div>
+            <div class="bassin-grid" th:if="${not #lists.isEmpty(bassinsActifs)}">
+              <div class="bassin-card" th:each="bassin : ${bassinsActifs}">
+                <div class="bassin-id">Bassin <span th:text="${bassin.code}"></span> <span class="badge badge-success">Actif</span></div>
+                <div class="bassin-stat-row"><span class="">Cycle : Semaine <span th:text="${bassin.semaineActuelle}">8</span></span><span class="" th:text="${#numbers.formatDecimal(bassin.avancement, 1, 0) + '%'}"></span></div>
+                <div class="progress-container">
+                  <div class="progress-bar" th:style="'width:' + ${bassin.avancement} + '%'"></div>
+                </div>
+                <div class="bassin-stat-row"><span class="">Restant : <span th:text="${bassin.joursRestants}"></span> jours</span></div>
+                <div class="bassin-stat-row" style="margin-top: 8px;"><span class="">Poids moyen</span><span
+                    style="font-weight:700" class="" th:text="${#numbers.formatDecimal(bassin.poidsMoyen, 1, 1) + ' g'}"></span></div>
+              </div>
+            </div>
+            <div th:if="${#lists.isEmpty(bassinsActifs)}" style="padding: 24px; text-align: center; color: #6b7280; font-style: italic;">
+              Il n'y a pas de bassins actifs pour le moment.
+            </div>
+          </div>
+          <!-- TOP KPI GRID -->
+
+          <div class="kpi-grid">
+            <div class="kpi-card" style="grid-column: span 2; position: relative;">
+              <div style="position: absolute; right: 16px; top: 16px;">
+                <form onsubmit="return false;">
+                  <select name="annee" id="annee" onchange="changerAnnee()" style="padding: 4px 8px; border-radius: 6px; border: 1px solid var(--mg-outline); font-family: inherit;">
+                    <option value="2026" th:selected="${annee == 2026}">2026</option>
+                    <option value="2025" th:selected="${annee == 2025}">2025</option>
+                    <option value="2024" th:selected="${annee == 2024}">2024</option>
+                  </select>
+                </form>
+              </div>
+              <div class="kpi-label">Production annuelle</div>
+              <div class="kpi-value"><span id="prodAnnuelle"></span> kg </div>
+              <div class="kpi-sub">Objectif : <span id="objectifAnnuel"></span></div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">Stock crevettes</div>
+              <div class="kpi-value"> <span th:text="${situationStock.stockCrevetteKg}"></span> kg</div>
+              <div class="kpi-sub">Valeur : <span th:text="${situationStock.valeurCrevetteAr}"></span> Ar</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">Stock aliments</div>
+              <div class="kpi-value"> <span th:text="${situationStock.stockAlimentKg}"></span> kg</div>
+              <div class="kpi-sub">Autonomie: <span th:text="${situationStock.autonomieAlimentJours}"></span> jours </div>
+            </div>
+            <!-- <div class="kpi-card">
+              <div class="kpi-label">ROI Actuel</div>
+              <div class="kpi-value">29.7%</div>
+              <div class="progress-container" style="margin: 8px 0 0;">
+                <div class="progress-bar" style="width:29.7%"></div>
+              </div>
+            </div> -->
+          </div>
+          <div class="dashboard-row">
+
+
+
+          
+            <!-- KPI PRODUCTION (WOW) -->
+            <!-- <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">Production mensuelle (kg) vs Objectif</h3>
+              </div>
+              <div style="position: relative;">
+                <div class="chart-target-line" style="top: 40px;"></div>
+                <div class="chart-container">
+                  <div class="chart-bar-group">
+                    <div class="chart-bar" style="height: 60%;"></div><span class="chart-label">Jan</span>
+                  </div>
+                  <div class="chart-bar-group">
+                    <div class="chart-bar" style="height: 75%;"></div><span class="chart-label">Fév</span>
+                  </div>
+                  <div class="chart-bar-group">
+                    <div class="chart-bar" style="height: 50%;"></div><span class="chart-label">Mar</span>
+                  </div>
+                  <div class="chart-bar-group">
+                    <div class="chart-bar" style="height: 85%;"></div><span class="chart-label">Avr</span>
+                  </div>
+                  <div class="chart-bar-group">
+                    <div class="chart-bar" style="height: 90%;"></div><span class="chart-label">Mai</span>
+                  </div>
+                  <div class="chart-bar-group">
+                    <div class="chart-bar" style="height: 40%; opacity: 0.5"></div><span class="chart-label">Juin</span>
+                  </div>
+                </div>
+              </div>
+              <div class="kpi-sub"
+                style="margin-top: 16px; border-top: 1px solid var(--mg-outline); padding-top: 12px; display: flex; justify-content: space-between;">
+                <span class="">Total depuis le 1er janvier : <strong>12 840 kg</strong></span>
+                <span style="color: var(--mg-success)" class=""><i class="bi bi-arrow-up"></i> +12% vs 2025</span>
+              </div>
+            </div> -->
+
+            
+            <!-- SALES & FINANCE KPI -->
+            <!-- <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">Ventes &amp; Performance financière</h3>
+              </div>
+              <div class="bassin-stat-row" style="margin-bottom: 12px;">
+                <span class="">Kg vendus ce mois</span><span style="font-weight: 700;" class="">1 500 kg</span>
+              </div>
+              <div class="bassin-stat-row" style="margin-bottom: 12px;">
+                <span class="">Taux d'écoulement (Vendu/Récolté)</span><span style="font-weight: 700;"
+                  class="">94%</span>
+              </div>
+              <div class="progress-container">
+                <div class="progress-bar" style="width:94%"></div>
+              </div>
+              <div style="margin-top: 24px;">
+                <div class="card-title" style="font-size: 11px; margin-bottom: 12px;">Dépenses vs Revenus (6 mois)</div>
+                <div class="mini-chart" style="display: flex; align-items: flex-end; gap: 4px; height: 80px;">
+                  <div class="mini-bar"
+                    style="height: 40%; width: 12px; background: var(--mg-danger); border-radius: 2px;"></div>
+                  <div class="mini-bar"
+                    style="height: 70%; width: 12px; background: var(--mg-success); border-radius: 2px;"></div>
+                  <div style="width: 12px;"></div>
+                  <div class="mini-bar"
+                    style="height: 35%; width: 12px; background: var(--mg-danger); border-radius: 2px;"></div>
+                  <div class="mini-bar"
+                    style="height: 75%; width: 12px; background: var(--mg-success); border-radius: 2px;"></div>
+                  <div style="width: 12px;"></div>
+                  <div class="mini-bar"
+                    style="height: 50%; width: 12px; background: var(--mg-danger); border-radius: 2px;"></div>
+                  <div class="mini-bar"
+                    style="height: 60%; width: 12px; background: var(--mg-success); border-radius: 2px;"></div>
+                  <div style="width: 12px;"></div>
+                  <div class="mini-bar"
+                    style="height: 45%; width: 12px; background: var(--mg-danger); border-radius: 2px;"></div>
+                  <div class="mini-bar"
+                    style="height: 80%; width: 12px; background: var(--mg-success); border-radius: 2px;"></div>
+                  <div style="width: 12px;"></div>
+                  <div class="mini-bar"
+                    style="height: 30%; width: 12px; background: var(--mg-danger); border-radius: 2px;"></div>
+                  <div class="mini-bar"
+                    style="height: 90%; width: 12px; background: var(--mg-success); border-radius: 2px;"></div>
+                </div>
+              </div>
+            </div>
+          </div> -->
+
+          <!-- STOCK SITUATION -->
+          <!-- <div class="kpi-grid" style="margin-bottom: 24px;">
+            <div class="kpi-card" style="border-left: 4px solid var(--mg-primary);">
+              <div class="kpi-label">Stock Crevettes (kg)</div>
+              <div class="kpi-value">1 550 kg</div>
+              <div class="kpi-sub">Valeur estimée : 65.1M Ar</div>
+            </div>
+            <div class="kpi-card" style="border-left: 4px solid var(--mg-warning);">
+              <div class="kpi-label">Stock Aliment (kg)</div>
+              <div class="kpi-value">420 kg</div>
+              <div class="kpi-sub" style="color: var(--mg-danger); font-weight: 700;">Autonomie : 5 jours <i
+                  class="bi bi-exclamation-triangle"></i></div>
+            </div>
+            <div class="kpi-card" style="border-left: 4px solid var(--mg-outline);">
+              <div class="kpi-label">Entrées du mois</div>
+              <div class="kpi-value">2 400 kg</div>
+              <div class="kpi-sub">Aliments &amp; Intrants</div>
+            </div>
+            <div class="kpi-card" style="border-left: 4px solid var(--mg-outline);">
+              <div class="kpi-label">Sorties du mois</div>
+              <div class="kpi-value">1 850 kg</div>
+              <div class="kpi-sub">Ventes &amp; Pertes</div>
+            </div>
+          </div> -->
+         
+          <!-- CONSOLIDATED ALERTS (WOW) -->
+          <!-- <div class="card" style="border-top: 4px solid var(--mg-danger);">
+            <div class="card-header">
+              <h3 class="card-title">Alertes consolidées du système</h3>
+              <span class="badge badge-danger">4 Critiques</span>
+            </div>
+            <div class="alert-list">
+              <div class="alert-item">
+                <div class="alert-source" style="color: var(--mg-danger);">Sanitaire</div>
+                <span class="badge badge-danger" style="margin-right: 8px;">Critique</span>
+                <div class="alert-desc">Bassin 7 : Virus WSSV confirmé. Risque de contagion élevé.</div>
+                <div class="alert-link" onclick="showPage('sanitaire','Sanitaire','incidents')">Voir module</div>
+                <button class="btn btn-secondary btn-sm" style="margin-left: 16px;">Résoudre</button>
+              </div>
+              <div class="alert-item">
+                <div class="alert-source" style="color: var(--mg-danger);">Stock</div>
+                <span class="badge badge-danger" style="margin-right: 8px;">Critique</span>
+                <div class="alert-desc">Stock aliment : Moins de 7 jours d'autonomie (420kg).</div>
+                <div class="alert-link" onclick="showPage('stock','Stock','lots')">Commander</div>
+                <button class="btn btn-secondary btn-sm" style="margin-left: 16px;">Résoudre</button>
+              </div>
+              <div class="alert-item">
+                <div class="alert-source" style="color: var(--mg-warning);">Finance</div>
+                <span class="badge badge-warning" style="margin-right: 8px;">Moyen</span>
+                <div class="alert-desc">CMD-502 : Paiement en retard de 3 jours.</div>
+                <div class="alert-link" onclick="showPage('finance','Finances','flux')">Relancer</div>
+                <button class="btn btn-secondary btn-sm" style="margin-left: 16px;">Résoudre</button>
+              </div>
+              <div class="alert-item">
+                <div class="alert-source" style="color: var(--mg-warning);">Livraison</div>
+                <span class="badge badge-warning" style="margin-right: 8px;">Moyen</span>
+                <div class="alert-desc">EXP-104 : Retard logistique sur trajet Mahajanga-Tana.</div>
+                <div class="alert-link" onclick="showPage('livraison','Livraisons','expéditions')">Suivre</div>
+                <button class="btn btn-secondary btn-sm" style="margin-left: 16px;">Résoudre</button>
+              </div>
+            </div>
+          </div> -->
+        </div>
+    </div>
+
+    <!-- KPI PRODUCTION (WOW) -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Vue de la production annuelle </h3>
+          </div>
+          <div style="position: relative;">
+            <div class="chart-target-line" style="top: 40px;"></div>
+            <!-- <div class="chart-container"> -->
+               <script src="/js/chart.js"></script>
+
+              <canvas id="salesChart"></canvas>
+            <!-- </div> -->
+          </div>
+          <!-- <div class="kpi-sub"
+            style="margin-top: 16px; border-top: 1px solid var(--mg-outline); padding-top: 12px; display: flex; justify-content: space-between;">
+            <span class="">Total depuis le 1er janvier : <strong>12 840 kg</strong></span>
+            <span style="color: var(--mg-success)" class=""><i class="bi bi-arrow-up"></i> +12% vs 2025</span>
+          </div> -->
+        </div>
+
+
+<!--  Script  js chart -->
+<script th:inline="javascript">
+
+    const ctx = document.getElementById('salesChart');
+
+    let dataset = [];
+    
+
+    const chart = new Chart(ctx, {
+        type: 'bar', //pie
+        data: {
+            labels: [
+                'Janvier',
+                'Février',
+                'Mars',
+                'Avril',
+                'Mai',
+                'Juin', 
+                'Juillet',
+                'Aout', 
+                'Septembre', 
+                'Octobre',
+                'Novembre',
+                'Décembre'
+            ],
+            datasets: [
+                // {
+                //     label: 'Objectif Annuel',
+                //     data: [],
+                //     type: 'line',
+                //     borderColor: '#e74c3c',
+                //     borderDash: [5, 5],
+                //     borderWidth: 2,
+                //     fill: false,
+                //     pointRadius: 0,
+                //     order: 1
+                // },
+                {
+                label: 'Crevettes',
+                data: dataset,
+                backgroundColor: [
+                    '#3498db'//,
+                    // '#2ecc71',
+                    // '#f39c12',
+                    // '#9b59b6',
+                    // '#e74c3c',
+                    // '#1abc9c'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: true
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+    async function changerAnnee() {
+        try {
+            const annee = document.getElementById("annee").value;
+            const response = await fetch("/api/production-stats?annee=" + annee);
+            if (!response.ok) throw new Error("Erreur serveur lors de la récupération des données");
+            const data = await response.json();
+            
+            const objVal = data.objectifAnnuel;
+            // chart.data.datasets[0].data = Array(12).fill(objVal);
+            chart.data.datasets[0].data = data.mensuelle;
+            chart.update();
+
+            const kpiValeur = data.annuelle;
+            let pourcentage = "0.0";
+            if (kpiValeur > 0 && objVal > 0) {
+                pourcentage = ((kpiValeur / objVal) * 100).toFixed(1);
+            }
+            
+            if (kpiValeur === undefined || kpiValeur === null || kpiValeur === 0) {
+                document.getElementById('prodAnnuelle').innerText = "Pas de données";
+            } else {
+                document.getElementById('prodAnnuelle').innerText = kpiValeur;
+            }
+
+            document.getElementById('objectifAnnuel').innerHTML = objVal + " kg (<span style='color: var(--mg-success); font-weight: bold;'>" + pourcentage + "%</span>)";
+        } catch (error) {
+            console.error(error);
+            document.getElementById('prodAnnuelle').innerText = "Pas de données";
+        }
+    }
+    
+    document.addEventListener("DOMContentLoaded", function() {
+        changerAnnee();
+    });
+    
+
+</script>
+</body>
+</html>

@@ -7,7 +7,7 @@ public class StockDashboardDTO {
     private Float stockCrevetteKg;
     private Float valeurCrevetteAr;
     private Float stockAlimentKg;
-    private Float autonomieAlimentJours;
+    private Integer autonomieAlimentJours;
     private Float stockMedicamentTotal;
     private Integer nbProduitsFaibles;
     private Integer nbLotsPerimes;
@@ -37,11 +37,11 @@ public class StockDashboardDTO {
         this.stockAlimentKg = stockAlimentKg;
     }
 
-    public Float getAutonomieAlimentJours() {
+    public Integer getAutonomieAlimentJours() {
         return autonomieAlimentJours;
     }
 
-    public void setAutonomieAlimentJours(Float autonomieAlimentJours) {
+    public void setAutonomieAlimentJours(Integer autonomieAlimentJours) {
         this.autonomieAlimentJours = autonomieAlimentJours;
     }
 
