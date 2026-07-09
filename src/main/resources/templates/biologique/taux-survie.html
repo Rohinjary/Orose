@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/default}">
+<head>
+    <title layout:fragment="page-title">Taux de survie — OROSE</title>
+    <th:block layout:fragment="page-styles">
+        <style>
+            .stats-shell {
+                display: grid;
+                grid-template-columns: 1.6fr 1fr;
+                gap: 24px;
+                align-items: start;
+            }
+            .panel {
+                background: white;
+                border: 1px solid var(--mg-outline);
+                border-radius: var(--radius);
+                box-shadow: 0 6px 18px rgba(15, 23, 42, 0.05);
+                padding: 20px;
+            }
+            .panel h3 {
+                margin: 0 0 14px;
+                font-size: 16px;
+                color: var(--mg-primary);
+            }
+            .table-responsive { overflow-x: auto; }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                font-size: 13px;
+            }
+            th, td {
+                padding: 11px 12px;
+                border-bottom: 1px solid #e5e7eb;
+                text-align: left;
+            }
+            th { background: #f8fafc; color: var(--mg-secondary); font-weight: 700; }
+            .badge-etat {
+                display: inline-block;
+                padding: 4px 9px;
+                border-radius: 999px;
+                font-size: 11px;
+                font-weight: 700;
+                text-transform: uppercase;
+            }
+            .chart-card {
+                min-height: 320px;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+            }
+            .chart-placeholder {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                min-height: 260px;
+                border: 1px dashed #cbd5e1;
+                border-radius: 14px;
+                color: var(--mg-secondary);
+                background: linear-gradient(135deg, #f8fafc, #fefefe);
+            }
+            .chart-summary {
+                margin-top: 14px;
+                padding: 12px 14px;
+                border-radius: 12px;
+                background: #f8fafc;
+                border: 1px solid #e2e8f0;
+            }
+            .chart-summary .value {
+                font-size: 24px;
+                font-weight: 700;
+                color: var(--mg-primary);
+            }
+            .chart-summary .caption {
+                margin-top: 4px;
+                color: var(--mg-secondary);
+                font-size: 13px;
+            }
+            .harvest-list {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px;
+                margin-top: 12px;
+            }
+            .harvest-pill {
+                border: 1px solid #cbd5e1;
+                border-radius: 999px;
+                padding: 7px 10px;
+                background: white;
+                color: var(--mg-primary);
+                font-size: 12px;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+            }
+            .harvest-pill.active {
+                background: #64748b;
+                color: white;
+                border-color: #64748b;
+            }
+            .harvest-pill.inactive {
+                opacity: 0.75;
+            }
+            .harvest-pill .pill-value {
+                font-weight: 700;
+            }
+            .dataTables_wrapper {
+
+                margin: 0px !important;
+
+            }
+            @media (max-width: 960px) {
+                .stats-shell { grid-template-columns: 1fr; }
+            }
+        </style>
+    </th:block>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="panel" style="margin-bottom: 20px;">
+        <h3>Taux de survie global</h3>
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+            <div>
+                <div style="font-size: 28px; font-weight: 700; color: var(--mg-primary);"
+                     th:text="${#numbers.formatDecimal(tauxSurvieGeneral, 1, 2)} + '%'">100%</div>
+                <div style="color: var(--mg-secondary);">Moyenne calculée sur tous les bassins du système</div>
+            </div>
+            <div class="badge-etat" style="background: #64748b; color: white;">Basé sur les déclarations de récolte</div>
+        </div>
+    </div>
+
+    <div class="stats-shell">
+        <div class="panel">
+            <h3>Statistiques de survie par bassin</h3>
+            <div class="table-responsive">
+                <table class="filtre-tab" style="width: 100%;">
+                    <thead>
+                    <tr>
+                        <th>Cycle</th>
+                        <th>Bassin</th>
+                        <th>Taux de survie bassin</th>
+                        <th>Taux moyen du cycle</th>
+                        <th>État du bassin</th>
+                    </tr>
+                    </thead>
+                   <tbody>
+    <tr th:if="${#lists.isEmpty(statistiquesSurvie)}">
+        <td colspan="5" style="text-align:center; color: var(--mg-secondary);">
+            Aucune statistique disponible pour le moment.
+        </td>
+    </tr>
+    <tr th:each="s : ${statistiquesSurvie}">
+        <td>
+            <strong th:text="${s.codeUniqueCycle}">C01</strong>
+        </td>
+        
+        <td th:text="${s.codeBassin}">B01</td>
+        
+        <td th:text="${s.tauxSurvieBassin != null} ? ${#numbers.formatDecimal(s.tauxSurvieBassin, 1, 2)} + '%' : '—'">
+            100%
+        </td>
+        
+        <td>
+            <span th:text="${s.tauxSurvieMoyenCycle != null} ? ${#numbers.formatDecimal(s.tauxSurvieMoyenCycle, 1, 2)} + '%' : '—'">100%</span>
+        </td>
+        
+        <td>
+            <span class="badge-etat"
+                  th:style="'background: ' + ${s.couleur} + '; color: white;'"
+                  th:text="${s.etatBassin}">ACTIF</span>
+        </td>
+    </tr>
+</tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="panel chart-card">
+            <h3>Répartition des taux de survie</h3>
+            <div class="chart-placeholder">
+                <canvas id="survieChart" width="320" height="320"></canvas>
+            </div>
+            <div class="chart-summary" id="survieSummary">
+                <div class="value" id="survieSummaryValue">0%</div>
+                <div class="caption" id="survieSummaryCaption">Taux moyen vivant des bassins récoltés sélectionnés.</div>
+            </div>
+            <div class="harvest-list" id="harvestList"></div>
+        </div>
+    </div>
+</div>
+
+
+<th:block layout:fragment="page-scripts">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script th:inline="javascript">
+        const rows = /*[[${statistiquesSurvie}]]*/ [];
+
+        const normalizeEtat = (value) => String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
+        const harvestedRows = rows.filter(r => normalizeEtat(r.etatBassin) === 'RECOLTE' || normalizeEtat(r.etatBassin) === 'RECOLTÉ');
+
+        const summaryValueEl = document.getElementById('survieSummaryValue');
+        const summaryCaptionEl = document.getElementById('survieSummaryCaption');
+        const harvestListEl = document.getElementById('harvestList');
+        const selectedState = harvestedRows.map(() => true);
+
+        function getSelectedRows() {
+            return harvestedRows.filter((_, index) => selectedState[index]);
+        }
+
+        function formatPercent(value) {
+            return `${Number(value).toFixed(2)}%`;
+        }
+
+        function renderList() {
+            if (harvestedRows.length === 0) {
+                harvestListEl.innerHTML = '<div style="color: var(--mg-secondary); font-size: 13px;">Aucun bassin récolté disponible pour le calcul.</div>';
+                return;
+            }
+
+            harvestListEl.innerHTML = harvestedRows.map((row, index) => {
+                const isActive = selectedState[index];
+                const value = Number(row.tauxSurvieBassin ?? 100);
+                return `
+                    <button type="button" class="harvest-pill ${isActive ? 'active' : 'inactive'}" data-index="${index}">
+                        <span>${row.codeBassin} (${row.codeUniqueCycle})</span>
+                        <span class="pill-value">${formatPercent(value)}</span>
+                    </button>
+                `;
+            }).join('');
+
+            harvestListEl.querySelectorAll('.harvest-pill').forEach(button => {
+                button.addEventListener('click', () => {
+                    const index = Number(button.dataset.index);
+                    selectedState[index] = !selectedState[index];
+                    updateChart();
+                });
+            });
+        }
+
+        function updateChart() {
+            const selectedRows = getSelectedRows();
+            const average = selectedRows.length > 0
+                ? selectedRows.reduce((sum, row) => sum + Number(row.tauxSurvieBassin ?? 100), 0) / selectedRows.length
+                : 0;
+            const living = Number(average.toFixed(2));
+            const dead = Number(Math.max(0, 100 - living).toFixed(2));
+
+            summaryValueEl.textContent = formatPercent(living);
+            summaryCaptionEl.textContent = selectedRows.length > 0
+                ? `Calcul basé sur ${selectedRows.length} bassin${selectedRows.length > 1 ? 'x' : ''} récolté${selectedRows.length > 1 ? 's' : ''}.`
+                : 'Aucun bassin sélectionné, le graphique affiche 0% vivant.';
+
+            if (chartInstance) {
+                chartInstance.data.labels = ['Vivant', 'Mort'];
+                chartInstance.data.datasets[0].data = [living, dead];
+                chartInstance.update();
+            }
+
+            renderList();
+        }
+
+        const ctx = document.getElementById('survieChart');
+        let chartInstance = null;
+
+        if (ctx) {
+            chartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Vivant', 'Mort'],
+                    datasets: [{
+                        data: [0, 100],
+                        backgroundColor: ['#64748b', '#e2e8f0'],
+                        borderColor: '#ffffff',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: (context) => `${context.label}: ${context.formattedValue}%`
+                            }
+                        }
+                    }
+                }
+            });
+
+            updateChart();
+        }
+    </script>
+</th:block>
+</body>
+</html>

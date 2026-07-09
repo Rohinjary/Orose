@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.example.orose.dto.stock.EnregistrerPerteCrevetteDTO;
+import com.example.orose.dto.stock.EntreeStockAlimentDTO;
 import com.example.orose.dto.stock.EntreeStockIntrantDTO;
 import com.example.orose.dto.stock.SortieStockIntrantDTO;
 import com.example.orose.repository.UtilisateurRepository;
@@ -38,33 +40,49 @@ public class StockController {
     public String dashboard(Model model) {
         preparerLayout(model, "Tableau de bord", "stock-dashboard");
         model.addAttribute("dashboard", stockService.getDashboard());
-        model.addAttribute("derniersMouvements", stockService.getDerniersMouvements(5));
         return "stock/dashboard";
     }
 
     @GetMapping("/produits")
-    public String listeProduits(Model model) {
-        preparerLayout(model, "Liste des produits", "stock-produits");
-        model.addAttribute("produits", stockService.getListeProduits());
-        model.addAttribute("alertes", stockService.getAlertes());
+    public String listeProduits(@RequestParam(required = false) String categorie, Model model) {
+        String titre = "Stock actuel";
+        String page = "stock-produits";
+        if (categorie != null) {
+            titre += " — " + categorie;
+            page = "stock-produits-" + categorie.toLowerCase();
+        }
+        preparerLayout(model, titre, page);
+        model.addAttribute("categorie", categorie);
+        model.addAttribute("produits", stockService.getListeProduits(categorie));
+        model.addAttribute("alertes", stockService.getAlertes(categorie));
         return "stock/index";
     }
 
-@GetMapping("/entree")
-public String formulaireEntree(Model model) {
-    preparerLayout(model, "Entrée stock", "stock-entree");
-    EntreeStockIntrantDTO dto = new EntreeStockIntrantDTO();
-    dto.setTypeProduit("MEDICAMENT");
-    model.addAttribute("entreeDTO", dto);
-    model.addAttribute("medicaments", stockService.getMedicaments());
-    model.addAttribute("utilisateurs", utilisateurRepository.findAll());
-    return "stock/entree";
-}
+    @GetMapping("/entree")
+    public String formulaireEntree(Model model) {
+        preparerLayout(model, "Entrée stock", "stock-entree");
+        EntreeStockIntrantDTO dto = new EntreeStockIntrantDTO();
+        dto.setTypeProduit("MEDICAMENT");
+        model.addAttribute("entreeDTO", dto);
+        model.addAttribute("medicaments", stockService.getMedicaments());
+        model.addAttribute("utilisateurs", utilisateurRepository.findAll());
+        return "stock/entree";
+    }
+
+    @GetMapping("/entree/aliment")
+    public String formulaireEntreeAliment(Model model) {
+        preparerLayout(model, "Entrée stock", "stock-entree-aliment");
+        EntreeStockAlimentDTO dto = new EntreeStockAlimentDTO();
+        model.addAttribute("entreeDTO", dto);
+        model.addAttribute("aliments", stockService.getAliments());
+        model.addAttribute("utilisateurs", utilisateurRepository.findAll());
+        return "stock/aliment/entree";
+    }
 
     @PostMapping("/entree")
     @PreAuthorize("hasAnyRole('ADMIN','TECH','RS')")
     public String enregistrerEntree(@ModelAttribute EntreeStockIntrantDTO dto,
-                                     RedirectAttributes redirectAttributes) {
+            RedirectAttributes redirectAttributes) {
         try {
             stockService.enregistrerEntreeIntrant(dto);
             redirectAttributes.addFlashAttribute("success", "Entrée enregistrée avec succès.");
@@ -72,6 +90,28 @@ public String formulaireEntree(Model model) {
             redirectAttributes.addFlashAttribute("error", "Erreur: " + e.getMessage());
         }
         return "redirect:/stock/produits";
+    }
+
+    @PostMapping("/entree/aliment")
+    @PreAuthorize("hasAnyRole('ADMIN','TECH','RS')")
+    public String enregistrerEntreeAliment(@ModelAttribute EntreeStockAlimentDTO dto,
+            RedirectAttributes redirectAttributes) {
+
+        try {
+
+            stockService.enregistrerEntreeAliment(dto);
+
+            redirectAttributes.addFlashAttribute(
+                    "success",
+                    "Entree aliment validé avec succès.");
+            return "redirect:/stock/mouvements?categorie=ALIMENT";
+        } catch (RuntimeException e) {
+
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            System.out.println("Erreur lors de la validation du entree aliment: " + e.getMessage());
+            return "redirect:/stock/entree/aliment";
+        }
+
     }
 
     @GetMapping("/sortie")
@@ -88,7 +128,7 @@ public String formulaireEntree(Model model) {
     @PostMapping("/sortie")
     @PreAuthorize("hasAnyRole('ADMIN','TECH','RS')")
     public String enregistrerSortie(@ModelAttribute SortieStockIntrantDTO dto,
-                                     RedirectAttributes redirectAttributes) {
+            RedirectAttributes redirectAttributes) {
         try {
             stockService.enregistrerSortieManuelle(dto);
             redirectAttributes.addFlashAttribute("success", "Sortie enregistrée avec succès.");
@@ -117,5 +157,29 @@ public String formulaireEntree(Model model) {
         preparerLayout(model, "Lots crevettes", "stock-lots");
         model.addAttribute("lots", stockService.getLotsCrevette());
         return "stock/lots_crevettes";
+    }
+
+    @GetMapping("/pertes-crevettes")
+    public String pertesCrevettes(Model model) {
+        preparerLayout(model, "Registre pertes crevettes", "stock-pertes-crevettes");
+        model.addAttribute("pertes", stockService.getPertesCrevettes());
+        model.addAttribute("lots", stockService.getLotsCrevette());
+        model.addAttribute("perteDTO", new EnregistrerPerteCrevetteDTO());
+        model.addAttribute("utilisateurs", utilisateurRepository.findAll());
+        return "stock/perte/crevettes";
+    }
+
+    @PostMapping("/pertes-crevettes")
+    @PreAuthorize("hasAnyRole('ADMIN','TECH','RS')")
+    public String enregistrerPerteCrevette(@ModelAttribute EnregistrerPerteCrevetteDTO dto,
+            @RequestParam Integer id_utilisateur,
+            RedirectAttributes redirectAttributes) {
+        try {
+            stockService.enregistrerPerteCrevette(dto, id_utilisateur);
+            redirectAttributes.addFlashAttribute("success", "Perte enregistrée avec succès.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Erreur: " + e.getMessage());
+        }
+        return "redirect:/stock/pertes-crevettes";
     }
 }

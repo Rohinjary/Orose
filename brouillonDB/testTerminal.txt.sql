@@ -125,3 +125,16 @@ SELECT id, quantite_kg, quantite_restante_kg, prix_unitaire_ar, date_reception, 
 FROM entree_stock_aliment
 WHERE id_aliment = (SELECT id FROM aliment WHERE libelle = 'Granulés Croissance Élevée')
 ORDER BY date_expiration ASC;
+
+
+
+-- ── Vérification ──────────────────────────────────────────────
+SELECT
+    b.code AS bassin,
+    c.code_unique_cycle AS cycle,
+    cba.semaine_actuelle,
+    cba.poids_moyen_actuel
+FROM cycle_bassin_assoc cba
+JOIN bassin b ON b.id = cba.id_bassin
+JOIN cycle c  ON c.id = cba.id_cycle
+ORDER BY c.code_unique_cycle, b.code;

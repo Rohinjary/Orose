@@ -7,6 +7,8 @@
  *
  * Optionnel : data-cols="0,2,3" pour ne filtrer que sur certaines colonnes.
  */
+
+
 (function () {
   function applyFilter(input) {
     const sel = input.getAttribute('data-list-filter');

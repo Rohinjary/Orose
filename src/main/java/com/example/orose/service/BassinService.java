@@ -4,7 +4,9 @@ import com.example.orose.dto.BassinDTO;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 
 import org.springframework.stereotype.Service;
@@ -55,6 +57,7 @@ public class BassinService {
     }
 
     public Bassin creerBassin(BassinDTO dto) {
+        validerCodeBassin(dto.getCode());
         if (bassinRepository.existsByCode(dto.getCode())) {
             throw new IllegalArgumentException("Le code du bassin doit être unique");
         }
@@ -96,17 +99,44 @@ public class BassinService {
         changerStatutBassin(id, "INACTIF", "Bassin désactivé", 1L);
     }
 
+    private static final java.util.regex.Pattern CODE_BASSIN_PATTERN =
+        java.util.regex.Pattern.compile("^B0[1-9]$");
+
+        private void validerCodeBassin(String code) {
+        if (code == null || !CODE_BASSIN_PATTERN.matcher(code).matches()) {
+                throw new IllegalArgumentException("Le code du bassin doit être compris entre B01 et B09");
+        }
+    }
+
     public Bassin modifierBassin(Long id, BassinDTO dto) {
+        validerCodeBassin(dto.getCode());
         Bassin bassin = bassinRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Bassin introuvable"));
 
-        // Vérifier que le code est unique si modifié
         if (bassinRepository.existsByCodeAndIdNot(dto.getCode(), id)) {
-            throw new IllegalArgumentException("Le code du bassin doit être unique");
+                throw new IllegalArgumentException("Le code du bassin doit être unique");
         }
 
         Utilisateur utilisateur = utilisateurRepository.findById(1L)
                 .orElseThrow(() -> new IllegalArgumentException("Utilisateur introuvable"));
+
+        List<String> changements = new ArrayList<>();
+
+        if (!bassin.getCode().equals(dto.getCode())) {
+                changements.add("code : " + bassin.getCode() + " → " + dto.getCode());
+        }
+        if (bassin.getSurfaceM2().compareTo(dto.getSurface_m2()) != 0) {
+                changements.add("surface : " + bassin.getSurfaceM2() + " m² → " + dto.getSurface_m2() + " m²");
+        }
+        if (bassin.getProfondeurMetre().compareTo(dto.getProfondeur_metre()) != 0) {
+                changements.add("profondeur : " + bassin.getProfondeurMetre() + " m → " + dto.getProfondeur_metre() + " m");
+        }
+        if (!Objects.equals(bassin.getNotes(), dto.getNotes())) {
+                changements.add("notes modifiées");
+        }
+        if (!bassin.getCreatedAt().toLocalDate().equals(dto.getDateCreation())) {
+                changements.add("date de création : " + bassin.getCreatedAt().toLocalDate() + " → " + dto.getDateCreation());
+        }
 
         bassin.setCode(dto.getCode());
         bassin.setSurfaceM2(dto.getSurface_m2());
@@ -114,18 +144,26 @@ public class BassinService {
         bassin.setNotes(dto.getNotes());
         bassin.setCreatedAt(dto.getDateCreation().atStartOfDay());
 
-        HistoStatutBassin histo = new HistoStatutBassin();
-        histo.setBassin(bassin);
-        histo.setUtilisateur(utilisateur);
-        histo.setStatutBassin(bassin.getStatutActuel());
-        histo.setMotif("Modification des informations du bassin");
-        histoStatutBassinRepository.save(histo);
+        if (!changements.isEmpty()) {
+                String motif = "Modification : " + String.join(" ; ", changements);
+
+                HistoStatutBassin histo = new HistoStatutBassin();
+                histo.setBassin(bassin);
+                histo.setUtilisateur(utilisateur);
+                histo.setStatutBassin(bassin.getStatutActuel());
+                histo.setMotif(motif);
+                histoStatutBassinRepository.save(histo);
+        }
 
         return bassinRepository.save(bassin);
-    }
+        }
 
     public List<Bassin> listerBassins() {
-        return bassinRepository.findAll();
+        List<Bassin> bassins = bassinRepository.findAllByOrderByCodeAsc();
+
+        bassins.forEach(b -> System.out.println(b.getCode()));
+
+        return bassins;
     }
 
     public Bassin getBassinById(Long id) {
@@ -155,11 +193,20 @@ public class BassinService {
         histo.setMotif(motif);
         histoStatutBassinRepository.save(histo);
 
-        if ("RECOLTE".equals(nouveauStatut)) {
-            creerLotCrevettePourRecolte(bassin, utilisateur);
-        }
+        // NOTE: Création de lots déplacée vers BiologiqueRecolteService
+        // Celle-ci crée automatiquement un LotCrevette lié à RecolteDeclaration
+        // lors de la validation d'une déclaration de récolte.
+        // if ("RECOLTE".equals(nouveauStatut)) {
+        //     creerLotCrevettePourRecolte(bassin, utilisateur);
+        // }
     }
 
+    /**
+     * DÉSACTIVÉ : Cette méthode appartient à l'ancien workflow.
+     * La création de lots se fait maintenant via BiologiqueRecolteService.crierLotCrevette()
+     * lors de la validation d'une déclaration de récolte (recolte_declaration).
+     */
+    @Deprecated
     private void creerLotCrevettePourRecolte(Bassin bassin, Utilisateur utilisateur) {
         List<CycleBassinAssoc> actifs = cycleBassinAssocRepository.findByEstClotureFalse();
         CycleBassinAssoc assoc = actifs.stream()
@@ -170,30 +217,33 @@ public class BassinService {
             return;
         }
 
-        String numeroLot = String.format("LOT-%s-%tY%<tm%<td-%03d",
-                bassin.getCode(), LocalDate.now(), new Random().nextInt(1000));
+        var dernierePesee = suiviHebdoBassinRepository
+                .findTopByCycleBassinAssocIdOrderByDateSuiviDesc(assoc.getId());
 
         java.math.BigDecimal poidsMoyen = (assoc.getPoidsMoyenActuel() != null
                 && assoc.getPoidsMoyenActuel().compareTo(java.math.BigDecimal.ZERO) > 0)
                 ? assoc.getPoidsMoyenActuel()
-                : suiviHebdoBassinRepository.findTopByCycleBassinAssocIdOrderByDateSuiviDesc(assoc.getId())
-                        .map(s -> s.getPoidsMoyenGramme())
+                : dernierePesee.map(s -> s.getPoidsMoyenGramme())
                         .orElse(java.math.BigDecimal.valueOf(20));
 
-        java.math.BigDecimal biomasse = java.math.BigDecimal.valueOf(assoc.getEffectifInitial())
+        // NOTE: nb_vivants a été supprimé de suivi_hebdo_bassin.
+        // On utilise l'effectif initial comme référence de population.
+        Integer population = assoc.getEffectifInitial();
+
+        java.math.BigDecimal biomasse = java.math.BigDecimal.valueOf(population)
                 .multiply(poidsMoyen)
                 .divide(java.math.BigDecimal.valueOf(1000), 2, java.math.RoundingMode.HALF_UP);
 
-        java.math.BigDecimal tailleMoyenne = suiviHebdoBassinRepository
-                .findTopByCycleBassinAssocIdOrderByDateSuiviDesc(assoc.getId())
+        java.math.BigDecimal tailleMoyenne = dernierePesee
                 .map(s -> s.getTailleMoyenneMm() != null ? s.getTailleMoyenneMm() : java.math.BigDecimal.ZERO)
                 .orElse(java.math.BigDecimal.ZERO);
 
         LotCrevette lot = new LotCrevette();
-        lot.setNumeroLotUnique(numeroLot);
-        lot.setCycleBassinAssoc(assoc);
-        lot.setBiomasseTotaleKg(biomasse);
-        lot.setBiomasseActuelleKg(biomasse);
+        lot.setNumeroLotUnique(String.format("LOT-%s-%tY%<tm%<td-%03d",
+                bassin.getCode(), LocalDate.now(), new Random().nextInt(1000)));
+        // lot.setCycleBassinAssoc(assoc);  // SUPPRIMÉ : utiliser recolteDeclaration maintenant
+        // lot.setBiomasseTotaleKg(biomasse);  // SUPPRIMÉ : calculée depuis recolteDeclaration.recolteReelleKg
+        // lot.setBiomasseActuelleKg(biomasse);  // SUPPRIMÉ : calculée depuis mouvements
         lot.setPoidsMoyenFinalG(poidsMoyen);
         lot.setTailleMoyenneFinaleMm(tailleMoyenne);
         lot.setDateRecolte(LocalDate.now());

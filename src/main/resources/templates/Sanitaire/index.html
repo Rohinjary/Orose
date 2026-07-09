@@ -4,7 +4,7 @@
     layout:decorate="~{layouts/default}">
 
 <head>
-    <title layout:fragment="page-title">Move Gasy — Dashboard Sanitaire</title>
+    <title layout:fragment="page-title">OROSE — Dashboard Sanitaire</title>
     <th:block layout:fragment="page-styles">
         <style>
             .header-section {
@@ -156,6 +156,45 @@
                 background: var(--mg-surface-container);
             }
 
+            .resolve-btn {
+                background: #166534;
+                border: none;
+                color: #ffffff;
+                cursor: pointer;
+                border-radius: 999px;
+                padding: 10px 14px;
+                font-size: 12px;
+                font-weight: 700;
+                letter-spacing: 0.02em;
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                box-shadow: 0 8px 18px rgba(22, 101, 52, 0.18);
+                transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+            }
+
+            .resolve-btn:hover {
+                background: #14532d;
+                transform: translateY(-1px);
+                box-shadow: 0 10px 22px rgba(22, 101, 52, 0.24);
+            }
+
+            .resolve-btn:focus-visible {
+                outline: 3px solid rgba(22, 101, 52, 0.28);
+                outline-offset: 2px;
+            }
+
+            .resolve-complete {
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                color: #166534;
+                font-size: 12px;
+                font-weight: 700;
+                text-transform: uppercase;
+                letter-spacing: 0.04em;
+            }
+
             @media (max-width: 992px) {
                 .table-container { overflow-x: auto; }
             }
@@ -188,7 +227,7 @@
 
         <div class="card" style="padding: 0;">
             <div class="table-container">
-                <table id="table-incidents">
+                <table id="table-incidents" class="filtre-tab" style="width: 100%;">
                     <thead>
                         <tr>
                             <th>Date</th>
@@ -218,14 +257,16 @@
                                 <span th:if="${incident.estResolu}" class="badge badge-success">Résolu</span>
                             </td>
                             <td>
-                                <a class="icon-btn" style="display: inline-flex;" th:href="@{/sanitaire/traitement(incidentId=${incident.id})}" title="Ajouter traitement">
-                                    <i class="bi bi-plus-circle"></i>
-                                </a>
                                 <form th:if="${!incident.estResolu}" th:action="@{/sanitaire/resoudre/{id}(id=${incident.id})}" method="post" style="display:inline;" onsubmit="return confirm('Êtes-vous sûr?')">
-                                    <button type="submit" class="icon-btn" title="Marquer comme résolu">
-                                        <i class="bi bi-check-circle"></i>
+                                    <button type="submit" class="resolve-btn" title="Résoudre l'incident">
+                                        <i class="bi bi-check2-circle"></i>
+                                        <span>Résoudre</span>
                                     </button>
                                 </form>
+                                <span th:if="${incident.estResolu}" class="resolve-complete">
+                                    <i class="bi bi-check-circle-fill"></i>
+                                    <span>Résolu</span>
+                                </span>
                             </td>
                         </tr>
                         <tr th:if="${incidents.isEmpty()}">

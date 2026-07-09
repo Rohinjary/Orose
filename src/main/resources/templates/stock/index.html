@@ -3,9 +3,14 @@
     xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
     layout:decorate="~{layouts/default}">
 <head>
-    <title layout:fragment="page-title">Move Gasy — Produits</title>
+    <title layout:fragment="page-title">OROSE — Produits</title>
     <th:block layout:fragment="page-styles">
         <style>
+             .dataTables_wrapper {
+
+                margin: 10px !important;
+
+            }
             .header-section { margin-bottom: 32px; padding-bottom: 16px; border-bottom: 1px solid #e2e8f0; }
             .header-title { font-size: 26px; font-weight: 700; margin-bottom: 8px; color: var(--mg-primary); }
             .header-sub { font-size: 14px; color: var(--mg-text-muted); line-height: 1.5; }
@@ -47,8 +52,8 @@
     </th:block>
     <div layout:fragment="content">
         <header class="header-section">
-            <h2 class="header-title">Référentiel Produits</h2>
-            <p class="header-sub">Liste des produits en stock, niveaux et alertes associées.</p>
+            <h2 class="header-title" th:text="${categorie != null ? 'Stock actuel — ' + categorie : 'Stock actuel (tous)'}">Stock actuel</h2>
+            <p class="header-sub" th:text="${categorie != null ? 'Affichage des produits de la catégorie ' + categorie + '.' : 'Liste des produits en stock, niveaux et alertes associées.'}">Liste des produits en stock.</p>
         </header>
 
         <div style="display: flex; gap: 12px; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap;">
@@ -58,8 +63,8 @@
                 <a class="btn btn-outline btn-sm" th:href="@{/stock/produits/export(format='excel')}"><i class="bi bi-file-earmark-excel"></i> Excel</a>
                 <a class="btn btn-outline btn-sm" th:href="@{/stock/produits/export(format='pdf')}"><i class="bi bi-file-earmark-pdf"></i> PDF</a>
                 <a class="btn btn-outline btn-sm" th:href="@{/stock/produits/export(format='csv')}"><i class="bi bi-filetype-csv"></i> CSV</a>
-                <a class="btn btn-outline" th:href="@{/stock/entree}" sec:authorize="hasAnyRole('ADMIN','TECH','RS')"><i class="bi bi-plus"></i> NOUVELLE ENTRÉE</a>
-                <a class="btn btn-outline" th:href="@{/stock/sortie}" sec:authorize="hasAnyRole('ADMIN','TECH','RS')"><i class="bi bi-dash"></i> NOUVELLE SORTIE</a>
+                <a class="btn btn-outline" th:if="${categorie == null or categorie == 'MEDICAMENT'}" th:href="@{/stock/entree}" sec:authorize="hasAnyRole('ADMIN','TECH','RS')"><i class="bi bi-plus"></i> NOUVELLE ENTRÉE</a>
+                <a class="btn btn-outline" th:if="${categorie == null or categorie == 'MEDICAMENT'}" th:href="@{/stock/sortie}" sec:authorize="hasAnyRole('ADMIN','TECH','RS')"><i class="bi bi-dash"></i> NOUVELLE SORTIE</a>
             </div>
         </div>
 
@@ -82,7 +87,7 @@
 
         <div class="card" style="padding: 0;">
             <div class="table-container">
-                <table id="table-produits">
+                <table id="table-produits" class="filtre-tab" style="width: 100%;">
                     <thead>
                         <tr>
                             <th>Produit</th>

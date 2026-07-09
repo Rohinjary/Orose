@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/default}">
+<head>
+    <title layout:fragment="page-title">Déclaration de récolte</title>
+    <th:block layout:fragment="page-styles">
+        <style>
+            /* --- EN-TÊTE ET UTILITIES --- */
+            .page-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 24px;
+            }
+            .page-title { margin: 0; font-size: 28px; font-weight: 700; color: var(--mg-primary); }
+            .page-sub { margin: 4px 0 0; color: var(--mg-secondary); font-size: 14px; line-height: 1.5; }
+            .bassin-tag { background: var(--mg-primary); color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; }
+            .cycle-highlight { color: var(--mg-primary); font-weight: 700; }
+
+            /* --- CARTES & CONTENEURS --- */
+            .card {
+                background: white;
+                border: 1px solid var(--mg-outline);
+                border-radius: var(--radius);
+                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+                padding: 24px;
+                margin-bottom: 24px;
+            }
+            .card-header-custom {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 16px;
+            }
+            .card-title-custom { margin: 0; font-size: 18px; font-weight: 700; color: var(--mg-primary); }
+
+            /* --- ALERTES --- */
+            .mg-alert { padding: 16px; border-radius: var(--radius); font-size: 14px; font-weight: 500; margin-bottom: 16px; display: flex; align-items: flex-start; gap: 12px; }
+            .mg-alert-info { background: #e0f2fe; color: #075985; border: 1px solid #7dd3fc; }
+            .mg-alert-success { background: #dcfce7; color: #166534; border: 1px solid #86efac; }
+            .mg-alert-danger { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+
+            /* --- GRILLE DE CONTENU --- */
+            .content-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px; }
+            
+            /* --- KPI BOXES --- */
+            .kpi-box {
+                background: var(--mg-surface-bright);
+                border: 2px solid var(--mg-outline);
+                border-radius: var(--radius);
+                padding: 20px;
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+            }
+            .kpi-box.highlight {
+                border-color: var(--mg-primary);
+                background: linear-gradient(135deg, rgba(10, 102, 194, 0.02) 0%, rgba(10, 102, 194, 0.05) 100%);
+            }
+            .kpi-label { font-size: 12px; font-weight: 700; text-transform: uppercase; color: var(--mg-secondary); letter-spacing: 0.05em; }
+            .kpi-value { font-size: 32px; font-weight: 700; color: var(--mg-primary); }
+            .kpi-unit { font-size: 14px; color: var(--mg-secondary); font-weight: 500; }
+
+            /* --- FORMULAIRE --- */
+            .form-group {
+                margin-bottom: 20px;
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+            }
+            .form-label { font-size: 14px; font-weight: 600; color: var(--mg-primary); }
+            .form-input {
+                padding: 12px 14px;
+                border: 1px solid var(--mg-outline);
+                border-radius: var(--radius);
+                font-size: 14px;
+                font-family: var(--font-main);
+                transition: all 0.2s;
+            }
+            .form-input:focus {
+                outline: none;
+                border-color: var(--mg-primary);
+                box-shadow: 0 0 0 3px rgba(10, 102, 194, 0.1);
+            }
+            .form-hint { font-size: 12px; color: var(--mg-secondary); margin-top: 4px; }
+
+            /* --- SECTIONS CALCULS --- */
+            .calculations-section {
+                background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+                border: 2px solid #bbf7d0;
+                border-radius: var(--radius);
+                padding: 20px;
+                margin-bottom: 24px;
+            }
+            .calculations-section h4 {
+                margin: 0 0 16px 0;
+                font-size: 14px;
+                font-weight: 700;
+                color: #14532d;
+            }
+            .calc-item {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 8px 0;
+                border-bottom: 1px solid rgba(20, 83, 45, 0.1);
+                font-size: 13px;
+                color: #14532d;
+            }
+            .calc-item:last-child { border-bottom: none; }
+            .calc-item strong { font-weight: 700; }
+            .calc-value {
+                font-size: 16px;
+                font-weight: 700;
+                color: #16a34a;
+            }
+
+            /* --- BOUTONS --- */
+            .btn-mg {
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                padding: 12px 20px;
+                border-radius: var(--radius);
+                font-size: 14px;
+                font-weight: 600;
+                text-decoration: none;
+                cursor: pointer;
+                transition: all 0.2s;
+                border: 1px solid transparent;
+            }
+            .btn-mg-primary { background: var(--mg-primary); color: white; }
+            .btn-mg-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+            .btn-mg-secondary { background: white; color: var(--mg-secondary); border-color: var(--mg-outline); }
+            .btn-mg-secondary:hover { background: #f8fafc; color: var(--mg-primary); }
+            .btn-group { display: flex; gap: 12px; margin-top: 32px; }
+            .btn-group .btn-mg { flex: 1; justify-content: center; }
+
+            /* --- RÉSUMÉ --- */
+            .summary-card {
+                background: #fef3c7;
+                border: 1px solid #fde68a;
+                border-radius: var(--radius);
+                padding: 16px;
+                margin-bottom: 24px;
+            }
+            .summary-card strong { color: #92400e; }
+
+            /* --- RESPONSIVE --- */
+            @media (max-width: 768px) {
+                .content-grid { grid-template-columns: 1fr; }
+                .btn-group { flex-direction: column-reverse; }
+            }
+        </style>
+    </th:block>
+</head>
+<body>
+    <div layout:fragment="content">
+
+        <!-- Messages d'erreur/succès -->
+        <div th:if="${erreur}" class="mg-alert mg-alert-danger">
+            <i class="bi bi-exclamation-triangle" style="font-size: 18px;"></i>
+            <div>
+                <strong>Erreur</strong><br/>
+                <span th:text="${erreur}"></span>
+            </div>
+        </div>
+
+        <!-- En-tête de page -->
+        <div class="page-header">
+            <div>
+                <h1 class="page-title"><i class="bi bi-basket" style="margin-right: 10px;"></i>Déclaration de récolte</h1>
+                <p class="page-sub">
+                    Bassin <span class="bassin-tag" th:text="${formulaire.codeBassin}">B01</span> · 
+                    Cycle <span class="cycle-highlight" th:text="${formulaire.codeUniqueCycle}">C01</span> · 
+                    <strong>Semaine S<span th:text="${formulaire.semaineActuelle}">X</span></strong>
+                </p>
+            </div>
+        </div>
+
+        <!-- Alerte informatif -->
+        <div class="mg-alert mg-alert-info">
+            <i class="bi bi-info-circle" style="font-size: 18px;"></i>
+            <div>
+                <strong>Instructions :</strong><br/>
+                La récolte estimée est calculée automatiquement. Veuillez saisir la quantité réelle récoltée. Le système calculera automatiquement la perte et le taux de survie.
+            </div>
+        </div>
+
+        <!-- Grille principale : Estimations vs Réelle -->
+        <div class="content-grid">
+            <!-- Colonne 1 : Récolte estimée (affichage) -->
+            <div class="card">
+                <div class="card-header-custom">
+                    <h3 class="card-title-custom">Récolte estimée</h3>
+                    <i class="bi bi-calculator" style="font-size: 20px; color: var(--mg-primary);"></i>
+                </div>
+                <p style="margin: 0 0 12px 0; font-size: 13px; color: var(--mg-secondary);">
+                    Calcul automatique : Effectif initial × 20 g
+                </p>
+                <div class="kpi-box highlight">
+                    <div class="kpi-label">Quantité estimée</div>
+                    <div class="kpi-value" th:text="${formulaire.recolteEstimeeKg} + ' '">— </div>
+                    <div class="kpi-unit">kilogrammes (kg)</div>
+                </div>
+                <p style="margin: 12px 0 0 0; font-size: 12px; color: var(--mg-secondary);">
+                    <i class="bi bi-info-circle" style="margin-right: 4px;"></i>
+                    Basé sur <strong th:text="${formulaire.effectifInitial}">150 000</strong> post-larves × 20 g
+                </p>
+            </div>
+
+            <!-- Colonne 2 : Récolte réelle (saisie) -->
+            <div class="card">
+                <div class="card-header-custom">
+                    <h3 class="card-title-custom">Récolte réelle</h3>
+                    <i class="bi bi-basket-check" style="font-size: 20px; color: #16a34a;"></i>
+                </div>
+                <form method="post" id="recolte-form">
+                    <div class="form-group">
+                        <label class="form-label" for="quantite-reelle">Quantité réellement récoltée <span style="color: #dc2626;">*</span></label>
+                        <div style="display: flex; gap: 8px; align-items: flex-end;">
+                            <div style="flex: 1;">
+                                <input type="number" 
+                                       id="quantite-reelle" 
+                                       name="recolteReelleKg" 
+                                       class="form-input" 
+                                       placeholder="Ex: 2850" 
+                                       step="0.01" 
+                                       min="0" 
+                                       th:value="${formulaire.recolteReelleKg}"
+                                       required 
+                                       oninput="calculerResultats()">
+                            </div>
+                            <span style="font-weight: 700; color: var(--mg-primary); padding-bottom: 12px;">kg</span>
+                        </div>
+                        <p class="form-hint">
+                            <i class="bi bi-lightbulb" style="margin-right: 4px;"></i>
+                            Saisir le poids total en kilogrammes (kg)
+                        </p>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Section des calculs automatiques -->
+        <div class="calculations-section">
+            <h4><i class="bi bi-calculator" style="margin-right: 8px;"></i>Résultats du calcul</h4>
+            <div class="calc-item">
+                <div><strong>Récolte estimée</strong></div>
+                <div class="calc-value" id="calc-estimee" th:text="${formulaire.recolteEstimeeKg}">—</div>
+            </div>
+            <div class="calc-item">
+                <div><strong>Récolte réelle</strong></div>
+                <div class="calc-value" id="calc-reelle">—</div>
+            </div>
+            <div class="calc-item" style="border-top: 2px solid rgba(20, 83, 45, 0.3); margin-top: 8px; padding-top: 12px;">
+                <div><strong style="color: #dc2626;">Perte (kg)</strong></div>
+                <div class="calc-value" id="calc-perte" style="color: #dc2626;">—</div>
+            </div>
+            <div class="calc-item">
+                <div><strong style="color: #16a34a;">Taux de survie</strong></div>
+                <div class="calc-value" id="calc-taux" style="color: #16a34a;">—</div>
+            </div>
+        </div>
+
+        <!-- Résumé avant validation -->
+        <div class="summary-card" id="summary-container" style="display: none;">
+            <strong style="font-size: 14px;"><i class="bi bi-exclamation-circle" style="margin-right: 8px;"></i>À retenir :</strong>
+            <p style="margin: 8px 0 0 0; font-size: 13px;">
+                Une récolte de <span id="summary-reelle" style="font-weight: 700; color: #92400e;">— kg</span> 
+                représente un taux de survie de <span id="summary-taux" style="font-weight: 700; color: #92400e;">—%</span>. 
+                Cette quantité sera enregistrée dans le stock de crevettes.
+            </p>
+        </div>
+
+        <!-- Boutons d'action -->
+        <div class="btn-group">
+            <a href="javascript:history.back()" class="btn-mg btn-mg-secondary">
+                <i class="bi bi-arrow-left"></i> Retour
+            </a>
+            <form th:action="@{/biologique/{id}/recolte/valider(id=${formulaire.idCycleBassinAssoc})}" 
+                  method="post" 
+                  onsubmit="return confirm('Confirmer la déclaration de récolte ? Cette action est irréversible.');"
+                  style="flex: 1;">
+                <input type="hidden" name="recolteReelleKg" id="recolte-input">
+                <button type="submit" class="btn-mg btn-mg-primary" style="width: 100%; justify-content: center;" id="submit-btn" disabled>
+                    <i class="bi bi-check-circle"></i> Valider la récolte
+                </button>
+            </form>
+        </div>
+
+    </div>
+
+    <th:block layout:fragment="page-scripts">
+        <script th:inline="javascript">
+            const recolteEstimee = parseFloat('[[${formulaire.recolteEstimeeKg}]]');
+            const recolteRealleInput = document.getElementById('quantite-reelle');
+            const submitBtn = document.getElementById('submit-btn');
+            const recolteInputHidden = document.getElementById('recolte-input');
+            const summaryContainer = document.getElementById('summary-container');
+
+            function calculerResultats() {
+                const recolteReelle = parseFloat(recolteRealleInput.value) || 0;
+
+                // Validation de saisie
+                if (recolteRealleInput.value === '' || isNaN(recolteReelle) || recolteReelle < 0) {
+                    document.getElementById('calc-reelle').textContent = '—';
+                    document.getElementById('calc-perte').textContent = '—';
+                    document.getElementById('calc-taux').textContent = '—';
+                    submitBtn.disabled = true;
+                    summaryContainer.style.display = 'none';
+                    return;
+                }
+
+                // Calculs
+                const perte = recolteEstimee - recolteReelle;
+                const tauxSurvie = (recolteReelle / recolteEstimee) * 100;
+
+                // Affichage
+                document.getElementById('calc-reelle').textContent = recolteReelle.toFixed(2) + ' kg';
+                document.getElementById('calc-perte').textContent = perte.toFixed(2) + ' kg';
+                document.getElementById('calc-taux').textContent = tauxSurvie.toFixed(2) + ' %';
+
+                // Résumé
+                document.getElementById('summary-reelle').textContent = recolteReelle.toFixed(2) + ' kg';
+                document.getElementById('summary-taux').textContent = tauxSurvie.toFixed(2);
+                summaryContainer.style.display = 'block';
+
+                // Activation bouton
+                submitBtn.disabled = false;
+                recolteInputHidden.value = recolteReelle;
+            }
+
+            // Initialisation
+            recolteRealleInput.addEventListener('input', calculerResultats);
+            if (recolteRealleInput.value) {
+                calculerResultats();
+            }
+        </script>
+    </th:block>
+</body>
+</html>

@@ -2,12 +2,21 @@ package com.example.orose.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "lot_crevette")
 @Data
+@Builder
+
 public class LotCrevette {
 
     @Id
@@ -18,14 +27,8 @@ public class LotCrevette {
     private String numeroLotUnique;
 
     @ManyToOne
-    @JoinColumn(name = "id_cycle_bassin_assoc", nullable = false)
-    private CycleBassinAssoc cycleBassinAssoc;
-
-    @Column(name = "biomasse_totale_kg", nullable = false, precision = 10, scale = 2)
-    private BigDecimal biomasseTotaleKg;
-
-    @Column(name = "biomasse_actuelle_kg", nullable = false, precision = 10, scale = 2)
-    private BigDecimal biomasseActuelleKg;
+    @JoinColumn(name = "id_recolte_declaration", nullable = false)
+    private RecolteDeclaration recolteDeclaration;
 
     @Column(name = "poids_moyen_final_g", nullable = false, precision = 10, scale = 2)
     private BigDecimal poidsMoyenFinalG;

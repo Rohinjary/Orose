@@ -15,4 +15,9 @@ public class BassinSuiviDTO {
     private BigDecimal poidsMoyenActuel;
     private BigDecimal tauxSurvie;
     private String statutCroissance;
+    private LocalDate dateFinPrevue;
+    private Long joursRestants;
+    private Integer tauxAvancement;
+    private boolean recolteProche;
+    private BigDecimal biomassActuelleKg;
 }

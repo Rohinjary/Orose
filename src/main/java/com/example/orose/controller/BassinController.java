@@ -1,13 +1,13 @@
 package com.example.orose.controller;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import java.util.Map;
 
-import com.example.orose.dto.BassinDTO;
-import com.example.orose.model.Bassin;
-import com.example.orose.service.BassinService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,11 +16,15 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import com.example.orose.dto.BassinDTO;
+import com.example.orose.dto.BassinSuiviDTO;
+import com.example.orose.model.Bassin;
 import com.example.orose.model.HistoStatutBassin;
+import com.example.orose.service.BassinService;
+import com.example.orose.service.BiologiqueService;
 
 @Controller
 @RequestMapping("/bassins")
@@ -28,6 +32,9 @@ public class BassinController {
 
     @Autowired
     private BassinService bassinService;
+
+    @Autowired
+    private BiologiqueService biologiqueService;
 
     private void preparerLayoutBassins(Model model, String breadcrumbCurrent, String currentPage) {
         model.addAttribute("currentPage", currentPage);
@@ -39,7 +46,17 @@ public class BassinController {
     @GetMapping("/liste")
     public String lister(Model model) {
         preparerLayoutBassins(model, "Liste des bassins", "liste");
-        model.addAttribute("bassins", bassinService.listerBassins());
+        List<Bassin> bassins = bassinService.listerBassins();
+        model.addAttribute("bassins", bassins);
+
+        // Clé Integer (type réel de Bassin.id) pour que le lookup ${suivisParBassin.get(bassin.id)}
+        // fonctionne côté template ; HashMap.put accepte en plus les valeurs null
+        // (contrairement à Collectors.toMap/Map.merge), nécessaires pour les bassins sans cycle actif.
+        Map<Integer, BassinSuiviDTO> suivisParBassin = new HashMap<>();
+        for (Bassin b : bassins) {
+            suivisParBassin.put(b.getId(), biologiqueService.getSuiviActifPourBassin(b.getId().longValue()).orElse(null));
+        }
+        model.addAttribute("suivisParBassin", suivisParBassin);
         return "bassin/liste";
     }
 
@@ -47,19 +64,22 @@ public class BassinController {
     @PreAuthorize("hasRole('ADMIN')")
     public String formulaireCreation(Model model) {
         preparerLayoutBassins(model, "Nouveau bassin", "nouveau");
-        model.addAttribute("bassinDTO", new BassinDTO());
+
+        BassinDTO bassinDTO = new BassinDTO();
+        bassinDTO.setDateCreation(LocalDate.now());
+
+        model.addAttribute("bassinDTO", bassinDTO);
         model.addAttribute("modeEdition", false);
         return "bassin/form";
     }
 
-    // Traite la soumission du formulaire de création
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     public String creer(@ModelAttribute BassinDTO bassinDTO, Model model) {
         try {
             bassinService.creerBassin(bassinDTO);
             return "redirect:/bassins/liste";
-        } catch (IllegalArgumentException e) {
+        } catch (Exception e) {
             preparerLayoutBassins(model, "Nouveau bassin", "nouveau");
             model.addAttribute("erreur", e.getMessage());
             model.addAttribute("bassinDTO", bassinDTO);
@@ -93,7 +113,7 @@ public class BassinController {
         try {
             bassinService.modifierBassin(id, bassinDTO);
             return "redirect:/bassins/liste";
-        } catch (IllegalArgumentException e) {
+        } catch (Exception e) {
             preparerLayoutBassins(model, "Modifier le bassin", "modifier");
             model.addAttribute("erreur", e.getMessage());
             model.addAttribute("bassinDTO", bassinDTO);
@@ -103,11 +123,14 @@ public class BassinController {
         }
     }
 
-    // Suppression (un formulaire HTML ne sait faire que GET/POST, donc POST ici)
     @PostMapping("/{id}/supprimer")
     @PreAuthorize("hasRole('ADMIN')")
-    public String supprimer(@PathVariable Long id) {
-        bassinService.supprimerBassin(id);
+    public String supprimer(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            bassinService.supprimerBassin(id);
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("erreur", e.getMessage());
+        }
         return "redirect:/bassins/liste";
     }
 
@@ -121,25 +144,23 @@ public class BassinController {
         model.addAttribute("bassin", bassin);
         model.addAttribute("transitions", transitions);
         model.addAttribute("historique", historique);
+        model.addAttribute("suiviActif", biologiqueService.getSuiviActifPourBassin(id).orElse(null));
         return "bassin/detail";
     }
 
-    // Traite le changement de statut
     @PostMapping("/{id}/statut")
     @PreAuthorize("hasRole('ADMIN')")
     public String changerStatut(@PathVariable Long id,
                                 @RequestParam String nouveauStatut,
                                 @RequestParam String motif,
                                 RedirectAttributes redirectAttributes) {
-        Long idUtilisateur = 1L; // à remplacer plus tard par l'utilisateur connecté
+        Long idUtilisateur = 1L;
         try {
-            // EN_TRAITEMENT (déclaré par un traitement sanitaire) et RECOLTE (déclarée par le
-            // suivi biologique une fois le calibre atteint) ne sont jamais des transitions manuelles.
             if (!bassinService.getTransitionsAutorisees(id).contains(nouveauStatut)) {
                 throw new IllegalStateException("Ce changement de statut n'est pas autorisé manuellement.");
             }
             bassinService.changerStatutBassin(id, nouveauStatut, motif, idUtilisateur);
-        } catch (IllegalStateException e) {
+        } catch (Exception e) {
             redirectAttributes.addFlashAttribute("erreur", e.getMessage());
         }
         return "redirect:/bassins/" + id;
@@ -164,4 +185,5 @@ public class BassinController {
         model.addAttribute("q", q);
         return "bassin/historique";
     }
+
 }

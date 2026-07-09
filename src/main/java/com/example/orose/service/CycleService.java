@@ -3,6 +3,7 @@ package com.example.orose.service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,8 @@ import com.example.orose.repository.CycleRepository;
 import com.example.orose.repository.CycleBassinAssocRepository;
 import com.example.orose.repository.BassinRepository;
 import com.example.orose.repository.EspeceCrevetteRepository;
+import com.example.orose.repository.SuiviHebdoBassinRepository;
+
 
 @Service
 public class CycleService {
@@ -28,18 +31,20 @@ public class CycleService {
     private final BassinRepository bassinRepository;
     private final EspeceCrevetteRepository especeCrevetteRepository;
     private final BassinService bassinService;
+    private final SuiviHebdoBassinRepository suiviHebdoBassinRepository;
 
     @Autowired
     public CycleService(CycleRepository cycleRepository,
                                CycleBassinAssocRepository cycleBassinAssocRepository,
                                BassinRepository bassinRepository,
                                EspeceCrevetteRepository especeCrevetteRepository,
-                               BassinService bassinService) {
+                               BassinService bassinService, SuiviHebdoBassinRepository suiviHebdoBassinRepository) {
         this.cycleRepository = cycleRepository;
         this.cycleBassinAssocRepository = cycleBassinAssocRepository;
         this.bassinRepository = bassinRepository;
         this.especeCrevetteRepository = especeCrevetteRepository;
         this.bassinService = bassinService;
+        this.suiviHebdoBassinRepository = suiviHebdoBassinRepository;
     }
 
     public void demarrerCycle(List<Long> idBassins, CycleDemarrageDTO dto) {
@@ -90,6 +95,8 @@ public class CycleService {
             : "Demarrage cycle " + savedCycle.getCodeUniqueCycle();
 
         // Creer 1 CycleBassinAssoc par bassin
+        int semaineActuelle = calculerSemaineActuelle(dto.getDateDebut());
+        
         for (Long idBassin : idBassins) {
             Bassin bassin = bassinRepository.findById(idBassin).get();
 
@@ -97,6 +104,7 @@ public class CycleService {
             assoc.setCycle(savedCycle);
             assoc.setBassin(bassin);
             assoc.setDensiteM2(densiteM2);
+            assoc.setSemaineActuelle(semaineActuelle);
             assoc.setEffectifInitial(dto.getEffectifInitial().intValue());
             assoc.setCoutPostLarves(dto.getCoutPostLarves());
             assoc.setEstCloture(false);
@@ -105,6 +113,14 @@ public class CycleService {
 
             bassinService.changerStatutBassin(idBassin, statutCible, motif, 1L);
         }
+    }
+
+    public int calculerSemaineActuelle(LocalDate dateDebut) {
+        long joursEcoules = ChronoUnit.DAYS.between(dateDebut, LocalDate.now());
+        if (joursEcoules < 0) {
+            return 0; // cycle pas encore démarré
+        }
+        return (int) (joursEcoules / 7); 
     }
 
     private String genererCodeUniqueCycle() {
@@ -122,6 +138,18 @@ public class CycleService {
     }
 
     public List<CycleBassinAssoc> getAssociationsByCycleId(Long cycleId) {
-        return cycleBassinAssocRepository.findByCycleId(cycleId);
+        List<CycleBassinAssoc> associations = cycleBassinAssocRepository.findByCycleId(cycleId);
+
+        for (CycleBassinAssoc assoc : associations) {
+            suiviHebdoBassinRepository
+                    .findTopByCycleBassinAssocIdOrderByDateSuiviDesc(assoc.getId())
+                    .ifPresent(pesee -> {
+                        if (pesee.getPoidsMoyenGramme() != null) {
+                            assoc.setPoidsMoyenActuel(pesee.getPoidsMoyenGramme());
+                        }
+                    });
+        }
+
+        return associations;
     }
 }

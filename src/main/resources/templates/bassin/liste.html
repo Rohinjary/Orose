@@ -4,159 +4,10 @@
     layout:decorate="~{layouts/default}">
 
 <head>
-    <title layout:fragment="page-title">Move Gasy — Liste des Bassins</title>
+    <title layout:fragment="page-title">OROSE — Liste des Bassins</title>
     <th:block layout:fragment="page-styles">
-        <style>
-            /* Styles spécifiques à la page des bassins */
-            .page-header {
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                margin-bottom: 24px;
-            }
-
-            .action-group {
-                display: flex;
-                gap: 12px;
-                align-items: center;
-            }
-
-            /* Boutons personnalisés */
-            .btn-mg {
-                display: inline-flex;
-                align-items: center;
-                gap: 8px;
-                padding: 8px 16px;
-                border-radius: var(--radius);
-                font-size: 13px;
-                font-weight: 600;
-                text-decoration: none;
-                cursor: pointer;
-                transition: all 0.2s;
-                border: 1px solid transparent;
-            }
-
-            .btn-mg-primary {
-                background: var(--mg-primary);
-                color: white;
-            }
-
-            .btn-mg-primary:hover {
-                opacity: 0.9;
-            }
-
-            .btn-mg-secondary {
-                background: var(--mg-surface-bright);
-                color: var(--mg-secondary);
-                border-color: var(--mg-outline);
-            }
-
-            .btn-mg-secondary:hover {
-                background: var(--mg-surface-container);
-                color: var(--mg-primary);
-            }
-
-            .btn-mg-danger {
-                background: transparent;
-                color: var(--mg-danger);
-                border-color: transparent;
-                padding: 6px 12px;
-            }
-
-            .btn-mg-danger:hover {
-                background: #fee2e2;
-                border-radius: var(--radius);
-            }
-
-            /* Tableaux modernes style Move Gasy */
-            .table-container {
-                background: var(--mg-surface-bright);
-                border: 1px solid var(--mg-outline);
-                border-radius: var(--radius);
-                overflow: hidden;
-                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-            }
-
-            .mg-table {
-                width: 100%;
-                border-collapse: collapse;
-                text-align: left;
-                font-size: 13px;
-            }
-
-            .mg-table th {
-                background: #f8fafc;
-                color: var(--mg-text-light);
-                font-weight: 700;
-                text-transform: uppercase;
-                font-size: 11px;
-                letter-spacing: 0.05em;
-                padding: 14px 20px;
-                border-bottom: 1px solid var(--mg-outline);
-            }
-
-            .mg-table td {
-                padding: 14px 20px;
-                border-bottom: 1px solid #f1f5f9;
-                color: var(--mg-secondary);
-                vertical-align: middle;
-            }
-
-            .mg-table tr:last-child td {
-                border-bottom: none;
-            }
-
-            .mg-table tr:hover td {
-                background: #fcfdfe;
-            }
-
-            /* Badge Statut dynamique */
-            .status-badge {
-                display: inline-flex;
-                padding: 4px 8px;
-                border-radius: 4px;
-                font-size: 11px;
-                font-weight: 700;
-                text-transform: uppercase;
-            }
-
-            /* Classes utilitaires de fallback pour les statuts */
-            .status-active {
-                background: #d1fae5;
-                color: #065f46;
-            }
-
-            .status-maintenance {
-                background: #fef3c7;
-                color: #92400e;
-            }
-
-            .status-empty {
-                background: #e2e8f0;
-                color: #475569;
-            }
-
-            /* Actions de ligne */
-            .row-actions {
-                display: flex;
-                gap: 8px;
-                align-items: center;
-            }
-
-            .row-link {
-                color: var(--mg-primary);
-                text-decoration: none;
-                font-weight: 600;
-                padding: 6px 12px;
-            }
-
-            .row-link:hover {
-                background: var(--mg-surface-container);
-                border-radius: var(--radius);
-            }
-        </style>
+        <link href="/css/bassin/liste.css" rel="stylesheet" />
     </th:block>
-
 </head>
 
 <body>
@@ -164,12 +15,9 @@
     <div layout:fragment="content">
 
         <div class="page-header">
-            <h1 class="section-title" style="font-size: 22px;">Bassins de Production</h1>
+            <h1 class="section-title" style="font-size: 22px;">Gestion des Bassins</h1>
 
             <div class="action-group">
-                <input type="text" data-list-filter="#table-bassins"
-                       placeholder="Rechercher un bassin..."
-                       style="font-size: 13px; padding: 8px 12px; border: 1px solid var(--mg-outline); border-radius: var(--radius); min-width: 200px;" />
                 <a class="btn-mg btn-mg-secondary" th:href="@{/bassins/liste/export(format='excel')}"><i class="bi bi-file-earmark-excel"></i> Excel</a>
                 <a class="btn-mg btn-mg-secondary" th:href="@{/bassins/liste/export(format='pdf')}"><i class="bi bi-file-earmark-pdf"></i> PDF</a>
                 <a class="btn-mg btn-mg-secondary" th:href="@{/bassins/liste/export(format='csv')}"><i class="bi bi-filetype-csv"></i> CSV</a>
@@ -179,58 +27,123 @@
             </div>
         </div>
 
-        <div class="table-container">
-            <table id="table-bassins" class="mg-table">
-                <thead>
-                    <tr>
-                        <th>Code Bassin</th>
-                        <th>Surface</th>
-                        <th>Profondeur</th>
-                        <th>Statut actuel</th>
-                        <th style="text-align: right;">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr th:each="bassin : ${bassins}">
-                        <td style="font-weight: 700; color: var(--mg-primary);" th:text="${bassin.code}"></td>
-                        <td th:text="${bassin.surfaceM2 + ' m²'}"></td>
-                        <td th:text="${bassin.profondeurMetre + ' m'}"></td>
-                        <td>
-                            <span class="status-badge status-active" th:text="${bassin.statutActuel.libelle}"></span>
-                        </td>
-                        <td>
-                            <div class="row-actions" style="justify-content: flex-end;">
-                                <a th:href="@{/bassins/{id}(id=${bassin.id})}" class="row-link">
-                                    <i class="bi bi-eye"></i> Voir
-                                </a>
-                                <a th:href="@{/bassins/{id}/modifier(id=${bassin.id})}" class="row-link" sec:authorize="hasRole('ADMIN')">
-                                    <i class="bi bi-pencil"></i> Modifier
-                                </a>
-                                <form th:action="@{/bassins/{id}/supprimer(id=${bassin.id})}" method="post"
-                                    sec:authorize="hasRole('ADMIN')"
-                                    style="display:inline"
-                                    onsubmit="return confirm('Voulez-vous vraiment supprimer ce bassin ?');">
-                                    <button type="submit" class="btn-mg btn-mg-danger">
-                                        <i class="bi bi-trash"></i> Supprimer
-                                    </button>
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
+        <div th:if="${erreur}" class="alert alert-danger" style="
+            background:#fee2e2;
+            color:#991b1b;
+            border:1px solid #fca5a5;
+            padding:12px;
+            margin-bottom:20px;
+            border-radius:6px;">
+            <span th:text="${erreur}"></span>
+        </div>
 
-                    <tr th:if="${#lists.isEmpty(bassins)}">
-                        <td colspan="5" style="text-align: center; color: var(--mg-text-muted); padding: 40px;">
-                            Aucun bassin enregistré pour le moment.
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+        <!-- ── Barre de filtres ──────────────────────────────────────────────── -->
+        <section class="filters-section">
+            <div class="filter-group">
+                <label class="filter-label" for="filter-etat">État</label>
+                <select id="filter-etat" class="filter-input">
+                    <option value="">Tous les états</option>
+                    <option value="VIDE">Vide</option>
+                    <option value="PREPARATION">Préparation</option>
+                    <option value="ACTIF">Actif</option>
+                    <option value="EN_TRAITEMENT">En traitement</option>
+                    <option value="RECOLTE">Récolté</option>
+                    <option value="QUARANTAINE">Quarantaine</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label class="filter-label" for="filter-disponibilite">Disponibilité</label>
+                <select id="filter-disponibilite" class="filter-input">
+                    <option value="">Tous</option>
+                    <option value="LIBRE">Libre (sans cycle actif)</option>
+                    <option value="OCCUPE">Occupé (cycle actif)</option>
+                </select>
+            </div>
+
+            <div class="filter-group" style="flex: 1; min-width: 220px;">
+                <label class="filter-label" for="filter-cycle">Cycle actif</label>
+                <input type="text" id="filter-cycle" class="filter-input" placeholder="Rechercher un code de cycle..." />
+            </div>
+
+            <button type="button" id="btn-reset-filters" class="btn-mg btn-mg-secondary btn-reset-filters">
+                <i class="bi bi-x-circle"></i> Réinitialiser
+            </button>
+        </section>
+
+        <div id="row-count"></div>
+
+        <!-- ── Grille de cartes ──────────────────────────────────────────────── -->
+        <div class="bassin-grid" id="bassin-grid">
+
+            <div th:if="${#lists.isEmpty(bassins)}" class="empty-state" id="empty-server">
+                <i class="bi bi-droplet-half"></i>
+                <p>Aucun bassin enregistré pour le moment.</p>
+            </div>
+
+            <article th:each="bassin : ${bassins}"
+                     th:with="suivi=${suivisParBassin.get(bassin.id)}"
+                     class="bassin-card"
+                     th:attr="data-code=${bassin.code},
+                              data-statut=${bassin.statutActuel.code},
+                              data-disponibilite=${suivi != null ? 'OCCUPE' : 'LIBRE'},
+                              data-cycle=${suivi != null ? suivi.codeUniqueCycle : ''}">
+
+                <div class="bassin-id">
+                    <span th:text="'Bassin ' + ${bassin.code}">Bassin B01</span>
+                    <span class="badge-statut"
+                        th:classappend="${bassin.statutActuel.code == 'ACTIF'} ? 'badge-actif' :
+                            (${bassin.statutActuel.code == 'PREPARATION'} ? 'badge-preparation' :
+                            (${bassin.statutActuel.code == 'EN_TRAITEMENT'} ? 'badge-traitement' :
+                            (${bassin.statutActuel.code == 'QUARANTAINE'} ? 'badge-quarantaine' :
+                            (${bassin.statutActuel.code == 'RECOLTE'} ? 'badge-recolte' :
+                            (${bassin.statutActuel.code == 'INACTIF'} ? 'badge-inactif' : 'badge-vide')))))"
+                        th:text="${bassin.statutActuel.libelle}">Actif</span>
+                </div>
+
+                <div class="bassin-stat-row">
+                    <span th:text="${suivi != null} ? ('Semaine ' + ${suivi.semaine}) :
+                                    (${bassin.statutActuel.code == 'VIDE'} ? 'Disponible' : ${bassin.statutActuel.libelle})">—</span>
+                    <span th:text="${suivi != null and suivi.tauxAvancement != null} ? ${suivi.tauxAvancement} + '%' : ''"></span>
+                </div>
+
+                <div class="progress-container">
+                    <div class="progress-bar"
+                         th:style="'width:' + ${suivi != null and suivi.tauxAvancement != null ? suivi.tauxAvancement : 0} + '%'"></div>
+                </div>
+
+                <div class="bassin-stat-row" style="margin-bottom:0;">
+                    <span th:if="${suivi != null and suivi.recolteProche}" class="harvest-alert">
+                        <i class="bi bi-lightning-charge-fill"></i> Récolte proche
+                    </span>
+                    <span th:unless="${suivi != null and suivi.recolteProche}" class="footer-label"
+                          th:text="'Cycle: ' + (${suivi != null} ? ${suivi.codeUniqueCycle} : '—')">Cycle: —</span>
+                    <span th:if="${suivi != null and suivi.poidsMoyenActuel != null}" style="font-weight:700; color: var(--mg-primary);"
+                          th:text="'Poids: ' + ${suivi.poidsMoyenActuel} + ' g'"></span>
+                </div>
+
+                <div class="bassin-footer">
+                    <div class="footer-stat">
+                        <span class="footer-label">Restant</span>
+                        <span class="footer-val"
+                              th:text="${suivi != null and suivi.joursRestants != null} ? (${suivi.joursRestants} + ' jrs') : '—'">—</span>
+                    </div>
+                    <a th:href="@{/bassins/{id}(id=${bassin.id})}" class="btn-card">
+                        <i class="bi bi-eye"></i> Détails
+                    </a>
+                </div>
+            </article>
+
+            <div id="empty-filtered" style="display:none;" class="empty-state">
+                <i class="bi bi-search"></i>
+                <p>Aucun bassin ne correspond aux critères de recherche.</p>
+            </div>
         </div>
 
     </div>
 
     <th:block layout:fragment="page-scripts">
-        <script th:src="@{/js/list-filter.js}"></script>
+        <script th:src="@{/js/bassin/liste-filtres.js}"></script>
     </th:block>
 </body>
 

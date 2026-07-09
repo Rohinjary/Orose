@@ -1,0 +1,52 @@
+1) On se connecte a la page de login: il y a cerrtain role(a voir dans le database)
+on valide et on se trouve dans la page d'accueil avec un dashboard representant la situation generale
+
+2)Pour commencer, il faut creer des bassins:
+    apres leurs creation, le status par defaut est VIDE, aucun changement d'etat peut se faire via nasin meme si on veut modifier
+    il y a une liste des bassins avec leur status actuel(VIDE<ACTIF,INACTIF,PREPARATION,EN_TRAITEMENT,RECOLTE), une liste filtrable et on peut exporter des donnees en excel csv pdf
+    il y a aussi les historque de modification 
+
+3)Pour demarrer un cycle, il faut selectionner 3 bassin VIDE, ni plus ni moins
+    valider-> cycle actif avec les donnees effectif post larve initial, densite, cout pl, semaine, poids moyen
+    un cycle dure 4 mois pile pour cette application, mais c'est estimatif, si on arrive a la date fin estimee rien ne change automatiquement
+    meme si aujourd'hui,on est le 02/07/26 et que je demarre un cycle pour 02/12/26: le status du cycle ne changera pas en EN_PREPARATION->ACTIF que qu'on est a cette date
+    et les bassin deja EN_PREPARATION ne sont plus selectionnable
+
+4)Dans suivi biologique, une fois qu'un cycle est demarrer, il y a les suivi biologique par bassin de chaque cycle actif
+    on fait des pesees de crevettes toutes les semaines pour voir si les crevettes dans un bassin evolue normalement
+    ou en retard (donc la on peut le considerer differemment au cas ou il y a un anomali)
+    ou precoce
+    et lorsque la pesee arrive a 20g(et 110mm), on informe que la RECOLTE peut se faire
+    meme si on n'est pas encore a la date prevue ou en retard
+    et aucune action peut se faire en dehors de 20g et taille 110mm
+    et meme si 1 bassin dans 1 cycle a deja atteint l'objectif et que les 2 qutres bassins ne le sont pas encore, le cycle ne s'arrete toujours pas
+    donc ici,il est possible qu'un bassin appartient a 2 cycle different en parallele
+    On voit aussi une courbe de croissance,biomasse actelle ,poids moyen, taille moyenne
+    Une fois la recolte fait, genre on clique sur recolte, une page saffiche ou l'on insere la quantite exacte et reelle recoltee, puis on valide et ca rentre dans stock et fait le calcul
+    de taux de survie a partir de biomasse estimme - quantite reelle
+
+
+5)Cote sanitaire, dashboard bassin sains, en traitement, incidents actifs, la on voit les etats sanitaires de chaque bassins
+    en code couleur, on peut declarer un nouvel incidents en indiquant la garvite 
+    l'etat du bassin change en EN_TRAITEMENT 
+    et une fois les test passes et traitement fini, on clique juste sur resolu et EN_TRAITEMENT devient ACTIF
+    seul dans la partie sanitaire qu'on peut changer leur etat ACTIF->EN_TRAITEMENT->ACTIF
+    il y a aussi les historique d'incient + filtre + export comme d'hab
+    et on ne gere pas le traitement, ce sont les personnels qui en pensent, l'app ne fait que marquer et informer si c'est deja fini ou passes
+    et quand ils ont besoin de medicament, il entre juste les medicaments sortie avec quantite et responsable 
+    afin de gerer le stock de medicament
+    on a prefere laisser le traitement car c'est un sujet tres delicat pour etre mis dans une application
+
+6)cote nourrissage, on cree au debut les les distributions, genre du matin midi soir etc, c'est genre un planning
+puis le responsableregarde juste quoi faire ou nourrir a cette heure ci et quel bassin
+apres quand on valide un nourrissage, ca soustrait dans le stock aliment, et aucune validation en dehors de l'horaire ecrit peut se faire, sauf si c'est en retard 
+du coup il recoit "en retard"
+
+
+
+7) une fois recolte, le stock se remplit avec le lot crevtte de recolte reelle, 
+    puis pour les pertes, le calcul est fait par l'application
+    stock medicament on entre et ca sort manuellement
+    pour aliment, entree manuelle et sortie automatique
+    on a une dashboard d;etat stock actuel
+    avec alerte rupture de stock crevettes et derniers mouvements + historique mouvements

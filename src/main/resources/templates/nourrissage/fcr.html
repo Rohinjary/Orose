@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layouts/default}">
+
+<head>
+    <title layout:fragment="page-title">FCR nourrissage - OROSE</title>
+    <th:block layout:fragment="page-styles">
+        <style>
+            .page-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-end;
+                gap: 16px;
+                margin-bottom: 32px;
+            }
+
+            .header-title {
+                font-size: 24px;
+                font-weight: 700;
+                margin-bottom: 4px;
+            }
+
+            .header-sub {
+                color: var(--mg-secondary);
+                font-size: 14px;
+            }
+
+            .card {
+                background: var(--mg-surface-bright);
+                border: 1px solid var(--mg-outline);
+                border-radius: var(--radius);
+                padding: 24px;
+                
+            }
+
+            .filter-bar {
+                display: flex;
+                align-items: end;
+                gap: 12px;
+                flex-wrap: wrap;
+                margin-bottom: 24px;
+            }
+
+            .form-group {
+                min-width: 220px;
+            }
+
+            .form-group label {
+                display: block;
+                color: var(--mg-secondary);
+                font-size: 11px;
+                font-weight: 700;
+                letter-spacing: 0.05em;
+                margin-bottom: 8px;
+                text-transform: uppercase;
+            }
+
+            select {
+                width: 100%;
+                min-height: 40px;
+                border: 1px solid var(--mg-outline);
+                border-radius: var(--radius);
+                background: white;
+                color: var(--mg-primary);
+                font-family: var(--font-main);
+                font-size: 13px;
+                padding: 8px 12px;
+            }
+
+            .btn {
+                min-height: 40px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+                border-radius: var(--radius);
+                font-size: 13px;
+                font-weight: 600;
+                padding: 8px 14px;
+                text-decoration: none;
+                cursor: pointer;
+            }
+
+            .btn-primary {
+                background: var(--mg-primary);
+                border: 1px solid var(--mg-primary);
+                color: white;
+            }
+
+            .btn-outline {
+                background: transparent;
+                border: 1px solid var(--mg-outline);
+                color: var(--mg-primary);
+            }
+
+            .summary-grid {
+                display: grid;
+                grid-template-columns: 340px minmax(0, 1fr);
+                gap: 24px;
+                margin-bottom: 24px;
+            }
+
+            .fcr-value {
+                font-size: 56px;
+                font-weight: 700;
+                line-height: 1;
+                margin: 14px 0 12px;
+            }
+
+            .meta-grid {
+                display: grid;
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+                gap: 12px;
+            }
+
+            .meta-item {
+                border: 1px solid var(--mg-outline);
+                border-radius: var(--radius);
+                padding: 16px;
+            }
+
+            .meta-label {
+                color: var(--mg-secondary);
+                font-size: 11px;
+                font-weight: 700;
+                letter-spacing: 0.05em;
+                margin-bottom: 6px;
+                text-transform: uppercase;
+            }
+
+            .meta-value {
+                font-size: 20px;
+                font-weight: 700;
+            }
+
+            .badge {
+                border-radius: var(--radius);
+                display: inline-flex;
+                font-size: 11px;
+                font-weight: 700;
+                padding: 4px 8px;
+                text-transform: uppercase;
+            }
+
+            .badge-success {
+                background: #dcfce7;
+                color: #166534;
+            }
+
+            .badge-warning {
+                background: #fef3c7;
+                color: #92400e;
+            }
+
+            .badge-danger {
+                background: #fee2e2;
+                color: #991b1b;
+            }
+
+            .badge-secondary {
+                background: #e0f2fe;
+                color: #075985;
+            }
+
+            .table-container {
+                width: 100%;
+                overflow-x: auto;
+               
+                border-radius: var(--radius);
+            }
+
+             .dataTables_wrapper {
+
+                margin: 0px !important;
+
+            }
+
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                text-align: left;
+                font-size: 13px;
+            }
+
+            th {
+                background: #f8fafc;
+                border-bottom: 1px solid var(--mg-outline);
+                color: var(--mg-secondary);
+                font-size: 11px;
+                font-weight: 700;
+                padding: 12px 16px;
+                text-transform: uppercase;
+            }
+
+            td {
+                border-bottom: 1px solid var(--mg-outline);
+                padding: 14px 16px;
+                white-space: nowrap;
+            }
+
+            tbody tr:last-child td {
+                border-bottom: none;
+            }
+
+            .empty-state {
+                color: var(--mg-secondary);
+                padding: 28px;
+                text-align: center;
+            }
+
+            @media (max-width: 980px) {
+                .page-header,
+                .summary-grid {
+                    display: block;
+                }
+
+                .meta-grid {
+                    grid-template-columns: 1fr;
+                }
+            }
+        </style>
+    </th:block>
+</head>
+
+<body>
+    <div layout:fragment="content">
+        <header class="page-header">
+            <div>
+                <h2 class="header-title">Calcul automatique FCR</h2>
+                <p class="header-sub">FCR par bassin et moyenne du cycle selectionne.</p>
+            </div>
+        </header>
+
+        <section class="card" style="margin-bottom: 24px;">
+            <form th:action="@{/nourrissage/fcr}" method="get" class="filter-bar">
+                <div class="form-group">
+                    <label>Cycle</label>
+                    <select name="cycleId" required>
+                        <option value="">Selectionner un cycle</option>
+                        <option th:each="cycle : ${cycles}" th:value="${cycle.id}" th:text="${cycle.codeUniqueCycle}"
+                            th:selected="${cycleIdSelectionne != null and cycle.id.toString() == cycleIdSelectionne.toString()}">
+                        </option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Bassin</label>
+                    <select name="bassinCode">
+                        <option value="">Tous les bassins du cycle</option>
+                        <option th:each="bassin : ${bassins}" th:value="${bassin.code}" th:text="${bassin.code}"
+                            th:selected="${bassinCodeSelectionne != null and bassin.code == bassinCodeSelectionne}">
+                        </option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-calculator"></i> Calculer
+                </button>
+                <a th:href="@{/nourrissage/fcr}" class="btn btn-outline">Reinitialiser</a>
+            </form>
+        </section>
+
+        <div th:if="${cycleIdSelectionne == null}" class="card empty-state">
+            Selectionnez un cycle pour afficher le FCR.
+        </div>
+
+        <div th:if="${cycleIdSelectionne != null}">
+            <div class="summary-grid">
+                <section class="card">
+                    <div class="meta-label">FCR moyen cycle</div>
+                    <div class="fcr-value" th:text="${fcrCycle != null ? #numbers.formatDecimal(fcrCycle.fcrReel, 1, 2) : '0.00'}">
+                        0.00
+                    </div>
+                    <span class="badge" th:if="${fcrCycle != null}" th:classappend="${fcrCycle.cssClass}"
+                        th:text="${fcrCycle.indicateur}">Bon</span>
+                    <div style="color: var(--mg-secondary); font-size: 13px; margin-top: 12px;">Objectif FCR : 1,2 a 1,5</div>
+                </section>
+
+                <section class="card">
+                    <div class="meta-grid">
+                        <div class="meta-item">
+                            <div class="meta-label">Cycle</div>
+                            <div class="meta-value" th:text="${fcrCycle != null ? fcrCycle.codeCycle : '-'}">-</div>
+                        </div>
+                        <div class="meta-item">
+                            <div class="meta-label">Total aliments</div>
+                            <div class="meta-value"
+                                th:text="${fcrCycle != null ? #numbers.formatDecimal(fcrCycle.totalAlimentsKg, 1, 2) + ' kg' : '0 kg'}">
+                                0 kg
+                            </div>
+                        </div>
+                        <div class="meta-item">
+                            <div class="meta-label">Biomasse produite</div>
+                            <div class="meta-value"
+                                th:text="${fcrCycle != null ? #numbers.formatDecimal(fcrCycle.biomasseProduiteKg, 1, 2) + ' kg' : '0 kg'}">
+                                0 kg
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <section class="card">
+                <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 16px;">
+                    <h3 style="font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">FCR par bassin</h3>
+                    <span style="color: var(--mg-secondary); font-size: 12px;"
+                        th:text="${fcrBassins != null ? #lists.size(fcrBassins) : 0} + ' bassin(s)'">0 bassin</span>
+                </div>
+
+                <div class="table-container" th:if="${fcrBassins != null and not #lists.isEmpty(fcrBassins)}">
+                    <table class="filtre-tab" style="width: 100%;">
+                        <thead>
+                            <tr>
+                                <th>Cycle</th>
+                                <th>Bassin</th>
+                                <th>Total aliments</th>
+                                <th>Biomasse produite</th>
+                                <th>FCR reel</th>
+                                <th>Indicateur</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="ligne : ${fcrBassins}">
+                                <td th:text="${ligne.codeCycle}">C01</td>
+                                <td><strong th:text="${ligne.codeBassin}">B01</strong></td>
+                                <td th:text="${#numbers.formatDecimal(ligne.totalAlimentsKg, 1, 2) + ' kg'}">0 kg</td>
+                                <td th:text="${#numbers.formatDecimal(ligne.biomasseProduiteKg, 1, 2) + ' kg'}">0 kg</td>
+                                <td th:text="${#numbers.formatDecimal(ligne.fcrReel, 1, 2)}">0.00</td>
+                                <td>
+                                    <span class="badge" th:classappend="${ligne.cssClass}" th:text="${ligne.indicateur}">
+                                        Bon
+                                    </span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="empty-state" th:if="${fcrBassins == null or #lists.isEmpty(fcrBassins)}">
+                    Aucun bassin trouve pour ces filtres.
+                </div>
+            </section>
+        </div>
+    </div>
+</body>
+
+</html>

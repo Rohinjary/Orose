@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="fr" 
-      xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
 <head th:replace="~{fragments/header :: head}">
-    <title>Move Gasy</title>
+    <title>OROSE</title>
 </head>
+
 <body>
     <div class="sidebar-overlay"></div>
-    
+
     <!-- Remplacement Sidebar -->
     <aside th:replace="~{fragments/sidebar :: sidebar}"></aside>
 
@@ -18,6 +18,9 @@
         <!-- Conteneur central de l'application -->
         <div class="container" layout:fragment="content"></div>
     </main>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+    <script src="/js/filtre.js"></script>
 
     <!-- Scripts JavaScript Globaux -->
     <script>
@@ -35,9 +38,15 @@
             const dropdown = element.closest('.nav-dropdown');
             dropdown.classList.toggle('open');
         }
+        function toggleSubGroup(element) {
+            const group = element.closest('.nav-sub-group');
+            group.classList.toggle('open');
+        }
     </script>
-    
+
     <!-- Zone d'injection pour les scripts JS spécifiques à chaque page -->
     <th:block layout:fragment="page-scripts"></th:block>
+
 </body>
+
 </html>
