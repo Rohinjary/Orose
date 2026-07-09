@@ -8,7 +8,7 @@ INSERT INTO statut_bassin (code, libelle) VALUES
 ('ACTIF',        'Actif'),
 ('EN_TRAITEMENT','En traitement'),
 ('RECOLTE',      'Récolté'),
-('QUARANTAINE',  'Quarantaine');
+('INACTIF',  'Inactif');
 
 INSERT INTO creneau_horaire (libelle, ordre) VALUES
 ('MATIN', 1), ('MIDI', 2), ('SOIR', 3), ('NUIT', 4);
@@ -46,8 +46,7 @@ WHERE e.nom_courant = 'Crevette blanche';
 INSERT INTO role (code, libelle) VALUES
 ('ADMIN', 'Administrateur'),
 ('DIR', 'Directeur'),
-('TECH', 'Technicien'),
-('RS', 'Responsable sanitaire')
+('TECH', 'Technicien')
 ON CONFLICT (code) DO NOTHING;
 
 INSERT INTO utilisateur (nom, prenom, email, mot_de_passe, statut)
@@ -60,3 +59,26 @@ FROM utilisateur u
 JOIN role r ON r.code = 'ADMIN'
 WHERE u.email = 'admin@baovola.mg'
 ON CONFLICT DO NOTHING;
+
+
+
+INSERT INTO aliment (libelle, seuil_minimum_kg)
+SELECT 'Granules Croissance Elevee', 50.00
+WHERE NOT EXISTS (
+    SELECT 1 FROM aliment WHERE libelle = 'Granules Croissance Elevee'
+);
+
+INSERT INTO aliment (libelle, seuil_minimum_kg)
+SELECT 'Granules finition', 20.00
+WHERE NOT EXISTS (
+    SELECT 1 FROM aliment WHERE libelle = 'Granules finition'
+);
+
+
+
+INSERT INTO entree_stock_aliment
+    (id_aliment, quantite_kg, quantite_restante_kg, prix_unitaire_ar, date_reception, date_expiration, id_responsable)
+VALUES
+    ((SELECT id FROM aliment WHERE libelle = 'Granules Croissance Elevee'), 450.00, 450.00, 2200.00, CURRENT_DATE - 25, CURRENT_DATE + 180, 1),
+    ((SELECT id FROM aliment WHERE libelle = 'Granules Croissance Elevee'), 700.00, 700.00, 2100.00, CURRENT_DATE - 10, CURRENT_DATE + 300, 1),
+    ((SELECT id FROM aliment WHERE libelle = 'Granules finition'), 180.00, 180.00, 2400.00, CURRENT_DATE - 5, CURRENT_DATE + 120, 1);

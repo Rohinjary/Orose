@@ -85,25 +85,25 @@ FROM (VALUES
 ON CONFLICT (code_unique_cycle) DO NOTHING;
 
 -- 5. Associations cycle <-> bassin (cycle_bassin_assoc)
--- INSERT INTO cycle_bassin_assoc (id_cycle, id_bassin, effectif_initial, densite_m2, cout_post_larves)
--- SELECT c.id, b.id, v.effectif, v.densite, v.cout
--- FROM (VALUES
---     ('C01', 'B01', 50000, 50.00, 1500000.00),
---     ('C01', 'B02', 50000, 50.00, 1500000.00),
---     ('C01', 'B03', 45000, 45.00, 1350000.00),
---     ('C02', 'B04', 45000, 37.50, 1350000.00),
---     ('C02', 'B05', 60000, 50.00, 1800000.00),
---     ('C02', 'B06', 60000, 50.00, 1800000.00),
---     ('C03', 'B07', 40000, 44.44, 1200000.00),
---     ('C03', 'B08', 40000, 44.44, 1200000.00),
---     ('C03', 'B09', 40000, 44.44, 1200000.00)
--- ) AS v(cycle, bassin, effectif, densite, cout)
--- JOIN cycle c ON c.code_unique_cycle = v.cycle
--- JOIN bassin b ON b.code = v.bassin
--- WHERE NOT EXISTS (
---     SELECT 1 FROM cycle_bassin_assoc cba
---     WHERE cba.id_cycle = c.id AND cba.id_bassin = b.id
--- );
+INSERT INTO cycle_bassin_assoc (id_cycle, id_bassin, effectif_initial, densite_m2, cout_post_larves)
+SELECT c.id, b.id, v.effectif, v.densite, v.cout
+FROM (VALUES
+    ('C01', 'B01', 50000, 50.00, 1500000.00),
+    ('C01', 'B02', 50000, 50.00, 1500000.00),
+    ('C01', 'B03', 45000, 45.00, 1350000.00),
+    ('C02', 'B04', 45000, 37.50, 1350000.00),
+    ('C02', 'B05', 60000, 50.00, 1800000.00),
+    ('C02', 'B06', 60000, 50.00, 1800000.00),
+    ('C03', 'B07', 40000, 44.44, 1200000.00),
+    ('C03', 'B08', 40000, 44.44, 1200000.00),
+    ('C03', 'B09', 40000, 44.44, 1200000.00)
+) AS v(cycle, bassin, effectif, densite, cout)
+JOIN cycle c ON c.code_unique_cycle = v.cycle
+JOIN bassin b ON b.code = v.bassin
+WHERE NOT EXISTS (
+    SELECT 1 FROM cycle_bassin_assoc cba
+    WHERE cba.id_cycle = c.id AND cba.id_bassin = b.id
+);
 
 -- ------------------------------------------------------------
 -- VÉRIFICATION : récupère les vrais id_cycle_bassin_assoc avant de continuer
