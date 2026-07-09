@@ -20,6 +20,8 @@ import com.example.orose.repository.CycleRepository;
 import com.example.orose.repository.CycleBassinAssocRepository;
 import com.example.orose.repository.BassinRepository;
 import com.example.orose.repository.EspeceCrevetteRepository;
+import com.example.orose.repository.SuiviHebdoBassinRepository;
+
 
 @Service
 public class CycleService {
@@ -29,18 +31,20 @@ public class CycleService {
     private final BassinRepository bassinRepository;
     private final EspeceCrevetteRepository especeCrevetteRepository;
     private final BassinService bassinService;
+    private final SuiviHebdoBassinRepository suiviHebdoBassinRepository;
 
     @Autowired
     public CycleService(CycleRepository cycleRepository,
                                CycleBassinAssocRepository cycleBassinAssocRepository,
                                BassinRepository bassinRepository,
                                EspeceCrevetteRepository especeCrevetteRepository,
-                               BassinService bassinService) {
+                               BassinService bassinService, SuiviHebdoBassinRepository suiviHebdoBassinRepository) {
         this.cycleRepository = cycleRepository;
         this.cycleBassinAssocRepository = cycleBassinAssocRepository;
         this.bassinRepository = bassinRepository;
         this.especeCrevetteRepository = especeCrevetteRepository;
         this.bassinService = bassinService;
+        this.suiviHebdoBassinRepository = suiviHebdoBassinRepository;
     }
 
     public void demarrerCycle(List<Long> idBassins, CycleDemarrageDTO dto) {
@@ -134,6 +138,18 @@ public class CycleService {
     }
 
     public List<CycleBassinAssoc> getAssociationsByCycleId(Long cycleId) {
-        return cycleBassinAssocRepository.findByCycleId(cycleId);
+        List<CycleBassinAssoc> associations = cycleBassinAssocRepository.findByCycleId(cycleId);
+
+        for (CycleBassinAssoc assoc : associations) {
+            suiviHebdoBassinRepository
+                    .findTopByCycleBassinAssocIdOrderByDateSuiviDesc(assoc.getId())
+                    .ifPresent(pesee -> {
+                        if (pesee.getPoidsMoyenGramme() != null) {
+                            assoc.setPoidsMoyenActuel(pesee.getPoidsMoyenGramme());
+                        }
+                    });
+        }
+
+        return associations;
     }
 }
