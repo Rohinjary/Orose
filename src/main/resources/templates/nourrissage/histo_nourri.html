@@ -125,7 +125,6 @@
             .table-container {
                 width: 100%;
                 overflow-x: auto;
-                border: 1px solid var(--mg-outline);
                 border-radius: var(--radius);
             }
 
@@ -236,6 +235,12 @@
                 color: var(--mg-secondary);
                 padding: 28px;
                 text-align: center;
+            }
+
+             .dataTables_wrapper {
+
+                margin: 0px !important;
+
             }
 
             @media (max-width: 980px) {
@@ -349,7 +354,7 @@
                 </div>
 
                 <div class="table-container" th:if="${historique != null and not #lists.isEmpty(historique)}">
-                    <table id="table-histo-nourri">
+                    <table id="table-histo-nourri" class="filtre-tab" style="width: 100%;">
                         <thead>
                             <tr>
                                 <th>Date</th>

@@ -6,6 +6,11 @@
     <title layout:fragment="page-title">OROSE — Produits</title>
     <th:block layout:fragment="page-styles">
         <style>
+             .dataTables_wrapper {
+
+                margin: 10px !important;
+
+            }
             .header-section { margin-bottom: 32px; padding-bottom: 16px; border-bottom: 1px solid #e2e8f0; }
             .header-title { font-size: 26px; font-weight: 700; margin-bottom: 8px; color: var(--mg-primary); }
             .header-sub { font-size: 14px; color: var(--mg-text-muted); line-height: 1.5; }
@@ -82,7 +87,7 @@
 
         <div class="card" style="padding: 0;">
             <div class="table-container">
-                <table id="table-produits">
+                <table id="table-produits" class="filtre-tab" style="width: 100%;">
                     <thead>
                         <tr>
                             <th>Produit</th>

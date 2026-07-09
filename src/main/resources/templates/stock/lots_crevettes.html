@@ -4,6 +4,12 @@
     <title layout:fragment="page-title">OROSE — Lots Crevettes</title>
     <th:block layout:fragment="page-styles">
         <style>
+
+             .dataTables_wrapper {
+
+                margin: 0px !important;
+
+            }
             .header-section { margin-bottom: 32px; padding-bottom: 16px; border-bottom: 1px solid #e2e8f0; }
             .header-title { font-size: 26px; font-weight: 700; margin-bottom: 8px; color: var(--mg-primary); }
             .header-sub { font-size: 14px; color: var(--mg-text-muted); line-height: 1.5; }
@@ -59,7 +65,7 @@
                 </div>
             </div>
             <div class="table-container">
-                <table id="table-lots">
+                <table id="table-lots" class="filtre-tab" style="width: 100%;">
                     <thead>
                         <tr>
                             <th>Date récolte</th>

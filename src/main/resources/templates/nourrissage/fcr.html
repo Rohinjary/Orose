@@ -30,6 +30,7 @@
                 border: 1px solid var(--mg-outline);
                 border-radius: var(--radius);
                 padding: 24px;
+                
             }
 
             .filter-bar {
@@ -164,8 +165,14 @@
             .table-container {
                 width: 100%;
                 overflow-x: auto;
-                border: 1px solid var(--mg-outline);
+               
                 border-radius: var(--radius);
+            }
+
+             .dataTables_wrapper {
+
+                margin: 0px !important;
+
             }
 
             table {
@@ -224,7 +231,7 @@
             </div>
         </header>
 
-        <section class="card">
+        <section class="card" style="margin-bottom: 24px;">
             <form th:action="@{/nourrissage/fcr}" method="get" class="filter-bar">
                 <div class="form-group">
                     <label>Cycle</label>
@@ -301,7 +308,7 @@
                 </div>
 
                 <div class="table-container" th:if="${fcrBassins != null and not #lists.isEmpty(fcrBassins)}">
-                    <table>
+                    <table class="filtre-tab" style="width: 100%;">
                         <thead>
                             <tr>
                                 <th>Cycle</th>

@@ -107,6 +107,11 @@
             .harvest-pill .pill-value {
                 font-weight: 700;
             }
+            .dataTables_wrapper {
+
+                margin: 0px !important;
+
+            }
             @media (max-width: 960px) {
                 .stats-shell { grid-template-columns: 1fr; }
             }
@@ -131,7 +136,7 @@
         <div class="panel">
             <h3>Statistiques de survie par bassin</h3>
             <div class="table-responsive">
-                <table>
+                <table class="filtre-tab" style="width: 100%;">
                     <thead>
                     <tr>
                         <th>Cycle</th>
@@ -141,28 +146,34 @@
                         <th>État du bassin</th>
                     </tr>
                     </thead>
-                    <tbody>
-                    <tr th:if="${#lists.isEmpty(statistiquesSurvie)}">
-                        <td colspan="5" style="text-align:center; color: var(--mg-secondary);">Aucune statistique disponible pour le moment.</td>
-                    </tr>
-                    <tr th:each="s : ${statistiquesSurvie}">
-                        <td th:if="${s.rowspanCycle != null and s.rowspanCycle > 0}"
-                            th:attr="rowspan=${s.rowspanCycle}">
-                            <strong th:text="${s.codeUniqueCycle}">C01</strong>
-                        </td>
-                        <td th:text="${s.codeBassin}">B01</td>
-                        <td th:text="${s.tauxSurvieBassin != null} ? ${#numbers.formatDecimal(s.tauxSurvieBassin, 1, 2)} + '%' : '—'">100%</td>
-                        <td th:if="${s.rowspanCycle != null and s.rowspanCycle > 0}"
-                            th:attr="rowspan=${s.rowspanCycle}">
-                            <span th:text="${s.tauxSurvieMoyenCycle != null} ? ${#numbers.formatDecimal(s.tauxSurvieMoyenCycle, 1, 2)} + '%' : '—'">100%</span>
-                        </td>
-                        <td>
-                            <span class="badge-etat"
-                                  th:style="'background: ' + ${s.couleur} + '; color: white;'"
-                                  th:text="${s.etatBassin}">ACTIF</span>
-                        </td>
-                    </tr>
-                    </tbody>
+                   <tbody>
+    <tr th:if="${#lists.isEmpty(statistiquesSurvie)}">
+        <td colspan="5" style="text-align:center; color: var(--mg-secondary);">
+            Aucune statistique disponible pour le moment.
+        </td>
+    </tr>
+    <tr th:each="s : ${statistiquesSurvie}">
+        <td>
+            <strong th:text="${s.codeUniqueCycle}">C01</strong>
+        </td>
+        
+        <td th:text="${s.codeBassin}">B01</td>
+        
+        <td th:text="${s.tauxSurvieBassin != null} ? ${#numbers.formatDecimal(s.tauxSurvieBassin, 1, 2)} + '%' : '—'">
+            100%
+        </td>
+        
+        <td>
+            <span th:text="${s.tauxSurvieMoyenCycle != null} ? ${#numbers.formatDecimal(s.tauxSurvieMoyenCycle, 1, 2)} + '%' : '—'">100%</span>
+        </td>
+        
+        <td>
+            <span class="badge-etat"
+                  th:style="'background: ' + ${s.couleur} + '; color: white;'"
+                  th:text="${s.etatBassin}">ACTIF</span>
+        </td>
+    </tr>
+</tbody>
                 </table>
             </div>
         </div>

@@ -6,6 +6,10 @@
     <div class="nav-container">
 
 
+        <a class="nav-item" th:classappend="${currentPage == 'dashboardP'} ? 'active' : ''"
+            th:href="@{/}">
+            TABLEAU DE BORD
+        </a>
         <div class="nav-label">Terrain</div>
 
         <div class="nav-dropdown" th:classappend="${currentGroup == 'bassins'} ? 'open' : ''">
@@ -130,7 +134,7 @@
                     th:href="@{/nourrissage/distribution}">
                     Saisie distribution
                 </a>
-            
+
                 <a class="nav-item" th:classappend="${currentPage == 'nourrissage-historique'} ? 'active' : ''"
                     th:href="@{/nourrissage/historique}">
                     Historique
@@ -169,7 +173,8 @@
                             th:href="@{/stock/pertes-crevettes}">
                             Registre perte
                         </a>
-                        <a class="nav-item" th:classappend="${currentPage == 'stock-mouvements-crevette'} ? 'active' : ''"
+                        <a class="nav-item"
+                            th:classappend="${currentPage == 'stock-mouvements-crevette'} ? 'active' : ''"
                             th:href="@{/stock/mouvements(categorie='CREVETTE')}">
                             Historique
                         </a>
@@ -190,7 +195,8 @@
                             th:href="@{/stock/entree/aliment}">
                             Réception aliment
                         </a>
-                        <a class="nav-item" th:classappend="${currentPage == 'stock-mouvements-aliment'} ? 'active' : ''"
+                        <a class="nav-item"
+                            th:classappend="${currentPage == 'stock-mouvements-aliment'} ? 'active' : ''"
                             th:href="@{/stock/mouvements(categorie='ALIMENT')}">
                             Historique
                         </a>
@@ -203,7 +209,8 @@
                         <span class="sub-chevron"><i class="bi bi-chevron-right"></i></span>
                     </a>
                     <div class="sub-submenu">
-                        <a class="nav-item" th:classappend="${currentPage == 'stock-produits-medicament'} ? 'active' : ''"
+                        <a class="nav-item"
+                            th:classappend="${currentPage == 'stock-produits-medicament'} ? 'active' : ''"
                             th:href="@{/stock/produits(categorie='MEDICAMENT')}">
                             État stock
                         </a>
@@ -215,7 +222,8 @@
                             th:href="@{/stock/sortie}">
                             Sortie médicament
                         </a>
-                        <a class="nav-item" th:classappend="${currentPage == 'stock-mouvements-medicament'} ? 'active' : ''"
+                        <a class="nav-item"
+                            th:classappend="${currentPage == 'stock-mouvements-medicament'} ? 'active' : ''"
                             th:href="@{/stock/mouvements(categorie='MEDICAMENT')}">
                             Historique
                         </a>

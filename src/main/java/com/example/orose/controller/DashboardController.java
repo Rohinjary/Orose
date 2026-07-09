@@ -25,6 +25,13 @@ public class DashboardController {
         this.accueilService = accueilService;
     }
 
+    private void preparerLayoutDashboard(Model model, String breadcrumbCurrent, String currentPage) {
+        model.addAttribute("currentPage", currentPage);
+        model.addAttribute("currentGroup", "dashboard");
+        model.addAttribute("breadcrumbParent", "Dashboard");
+        model.addAttribute("breadcrumbCurrent", breadcrumbCurrent);
+    }
+
     @GetMapping("/")
     public String index(@RequestParam(name = "annee", required = false) Integer annee, Model model) {
         int targetAnnee = (annee != null) ? annee : Year.now().getValue();
@@ -32,8 +39,11 @@ public class DashboardController {
         model.addAttribute("annee", targetAnnee);
         model.addAttribute("bassinsActifs", accueilService.etatsTousBassinsActifs());
         model.addAttribute("situationStock", accueilService.getSituationStock());
-        // model.addAttribute("productionAnnuelle", accueilService.getProductionAnnuelle(targetAnnee));
-        // model.addAttribute("productionMensuelle", accueilService.getProductionMensuelle(targetAnnee));
+        // model.addAttribute("productionAnnuelle",
+        // accueilService.getProductionAnnuelle(targetAnnee));
+        // model.addAttribute("productionMensuelle",
+        // accueilService.getProductionMensuelle(targetAnnee));
+        preparerLayoutDashboard(model, "Accueil", "dashboardP");
 
         return "dashboard";
     }
