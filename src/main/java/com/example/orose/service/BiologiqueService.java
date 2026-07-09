@@ -102,9 +102,13 @@ public class BiologiqueService {
             if (dernierePesee.isPresent()) {
                 SuiviHebdoBassin pesee = dernierePesee.get();
                 dto.setDateDernierePesee(pesee.getDateSuivi());
-                // REMARQUE: Le taux de survie n'est plus calculé pendant le suivi hebdo.
-                // Il est maintenant déterminé lors de la déclaration de récolte (recolte_declaration.taux_survie_percent).
-                // Les colonnes nb_vivants et nb_morts ont été supprimées de suivi_hebdo_bassin.
+
+                if (pesee.getPoidsMoyenGramme() != null && assoc.getEffectifInitial() != null) {
+                    BigDecimal biomasseKg = pesee.getPoidsMoyenGramme()
+                            .multiply(BigDecimal.valueOf(assoc.getEffectifInitial()))
+                            .divide(new BigDecimal("1000"), 2, RoundingMode.HALF_UP);
+                    dto.setBiomassActuelleKg(biomasseKg);
+                }
             }
 
             Integer idEspece = assoc.getCycle().getEspece().getId();
@@ -209,20 +213,15 @@ public class BiologiqueService {
 
         if (dernierePesee.isPresent()) {
             SuiviHebdoBassin pesee = dernierePesee.get();
-            // NOTE: getBiomasseCalculeeKg() n'existe plus - supprimé avec nb_vivants et nb_morts
-            // dto.setBiomassActuelleKg(pesee.getBiomasseCalculeeKg());
             dto.setPoidsMoyen(determinerPoidsMoyenActuel(assoc, Optional.of(pesee)));
             dto.setTailleMoyenne(pesee.getTailleMoyenneMm());
 
-            // NOTE: Le taux de survie n'est plus calculé pendant le suivi.
-            // Il sera déterminé lors de la déclaration de récolte.
-            // if (assoc.getEffectifInitial() != null && assoc.getEffectifInitial() > 0) {
-            //     dto.setTauxSurvie(BigDecimal.valueOf(pesee.getNbVivants())...);
-            // }
-
-            // NOTE: La biomasse recoltable estimée ne peut plus être calculée
-            // car le nombre de vivants n'est plus enregistré.
-            // dto.setBiomasseRecoltableEstimee(...);
+            if (pesee.getPoidsMoyenGramme() != null && assoc.getEffectifInitial() != null) {
+                BigDecimal biomasseKg = pesee.getPoidsMoyenGramme()
+                        .multiply(BigDecimal.valueOf(assoc.getEffectifInitial()))
+                        .divide(new BigDecimal("1000"), 2, RoundingMode.HALF_UP);
+                dto.setBiomassActuelleKg(biomasseKg);
+            }
         }
 
         dto.setCalibreAtteint(estRecoltableParPoids(pesees));
