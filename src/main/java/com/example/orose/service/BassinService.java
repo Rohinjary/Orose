@@ -57,6 +57,7 @@ public class BassinService {
     }
 
     public Bassin creerBassin(BassinDTO dto) {
+        validerCodeBassin(dto.getCode());
         if (bassinRepository.existsByCode(dto.getCode())) {
             throw new IllegalArgumentException("Le code du bassin doit être unique");
         }
@@ -98,7 +99,17 @@ public class BassinService {
         changerStatutBassin(id, "INACTIF", "Bassin désactivé", 1L);
     }
 
+    private static final java.util.regex.Pattern CODE_BASSIN_PATTERN =
+        java.util.regex.Pattern.compile("^B0[1-9]$");
+
+        private void validerCodeBassin(String code) {
+        if (code == null || !CODE_BASSIN_PATTERN.matcher(code).matches()) {
+                throw new IllegalArgumentException("Le code du bassin doit être compris entre B01 et B09");
+        }
+    }
+
     public Bassin modifierBassin(Long id, BassinDTO dto) {
+        validerCodeBassin(dto.getCode());
         Bassin bassin = bassinRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Bassin introuvable"));
 
