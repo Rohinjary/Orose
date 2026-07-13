@@ -30,6 +30,9 @@ import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 
 import jakarta.persistence.Id;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 
 @Service
 public class ImportService {
@@ -72,6 +75,24 @@ public class ImportService {
                 throw new DoublonException("Ligne dans le fichier", "doublon détecté");
             }
         }
+    }
+
+    /**
+     * Point d'entree generique unique pour tous les formulaires du projet :
+     * detecte CSV vs Excel par l'extension du fichier envoye et delegue.
+     */
+    public static <T> List<T> importerFichier(Class<T> classe, MultipartFile fichier) throws Exception {
+        String nom = fichier.getOriginalFilename();
+        String nomMinuscule = nom != null ? nom.toLowerCase() : "";
+        if (nomMinuscule.endsWith(".xlsx") || nomMinuscule.endsWith(".xls")) {
+            return importerExcel(classe, fichier, 0);
+        }
+        if (nomMinuscule.endsWith(".csv")) {
+            return importerCsv(classe, fichier, ';');
+        }
+        throw new ColonneInvalideException(
+                "Format de fichier non reconnu (" + (nom == null ? "nom manquant" : nom)
+                        + ") — utilisez un fichier .csv ou .xlsx");
     }
 
     public static <T> List<T> importerCsv(Class<T> classe, MultipartFile fichier, char separateur) throws Exception {
@@ -148,7 +169,9 @@ public class ImportService {
                 for (Map.Entry<String, String> e : ligne.entrySet()) {
                     if (e.getKey().trim().equalsIgnoreCase(nom)) { valeur = e.getValue(); break; }
                 }
-                validerChampObligatoire(nom, valeur, numeroLigne);
+                if (estObligatoire(champ)) {
+                    validerChampObligatoire(nom, valeur, numeroLigne);
+                }
                 validerType(nom, valeur, champ.getType(), numeroLigne);
                 champ.set(objet, Converter.convert(valeur, champ.getType()));
             }
@@ -157,5 +180,21 @@ public class ImportService {
             numeroLigne++;
         }
         return resultat;
+    }
+
+    /**
+     * Un champ est obligatoire dans le fichier importe s'il porte une annotation
+     * Bean Validation "not null/blank/empty", ou si son type n'est pas du texte
+     * libre (BigDecimal, LocalDate, id, enum...). Seuls les champs String sans
+     * annotation (notes, description libre...) restent optionnels, comme dans
+     * les formulaires web existants qui ne les marquent jamais obligatoires.
+     */
+    private static boolean estObligatoire(Field champ) {
+        if (champ.isAnnotationPresent(NotNull.class)
+                || champ.isAnnotationPresent(NotBlank.class)
+                || champ.isAnnotationPresent(NotEmpty.class)) {
+            return true;
+        }
+        return champ.getType() != String.class;
     }
 }

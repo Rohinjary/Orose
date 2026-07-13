@@ -1,0 +1,22 @@
+<div th:fragment="modal(id, titre, action, colonnes)" xmlns:th="http://www.thymeleaf.org"
+     th:id="${id}" class="import-modal-overlay">
+    <div class="import-modal-box">
+        <div class="import-modal-header">
+            <h3 th:text="'Importer — ' + ${titre}">Importer</h3>
+            <button type="button" class="import-modal-close" th:attr="onclick=|fermerModalImport('${id}')|">&times;</button>
+        </div>
+        <form th:action="${action}" method="post" enctype="multipart/form-data">
+            <div class="import-modal-body">
+                <p class="import-modal-hint">
+                    Fichier CSV (<code>;</code> comme séparateur) ou Excel (.xlsx). Colonnes attendues, dans n'importe quel ordre :
+                    <strong th:text="${colonnes}">—</strong>
+                </p>
+                <input type="file" name="fichier" accept=".csv,.xlsx,.xls" required class="import-modal-file" />
+            </div>
+            <div class="import-modal-footer">
+                <button type="button" class="btn-mg btn-mg-secondary" th:attr="onclick=|fermerModalImport('${id}')|">Annuler</button>
+                <button type="submit" class="btn-mg btn-mg-primary"><i class="bi bi-upload"></i> Importer</button>
+            </div>
+        </form>
+    </div>
+</div>

@@ -1,5 +1,6 @@
 package com.example.orose.controller;
 
+import com.example.orose.common.io.ImportService;
 import com.example.orose.dto.PeseeDTO;
 import com.example.orose.dto.DeclarRecolteFormDTO;
 import com.example.orose.model.CycleBassinAssoc;
@@ -15,6 +16,7 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.math.BigDecimal;
@@ -66,6 +69,26 @@ public class BiologiqueController {
         preparerLayoutBiologique(model, "Ta bleau de bord", "tableau-de-bord");
         model.addAttribute("bassinsEnSuivi", biologiqueService.getBassinsSuivi());
         return "biologique/liste";
+    }
+
+    @PostMapping("/import")
+    @PreAuthorize("hasAnyRole('ADMIN','TECH','RS')")
+    @Transactional
+    public String importerPesees(@RequestParam("fichier") MultipartFile fichier, RedirectAttributes ra) {
+        try {
+            List<PeseeDTO> dtos = ImportService.importerFichier(PeseeDTO.class, fichier);
+            // Trie par bassin puis par date pour que chaque pesee voie bien la
+            // precedente lors de la validation sequentielle du service.
+            dtos.sort(Comparator.comparing(PeseeDTO::getIdCycleBassinAssoc)
+                    .thenComparing(PeseeDTO::getDateSuivi));
+            for (PeseeDTO dto : dtos) {
+                peseeService.enregistrerPesee(dto);
+            }
+            ra.addFlashAttribute("succes", dtos.size() + " pesée(s) importée(s) avec succès");
+        } catch (Exception e) {
+            ra.addFlashAttribute("erreur", "Import échoué : " + e.getMessage());
+        }
+        return "redirect:/biologique";
     }
 
     @GetMapping("/alertes")

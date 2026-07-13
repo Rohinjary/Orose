@@ -374,6 +374,7 @@
         }
     </style>
     <link href="../css/responsive.css" rel="stylesheet">
+    <link href="/css/common/import-modal.css" rel="stylesheet">
 </head>
 
 <body>
@@ -441,9 +442,19 @@
                         <a class="btn btn-outline btn-sm" th:href="@{/stock/medicament/liste/export(format='excel')}"><i class="bi bi-file-earmark-excel"></i> Excel</a>
                         <a class="btn btn-outline btn-sm" th:href="@{/stock/medicament/liste/export(format='pdf')}"><i class="bi bi-file-earmark-pdf"></i> PDF</a>
                         <a class="btn btn-outline btn-sm" th:href="@{/stock/medicament/liste/export(format='csv')}"><i class="bi bi-filetype-csv"></i> CSV</a>
+                        <button type="button" class="btn btn-outline btn-sm" onclick="ouvrirModalImport('import-medicament')"><i class="bi bi-upload"></i> Importer</button>
                         <button class="btn btn-primary"><i class="bi bi-plus-lg"></i> NOUVEAU PRODUIT</button>
                     </div>
                 </header>
+
+                <div th:if="${message}" class="badge badge-success" style="display:block; padding:12px 16px; margin-bottom:16px; font-size:13px; text-transform:none;">
+                    <span th:text="${message}"></span>
+                </div>
+                <div th:if="${errorMessage}" class="badge badge-danger" style="display:block; padding:12px 16px; margin-bottom:16px; font-size:13px; text-transform:none;">
+                    <span th:text="${errorMessage}"></span>
+                </div>
+
+                <div th:replace="~{fragments/import-modal :: modal('import-medicament', 'Entrées de stock — Médicaments', @{/stock/medicament/liste/import}, 'idMedicament, quantite, prixTotalAr, dateExpiration (AAAA-MM-JJ), idResponsable')}"></div>
 
                 <div class="card">
                     <div class="filter-bar">
@@ -542,6 +553,7 @@
             });
     </script>
     <script th:src="@{/js/list-filter.js}"></script>
+    <script th:src="@{/js/common/import-modal.js}"></script>
 </body>
 
 </html>

@@ -5,6 +5,7 @@
 <head>
     <title layout:fragment="page-title">Suivi biologique — OROSE</title>
     <th:block layout:fragment="page-styles">
+        <link href="/css/common/import-modal.css" rel="stylesheet" />
         <style>
             /* ── Barre de filtres ──────────────────────────────────────────── */
             .filter-bar {
@@ -239,6 +240,19 @@
 <body>
 <div layout:fragment="content">
 
+    <div th:if="${erreur}" class="alert alert-danger" style="
+        background:#fee2e2; color:#991b1b; border:1px solid #fca5a5;
+        padding:12px; margin-bottom:20px; border-radius:6px;">
+        <span th:text="${erreur}"></span>
+    </div>
+    <div th:if="${succes}" class="alert alert-success" style="
+        background:#dcfce7; color:#166534; border:1px solid #86efac;
+        padding:12px; margin-bottom:20px; border-radius:6px;">
+        <span th:text="${succes}"></span>
+    </div>
+
+    <div th:replace="~{fragments/import-modal :: modal('import-pesees', 'Pesées biologiques', @{/biologique/import}, 'idCycleBassinAssoc, dateSuivi (AAAA-MM-JJ), poidsMoyenGramme, tailleMoyenneMm, nbVivants, nbMorts (optionnel), idTechnicien, notes (optionnel)')}"></div>
+
     <!-- ── Barre de filtres ──────────────────────────────────────────────── -->
     <form method="get" th:action="@{/biologique}" class="filter-bar">
 
@@ -297,6 +311,11 @@
             <button type="submit" th:formaction="@{/biologique/export}" name="format" value="csv" class="btn-filter-primary"
                     style="background: white; color: var(--mg-primary); border: 1px solid var(--mg-outline);"
                     title="Exporter CSV"><i class="bi bi-filetype-csv"></i></button>
+            <button type="button" class="btn-filter-primary"
+                    style="background: white; color: var(--mg-primary); border: 1px solid var(--mg-outline);"
+                    onclick="ouvrirModalImport('import-pesees')" title="Importer des pesées">
+                <i class="bi bi-upload"></i> Importer
+            </button>
         </div>
     </form>
 
@@ -370,5 +389,9 @@
     </div>
 
 </div>
+
+<th:block layout:fragment="page-scripts">
+    <script th:src="@{/js/common/import-modal.js}"></script>
+</th:block>
 </body>
 </html>

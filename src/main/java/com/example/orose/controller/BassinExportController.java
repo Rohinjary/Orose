@@ -9,19 +9,27 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.orose.common.filter.GenericFilter;
 import com.example.orose.common.filter.GenericFilterUtil;
 import com.example.orose.common.io.ExportService;
+import com.example.orose.common.io.ImportService;
+import com.example.orose.dto.BassinDTO;
 import com.example.orose.model.Bassin;
 import com.example.orose.model.HistoStatutBassin;
 import com.example.orose.service.BassinService;
 
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.List;
 
 /**
  * Export CSV / Excel / PDF des listes du module Bassin.
@@ -100,6 +108,22 @@ public class BassinExportController {
         cols.put("utilisateur", "Utilisateur");
         cols.put("motif", "Motif");
         ecrire(response, data, "historique-bassins", format, "Historique des transitions de bassins", cols);
+    }
+
+    @PostMapping("/liste/import")
+    @PreAuthorize("hasRole('ADMIN')")
+    @Transactional
+    public String importer(@RequestParam("fichier") MultipartFile fichier, RedirectAttributes ra) {
+        try {
+            List<BassinDTO> dtos = ImportService.importerFichier(BassinDTO.class, fichier);
+            for (BassinDTO dto : dtos) {
+                bassinService.creerBassin(dto);
+            }
+            ra.addFlashAttribute("succes", dtos.size() + " bassin(s) importé(s) avec succès");
+        } catch (Exception e) {
+            ra.addFlashAttribute("erreur", "Import échoué : " + e.getMessage());
+        }
+        return "redirect:/bassins/liste";
     }
 
     // ─────────────────────── Helpers ───────────────────────

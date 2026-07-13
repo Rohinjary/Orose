@@ -1,5 +1,6 @@
 package com.example.orose.controller;
 
+import com.example.orose.common.io.ImportService;
 import com.example.orose.dto.IncidentDTO;
 import com.example.orose.service.IncidentService;
 import com.example.orose.service.SanitaireService;
@@ -11,12 +12,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.example.orose.model.IncidentSanitaire;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @Controller
 @RequestMapping("/sanitaire")
@@ -79,6 +83,22 @@ public class SanitaireController {
                 return "redirect:/sanitaire/declaration";
             }
         }
+
+    @PostMapping("/index/import")
+    @PreAuthorize("hasAnyRole('ADMIN','TECH','RS')")
+    @Transactional
+    public String importerIncidents(@RequestParam("fichier") MultipartFile fichier, RedirectAttributes ra) {
+        try {
+            List<IncidentDTO> dtos = ImportService.importerFichier(IncidentDTO.class, fichier);
+            for (IncidentDTO dto : dtos) {
+                incidentService.declarerIncident(dto);
+            }
+            ra.addFlashAttribute("message", dtos.size() + " incident(s) importé(s) avec succès");
+        } catch (Exception e) {
+            ra.addFlashAttribute("errorMessage", "Import échoué : " + e.getMessage());
+        }
+        return "redirect:/sanitaire/index";
+    }
 
     @GetMapping("/dashboard")
     public String dashboard(Model model) {
