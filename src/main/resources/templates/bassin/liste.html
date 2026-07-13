@@ -19,9 +19,9 @@
             <h1 class="section-title" style="font-size: 22px;">Gestion des Bassins</h1>
 
             <div class="action-group">
-                <a class="btn-mg btn-mg-secondary" th:href="@{/bassins/liste/export(format='excel')}"><i class="bi bi-file-earmark-excel"></i> Excel</a>
-                <a class="btn-mg btn-mg-secondary" th:href="@{/bassins/liste/export(format='pdf')}"><i class="bi bi-file-earmark-pdf"></i> PDF</a>
-                <a class="btn-mg btn-mg-secondary" th:href="@{/bassins/liste/export(format='csv')}"><i class="bi bi-filetype-csv"></i> CSV</a>
+                <a data-export-link class="btn-mg btn-mg-secondary" th:href="@{/bassins/liste/export(format='excel')}"><i class="bi bi-file-earmark-excel"></i> Excel</a>
+                <a data-export-link class="btn-mg btn-mg-secondary" th:href="@{/bassins/liste/export(format='pdf')}"><i class="bi bi-file-earmark-pdf"></i> PDF</a>
+                <a data-export-link class="btn-mg btn-mg-secondary" th:href="@{/bassins/liste/export(format='csv')}"><i class="bi bi-filetype-csv"></i> CSV</a>
                 <button type="button" class="btn-mg btn-mg-secondary" onclick="ouvrirModalImport('import-bassin')" sec:authorize="hasRole('ADMIN')">
                     <i class="bi bi-upload"></i> Importer
                 </button>
@@ -57,7 +57,7 @@
         <section class="filters-section">
             <div class="filter-group">
                 <label class="filter-label" for="filter-etat">État</label>
-                <select id="filter-etat" class="filter-input">
+                <select id="filter-etat" class="filter-input" data-filter-param="etat">
                     <option value="">Tous les états</option>
                     <option value="VIDE">Vide</option>
                     <option value="PREPARATION">Préparation</option>
@@ -70,7 +70,7 @@
 
             <div class="filter-group">
                 <label class="filter-label" for="filter-disponibilite">Disponibilité</label>
-                <select id="filter-disponibilite" class="filter-input">
+                <select id="filter-disponibilite" class="filter-input" data-filter-param="disponibilite">
                     <option value="">Tous</option>
                     <option value="LIBRE">Libre (sans cycle actif)</option>
                     <option value="OCCUPE">Occupé (cycle actif)</option>
@@ -79,7 +79,7 @@
 
             <div class="filter-group" style="flex: 1; min-width: 220px;">
                 <label class="filter-label" for="filter-cycle">Cycle actif</label>
-                <input type="text" id="filter-cycle" class="filter-input" placeholder="Rechercher un code de cycle..." />
+                <input type="text" id="filter-cycle" class="filter-input" placeholder="Rechercher un code de cycle..." data-filter-param="cycle" />
             </div>
 
             <button type="button" id="btn-reset-filters" class="btn-mg btn-mg-secondary btn-reset-filters">
@@ -161,6 +161,7 @@
     <th:block layout:fragment="page-scripts">
         <script th:src="@{/js/bassin/liste-filtres.js}"></script>
         <script th:src="@{/js/common/import-modal.js}"></script>
+        <script th:src="@{/js/common/export-filters.js}"></script>
     </th:block>
 </body>
 

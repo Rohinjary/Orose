@@ -1,9 +1,12 @@
 package com.example.orose.controller;
 
 import java.io.PrintWriter;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,11 +44,25 @@ public class NourrissageExportController {
 
     @GetMapping("/historique/export")
     public void exportHistorique(@RequestParam(defaultValue = "excel") String format,
+                                  @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+                                  @RequestParam(required = false) String bassinCode,
+                                  @RequestParam(required = false) Long cycleId,
+                                  @RequestParam(required = false) Long creneauId,
                                   @RequestParam(required = false) String q,
                                   HttpServletResponse response) throws Exception {
-        List<JournalDTO> data = nourrissageService.getJournalActivites();
+        String codeBassinFiltre = (bassinCode == null || bassinCode.isBlank()) ? null : bassinCode;
+        List<JournalDTO> data = nourrissageService.getHistoriqueFiltreDTO(date, codeBassinFiltre, cycleId, creneauId);
         if (q != null && !q.isBlank()) {
-            data = GenericFilterUtil.filtrer(data, new GenericFilter().contains("codeBassin", q));
+            String needle = q.toLowerCase();
+            List<JournalDTO> filtre = new ArrayList<>();
+            for (JournalDTO d : data) {
+                if ((d.getCodeBassin() != null && d.getCodeBassin().toLowerCase().contains(needle))
+                        || (d.getNomAliment() != null && d.getNomAliment().toLowerCase().contains(needle))
+                        || (d.getNomResponsable() != null && d.getNomResponsable().toLowerCase().contains(needle))) {
+                    filtre.add(d);
+                }
+            }
+            data = filtre;
         }
         LinkedHashMap<String, String> cols = new LinkedHashMap<>();
         cols.put("date", "Date");

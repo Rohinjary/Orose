@@ -13,8 +13,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.example.orose.common.filter.GenericFilter;
-import com.example.orose.common.filter.GenericFilterUtil;
 import com.example.orose.common.io.ExportService;
 import com.example.orose.model.IncidentSanitaire;
 import com.example.orose.service.SanitaireService;
@@ -56,10 +54,7 @@ public class SanitaireExportController {
                 .getHistoriqueSanitaire(idBassin, type, dDebut, dFin, statut, PageRequest.of(0, 100_000))
                 .getContent();
 
-        List<IncidentRow> data = mapper(source);
-        if (q != null && !q.isBlank()) {
-            data = GenericFilterUtil.filtrer(data, new GenericFilter().contains("bassin", q));
-        }
+        List<IncidentRow> data = filtrerParTexte(mapper(source), q);
         ecrire(response, data, "historique-sanitaire", format, "Historique sanitaire", colonnes());
     }
 
@@ -71,11 +66,25 @@ public class SanitaireExportController {
                 .getHistoriqueSanitaire(null, null, null, null, null, PageRequest.of(0, 100_000))
                 .getContent();
 
-        List<IncidentRow> data = mapper(source);
-        if (q != null && !q.isBlank()) {
-            data = GenericFilterUtil.filtrer(data, new GenericFilter().contains("bassin", q));
-        }
+        List<IncidentRow> data = filtrerParTexte(mapper(source), q);
         ecrire(response, data, "registre-incidents", format, "Registre des incidents sanitaires", colonnes());
+    }
+
+    private List<IncidentRow> filtrerParTexte(List<IncidentRow> data, String q) {
+        if (q == null || q.isBlank()) return data;
+        String needle = q.toLowerCase();
+        List<IncidentRow> filtre = new ArrayList<>();
+        for (IncidentRow r : data) {
+            if (r.getBassin().toLowerCase().contains(needle)
+                    || r.getTypeIncident().toLowerCase().contains(needle)
+                    || r.getNiveauGravite().toLowerCase().contains(needle)
+                    || r.getStatut().toLowerCase().contains(needle)
+                    || r.getResponsable().toLowerCase().contains(needle)
+                    || (r.getDescription() != null && r.getDescription().toLowerCase().contains(needle))) {
+                filtre.add(r);
+            }
+        }
+        return filtre;
     }
 
     private List<IncidentRow> mapper(List<IncidentSanitaire> source) {

@@ -61,10 +61,8 @@
             </div>
 
             <div class="filters-bar" style="padding: 0 24px 16px 24px;">
-                <input type="text" class="form-control" style="max-width: 260px;"
-                       data-list-filter="#table-mouvements" placeholder="Filtrer (produit, motif, etc.)..." />
-
                 <form id="export-mouvements" method="get" th:action="@{/stock/mouvements/export}" style="display: flex; gap: 8px; align-items: flex-end; flex-wrap: wrap;">
+                    <input type="hidden" name="categorie" th:value="${categorie}" />
                     <div class="filter-group">
                         <label class="filter-label" for="dateMin">Du</label>
                         <input type="date" id="dateMin" name="dateMin" class="filter-select" />
@@ -73,6 +71,8 @@
                         <label class="filter-label" for="dateMax">Au</label>
                         <input type="date" id="dateMax" name="dateMax" class="filter-select" />
                     </div>
+                    <input type="text" name="q" class="form-control" style="max-width: 260px;"
+                           data-list-filter="#table-mouvements" placeholder="Filtrer (produit, motif, etc.)..." />
                     <button type="submit" name="format" value="excel" class="btn btn-outline btn-sm"><i class="bi bi-file-earmark-excel"></i> Excel</button>
                     <button type="submit" name="format" value="pdf" class="btn btn-outline btn-sm"><i class="bi bi-file-earmark-pdf"></i> PDF</button>
                     <button type="submit" name="format" value="csv" class="btn btn-outline btn-sm"><i class="bi bi-filetype-csv"></i> CSV</button>

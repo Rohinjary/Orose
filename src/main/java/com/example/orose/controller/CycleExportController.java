@@ -11,8 +11,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.example.orose.common.filter.GenericFilter;
-import com.example.orose.common.filter.GenericFilterUtil;
 import com.example.orose.common.io.ExportService;
 import com.example.orose.model.Cycle;
 import com.example.orose.service.CycleService;
@@ -59,7 +57,13 @@ public class CycleExportController {
                     technicien));
         }
         if (q != null && !q.isBlank()) {
-            data = GenericFilterUtil.filtrer(data, new GenericFilter().contains("code", q));
+            String needle = q.toLowerCase();
+            data = data.stream().filter(r ->
+                    r.getCode().toLowerCase().contains(needle)
+                    || r.getEspece().toLowerCase().contains(needle)
+                    || r.getStatut().toLowerCase().contains(needle)
+                    || r.getTechnicien().toLowerCase().contains(needle)
+            ).collect(java.util.stream.Collectors.toList());
         }
         LinkedHashMap<String, String> cols = new LinkedHashMap<>();
         cols.put("code", "Code cycle");

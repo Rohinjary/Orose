@@ -437,11 +437,11 @@
                     </div>
                     <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
                         <input type="text" class="filter-select"
-                               data-list-filter="#table-stock-medicament"
+                               data-list-filter="#table-stock-medicament" data-filter-param="q"
                                placeholder="Rechercher un médicament..." style="min-width: 220px;" />
-                        <a class="btn btn-outline btn-sm" th:href="@{/stock/medicament/liste/export(format='excel')}"><i class="bi bi-file-earmark-excel"></i> Excel</a>
-                        <a class="btn btn-outline btn-sm" th:href="@{/stock/medicament/liste/export(format='pdf')}"><i class="bi bi-file-earmark-pdf"></i> PDF</a>
-                        <a class="btn btn-outline btn-sm" th:href="@{/stock/medicament/liste/export(format='csv')}"><i class="bi bi-filetype-csv"></i> CSV</a>
+                        <a data-export-link class="btn btn-outline btn-sm" th:href="@{/stock/medicament/liste/export(format='excel')}"><i class="bi bi-file-earmark-excel"></i> Excel</a>
+                        <a data-export-link class="btn btn-outline btn-sm" th:href="@{/stock/medicament/liste/export(format='pdf')}"><i class="bi bi-file-earmark-pdf"></i> PDF</a>
+                        <a data-export-link class="btn btn-outline btn-sm" th:href="@{/stock/medicament/liste/export(format='csv')}"><i class="bi bi-filetype-csv"></i> CSV</a>
                         <button type="button" class="btn btn-outline btn-sm" onclick="ouvrirModalImport('import-medicament')"><i class="bi bi-upload"></i> Importer</button>
                         <button class="btn btn-primary"><i class="bi bi-plus-lg"></i> NOUVEAU PRODUIT</button>
                     </div>
@@ -554,6 +554,7 @@
     </script>
     <script th:src="@{/js/list-filter.js}"></script>
     <script th:src="@{/js/common/import-modal.js}"></script>
+    <script th:src="@{/js/common/export-filters.js}"></script>
 </body>
 
 </html>

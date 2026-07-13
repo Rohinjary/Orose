@@ -49,6 +49,7 @@
 <body>
     <th:block layout:fragment="page-scripts">
         <script th:src="@{/js/list-filter.js}"></script>
+        <script th:src="@{/js/common/export-filters.js}"></script>
     </th:block>
     <div layout:fragment="content">
         <header class="header-section">
@@ -58,11 +59,11 @@
 
         <div style="display: flex; gap: 12px; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap;">
             <input type="text" class="form-control" style="max-width: 280px;"
-                   data-list-filter="#table-produits" placeholder="Rechercher un produit..." />
+                   data-list-filter="#table-produits" data-filter-param="q" placeholder="Rechercher un produit..." />
             <div style="display: flex; gap: 8px;">
-                <a class="btn btn-outline btn-sm" th:href="@{/stock/produits/export(format='excel')}"><i class="bi bi-file-earmark-excel"></i> Excel</a>
-                <a class="btn btn-outline btn-sm" th:href="@{/stock/produits/export(format='pdf')}"><i class="bi bi-file-earmark-pdf"></i> PDF</a>
-                <a class="btn btn-outline btn-sm" th:href="@{/stock/produits/export(format='csv')}"><i class="bi bi-filetype-csv"></i> CSV</a>
+                <a data-export-link class="btn btn-outline btn-sm" th:href="@{/stock/produits/export(format='excel', categorie=${categorie})}"><i class="bi bi-file-earmark-excel"></i> Excel</a>
+                <a data-export-link class="btn btn-outline btn-sm" th:href="@{/stock/produits/export(format='pdf', categorie=${categorie})}"><i class="bi bi-file-earmark-pdf"></i> PDF</a>
+                <a data-export-link class="btn btn-outline btn-sm" th:href="@{/stock/produits/export(format='csv', categorie=${categorie})}"><i class="bi bi-filetype-csv"></i> CSV</a>
                 <a class="btn btn-outline" th:if="${categorie == null or categorie == 'MEDICAMENT'}" th:href="@{/stock/entree}" sec:authorize="hasAnyRole('ADMIN','TECH','RS')"><i class="bi bi-plus"></i> NOUVELLE ENTRÉE</a>
                 <a class="btn btn-outline" th:if="${categorie == null or categorie == 'MEDICAMENT'}" th:href="@{/stock/sortie}" sec:authorize="hasAnyRole('ADMIN','TECH','RS')"><i class="bi bi-dash"></i> NOUVELLE SORTIE</a>
             </div>
