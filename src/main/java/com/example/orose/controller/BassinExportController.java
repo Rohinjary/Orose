@@ -24,9 +24,11 @@ import com.example.orose.common.filter.GenericFilterUtil;
 import com.example.orose.common.io.ExportService;
 import com.example.orose.common.io.ImportService;
 import com.example.orose.dto.BassinDTO;
+import com.example.orose.dto.BassinSuiviDTO;
 import com.example.orose.model.Bassin;
 import com.example.orose.model.HistoStatutBassin;
 import com.example.orose.service.BassinService;
+import com.example.orose.service.BiologiqueService;
 
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.List;
@@ -45,17 +47,36 @@ public class BassinExportController {
     private static final DateTimeFormatter DATE_EXPORT = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     private final BassinService bassinService;
+    private final BiologiqueService biologiqueService;
 
-    public BassinExportController(BassinService bassinService) {
+    public BassinExportController(BassinService bassinService, BiologiqueService biologiqueService) {
         this.bassinService = bassinService;
+        this.biologiqueService = biologiqueService;
     }
 
     @GetMapping("/liste/export")
     public void exportListe(@RequestParam(defaultValue = "excel") String format,
                              @RequestParam(required = false) String q,
+                             @RequestParam(required = false) String etat,
+                             @RequestParam(required = false) String disponibilite,
+                             @RequestParam(required = false) String cycle,
                              HttpServletResponse response) throws Exception {
         List<BassinRow> data = new ArrayList<>();
         for (Bassin b : bassinService.listerBassins()) {
+            if (etat != null && !etat.isBlank()
+                    && (b.getStatutActuel() == null || !etat.equalsIgnoreCase(b.getStatutActuel().getCode()))) {
+                continue;
+            }
+            BassinSuiviDTO suivi = biologiqueService.getSuiviActifPourBassin(b.getId().longValue()).orElse(null);
+            String dispo = suivi != null ? "OCCUPE" : "LIBRE";
+            if (disponibilite != null && !disponibilite.isBlank() && !disponibilite.equalsIgnoreCase(dispo)) {
+                continue;
+            }
+            if (cycle != null && !cycle.isBlank()
+                    && (suivi == null || suivi.getCodeUniqueCycle() == null
+                        || !suivi.getCodeUniqueCycle().toLowerCase().contains(cycle.toLowerCase()))) {
+                continue;
+            }
             data.add(new BassinRow(
                     b.getCode(),
                     b.getSurfaceM2(),

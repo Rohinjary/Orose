@@ -50,8 +50,9 @@ public class StockExportController {
     @GetMapping("/produits/export")
     public void exportProduits(@RequestParam(defaultValue = "excel") String format,
                                 @RequestParam(required = false) String q,
+                                @RequestParam(required = false) String categorie,
                                 HttpServletResponse response) throws Exception {
-        List<ProduitStockDTO> data = stockService.getListeProduits();
+        List<ProduitStockDTO> data = stockService.getListeProduits(categorie);
         if (q != null && !q.isBlank()) {
             data = GenericFilterUtil.filtrer(data, new GenericFilter().contains("nom", q));
         }
@@ -69,8 +70,9 @@ public class StockExportController {
                                   @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateMin,
                                   @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateMax,
                                   @RequestParam(required = false) String q,
+                                  @RequestParam(required = false) String categorie,
                                   HttpServletResponse response) throws Exception {
-        List<MouvementStockDTO> data = stockService.getHistoriqueMouvements();
+        List<MouvementStockDTO> data = stockService.getHistoriqueMouvements(categorie);
         GenericFilter f = new GenericFilter();
         if (dateMin != null || dateMax != null) f.dateBetween("dateMouvement", dateMin, dateMax);
         if (q != null && !q.isBlank()) f.contains("produit", q);
@@ -88,6 +90,7 @@ public class StockExportController {
 
     @GetMapping("/lots-crevettes/export")
     public void exportLotsCrevettes(@RequestParam(defaultValue = "excel") String format,
+                                     @RequestParam(required = false) String q,
                                      HttpServletResponse response) throws Exception {
         List<LotCrevetteExportRow> data = new ArrayList<>();
         for (LotCrevette l : stockService.getLotsCrevette()) {
@@ -120,6 +123,18 @@ public class StockExportController {
                     biomassActuelle,
                     bassin,
                     cycle));
+        }
+        if (q != null && !q.isBlank()) {
+            String needle = q.toLowerCase();
+            List<LotCrevetteExportRow> filtre = new ArrayList<>();
+            for (LotCrevetteExportRow r : data) {
+                if (r.getNumeroLot().toLowerCase().contains(needle)
+                        || r.getBassin().toLowerCase().contains(needle)
+                        || r.getCycle().toLowerCase().contains(needle)) {
+                    filtre.add(r);
+                }
+            }
+            data = filtre;
         }
         LinkedHashMap<String, String> cols = new LinkedHashMap<>();
         cols.put("dateRecolte", "Date récolte");

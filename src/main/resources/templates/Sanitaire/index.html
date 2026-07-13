@@ -223,11 +223,11 @@
         <div class="card" style="margin-bottom: 24px;">
             <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
                 <div class="form-group" style="flex: 1; min-width: 200px; margin-bottom: 0;">
-                    <input class="form-control" data-list-filter="#table-incidents" placeholder="Rechercher un incident..." type="text" />
+                    <input class="form-control" data-list-filter="#table-incidents" data-filter-param="q" placeholder="Rechercher un incident..." type="text" />
                 </div>
-                <a class="btn btn-outline" th:href="@{/sanitaire/index/export(format='excel')}"><i class="bi bi-file-earmark-excel"></i> Excel</a>
-                <a class="btn btn-outline" th:href="@{/sanitaire/index/export(format='pdf')}"><i class="bi bi-file-earmark-pdf"></i> PDF</a>
-                <a class="btn btn-outline" th:href="@{/sanitaire/index/export(format='csv')}"><i class="bi bi-filetype-csv"></i> CSV</a>
+                <a data-export-link class="btn btn-outline" th:href="@{/sanitaire/index/export(format='excel')}"><i class="bi bi-file-earmark-excel"></i> Excel</a>
+                <a data-export-link class="btn btn-outline" th:href="@{/sanitaire/index/export(format='pdf')}"><i class="bi bi-file-earmark-pdf"></i> PDF</a>
+                <a data-export-link class="btn btn-outline" th:href="@{/sanitaire/index/export(format='csv')}"><i class="bi bi-filetype-csv"></i> CSV</a>
                 <button type="button" class="btn btn-outline" onclick="ouvrirModalImport('import-incidents')" sec:authorize="hasAnyRole('ADMIN','TECH','RS')">
                     <i class="bi bi-upload"></i> Importer
                 </button>
@@ -294,6 +294,7 @@
     <th:block layout:fragment="page-scripts">
         <script th:src="@{/js/list-filter.js}"></script>
         <script th:src="@{/js/common/import-modal.js}"></script>
+        <script th:src="@{/js/common/export-filters.js}"></script>
     </th:block>
 
 </body>
