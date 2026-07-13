@@ -270,15 +270,15 @@
                 <p class="header-sub">Suivi chronologique du nourrissage sur le site.</p>
             </div>
             <div class="actions-row">
-                <input class="form-control" type="text" data-list-filter="#table-histo-nourri"
+                <input class="form-control" type="text" data-list-filter="#table-histo-nourri" data-filter-param="q"
                     placeholder="Rechercher bassin, aliment, responsable" style="min-width: 280px;" />
-                <a class="btn btn-outline" th:href="@{/nourrissage/historique/export(format='excel')}">
+                <a data-export-link class="btn btn-outline" th:href="@{/nourrissage/historique/export(format='excel')}">
                     <i class="bi bi-file-earmark-excel"></i> Excel
                 </a>
-                <a class="btn btn-outline" th:href="@{/nourrissage/historique/export(format='pdf')}">
+                <a data-export-link class="btn btn-outline" th:href="@{/nourrissage/historique/export(format='pdf')}">
                     <i class="bi bi-file-earmark-pdf"></i> PDF
                 </a>
-                <a class="btn btn-outline" th:href="@{/nourrissage/historique/export(format='csv')}">
+                <a data-export-link class="btn btn-outline" th:href="@{/nourrissage/historique/export(format='csv')}">
                     <i class="bi bi-filetype-csv"></i> CSV
                 </a>
             </div>
@@ -288,12 +288,12 @@
             <form th:action="@{/nourrissage/historique}" method="get" class="filter-bar">
                 <div class="form-group">
                     <label>Date</label>
-                    <input class="form-control" type="date" name="date" th:value="${dateSelectionnee}" />
+                    <input class="form-control" type="date" name="date" data-filter-param="date" th:value="${dateSelectionnee}" />
                 </div>
 
                 <div class="form-group">
                     <label>Bassin</label>
-                    <select name="bassinCode">
+                    <select name="bassinCode" data-filter-param="bassinCode">
                         <option value="">Tous les bassins</option>
                         <option th:each="bassin : ${bassins}" th:value="${bassin.code}" th:text="${bassin.code}"
                             th:selected="${bassinCodeSelectionne != null and bassin.code == bassinCodeSelectionne}">
@@ -303,7 +303,7 @@
 
                 <div class="form-group">
                     <label>Cycle</label>
-                    <select name="cycleId">
+                    <select name="cycleId" data-filter-param="cycleId">
                         <option value="">Tous les cycles</option>
                         <option th:each="cycle : ${cycles}" th:value="${cycle.id}" th:text="${cycle.codeUniqueCycle}"
                             th:selected="${cycleIdSelectionne != null and cycle.id.toString() == cycleIdSelectionne.toString()}">
@@ -313,7 +313,7 @@
 
                 <div class="form-group">
                     <label>Creneau</label>
-                    <select name="creneauId">
+                    <select name="creneauId" data-filter-param="creneauId">
                         <option value="">Tous les creneaux</option>
                         <option th:each="creneau : ${listeCreneaux}" th:value="${creneau.id}"
                             th:text="${creneau.libelle}"
@@ -404,6 +404,7 @@
 
     <th:block layout:fragment="page-scripts">
         <script th:src="@{/js/list-filter.js}"></script>
+        <script th:src="@{/js/common/export-filters.js}"></script>
     </th:block>
 </body>
 

@@ -284,11 +284,9 @@
                     <button class="btn btn-outline btn-sm" type="submit" th:formaction="@{/sanitaire/historique/export}" name="format" value="excel"><i class="bi bi-file-earmark-excel"></i> Excel</button>
                     <button class="btn btn-outline btn-sm" type="submit" th:formaction="@{/sanitaire/historique/export}" name="format" value="pdf"><i class="bi bi-file-earmark-pdf"></i> PDF</button>
                     <button class="btn btn-outline btn-sm" type="submit" th:formaction="@{/sanitaire/historique/export}" name="format" value="csv"><i class="bi bi-filetype-csv"></i> CSV</button>
+                    <input type="text" name="q" data-list-filter="#table-histo-sanitaire" placeholder="Rechercher dans la page (bassin, type, description...)..."
+                           class="form-control" style="max-width: 360px;" />
                 </form>
-            </div>
-            <div style="padding: 0 24px 12px 24px;">
-                <input type="text" data-list-filter="#table-histo-sanitaire" placeholder="Rechercher dans la page (bassin, type, description...)..."
-                       class="form-control" style="max-width: 360px;" />
             </div>
             <div class="table-container">
                 <table id="table-histo-sanitaire" class="filtre-tab" style="width: 100%;">
