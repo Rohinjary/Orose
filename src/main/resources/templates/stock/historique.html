@@ -95,18 +95,18 @@
                     <tbody>
                         <tr th:each="mvt : ${mouvements}">
                             <td>
-                                <span th:text="${#temporals.format(mvt.dateMouvement, 'dd/MM/yyyy')}">--</span>
+                                <span th:data-order="${mvt.dateMouvement}" th:text="${#temporals.format(mvt.dateMouvement, 'dd/MM/yyyy')}">--</span>
                                 <!-- <span class="data-meta" th:text="${#temporals.format(mvt.dateMouvement, 'HH:mm:ss')}">--</span> -->
                             </td>
-                            <td><strong th:text="${mvt.produit}">--</strong></td>
+                            <td><strong th:data-order="${mvt.produit}" th:text="${mvt.produit}">--</strong></td>
                             <td>
                                 <span th:if="${mvt.type == 'ENTRÉE'}" class="badge badge-success"><i class="bi bi-arrow-down-left"></i> Entrée</span>
                                 <span th:if="${mvt.type == 'SORTIE'}" class="badge badge-danger"><i class="bi bi-arrow-up-right"></i> Sortie</span>
                             </td>
-                            <td th:class="${mvt.type == 'ENTRÉE'} ? 'val-positive' : 'val-negative'" th:text="${mvt.type == 'ENTRÉE' ? '+' : ''} + ${#numbers.formatDecimal(mvt.quantite, 1, 2)} + ' kg'">--</td>
-                            <td th:text="${mvt.motif}">--</td>
-                            <td><span class="badge badge-info" th:text="${mvt.source}">--</span></td>
-                            <td th:text="${mvt.responsable}">--</td>
+                            <td th:data-order="${mvt.quantite}" th:class="${mvt.type == 'ENTRÉE'} ? 'val-positive' : 'val-negative'" th:text="${mvt.type == 'ENTRÉE' ? '+' : ''} + ${#numbers.formatDecimal(mvt.quantite, 1, 2)} + ' kg'">--</td>
+                            <td th:data-order="${mvt.motif}" th:text="${mvt.motif}">--</td>
+                            <td><span class="badge badge-info" th:data-order="${mvt.source}" th:text="${mvt.source}">--</span></td>
+                            <td th:data-order="${mvt.responsable}" th:text="${mvt.responsable}">--</td>
                         </tr>
                         <tr th:if="${#lists.isEmpty(mouvements)}">
                             <td colspan="7" style="text-align: center; padding: 40px; color: var(--mg-text-muted);">Aucun mouvement enregistré</td>

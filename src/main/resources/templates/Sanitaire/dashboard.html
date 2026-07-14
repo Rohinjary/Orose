@@ -299,16 +299,16 @@
                             </thead>
                             <tbody>
                                 <tr th:each="inc : ${dashboard.incidentsActifs}">
-                                    <td><strong th:text="${inc.bassinCode}">--</strong></td>
-                                    <td th:text="${inc.typeIncident}">--</td>
+                                    <td><strong th:data-order="${inc.bassinCode}" th:text="${inc.bassinCode}">--</strong></td>
+                                    <td th:data-order="${inc.typeIncident}" th:text="${inc.typeIncident}">--</td>
                                     <td>
                                         <span th:if="${inc.gravite == 'CRITIQUE'}" class="badge badge-danger">Critique</span>
                                         <span th:if="${inc.gravite == 'MODERE'}" class="badge badge-warning">Modéré</span>
                                         <span th:if="${inc.gravite == 'FAIBLE'}" class="badge badge-neutral">Faible</span>
                                     </td>
-                                    <td th:text="${#temporals.format(inc.dateDetection, 'dd/MM/yyyy')}">--</td>
+                                    <td th:data-order="${inc.dateDetection}" th:text="${#temporals.format(inc.dateDetection, 'dd/MM/yyyy')}">--</td>
                                     <td>
-                                        <span th:text="${inc.statutTraitement}">--</span>
+                                        <span th:data-order="${inc.statutTraitement}" th:text="${inc.statutTraitement}">--</span>
                                     </td>
                                 </tr>
                             </tbody>

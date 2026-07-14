@@ -154,17 +154,17 @@
     </tr>
     <tr th:each="s : ${statistiquesSurvie}">
         <td>
-            <strong th:text="${s.codeUniqueCycle}">C01</strong>
+            <strong th:data-order="${s.codeUniqueCycle}" th:text="${s.codeUniqueCycle}">C01</strong>
         </td>
         
-        <td th:text="${s.codeBassin}">B01</td>
+        <td th:data-order="${s.codeBassin}" th:text="${s.codeBassin}">B01</td>
         
-        <td th:text="${s.tauxSurvieBassin != null} ? ${#numbers.formatDecimal(s.tauxSurvieBassin, 1, 2)} + '%' : '—'">
+        <td th:data-order="${s.tauxSurvieBassin}" th:text="${s.tauxSurvieBassin != null} ? ${#numbers.formatDecimal(s.tauxSurvieBassin, 1, 2)} + '%' : '—'">
             100%
         </td>
         
         <td>
-            <span th:text="${s.tauxSurvieMoyenCycle != null} ? ${#numbers.formatDecimal(s.tauxSurvieMoyenCycle, 1, 2)} + '%' : '—'">100%</span>
+            <span th:data-order="${s.tauxSurvieMoyenCycle}" th:text="${s.tauxSurvieMoyenCycle != null} ? ${#numbers.formatDecimal(s.tauxSurvieMoyenCycle, 1, 2)} + '%' : '—'">100%</span>
         </td>
         
         <td>

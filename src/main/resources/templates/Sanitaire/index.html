@@ -255,16 +255,16 @@
                     </thead>
                     <tbody>
                         <tr th:each="incident : ${incidents}">
-                            <td th:text="${#temporals.format(incident.dateDetection, 'dd/MM/yyyy')}">--</td>
-                            <td><strong th:text="${incident.cycleBassinAssoc.bassin.code}">--</strong></td>
-                            <td th:text="${incident.typeIncident}">--</td>
+                            <td  th:data-order="${incident.dateDetection}" th:text="${#temporals.format(incident.dateDetection, 'dd/MM/yyyy')}">--</td>
+                            <td><strong th:data-order="${incident.cycleBassinAssoc.bassin.code}" th:text="${incident.cycleBassinAssoc.bassin.code}">--</strong></td>
+                            <td th:data-order="${incident.typeIncident}" th:text="${incident.typeIncident}">--</td>
                             <td>
                                 <span th:if="${incident.niveauGravite == 'CRITIQUE'}" class="badge badge-danger">Critique</span>
                                 <span th:if="${incident.niveauGravite == 'MODERE'}" class="badge badge-warning">Modéré</span>
                                 <span th:if="${incident.niveauGravite == 'FAIBLE'}" class="badge badge-neutral">Faible</span>
                             </td>
-                            <td th:text="${#strings.abbreviate(incident.description, 50)}">--</td>
-                            <td th:text="${incident.responsable.nom} + ' ' + ${incident.responsable.prenom}">--</td>
+                            <td th:data-order="${incident.description}" th:text="${#strings.abbreviate(incident.description, 50)}">--</td>
+                            <td th:data-order="${incident.responsable.nom} + ' ' + ${incident.responsable.prenom}" th:text="${incident.responsable.nom} + ' ' + ${incident.responsable.prenom}">--</td>
                             <td>
                                 <span th:if="${!incident.estResolu}" class="badge badge-neutral">En cours</span>
                                 <span th:if="${incident.estResolu}" class="badge badge-success">Résolu</span>

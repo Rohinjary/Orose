@@ -459,15 +459,16 @@
                     </thead>
                     <tbody>
                         <tr th:each="p : ${detail.pesees}">
-                            <td style="font-weight: 700; color: var(--mg-primary);"
+                            <td th:data-order="${p.semaineActuelle}" style="font-weight: 700; color: var(--mg-primary);"
                                 th:text="'S' + ${p.semaineActuelle}">S1</td>
-                            <td th:text="${#temporals.format(p.dateSuivi, 'dd/MM/yyyy')}">—</td>
-                            <td th:text="${p.poidsMoyenGramme} + ' g'">—</td>
-                            <td th:text="${p.tailleMoyenneMm} + ' mm'">—</td>
-                            <td style="font-weight: 600;" th:text="${p.poidsMoyenGramme != null and detail.effectifInitial != null} 
+                            <td th:data-order="${p.dateSuivi}" th:text="${#temporals.format(p.dateSuivi, 'dd/MM/yyyy')}">—</td>
+                            <td th:data-order="${p.poidsMoyenGramme}" th:text="${p.poidsMoyenGramme} + ' g'">—</td>
+                            <td th:data-order="${p.tailleMoyenneMm}" th:text="${p.tailleMoyenneMm} + ' mm'">—</td>
+                            <td style="font-weight: 600;" th:data-order="${p.poidsMoyenGramme != null and detail.effectifInitial != null ? (p.poidsMoyenGramme * detail.effectifInitial) / 1000 : null}"
+                                th:text="${p.poidsMoyenGramme != null and detail.effectifInitial != null} 
                                     ? ${#numbers.formatDecimal((p.poidsMoyenGramme * detail.effectifInitial) / 1000, 1, 2)} + ' kg' 
                                     : '—'">—</td>
-                            <td
+                            <td th:data-order="${p.technicien.nom + ' ' + (p.technicien.prenom != null ? p.technicien.prenom : '')}"
                                 th:text="${p.technicien.nom + ' ' + (p.technicien.prenom != null ? p.technicien.prenom : '')}">
                                 —</td>
                             <td>
