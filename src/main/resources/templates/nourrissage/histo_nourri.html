@@ -58,7 +58,7 @@
 
             .grid-layout {
                 display: grid;
-                grid-template-columns: minmax(0, 1fr) 320px;
+                grid-template-columns: minmax(1fr, 1fr) 320px;
                 gap: 24px;
                 margin-top: 24px;
             }
@@ -388,7 +388,7 @@
                 </div>
             </section>
 
-            <aside class="side-stack">
+            <!-- <aside class="side-stack">
                 <section class="card"
                     th:style="${dashboard != null and dashboard.stockCritique} ? 'background: #991b1b; color: white;' : 'background: var(--mg-primary); color: white;'">
                     <h3 class="card-title" style="color: rgba(255,255,255,0.72);">Alerte stock</h3>
@@ -398,7 +398,7 @@
                         th:text="${dashboard != null and dashboard.stockCritique} ? 'Alerte : stock critique.' : 'Niveau de stock stable.'">
                     </p>
                 </section>
-            </aside>
+            </aside> -->
         </div>
     </div>
 
