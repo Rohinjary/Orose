@@ -83,7 +83,6 @@ INSERT INTO public.suivi_hebdo_bassin (id_cycle_bassin_assoc,date_suivi,semaine_
 INSERT INTO public.suivi_hebdo_bassin (id_cycle_bassin_assoc,date_suivi,semaine_actuelle,poids_moyen_gramme,taille_moyenne_mm,id_technicien,notes) VALUES
 	 (1,'2026-06-23',10,13.00,78.00,1,'Approche calibre commercial'),
 	 (1,'2026-06-30',11,14.50,85.00,1,'Suivi S11'),
-	 (1,'2026-07-6',12,18.50,92.00,1,'Suivi S12'),
 	 (2,'2026-04-14',0,0.50,8.00,1,'Début de cycle - acclimatation'),
 	 (2,'2026-04-21',1,1.00,12.00,1,'Adaptation correcte'),
 	 (2,'2026-04-28',2,1.80,18.00,1,'Croissance normale'),
@@ -97,7 +96,6 @@ INSERT INTO public.suivi_hebdo_bassin (id_cycle_bassin_assoc,date_suivi,semaine_
 	 (2,'2026-06-16',9,11.50,70.00,1,'Croissance avancée'),
 	 (2,'2026-06-23',10,13.00,78.00,1,'Approche calibre commercial'),
 	 (2,'2026-06-30',11,14.50,85.00,1,'Suivi S11'),
-	 (2,'2026-07-6',12,18.50,92.00,1,'Suivi S12'),
 	 (3,'2026-04-14',0,0.50,8.00,1,'Début de cycle - acclimatation'),
 	 (3,'2026-04-21',1,1.00,12.00,1,'Adaptation correcte'),
 	 (3,'2026-04-28',2,1.80,18.00,1,'Croissance normale'),
@@ -111,7 +109,6 @@ INSERT INTO public.suivi_hebdo_bassin (id_cycle_bassin_assoc,date_suivi,semaine_
 	 (3,'2026-06-16',9,11.50,70.00,1,'Croissance avancée'),
 	 (3,'2026-06-23',10,13.00,78.00,1,'Approche calibre commercial'),
 	 (3,'2026-06-30',11,14.50,85.00,1,'Suivi S11'),
-	 (3,'2026-07-6',12,18.50,92.00,1,'Suivi S12'),
 	 (1,'2026-07-7',13,18.75,92.00,1,'ok');
 INSERT INTO public.suivi_hebdo_bassin (id_cycle_bassin_assoc,date_suivi,semaine_actuelle,poids_moyen_gramme,taille_moyenne_mm,id_technicien,notes) VALUES
 	 (3,'2026-07-7',13,18.75,92.00,1,'ok'),
