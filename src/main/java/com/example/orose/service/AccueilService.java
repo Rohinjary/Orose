@@ -10,6 +10,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.orose.config.AppConfigParams;
 import com.example.orose.dto.dashboard.EtatBassinActifDTO;
 import com.example.orose.dto.stock.StockDashboardDTO;
 import com.example.orose.model.Bassin;
@@ -103,11 +104,11 @@ public class AccueilService {
 
     public float getObjectifAnnuel(){
         // en dur mais à redifinir dans ne table de parametres 
-        int cycleParAn = 3;
-        int bassinParCycle = 3; 
-        float poidsCibleGr = 0.02f;
-        int plInitial = 25000;
-        return cycleParAn * bassinParCycle * poidsCibleGr * plInitial;
+        // int cycleParAn = 3;
+        // int bassinParCycle = 3; 
+        // float poidsCibleGr = 0.02f;
+        // int plInitial = 25000;
+        return AppConfigParams.cycleParAn * AppConfigParams.bassinParCycle * (AppConfigParams.poidsCibleGr/100) * AppConfigParams.plInitial;
     }
 
 }
